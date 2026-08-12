@@ -1,6 +1,6 @@
 # Walking Skeleton — Build Foundation Validation
 
-**Status:** In Progress
+**Status:** Completed
 
 | ID | 検証 | 期待結果 | 実結果 | 判断 / メモ |
 |---|---|---|---|---|
@@ -13,7 +13,7 @@
 | WS-B07 | NullAway negative | 意図的違反でbuild失敗 | PASS | `return null`を検出し終了コード1、検証後に正常コードへ復元 |
 | WS-B08 | NullAway revert | 修正後に再度成功 | PASS | 正常コード復元後、全5 projectの`clean verify`が終了コード0 |
 | WS-B09 | Maven Wrapper | Wrapper経由で同一build成功 | PASS | Wrapper 3.3.4 / Maven 3.9.16で`clean verify`成功 |
-| WS-B10 | Container | layer extract / JRE / non-rootで起動 | DEFERRED | ローカルにcontainer engineがないため、Docker利用可能環境で再開 |
+| WS-B10 | Container | layer extract / JRE / non-rootで起動 | PASS | Rancher Desktop Mobyでbuild・起動成功、JRE 21、UID/GID 999、終了コード0 |
 
 ## Version Snapshot
 
@@ -39,6 +39,10 @@
 - 2026-08-12: Temurin 21.0.12で生成したSpring Boot JARをTemurin 25.0.4の`java.exe -jar`で直接起動。`Started SmokeApplication`と`KOIKI Walking Skeleton: hello Spring Boot`を確認し、終了コード0。
 - 2026-08-12: `@NullMarked`配下の`GreetingService.greeting`を一時的に`return null`へ変更。NullAwayが`returning @Nullable expression from method with @NonNull return type`として検出し、終了コード1。検証後に正常コードへ復元。
 - 2026-08-12: 正常コード復元後、Temurin 21.0.12とMaven Wrapper 3.9.16で全5 projectの`clean verify`が再び成功し、終了コード0。NullAwayのPASS → FAIL → PASSを完了。
+- 2026-08-12: Rancher Desktop Moby 29.5.3（Linux / amd64）で`Dockerfile.ws`からimage build成功。Spring Boot toolsによる`dependencies` / `spring-boot-loader` / `snapshot-dependencies` / `application`のlayer extractと個別COPYを確認。
+- 2026-08-12: Runtime imageはTemurin JRE 21.0.11で`javac`なし。image metadataと実行時の両方でnon-rootユーザー`koiki`（UID/GID 999）を確認。
+- 2026-08-12: imageの既定ENTRYPOINTでcontainerを起動し、`Started SmokeApplication`と`KOIKI Walking Skeleton: hello Spring Boot`を確認。終了コード0、`--rm`後の残存containerなし。
+- 2026-08-12: PC再起動後、Windows PowerShellの通常の`docker build` / `docker run`からWS-B10を再実施。layer extract、JRE-only、non-root、アプリ起動、終了コード0を再確認。
 
 ### PASS WITH CHANGE
 
@@ -47,10 +51,14 @@
 
 ### FAIL
 
-### DEFERRED
+### Environment Notes
 
-- WS-B10は2026-08-12時点のローカル環境にDocker / Podman / nerdctlおよびWSLがないため未実施。Docker利用可能環境でrepositoryを取得し、`walking-skeleton/ws-smoke-app/Dockerfile.ws`から再開する。
+- 初回はRancher DesktopのWindows側Docker named pipeが`timed out dialing Hyper-V socket`となったため、管理VM内のMoby engineへ`rdctl shell docker ...`で接続して検証した。
+- PC再起動後にnamed pipeは復旧し、Windows PowerShellからServer情報を取得できた。通常の`docker`コマンドでもWS-B10が再度PASSしたため、初回の接続障害はDockerfileまたはimageの不成立ではなく、一時的な環境問題と判断する。
 
 ## Phase 1aへ持ち込む設定
 
-TBD
+- Root Reactor / BOM / Parentの責務分離を継続する。
+- Build JDK 21をEnforcerで強制し、target release 21を維持する。
+- Error Prone / NullAwayはforked javacで実行する。
+- Container候補はlayer extract、JRE runtime、non-root実行を維持する。正式base imageとsecurity設定はPhase 1aで判断する。
