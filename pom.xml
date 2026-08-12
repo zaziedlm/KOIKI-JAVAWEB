@@ -16,6 +16,8 @@
   <modules>
     <module>koiki-dependencies-bom</module>
     <module>koiki-parent</module>
+    <module>walking-skeleton/ws-architecture-contract</module>
+    <module>koiki-archunit-rules</module>
     <module>walking-skeleton/ws-smoke-lib</module>
     <module>walking-skeleton/ws-smoke-app</module>
     <module>walking-skeleton/ws-flyway-two-tier</module>
