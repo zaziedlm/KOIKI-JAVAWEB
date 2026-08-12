@@ -32,7 +32,9 @@ Walking Skeleton の名前を正式仕様化しないため、一時 namespace �
 dev.koiki.walkingskeleton
 ```
 
-正式な `groupId` / Java base package は Walking Skeleton 後に確定します。
+正式な `groupId` / Java base package は `org.koikifw` に決定しています。
+上記の一時namespaceはWalking Skeletonの検証コードだけで使用し、
+Phase 1aの正式成果物へは引き継ぎません。
 
 ## 前提
 

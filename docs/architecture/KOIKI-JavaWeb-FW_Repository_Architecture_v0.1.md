@@ -49,15 +49,22 @@ koiki-javaweb-fw/
 基本方式:
 
 ```text
-Public:   com.koiki.<module>....
-Internal: com.koiki.<module>.internal....
+Public:   org.koikifw.<module>....
+Internal: org.koikifw.<module>.internal....
 ```
 
 `internal`参照禁止はArchUnitで機械検査する。
 重要SPIのみ必要に応じて `-api` / `-impl` 分割する。
 JPMSは採用しない。
 
-正式base packageはWalking Skeleton後に確定する。
+正式なMaven `groupId`とJava base packageは、KOIKIが保有する
+`koikifw.org`の逆ドメイン名である`org.koikifw`とする。
+
+別プロジェクトで使用している`org.koikifw.libkoiki.batch`は、
+バッチ実行基盤固有のnamespaceであり、本Repositoryのpackage階層には持ち込まない。
+
+Walking Skeletonの`dev.koiki.walkingskeleton`は検証用の一時namespaceとして維持し、
+Phase 1aの正式成果物へは引き継がない。
 
 ## 6. Dependency Principle
 

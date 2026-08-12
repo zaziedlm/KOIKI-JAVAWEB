@@ -16,7 +16,7 @@
   "notes": [
     "Walking Skeleton code is disposable.",
     "Generate official Maven Wrapper scripts with the Apache Maven Wrapper Plugin.",
-    "Formal groupId/base package are intentionally deferred.",
+    "Formal groupId/base package are org.koikifw; the walking-skeleton coordinates remain temporary.",
     "Future product modules are not pre-created as empty Maven modules."
   ]
 }

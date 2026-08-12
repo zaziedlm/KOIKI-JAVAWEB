@@ -720,7 +720,7 @@ Spring 公式ポートフォリオ外のライブラリを KOIKI の公式プロ
 
 | 手段 | 適用範囲 |
 |---|---|
-| **`internal` パッケージ規約 ＋ ArchUnit** | 全体。`com.koiki.<module>.internal.**` を非公開とし、Framework 外からの参照を禁止する |
+| **`internal` パッケージ規約 ＋ ArchUnit** | 全体。`org.koikifw.<module>.internal.**` を非公開とし、Framework 外からの参照を禁止する |
 | **Maven モジュール分割**（`-api` / `-impl`） | 拡張点・SPI となる重要な契約に限定して併用する。対象は Phase 1a で確定する |
 | **japicmp** | Public API の破壊的変更を CI で検出する（§8.5） |
 
@@ -2198,7 +2198,7 @@ PostgreSQL 等の実 DB、必要な外部 Middleware を Testcontainers で起�
 | 10 | `domain.event` は他モジュールから参照してよい（**明示例外**） |
 | 11 | Domain Event 型は `record` であり、`domain.model` の型をフィールドに持たない |
 | 12 | `RestTemplate` を新規コードで使用しない |
-| 13 | Framework 外から `com.koiki.<module>.internal.**` を参照しない |
+| 13 | Framework 外から `org.koikifw.<module>.internal.**` を参照しない |
 
 ##### Tier 1 固有
 
