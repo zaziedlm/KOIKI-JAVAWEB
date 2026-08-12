@@ -1,0 +1,31 @@
+# Maven
+target/
+**/target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary / local
+.tmp/
+tmp/
+.env
+.env.*
+!.env.example
+
+# Maven wrapper cache
+.mvn/wrapper/dists/
+
+# Walking Skeleton local outputs
+walking-skeleton/.work/

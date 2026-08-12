@@ -1,0 +1,97 @@
+koiki-javaweb-fw-walking-skeleton-base-v0.1/
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   └── README.md
+│   ├── workflows/
+│   │   └── README.md
+│   └── pull_request_template.md
+├── .mvn/
+│   ├── wrapper/
+│   │   └── maven-wrapper.properties.template
+│   └── README.md
+├── build-support/
+│   ├── maven/
+│   │   └── toolchains.xml.example
+│   ├── scripts/
+│   │   ├── bootstrap-maven-wrapper.ps1
+│   │   ├── bootstrap-maven-wrapper.sh
+│   │   ├── check-build-environment.ps1
+│   │   ├── run-with-java25.ps1
+│   │   └── verify-class-version.ps1
+│   └── README.md
+├── docs/
+│   ├── agent/
+│   │   ├── skills/
+│   │   │   └── README.md
+│   │   └── README.md
+│   ├── architecture/
+│   │   ├── adr/
+│   │   │   └── README.md
+│   │   ├── diagrams/
+│   │   │   └── README.md
+│   │   ├── grand-design/
+│   │   │   └── KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md
+│   │   ├── validation/
+│   │   │   └── walking-skeleton-build-foundation.md
+│   │   ├── KOIKI-JavaWeb-FW_Repository_Architecture_v0.1.md
+│   │   └── README.md
+│   ├── development/
+│   │   ├── KOIKI-JavaWeb-FW_WalkingSkeleton実装計画_v1.0.md
+│   │   └── README.md
+│   └── standards/
+│       └── README.md
+├── koiki-archunit-rules/
+│   └── README.md
+├── koiki-dependencies-bom/
+│   └── pom.xml
+├── koiki-framework/
+│   └── README.md
+├── koiki-parent/
+│   └── pom.xml
+├── koiki-starters/
+│   └── README.md
+├── koiki-testing/
+│   └── README.md
+├── ops/
+│   └── README.md
+├── walking-skeleton/
+│   ├── negative-tests/
+│   │   └── nullaway/
+│   │       └── README.md
+│   ├── ws-smoke-app/
+│   │   ├── src/
+│   │   │   └── main/
+│   │   │       ├── java/
+│   │   │       │   └── dev/
+│   │   │       │       └── koiki/
+│   │   │       │           └── walkingskeleton/
+│   │   │       │               └── smoke/
+│   │   │       │                   └── app/
+│   │   │       │                       ├── package-info.java
+│   │   │       │                       └── SmokeApplication.java
+│   │   │       └── resources/
+│   │   │           └── application.properties
+│   │   ├── Dockerfile.ws
+│   │   └── pom.xml
+│   └── ws-smoke-lib/
+│       ├── src/
+│       │   └── main/
+│       │       └── java/
+│       │           └── dev/
+│       │               └── koiki/
+│       │                   └── walkingskeleton/
+│       │                       └── smoke/
+│       │                           └── lib/
+│       │                               ├── GreetingService.java
+│       │                               └── package-info.java
+│       └── pom.xml
+├── .editorconfig
+├── .gitattributes
+├── .gitignore
+├── AGENTS.md
+├── BUILD-BASELINE.json
+├── CONTRIBUTING.md
+├── LICENSE
+├── pom.xml
+├── README.md
+└── SECURITY.md

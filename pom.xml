@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- Walking Skeleton candidate: Root POM is Reactor/Aggregator only. -->
+  <groupId>dev.koiki.walkingskeleton</groupId>
+  <artifactId>koiki-javaweb-fw-reactor</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>KOIKI-JavaWeb-FW Walking Skeleton Reactor</name>
+
+  <modules>
+    <module>koiki-dependencies-bom</module>
+    <module>koiki-parent</module>
+    <module>walking-skeleton/ws-smoke-lib</module>
+    <module>walking-skeleton/ws-smoke-app</module>
+  </modules>
+
+</project>

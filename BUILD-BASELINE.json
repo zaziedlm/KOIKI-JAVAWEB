@@ -1,0 +1,22 @@
+{
+  "artifact": "KOIKI-JavaWeb-FW Walking Skeleton Base",
+  "version": "v0.1",
+  "purpose": "Phase 0 repository/build foundation",
+  "temporaryGroupId": "dev.koiki.walkingskeleton",
+  "versions": {
+    "springBoot": "4.1.0",
+    "maven": "3.9.16",
+    "mavenCompilerPlugin": "3.15.0",
+    "mavenEnforcerPlugin": "3.6.3",
+    "mavenToolchainsPlugin": "3.3.0",
+    "errorProne": "2.50.0",
+    "nullAway": "0.13.8",
+    "jSpecify": "1.0.0"
+  },
+  "notes": [
+    "Walking Skeleton code is disposable.",
+    "Generate official Maven Wrapper scripts with the Apache Maven Wrapper Plugin.",
+    "Formal groupId/base package are intentionally deferred.",
+    "Future product modules are not pre-created as empty Maven modules."
+  ]
+}
