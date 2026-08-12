@@ -18,6 +18,7 @@
     <module>koiki-parent</module>
     <module>walking-skeleton/ws-smoke-lib</module>
     <module>walking-skeleton/ws-smoke-app</module>
+    <module>walking-skeleton/ws-flyway-two-tier</module>
   </modules>
 
 </project>

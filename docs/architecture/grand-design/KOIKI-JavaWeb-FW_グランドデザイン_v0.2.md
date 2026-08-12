@@ -1779,9 +1779,13 @@ KOIKI-PYFW の接頭辞規約を移植する。
 |---|---|---|---|
 | KOIKI Framework | `classpath:db/migration/koiki` | `koiki_flyway_history` | 1 |
 | Reference Application | `classpath:db/migration/kkref` | `kkref_flyway_history` | 2 |
-| Customer Application | `classpath:db/migration` | `flyway_schema_history` | 3 |
+| Customer Application | `classpath:db/migration/customer` | `flyway_schema_history` | 3 |
 
 **この方式を選ぶ理由** — 単一の履歴テーブルに混在させると、**KOIKI が後からマイグレーションを追加したときにバージョン順序が破綻する**（顧客の `V5` の後に KOIKI の `V2` を追加できない）。バージョン帯域の分割も同じ問題を抱える。履歴テーブルを分けることで、各所有者が独立してバージョンを進められる。
+
+locationsも所有者ごとに相互に親子関係を持たない専用Directoryとする。Flywayはlocation配下を再帰走査するため、Customerを`classpath:db/migration`にすると`db/migration/koiki`まで取り込み、所有者間で同じversionを使用した際に重複migrationとなることをWalking Skeletonで実測した。
+
+同一schemaで先行ownerがテーブルを作成すると、履歴テーブルをまだ持たない後続ownerはFlywayの非空schema検査で停止する。このため後続ownerは`baselineOnMigrate=true`、`baselineVersion=0`として履歴を初期化する。baseline versionを0とすることで、後続owner自身の`V1`以降を省略せず適用する。
 
 Spring Boot は Flyway Bean を1つ自動構成するため、複数構成には追加の Bean 定義と実行順序の制御を要する。**KOIKI Starter がこの構成を提供する。**
 
