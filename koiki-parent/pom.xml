@@ -100,6 +100,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler-plugin.version}</version>
         <configuration>
+          <!-- Error Prone's -J module-access options require an external javac process. -->
+          <fork>true</fork>
           <release>${maven.compiler.release}</release>
           <encoding>${project.build.sourceEncoding}</encoding>
           <parameters>true</parameters>
