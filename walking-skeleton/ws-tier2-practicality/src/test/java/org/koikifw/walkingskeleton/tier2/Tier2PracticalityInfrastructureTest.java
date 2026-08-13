@@ -38,6 +38,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.modulith.ApplicationModule;
 import org.springframework.modulith.NamedInterface;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.junit.jupiter.Container;
@@ -46,6 +48,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 
 @SpringBootTest
 @Testcontainers
+@RecordApplicationEvents
 class Tier2PracticalityInfrastructureTest {
 
     @Container
@@ -76,6 +79,9 @@ class Tier2PracticalityInfrastructureTest {
 
     @Autowired
     private DeactivateCategoryUseCase deactivateCategoryUseCase;
+
+    @Autowired
+    private ApplicationEvents applicationEvents;
 
     @Autowired
     private PlatformTransactionManager transactionManager;
@@ -219,7 +225,7 @@ class Tier2PracticalityInfrastructureTest {
     }
 
     @Test
-    void generatedTierOneRepositoryPersistsCategoryDeactivation() {
+    void deactivatesUnreferencedCategoryAndProcessesEventOnce() {
         UUID categoryId = insertCategory("meals");
         Category category = categoryRepository.findById(categoryId).orElseThrow();
         assertThat(category.active()).isTrue();
@@ -232,6 +238,32 @@ class Tier2PracticalityInfrastructureTest {
                 Boolean.class,
                 categoryId);
         assertThat(active).isFalse();
+        assertThat(applicationEvents.stream(CategoryDeactivating.class).count()).isEqualTo(1);
+    }
+
+    @Test
+    void keepsCategoryActiveWhenReferencedByDraftExpense() {
+        UUID categoryId = insertCategory("draft-reference");
+        expenseUseCase.create(command(
+                categoryId, "draft expense", "1000.00", "1000.00"));
+
+        assertThatThrownBy(() -> deactivateCategoryUseCase.deactivate(categoryId))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("category is referenced by a pending expense: " + categoryId);
+        assertThat(categoryActive(categoryId)).isTrue();
+    }
+
+    @Test
+    void keepsCategoryActiveWhenReferencedBySubmittedExpense() {
+        UUID categoryId = insertCategory("submitted-reference");
+        ExpenseResult created = expenseUseCase.create(command(
+                categoryId, "submitted expense", "2000.00", "2000.00"));
+        expenseUseCase.submit(created.expenseRequestId());
+
+        assertThatThrownBy(() -> deactivateCategoryUseCase.deactivate(categoryId))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("category is referenced by a pending expense: " + categoryId);
+        assertThat(categoryActive(categoryId)).isTrue();
     }
 
     private static KoikiModule moduleMetadata(String packageInfoClassName)
@@ -256,6 +288,13 @@ class Tier2PracticalityInfrastructureTest {
                     .orElseThrow()
                     .status();
         }));
+    }
+
+    private Boolean categoryActive(UUID categoryId) {
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
+                "SELECT active FROM ws_category WHERE category_id = ?",
+                Boolean.class,
+                categoryId));
     }
 
     private static CreateExpenseCommand command(
