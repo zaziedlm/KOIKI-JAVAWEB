@@ -64,7 +64,7 @@ koiki-javaweb-fw/
 
 ### ArchUnit・構造規約
 
-- [ ] Tier1/Tier2の主要規則（全Tier共通1-13、Tier1固有14、Tier2兼用15-24、イベントリスナー38-39の計26件）が実際に書け、意図的違反を検出できる。誤検出がないか
+- [x] Tier1/Tier2の主要規則（全Tier共通1-13、Tier1固有14、Tier2兼用15-24、イベントリスナー38-39の計26件）が実際に書け、意図的違反を検出できる。誤検出がないか
 - [x] `koiki-archunit-rules`を独立Maven artifactとしてinstallし、**外側の別プロジェクトから**test依存として使って違反を検出できる
 - [x] `internal`パッケージへの外部参照が検出される
 - [x] `package-info.java`への`@NullMarked`と`@KoikiModule`の併記に問題がない
