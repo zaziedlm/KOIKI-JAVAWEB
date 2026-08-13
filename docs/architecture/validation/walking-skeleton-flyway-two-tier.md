@@ -81,6 +81,6 @@ Customer: baseline 0, V1, V5
 - V2の「所有者別に独立してversionを進められるか」はPASSとする。
 - locationsと履歴テーブルは双方とも所有者別に分離する。
 - 同一schemaの後続ownerにはbaseline version 0を設定する。
-- `FlywayMigrationStrategy`を用いる構成はPhase 1bのStarter設計候補とする。
+- `FlywayMigrationStrategy`を用いる構成はKOIKI Starterが提供する。具体的なStarterへの所属はPhase 1bで決定する。
 - 本PoCのapplicationとmigration SQLは正式製品コードへ昇格させない。
 - Reference Applicationを含む3階層への一般化はPhase 1bで実装検証する。

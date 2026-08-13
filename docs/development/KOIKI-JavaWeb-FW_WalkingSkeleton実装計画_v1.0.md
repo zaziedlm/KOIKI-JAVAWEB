@@ -57,10 +57,10 @@ koiki-javaweb-fw/
 
 ### リポジトリ・ビルドの土台
 
-- [ ] Root Reactor／Parent／BOMの責務を分離した状態でMulti-module buildが通る
-- [ ] `<release>21>`＋Toolchains＋Enforcerで、想定外JDKでのビルドを実際に失敗させられる
-- [ ] Java 21でビルドした成果物がJava 25ランタイムでも起動する
-- [ ] `@NullMarked`とNullAwayを導入し、違反でビルドが失敗する
+- [x] Root Reactor／Parent／BOMの責務を分離した状態でMulti-module buildが通る
+- [x] `<release>21>`＋Toolchains＋Enforcerで、想定外JDKでのビルドを実際に失敗させられる
+- [x] Java 21でビルドした成果物がJava 25ランタイムでも起動する
+- [x] `@NullMarked`とNullAwayを導入し、違反でビルドが失敗する
 
 ### ArchUnit・構造規約
 
@@ -71,8 +71,8 @@ koiki-javaweb-fw/
 
 ### Flyway
 
-- [ ] KOIKI側・顧客側で履歴テーブルを分けた2階層構成が独立して進む（顧客側`V5`の後にKOIKI側`V2`を追加してもバージョン順序が壊れない）
-- [ ] この構成をどのStarter（または内部モジュール）に持たせるかを、実装しながら決める
+- [x] KOIKI側・顧客側で履歴テーブルを分けた2階層構成が独立して進む（顧客側`V5`の後にKOIKI側`V2`を追加してもバージョン順序が壊れない）
+- [x] KOIKI Starterが構成を提供する方針とし、具体的なStarterへの所属決定と3階層への一般化はPhase 1bで行う
 
 ### Tier2実装の実務感
 
@@ -83,7 +83,7 @@ koiki-javaweb-fw/
 
 ### コンテナビルドの型（本番設定はPhase 4。ここでは型だけ）
 
-- [ ] Multi-stage build＋レイヤ分割（`-Djarmode=tools ... extract`）＋JREベースイメージ＋非rootユーザーが機能する
+- [x] Multi-stage build＋レイヤ分割（`-Djarmode=tools ... extract`）＋JREベースイメージ＋非rootユーザーが機能する
 
 ### AIエージェント向けSkills
 
@@ -92,6 +92,7 @@ koiki-javaweb-fw/
 
 ### OpenSpec試行
 
+- [x] OpenSpecが未導入（ディレクトリ・設定・CLIなし）であることを確認する
 - [ ] `expense`の実装をOpenSpecのワークフロー（提案→設計→タスク分解→実装→検証→アーカイブ）で進めてみて、実務に合うか判断する
 - [ ] OpenSpecが生成するAI向け指示と、`docs/agent/skills/`が衝突しないか確認する
 
