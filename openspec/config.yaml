@@ -1,0 +1,37 @@
+schema: spec-driven
+
+context: |
+  KOIKI-JavaWeb-FW Phase 0 Walking Skeleton repository.
+  The governing design is docs/architecture/grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md.
+  Use Java 21, Spring Boot 4.1, Maven, PostgreSQL, Flyway, ArchUnit, Testcontainers,
+  Spring Modulith, Spring MVC and Thymeleaf where required by the Walking Skeleton.
+  Prefer Spring standard capabilities. Keep Framework, Reference and Customer ownership separate.
+  Walking Skeleton implementation is disposable validation code and must not be promoted directly
+  into the formal framework. Do not pre-create unused future modules or packages.
+  Prefer implementation evidence over document speculation and record findings under
+  docs/architecture/validation/.
+  The target experiment is masterdata (Tier 1 SIMPLE) plus expense (Tier 2 RICH, JPA shared model),
+  OSIV disabled, synchronous domain-event collaboration and Spring Modulith module verification.
+
+rules:
+  proposal:
+    - State that generated implementation is disposable Walking Skeleton code.
+    - Include explicit non-goals to prevent formal framework scope expansion.
+  design:
+    - Map material choices to the governing grand-design sections or ADRs.
+    - Separate Framework, Walking Skeleton application and database ownership decisions.
+  tasks:
+    - Include executable verification and a validation-document update.
+    - Do not include commit, push or deployment as implementation tasks.
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
