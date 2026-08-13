@@ -38,10 +38,10 @@
 
 ## 6. アーキテクチャとモジュール検証
 
-- [ ] 6.1 Walking Skeletonの本番クラスへ`KoikiArchitectureRules.phaseZeroRules(...)`を適用し、該当するV1ルールをすべて成功させる。
-- [ ] 6.2 Spring Modulithの`ApplicationModules.of(...).verify()`を実行し、循環、不正依存、および非公開型参照がないことを確認する。
-- [ ] 6.3 Spring Modulithが`masterdata::events`を公開境界として認識し、それ以外の`masterdata`内部型を公開APIとして扱わないことを検証する。
-- [ ] 6.4 Java 21で対象モジュールのテストとMavenリアクター全体を実行し、再現性に必要な依存関係またはツール調整を記録する。
+- [x] 6.1 Walking Skeletonの本番クラスへ`KoikiArchitectureRules.phaseZeroRules(...)`を適用し、該当するV1ルールをすべて成功させる。
+- [x] 6.2 Spring Modulithの`ApplicationModules.of(...).verify()`を実行し、循環、不正依存、および非公開型参照がないことを確認する。
+- [x] 6.3 Spring Modulithが`masterdata::events`を公開境界として認識し、それ以外の`masterdata`内部型を公開APIとして扱わないことを検証する。
+- [x] 6.4 Java 21で対象モジュールのテストとMavenリアクター全体を実行し、再現性に必要な依存関係またはツール調整を記録する。
 
 ## 7. 検証証拠とOpenSpec評価
 

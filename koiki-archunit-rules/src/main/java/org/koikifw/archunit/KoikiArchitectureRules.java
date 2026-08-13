@@ -420,7 +420,8 @@ public final class KoikiArchitectureRules {
                         .forEach(dependency -> violation(events, dependency,
                                 "[Rule 6] Controller directly depends on Repository"));
             }
-            if (pkg.contains(".domain.event")) {
+            if (pkg.contains(".domain.event")
+                    && !type.getSimpleName().equals("package-info")) {
                 if (!type.isRecord()) {
                     violation(events, type, "[Rule 11] Domain Event " + type.getName() + " is not a record");
                 }
