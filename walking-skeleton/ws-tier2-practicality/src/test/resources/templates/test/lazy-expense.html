@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>誤った経費詳細</title>
+</head>
+<body>
+<ul>
+    <li th:each="line : ${expense.lines()}" th:text="${line.description()}">line</li>
+</ul>
+</body>
+</html>

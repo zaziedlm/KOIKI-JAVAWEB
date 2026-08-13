@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>経費詳細</title>
+</head>
+<body>
+<main>
+    <h1>経費詳細</h1>
+    <dl>
+        <dt>ID</dt>
+        <dd th:text="${expense.expenseRequestId}">expense-id</dd>
+        <dt>説明</dt>
+        <dd th:text="${expense.description}">description</dd>
+        <dt>申請金額</dt>
+        <dd th:text="${expense.requestedAmount}">0.00</dd>
+        <dt>状態</dt>
+        <dd th:text="${expense.status}">DRAFT</dd>
+    </dl>
+    <table>
+        <thead>
+        <tr><th>明細</th><th>金額</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="line : ${expense.lines}">
+            <td th:text="${line.description}">line</td>
+            <td th:text="${line.amount}">0.00</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

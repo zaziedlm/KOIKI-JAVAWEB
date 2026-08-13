@@ -14,6 +14,8 @@ import dev.koiki.walkingskeleton.architecture.PersistenceModel;
 import dev.koiki.walkingskeleton.architecture.PersistenceTechnology;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
+import org.hibernate.LazyInitializationException;
+import org.koikifw.walkingskeleton.tier2.expense.application.ExpenseDetailView;
 import org.koikifw.walkingskeleton.tier2.expense.application.ExpenseUseCase;
 import org.koikifw.walkingskeleton.tier2.expense.application.ExpenseUseCase.CreateExpenseCommand;
 import org.koikifw.walkingskeleton.tier2.expense.application.ExpenseUseCase.ExpenseLineCommand;
@@ -29,26 +31,39 @@ import org.koikifw.walkingskeleton.tier2.masterdata.adapter.outbound.persistence
 import org.koikifw.walkingskeleton.tier2.masterdata.application.DeactivateCategoryUseCase;
 import org.koikifw.walkingskeleton.tier2.masterdata.application.DeactivateCategoryUseCase.CategoryResult;
 import org.koikifw.walkingskeleton.tier2.masterdata.domain.event.CategoryDeactivating;
+import org.koikifw.walkingskeleton.tier2test.mvc.LazyExpenseEntityQuery;
+import org.koikifw.walkingskeleton.tier2test.mvc.LazyExpenseExposureController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.modulith.ApplicationModule;
 import org.springframework.modulith.NamedInterface;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
 @SpringBootTest
 @Testcontainers
 @RecordApplicationEvents
+@Import({LazyExpenseEntityQuery.class, LazyExpenseExposureController.class})
 class Tier2PracticalityInfrastructureTest {
 
     @Container
@@ -85,6 +100,12 @@ class Tier2PracticalityInfrastructureTest {
 
     @Autowired
     private PlatformTransactionManager transactionManager;
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @Autowired
+    private LazyExpenseEntityQuery lazyExpenseEntityQuery;
 
     @Test
     void startsApplicationContextWithOsivDisabled() {
@@ -266,6 +287,43 @@ class Tier2PracticalityInfrastructureTest {
         assertThat(categoryActive(categoryId)).isTrue();
     }
 
+    @Test
+    void rendersExpenseDetailThroughImmutableViewWithOsivDisabled() throws Exception {
+        UUID categoryId = insertCategory("mvc-view");
+        ExpenseResult created = expenseUseCase.create(command(
+                categoryId, "Tokyo business trip", "1200.00", "800.00", "400.00"));
+
+        MvcResult result = mockMvc().perform(get(
+                        "/expenses/{expenseRequestId}", created.expenseRequestId()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("expense/detail"))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "Tokyo business trip")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("line-0")))
+                .andReturn();
+
+        Object modelValue = Objects.requireNonNull(result.getModelAndView())
+                .getModel()
+                .get("expense");
+        assertThat(modelValue)
+                .isInstanceOf(ExpenseDetailView.class)
+                .isNotInstanceOf(ExpenseRequest.class);
+    }
+
+    @Test
+    void failsRenderingWhenDetachedEntityExposesLazyLinesWithOsivDisabled() {
+        UUID categoryId = insertCategory("lazy-view");
+        ExpenseResult created = expenseUseCase.create(command(
+                categoryId, "detached entity", "1000.00", "1000.00"));
+
+        ExpenseRequest detached = lazyExpenseEntityQuery.find(created.expenseRequestId());
+        assertThat(Persistence.getPersistenceUtil().isLoaded(detached, "lines")).isFalse();
+
+        assertThatThrownBy(() -> mockMvc().perform(get(
+                        "/test/lazy-expenses/{expenseRequestId}", created.expenseRequestId())))
+                .hasRootCauseInstanceOf(LazyInitializationException.class);
+    }
+
     private static KoikiModule moduleMetadata(String packageInfoClassName)
             throws ClassNotFoundException {
         Package modulePackage = Class.forName(packageInfoClassName).getPackage();
@@ -309,5 +367,9 @@ class Tier2PracticalityInfrastructureTest {
                 .toList();
         return new CreateExpenseCommand(
                 categoryId, description, new BigDecimal(requestedAmount), lines);
+    }
+
+    private MockMvc mockMvc() {
+        return MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 }

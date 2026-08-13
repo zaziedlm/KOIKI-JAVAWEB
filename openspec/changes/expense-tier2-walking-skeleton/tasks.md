@@ -31,10 +31,10 @@
 
 ## 5. MVCとOSIV境界
 
-- [ ] 5.1 不変な経費詳細view/read modelと、トランザクション内で集約をViewデータへ変換するQuery Use Caseを実装する。
-- [ ] 5.2 JPA EntityをMVCモデルへ格納しない正規ControllerとThymeleaf Templateを実装し、明細を含む詳細画面の正常レンダリングをテストする。
-- [ ] 5.3 MVCハンドラまたはMVCモデルへEntityを直接露出する意図的なArchUnit違反fixtureを追加し、KOIKIルール19による検出を確認する。
-- [ ] 5.4 テスト専用ControllerとTemplateで未初期化のLazy明細へトランザクション終了後にアクセスし、原因連鎖に`LazyInitializationException`を含むレンダリング失敗を確認する。
+- [x] 5.1 不変な経費詳細view/read modelと、トランザクション内で集約をViewデータへ変換するQuery Use Caseを実装する。
+- [x] 5.2 JPA EntityをMVCモデルへ格納しない正規ControllerとThymeleaf Templateを実装し、明細を含む詳細画面の正常レンダリングをテストする。
+- [x] 5.3 MVCハンドラまたはMVCモデルへEntityを直接露出する意図的なArchUnit違反fixtureを追加し、KOIKIルール19による検出を確認する。
+- [x] 5.4 テスト専用ControllerとTemplateで未初期化のLazy明細へトランザクション終了後にアクセスし、原因連鎖に`LazyInitializationException`を含むレンダリング失敗を確認する。
 
 ## 6. アーキテクチャとモジュール検証
 
