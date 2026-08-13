@@ -21,6 +21,7 @@
     <module>walking-skeleton/ws-smoke-lib</module>
     <module>walking-skeleton/ws-smoke-app</module>
     <module>walking-skeleton/ws-flyway-two-tier</module>
+    <module>walking-skeleton/ws-tier2-practicality</module>
   </modules>
 
 </project>

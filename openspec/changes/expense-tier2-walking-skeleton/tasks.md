@@ -1,9 +1,9 @@
 ## 1. モジュールと依存関係の基盤
 
-- [ ] 1.1 `walking-skeleton/ws-tier2-practicality`をMavenリアクターへ追加し、Spring Boot MVC、Thymeleaf、JPA、Flyway、PostgreSQL、Testcontainers、ArchUnit、およびSpring Modulithの必要最小限の依存関係を設定する。
-- [ ] 1.2 アプリケーションルートと`expense`、`masterdata`のモジュールルートだけを作成し、KOIKI Tier・永続化メタデータを宣言してOSIVを無効化する。
-- [ ] 1.3 空のアプリケーションコンテキストがJava 21で起動することをテストする。
-- [ ] 1.4 経費申請、経費明細、およびカテゴリのアプリケーション所有Flyway migrationを追加し、Testcontainers PostgreSQLへの適用を検証する。
+- [x] 1.1 `walking-skeleton/ws-tier2-practicality`をMavenリアクターへ追加し、Spring Boot MVC、Thymeleaf、JPA、Flyway、PostgreSQL、Testcontainers、ArchUnit、およびSpring Modulithの必要最小限の依存関係を設定する。
+- [x] 1.2 アプリケーションルートと`expense`、`masterdata`のモジュールルートだけを作成し、KOIKI Tier・永続化メタデータを宣言してOSIVを無効化する。
+- [x] 1.3 空のアプリケーションコンテキストがJava 21で起動することをテストする。
+- [x] 1.4 経費申請、経費明細、およびカテゴリのアプリケーション所有Flyway migrationを追加し、Testcontainers PostgreSQLへの適用を検証する。
 
 ## 2. expense Tier 2集約と永続化
 
