@@ -7,12 +7,12 @@
 
 ## 2. expense Tier 2集約と永続化
 
-- [ ] 2.1 `Money`、`ExpenseStatus`、`ExpenseLine`、`ExpenseRequest`からなるJPA共有集約を実装し、public setterを設けず、正の金額と1件以上の明細を保証する。
-- [ ] 2.2 `submit()`で明細合計と申請金額の一致を検証し、`Draft → Submitted → Approved / Rejected`の合法な状態遷移だけを実装する。
-- [ ] 2.3 `expense.domain.repository`にSpring Data Commonsの`Repository<T, ID>`を継承するRepository契約を定義し、手書きのJPA Repository Adapterを作成せずSpring Data生成実装で永続化する。
-- [ ] 2.4 作成、申請、承認、および却下を行うトランザクション境界付きApplication Use Caseを実装する。
-- [ ] 2.5 正常な不変条件と状態遷移、および金額、明細合計、状態に関する拒否ケースのDomainテストを追加する。
-- [ ] 2.6 集約とLazy明細Collectionの保存・再取得をTestcontainers PostgreSQLで検証する。
+- [x] 2.1 `Money`、`ExpenseStatus`、`ExpenseLine`、`ExpenseRequest`からなるJPA共有集約を実装し、public setterを設けず、正の金額と1件以上の明細を保証する。
+- [x] 2.2 `submit()`で明細合計と申請金額の一致を検証し、`Draft → Submitted → Approved / Rejected`の合法な状態遷移だけを実装する。
+- [x] 2.3 `expense.domain.repository`にSpring Data Commonsの`Repository<T, ID>`を継承するRepository契約を定義し、手書きのJPA Repository Adapterを作成せずSpring Data生成実装で永続化する。
+- [x] 2.4 作成、申請、承認、および却下を行うトランザクション境界付きApplication Use Caseを実装する。
+- [x] 2.5 正常な不変条件と状態遷移、および金額、明細合計、状態に関する拒否ケースのDomainテストを追加する。
+- [x] 2.6 集約とLazy明細Collectionの保存・再取得をTestcontainers PostgreSQLで検証する。
 
 ## 3. masterdata Tier 1と同期イベント契約
 
