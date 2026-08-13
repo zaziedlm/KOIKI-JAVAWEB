@@ -12,6 +12,10 @@ context: |
   docs/architecture/validation/.
   The target experiment is masterdata (Tier 1 SIMPLE) plus expense (Tier 2 RICH, JPA shared model),
   OSIV disabled, synchronous domain-event collaboration and Spring Modulith module verification.
+  OpenSpecの計画成果物では、説明、設計判断、要件、シナリオ、タスクを日本語で記述する。
+  change ID、capability ID、ファイル名、コード識別子、およびOpenSpecが要求する構造見出しや
+  WHEN / THEN / ANDなどの構文キーワードは、互換性を保つため英語のまま維持する。
+  英語版と日本語版の成果物を重複作成せず、日本語本文を含むOpenSpec成果物を唯一の正本とする。
 
 rules:
   proposal:
