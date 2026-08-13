@@ -93,7 +93,7 @@ koiki-javaweb-fw/
 ### OpenSpec試行
 
 - [x] OpenSpecが未導入（ディレクトリ・設定・CLIなし）であることを確認する
-- [ ] `expense`の実装をOpenSpecのワークフロー（提案→設計→タスク分解→実装→検証→アーカイブ）で進めてみて、実務に合うか判断する（提案〜検証は完了。archive後に最終判断）
+- [x] `expense`の実装をOpenSpecのワークフロー（提案→設計→タスク分解→実装→検証→アーカイブ）で進め、4 capabilityのmain spec同期を含めて実務に適用可能と判断する
 - [ ] OpenSpecが生成するAI向け指示と、`docs/agent/skills/`が衝突しないか確認する（ルート`AGENTS.md`との衝突なし。`docs/agent/skills/`作成後に最終確認）
 
 ---

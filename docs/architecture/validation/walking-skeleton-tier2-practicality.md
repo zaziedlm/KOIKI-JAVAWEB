@@ -176,8 +176,9 @@ OpenSpecの`proposal.md`、4 delta specs、`design.md`、`tasks.md`を日本語�
 OpenSpecはchange単位の計画正本、`AGENTS.md`はRepository統治、Skillは反復判断の導線とすれば
 衝突を避けられる。`docs/agent/skills/`は未作成なので、実ファイル同士の最終照合は後続工程に残す。
 
-OpenSpecの提案から検証までは実務に適用可能だった。workflow全体の最終評価は、このchangeを
-archiveしてspec同期結果を確認した時点で完了とする。
+OpenSpecの提案から検証、4 capabilityのmain spec同期、およびarchiveまで一貫して実行できた。
+2026-08-13にchangeを`openspec/changes/archive/2026-08-13-expense-tier2-walking-skeleton/`へ
+移動し、同期後の全main specがvalidationを通過したため、このworkflowは実務に適用可能と判断する。
 
 ## Evidence Mapping
 
