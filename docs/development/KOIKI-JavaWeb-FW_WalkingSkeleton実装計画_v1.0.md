@@ -18,10 +18,10 @@
 
 | モジュール | Tier | 内容 |
 |---|---|---|
-| `masterdata` | Tier 1（Simple） | 経費科目マスタ相当の単純CRUD |
+| `masterdata` | Tier 1（Simple） | 経費カテゴリの最小永続化と無効化 |
 | `expense` | Tier 2（Rich） | 経費申請の状態遷移1本（下書き→申請→承認/却下） |
 
-両モジュール間でDomain Eventを1本飛ばす（`expense`承認時に`masterdata`の利用回数カウンタを更新、等）。**これは正式な`koiki-reference-app`ではない。**業務題材が同じ（経費申請）なのは検証結果を後で活かすためで、コードは引き継がない。
+`masterdata`によるカテゴリ無効化前にDomain Eventを1本同期発行し、`expense`が未処理経費からの参照を検査する。受信側の拒否が送信側transactionへ伝播することも確認する。**これは正式な`koiki-reference-app`ではない。**業務題材が同じ（経費申請）なのは検証結果を後で活かすためで、コードは引き継がない。
 
 ---
 
@@ -76,10 +76,10 @@ koiki-javaweb-fw/
 
 ### Tier2実装の実務感
 
-- [ ] `expense`の実装量が現実的か（クラス数を実測して記録する）
-- [ ] OSIV無効化状態で、Entityをビューへ渡す違反コードがArchUnitで検出される
-- [ ] `expense`→`masterdata`の同期イベント連携が、Testcontainers統合テストで素直に書ける（ロールバック伝播を含む）
-- [ ] Spring Modulithのモジュールテスト機能（`ApplicationModules.of`等）がtest scopeで使える
+- [x] `expense`の実装量が現実的か（本番13 Javaソース単位。内訳を検証文書へ記録）
+- [x] OSIV無効化状態で、Entityをビューへ渡す違反コードがArchUnitと実レンダリングで検出される
+- [x] `masterdata`→`expense`の同期イベント連携が、Testcontainers統合テストで素直に書ける（ロールバック伝播を含む）
+- [x] Spring Modulithのモジュールテスト機能（`ApplicationModules.of`等）がtest scopeで使える
 
 ### コンテナビルドの型（本番設定はPhase 4。ここでは型だけ）
 
@@ -93,8 +93,8 @@ koiki-javaweb-fw/
 ### OpenSpec試行
 
 - [x] OpenSpecが未導入（ディレクトリ・設定・CLIなし）であることを確認する
-- [ ] `expense`の実装をOpenSpecのワークフロー（提案→設計→タスク分解→実装→検証→アーカイブ）で進めてみて、実務に合うか判断する
-- [ ] OpenSpecが生成するAI向け指示と、`docs/agent/skills/`が衝突しないか確認する
+- [ ] `expense`の実装をOpenSpecのワークフロー（提案→設計→タスク分解→実装→検証→アーカイブ）で進めてみて、実務に合うか判断する（提案〜検証は完了。archive後に最終判断）
+- [ ] OpenSpecが生成するAI向け指示と、`docs/agent/skills/`が衝突しないか確認する（ルート`AGENTS.md`との衝突なし。`docs/agent/skills/`作成後に最終確認）
 
 ---
 

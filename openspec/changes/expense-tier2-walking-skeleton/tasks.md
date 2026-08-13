@@ -45,7 +45,7 @@
 
 ## 7. 検証証拠とOpenSpec評価
 
-- [ ] 7.1 `expense`、`masterdata`、アプリケーション共通部分、および検証専用fixtureごとに、本番・テストJavaクラス数を計測する。
-- [ ] 7.2 `docs/architecture/validation/walking-skeleton-tier2-practicality.md`を作成し、V5/V6、クラス数、Spring Modulith公開境界、実装上の摩擦、制約、およびPhase 1への引継ぎ判断を記録する。
-- [ ] 7.3 実行証拠に基づいてWalking Skeleton実装チェックリストを更新し、OpenSpecの指示とルート`AGENTS.md`または将来の`docs/agent/skills/`との責務衝突がないか評価する。
-- [ ] 7.4 OpenSpec changeをstrict validationし、各完了タスクを対応するテストまたは検証文書の証拠と照合する。
+- [x] 7.1 `expense`、`masterdata`、アプリケーション共通部分、および検証専用fixtureごとに、本番・テストJavaクラス数を計測する。
+- [x] 7.2 `docs/architecture/validation/walking-skeleton-tier2-practicality.md`を作成し、V5/V6、クラス数、Spring Modulith公開境界、実装上の摩擦、制約、およびPhase 1への引継ぎ判断を記録する。
+- [x] 7.3 実行証拠に基づいてWalking Skeleton実装チェックリストを更新し、OpenSpecの指示とルート`AGENTS.md`または将来の`docs/agent/skills/`との責務衝突がないか評価する。
+- [x] 7.4 OpenSpec changeをstrict validationし、各完了タスクを対応するテストまたは検証文書の証拠と照合する。
