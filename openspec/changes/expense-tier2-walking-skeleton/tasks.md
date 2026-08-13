@@ -16,10 +16,10 @@
 
 ## 3. masterdata Tier 1と同期イベント契約
 
-- [ ] 3.1 `masterdata`に最小のカテゴリ永続化モデル、Spring Data Repository、およびカテゴリ無効化Application Use CaseをTier 1構造で実装する。
-- [ ] 3.2 `masterdata.domain.event`にカテゴリ識別子だけを持つ不変な`CategoryDeactivating`イベントを定義する。
-- [ ] 3.3 `masterdata.domain.event`を`events` Named Interfaceとして試行し、`expense`からの許可依存をその公開境界へ限定する。
-- [ ] 3.4 カテゴリ無効化Use Caseからイベントを同期発行し、受信処理の成功後だけカテゴリを無効状態で保存する。
+- [x] 3.1 `masterdata`に最小のカテゴリ永続化モデル、Spring Data Repository、およびカテゴリ無効化Application Use CaseをTier 1構造で実装する。
+- [x] 3.2 `masterdata.domain.event`にカテゴリ識別子だけを持つ不変な`CategoryDeactivating`イベントを定義する。
+- [x] 3.3 `masterdata.domain.event`を`events` Named Interfaceとして試行し、`expense`からの許可依存をその公開境界へ限定する。
+- [x] 3.4 カテゴリ無効化Use Caseからイベントを同期発行し、受信処理の成功後だけカテゴリを無効状態で保存する。
 
 ## 4. expenseによるカテゴリ参照検査
 

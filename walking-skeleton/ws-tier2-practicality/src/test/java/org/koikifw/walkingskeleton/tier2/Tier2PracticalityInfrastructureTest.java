@@ -24,6 +24,11 @@ import org.koikifw.walkingskeleton.tier2.expense.domain.model.ExpenseRequestId;
 import org.koikifw.walkingskeleton.tier2.expense.domain.model.ExpenseStatus;
 import org.koikifw.walkingskeleton.tier2.expense.domain.model.Money;
 import org.koikifw.walkingskeleton.tier2.expense.domain.repository.ExpenseRequestRepository;
+import org.koikifw.walkingskeleton.tier2.masterdata.adapter.outbound.persistence.Category;
+import org.koikifw.walkingskeleton.tier2.masterdata.adapter.outbound.persistence.CategoryRepository;
+import org.koikifw.walkingskeleton.tier2.masterdata.application.DeactivateCategoryUseCase;
+import org.koikifw.walkingskeleton.tier2.masterdata.application.DeactivateCategoryUseCase.CategoryResult;
+import org.koikifw.walkingskeleton.tier2.masterdata.domain.event.CategoryDeactivating;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +36,8 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.modulith.ApplicationModule;
+import org.springframework.modulith.NamedInterface;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.junit.jupiter.Container;
@@ -65,6 +72,12 @@ class Tier2PracticalityInfrastructureTest {
     private ExpenseUseCase expenseUseCase;
 
     @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private DeactivateCategoryUseCase deactivateCategoryUseCase;
+
+    @Autowired
     private PlatformTransactionManager transactionManager;
 
     @Test
@@ -90,6 +103,20 @@ class Tier2PracticalityInfrastructureTest {
         assertThat(masterdata.tier()).isEqualTo(ModuleTier.SIMPLE);
         assertThat(masterdata.persistence()).isEqualTo(PersistenceTechnology.JPA);
         assertThat(masterdata.persistenceModel()).isEqualTo(PersistenceModel.SHARED);
+    }
+
+    @Test
+    void declaresOnlyMasterdataEventsAsExpenseDependency() throws ClassNotFoundException {
+        NamedInterface eventBoundary = CategoryDeactivating.class.getPackage()
+                .getAnnotation(NamedInterface.class);
+        assertThat(eventBoundary.value()).containsExactly("events");
+
+        ApplicationModule expenseModule = Class.forName(
+                        "org.koikifw.walkingskeleton.tier2.expense.package-info")
+                .getPackage()
+                .getAnnotation(ApplicationModule.class);
+        assertThat(expenseModule.allowedDependencies())
+                .containsExactly("masterdata::events");
     }
 
     @Test
@@ -189,6 +216,22 @@ class Tier2PracticalityInfrastructureTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("expense line total must equal requested amount");
         assertThat(loadStatus(created.expenseRequestId())).isEqualTo(ExpenseStatus.DRAFT);
+    }
+
+    @Test
+    void generatedTierOneRepositoryPersistsCategoryDeactivation() {
+        UUID categoryId = insertCategory("meals");
+        Category category = categoryRepository.findById(categoryId).orElseThrow();
+        assertThat(category.active()).isTrue();
+
+        CategoryResult result = deactivateCategoryUseCase.deactivate(categoryId);
+
+        assertThat(result).isEqualTo(new CategoryResult(categoryId, false));
+        Boolean active = jdbcTemplate.queryForObject(
+                "SELECT active FROM ws_category WHERE category_id = ?",
+                Boolean.class,
+                categoryId);
+        assertThat(active).isFalse();
     }
 
     private static KoikiModule moduleMetadata(String packageInfoClassName)
