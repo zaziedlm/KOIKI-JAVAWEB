@@ -87,14 +87,14 @@ koiki-javaweb-fw/
 
 ### AIエージェント向けSkills
 
-- [ ] `docs/agent/skills/koiki-project-overview`・`koiki-business-feature-work`を最小版で作成する
-- [ ] `AGENTS.md`等の導線ファイルを置き、実際にAIコーディングエージェントから参照できる
+- [x] `docs/agent/skills/koiki-project-overview`・`koiki-business-feature-work`を最小版で作成する
+- [x] `AGENTS.md`等の導線ファイルを置き、実際にAIコーディングエージェントから参照できる
 
 ### OpenSpec試行
 
 - [x] OpenSpecが未導入（ディレクトリ・設定・CLIなし）であることを確認する
 - [x] `expense`の実装をOpenSpecのワークフロー（提案→設計→タスク分解→実装→検証→アーカイブ）で進め、4 capabilityのmain spec同期を含めて実務に適用可能と判断する
-- [ ] OpenSpecが生成するAI向け指示と、`docs/agent/skills/`が衝突しないか確認する（ルート`AGENTS.md`との衝突なし。`docs/agent/skills/`作成後に最終確認）
+- [x] OpenSpecが生成するAI向け指示と、`docs/agent/skills/`が衝突しないことを確認する（検証記録: `docs/architecture/validation/walking-skeleton-agent-skills.md`）
 
 ---
 
