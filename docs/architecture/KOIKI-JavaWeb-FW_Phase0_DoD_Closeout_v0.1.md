@@ -17,7 +17,7 @@ REST API、Security、SPA、非同期event等の具体的な実装規約は、�
 
 | DoD | 状態 | 現状と証拠 | 不足 | 完了条件 |
 |---|---|---|---|---|
-| 0-1 ADR | PARTIAL | グランドデザイン§30にADR tableがあり、実在する行は43件。ADR-018とADR-021は欠番として注記されている | DoDの「40本」と43件の不一致。「確定／Phase 0で検証」の個別分類、および承認記録がない | 有効ADR集合を確定し、全件に分類と承認状態を付与する。DoDの固定本数を実数または件数に依存しない表現へ修正する |
+| 0-1 ADR | COMPLETE | グランドデザイン§30の有効ADR 43件を`adr/README.md`へ過不足なく登録し、区分（確定28件／Phase 0で検証15件）、証拠、検証scopeをreviewした。2026年8月15日に43件すべてをArchitecture Ownerが承認 | なし | 承認状態を維持し、後続証拠が前提を否定した場合はGovernanceに従って再reviewする |
 | 0-2 用語集 | NOT STARTED | §29で今後作成する文書として定義されている | KOIKI-PYFWとの概念対応、KOIKI固有語、Java/Spring用語の採用意味をまとめた正本がない | 用語、意味、使用箇所、非推奨表現、KOIKI-PYFWとの対応をレビュー可能な文書として確定する |
 | 0-3 Walking Skeleton | COMPLETE | 実装計画の全項目が完了し、`validation/walking-skeleton-phase0-completion.md`に最終再検証を記録した | なし | 完了状態を維持し、Walking Skeleton codeを正式成果物へ直接昇格させない |
 | 0-4 規約調整 | COMPLETE | V1〜V7がすべてPASS。ArchUnit ruleの実装中に判明した`package-info`等の調整も検証済み | なし | 実装不能なPhase 0規約を残さず、検証証拠から参照可能な状態を維持する |
@@ -26,19 +26,22 @@ REST API、Security、SPA、非同期event等の具体的な実装規約は、�
 | 0-7 Governance | COMPLETE | `governance/KOIKI-JavaWeb-FW_Architecture_Governance_v0.1.md`でPrimary MaintainerをOwnerに任命し、代理・継続性、承認記録、四半期review、Phase判定を定めた | なし | Maintainerまたは運営体制の変更時にGovernanceを更新する |
 | 0-8 Baseline対応表 | PARTIAL | §8.1にKOIKI／Spring Boot／Javaの対応原則とreleaseごとの更新要求がある | 正本の配置場所、項目、更新契機、更新責任、review方法が定まっていない | 対応表の正本pathと更新手順を定め、初期baselineを記録する。具体的なsupport終了日の公開はPhase 5 DoD 5-3で行う |
 
-現状は、COMPLETE 3件、PARTIAL 4件、NOT STARTED 1件である。したがって、
+現状は、COMPLETE 4件、PARTIAL 3件、NOT STARTED 1件である。したがって、
 Phase 0全体は未完了である。
 
 ## 3. 正本間の不整合
 
 ### 3.1 ADR件数
 
-§27.3の0-1は「40本」とするが、§30のADR tableには43件ある。ADR-018とADR-021は
+旧§27.3の0-1は「40本」としていたが、§30のADR tableには43件ある。ADR-018とADR-021は
 欠番であり、ADR-001〜045のうちこの2件を除いた43件が有効な行である。
 
-ADRは将来追加され得るため、完了条件は固定本数ではなく、次の意味へ変更することを推奨する。
+ADRは将来追加され得るため、完了条件を固定本数ではなく、次の意味へ変更した。
 
 > Phase 0で有効な全ADRが記述され、各ADRに「確定」「Phase 0で検証」の区分と承認状態が付いている。
+
+43件の分類と検証証拠を`adr/README.md`へ記録し、Architecture OwnerがAI支援reviewで
+各判断とscopeを確認した。2026年8月15日に全件が承認され、0-1を完了と判定した。
 
 ### 3.2 文書状態
 
@@ -57,7 +60,7 @@ Architecture Ownerとし、単独運営中は代理者を置かない。Owner不
 | 順序 | Work Package | 対象DoD | 成果物候補 | 完了判定への依存 |
 |---:|---|---|---|---|
 | 1 | Governanceの一人project適合（COMPLETE） | 0-7 | Architecture Governance文書 | ADRとPhase完了承認の前提 |
-| 2 | ADR棚卸し・分類 | 0-1 | ADR registerまたは§30改訂 | 0-7の承認方式 |
+| 2 | ADR棚卸し・分類（COMPLETE） | 0-1 | ADR registerと§30改訂 | 0-7の承認方式 |
 | 3 | 用語集 | 0-2 | `docs/standards/`配下のGlossary | Reference業務仕様の用語統一 |
 | 4 | Reference Application業務仕様 | 0-6 | Reference Application Specification | 用語集、ADR-043、§26 |
 | 5 | Phase規模・実現可能性評価 | 0-5 | Phase Estimate / Feasibility表 | 0-6を含む全成果物scope |

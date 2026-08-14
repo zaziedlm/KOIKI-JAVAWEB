@@ -239,7 +239,7 @@ UI は API 基盤の上に載る**公式プロファイル**として提供す�
 
 提供形態は、Maven BOM、Spring Boot Starter、共通ライブラリ、実行可能な Reference Application、Project Template、Testing Support、**ArchUnit ルールセット**、**移行支援レシピ**、Agent Guidance から構成する。顧客案件は KOIKI 本体をコピーして改造するのではなく、別リポジトリからバージョン付き依存として利用する。
 
-**KOIKI は年1回のメジャーリリースを行い、最新と直前の2ラインを並行サポートする。**Spring Boot に LTS が存在しないため、KOIKI 自身のサポートウィンドウを日付で明示し、顧客への更新義務と移行支援を契約可能な形で定める。
+**KOIKIは年1回のメジャーリリースを行い、最新と直前の2ラインを管理対象とする。**各ラインのOSSサポートは、対応するSpring Bootの実際のOSSサポート終了日までとし、日付をリリース時に明示する。12か月の移行期間が必要な場合は商用延長サポートを選択肢とし、顧客への更新義務と移行支援を契約可能な形で定める。
 
 ブラウザ向け認証は HTTP Session を第一標準とし、セッションは Spring Session JDBC により既存 PostgreSQL へ格納する。外部 API およびサービス間連携には OAuth 2.0 Bearer JWT を用いる。OIDC を企業 SSO の優先方式とし、SAML、Cognito、ALB 認証、HENNGE 等を Adapter として追加できる構造を持つ。
 
@@ -433,7 +433,7 @@ KOIKI のターゲットバイトコードを **Java 21** とする。KOIKI 成�
 
 Spring Boot 4.x のベースラインは Java 17 であり、より新しい Java を要求する技術的必然性はない。**実行環境の下限を引き上げることは、適用可能な案件の範囲を狭める。**§4.2 の対象案件には既存環境の制約を持つものが含まれるため、下限を Java 21 に置く。
 
-Java 25 は推奨実行環境とする。特に仮想スレッドを利用する場合、Java 24 以降で `synchronized` による pinning が解消されているため、Java 25 上での実行を推奨する。
+Java 25は推奨実行環境とする。特に仮想スレッドを利用する場合、Java 24以降で`synchronized`に起因するpinningのほぼすべてが解消されているため、Java 25上での実行を推奨する。native code等に起因する残存ケースは別途検証する。
 
 バージョンは「常に最新へ自動追従」せず、KOIKI のリリース単位で固定する。ベースラインの妥当性は §8 に基づき KOIKI メジャー更新ごとに評価する。**Java 29 LTS（2027年9月予定）は次期以降の引き上げ候補である。**
 
@@ -550,7 +550,7 @@ Customer Application
 
 ## 8. リリース管理とサポート方針
 
-> **本章は顧客への約束事項を定める。**Spring Boot に LTS が存在しないため、KOIKI が自らサポートウィンドウを明示する必要がある。
+> **本章は顧客への約束事項を定める。**Spring Bootに一律のOSS LTSラインはなく、商用延長サポートは別契約であるため、KOIKIが自らサポートウィンドウを明示する必要がある。
 
 ### 8.1 バージョン体系と Spring Boot 対応
 
@@ -565,14 +565,14 @@ Customer Application
 
 - **KOIKI メジャーを年1回、毎年12月にリリースする。**
 - リリース時期は Spring Boot の11月マイナーへ追従する形とする。
-- **最新ラインと直前ラインの2ラインを並行サポートする。**
+- **最新ラインと直前ラインの2ラインを管理対象とする。**ただし、OSSでのセキュリティパッチと重大バグ修正の提供は、対応するSpring BootのOSSサポート期間内に限る。
 
-**この時期設定を選ぶ理由** — Spring Boot のマイナーは11月と5月におおむね出る。11月マイナーの OSS サポートは翌年12月頃までであるため、KOIKI を12月にリリースすると**旧ラインの並行サポート期間がちょうど約12か月**となる。顧客の移行猶予を追加コストなしで確保できる。
+**この時期設定を選ぶ理由** — Spring Bootの11月マイナーに追従し、年次更新のリズムを一定にするためである。Spring Boot minorのOSSサポートは最低13か月であり、年次リリース間で重複する期間は限定的である。そのため、OSSのみで12か月の旧ライン移行期間を保証せず、リリース時に確定した実日付を公開する。
 
-| KOIKI | 対応 Spring Boot | リリース | サポート終了 | 並行期間 |
+| KOIKI | 対応 Spring Boot | リリース | OSSサポート終了 | 移行期間 |
 |---|---|---|---|---|
-| N | 11月マイナー | 同年12月 | 翌年12月頃 | — |
-| N+1 | 翌年11月マイナー | 翌年12月 | 翌々年12月頃 | 約12か月 |
+| N | 11月マイナー | 同年12月 | Spring公式日付に合わせてリリース時に明示 | 実際のOSSサポート残存期間 |
+| N+1 | 翌年11月マイナー | 翌年12月 | Spring公式日付に合わせてリリース時に明示 | 12か月必要な場合は商用延長サポートを利用 |
 
 ### 8.3 サポートウィンドウ
 
@@ -582,7 +582,7 @@ Customer Application
 | **サポート終了後** | Spring Boot 側が OSS パッチを出さないため、**KOIKI もセキュリティパッチを提供できない。**この制約を顧客へ明示する |
 | **延長サポート（オプション）** | 顧客が商用サポート契約（Tanzu Spring 等）を保有する場合、KOIKI は当該ラインのビルド検証を継続する。工数は別途とする |
 
-**「LTS」という語を KOIKI では使用しない。**Spring Boot に LTS が存在しない以上、KOIKI が LTS を名乗ることは実態と乖離する。**リリース時点でサポート終了日を日付で明示する。**
+**「LTS」という語をKOIKIでは使用しない。**OSSと商用延長サポートで条件が異なるため、単一の「LTS」表記ではなく、**リリース時点でサポート終了日を日付で明示する。**
 
 なお、商用サポートのリリースは Maven Central へ公開されず、契約者向けリポジトリからのみ取得する。当該構成での BOM と Starter の解決可否は Phase 5 で検証する。
 
@@ -658,7 +658,9 @@ Spring 公式ポートフォリオ外のライブラリを KOIKI の公式プロ
 
 ### 9.2 Framework への昇格チェックリスト
 
-**次の全項目を満たすことを条件とする。**
+本チェックリストは、Reference、CustomerまたはWalking Skeletonで実装された候補を、再利用可能なFramework契約へ昇格する場合に適用する。グランドデザインでPhase 1からのFramework基盤として明示的に定義済みの項目は、「2案件の実績」を待つ昇格候補には含めない。ただし、それらもFrameworkの品質ゲート、Public API review、Ownership規約の対象とする。
+
+**昇格候補は次の全項目を満たすことを条件とする。**
 
 1. **実利用実績** — 2つ以上の独立した案件で、実質的に同一の契約として使われている（コードのコピーではなく、同じ振る舞いを期待している）
 2. **契約の安定性** — 直近6か月または2案件分の開発期間において、インターフェースの破壊的変更がない
@@ -988,7 +990,7 @@ Tier 1 のモジュールが次のいずれかに該当した場合、Tier 2 へ
 2. **引数なしコンストラクタは `protected` とし、生成は業務上有効な状態を保証するコンストラクタまたはファクトリメソッドに限定する**
 3. **コレクションは変更不可ビューで公開し、要素の追加・削除は業務モデルのメソッドを通す**
 4. **業務モデルを Inbound / Outbound の入出力型として使用しない。**REST・MVC の応答、外部連携の送受信は必ず DTO へ変換する。兼用方式では分離方式が自動的に与えていた「モデルの外部流出防止」が働かないため、**この規約は ArchUnit で機械検査する**（§13.3、§21.3）
-5. **参照専用の一覧・検索・帳票・集計は read model を用いてよい。**`application.query` から `adapter.outbound.persistence` の read model を直接利用する経路を正規の手段として認める。業務モデルを経由させない
+5. **参照専用の一覧・検索・帳票・集計はread modelを用いてよい。**Query契約と戻り値のread modelは`application.query`が所有し、`adapter.outbound.persistence`がJPA射影、JdbcClientまたはMyBatisで実装する。ApplicationからAdapterを直接参照せず、業務モデルも経由させない
 6. **Value Object は `@Embeddable` とし、setter を公開しない**
 7. **`equals` / `hashCode` は識別子ベースで実装し、遅延ロードプロキシを考慮する。**型比較に `getClass()` を用いない
 
@@ -1153,7 +1155,7 @@ public class KoikiApiVersionConfig implements WebMvcConfigurer {
 ```
 
 ```java
-@GetMapping(url = "/accounts/{id}", version = "1")
+@GetMapping(path = "/accounts/{id}", version = "1")
 ```
 
 #### 規約
@@ -1161,7 +1163,7 @@ public class KoikiApiVersionConfig implements WebMvcConfigurer {
 - **メジャーバージョンのみをパスに含める**（`v1`、`v2`）。マイナーバージョニングは行わない
 - 後方互換な変更ではバージョンを上げない。破壊的変更のみメジャーを上げる（§8.5 と整合）
 - **Thymeleaf 経路（MVC）にはバージョニングを適用しない。**UI は内部契約であり、外部公開 API とは扱いが異なる
-- 外部 API を呼び出す際は `ApiVersionInserter` を用いる（`RestClient`、`@HttpServiceClient`、`RestTestClient` で共通）
+- 外部 API を呼び出す際は `ApiVersionInserter` を用いる（`RestClient`、HTTP Service Client、`RestTestClient` で共通）
 
 #### API の非推奨
 
@@ -1687,19 +1689,20 @@ MyBatis-Spring は MyBatis を Spring トランザクションへ参加させ、
 
 ### 16.3 read model
 
-参照専用の結果型を read model と呼び、`adapter.outbound.persistence.readmodel` に配置する。
+参照専用の結果型をread modelと呼び、Query契約とともに`application.query`に配置する。永続化の実装は`adapter.outbound.persistence`に置き、ApplicationがAdapterを参照する逆向き依存を作らない。
 
 #### 生成方式の使い分け
 
 | 条件 | 方式 |
 |---|---|
-| 1つの集約から導出できる単純な一覧・詳細 | **JPA の射影**（interface / class ベース） |
+| 1つの集約から導出できる単純な一覧・詳細 | **JPAのclass-based射影**（Java `record`） |
 | 複数集約にまたがる検索、集計、帳票、既存 SQL 資産の移行 | **JdbcClient** |
 | MyBatis を採用するモジュール | **MyBatis Mapper**（モジュール内の一貫性を優先し、JPA 射影を混在させない） |
 
 #### 規約
 
-- read model は **Java `record`** として定義する
+- read modelは**Java `record`**として定義し、JPAのinterface-based射影は用いない
+- Query Portは`application.query`が所有し、Outbound Adapterがその契約を実装してApplication所有のread modelをmaterializeする
 - **Tier 1 では read model という専用概念を設けない。**Tier 1 には Domain 層が存在しないため、`application.dto` で足りる。`readmodel` パッケージが意味を持つのは Tier 2 のみである
 - 分離方式において、read model は `converter` を経由しない（既に最終形であるため）
 
@@ -1709,7 +1712,7 @@ JdbcClient および MyBatis で SQL を記述する箇所が増えるほど、�
 
 ### 16.4 キャッシュ
 
-**Spring Cache 抽象 ＋ Caffeine を標準とする。**Redis は標準採用しないが、Spring Cache の抽象により差し替え可能とする。
+**Spring Cache抽象＋Caffeineを標準とする。**Redisは標準採用しない。Spring Cacheにより呼出側の契約は維持できるが、Redis等の分散cacheへの変更を設定だけの無条件な差し替えとは扱わない。シリアライズ、TTL、key互換性、障害時動作を別途検証する。
 
 複数タスク構成ではインメモリキャッシュの内容がインスタンス間で食い違う。**したがって方針の本体はキャッシュ対象を限定する規約である。**
 
@@ -1717,7 +1720,7 @@ JdbcClient および MyBatis で SQL を記述する箇所が増えるほど、�
 
 1. **キャッシュ対象は「更新頻度が低く、インスタンス間の一時的な不整合が許容できるデータ」に限定する** — マスタ、コード値、ロールと権限のマッピング定義など
 2. **業務トランザクションデータをキャッシュしない**
-3. **個別の認可判断結果をキャッシュしない。**ロールと権限のマッピング定義（更新頻度が低い）はキャッシュしてよいが、「このユーザがこの操作を実行できるか」という判断結果はキャッシュしない。**権限変更が反映されないリスクが利益を上回る**
+3. **個別の認可判断結果をキャッシュしない。**「このユーザがこの操作を実行できるか」という判断結果はキャッシュしない。ロールと権限のマッピング定義も、権限剥奪の反映遅延をTTLまで許容できる場合に限りキャッシュしてよい。即時失効が必要なシステムでは認可関係のキャッシュを禁止する
 4. **TTL を必須とする。**無期限キャッシュを禁止する
 5. **キャッシュキーに名前空間プレフィックスを付ける**（例: `koiki:<領域>:<キー>`）
 
@@ -1818,11 +1821,13 @@ Spring Boot は Flyway Bean を1つ自動構成するため、複数構成には
 
 #### 検証戦略
 
-**Phase 2 から Oracle Testcontainers による nightly スモークを CI へ追加する**（§21.5）。
+**Phase 2からOracle TestcontainersによるnightlyスモークをCIへ追加する**（§21.5）。開始時にOracle edition／version、container image、JDBC Driverを明示的に固定する。
 
 §5 の原則9「Production Parity」に対し、Oracle の CI を Phase 4 まで持たない構成では人的担保に依存することになる。**JdbcClient による read model（§16.3）と MyBatis の採用（§16.2）により SQL 記述量が増えたため、リスクは上昇している。**
 
 Phase 2 時点では Framework 所有のテーブルのみが存在するため範囲は限定的だが、**最も価値が高い「Flyway の DDL 方言差の検出」はこの段階で行える。**
+
+Phase 2のOracle Freeコンテナによる検証は、DDL、基本CRUD、ページング、楽観ロックに対する設計適合スモークであり、本番Oracleの正式サポートを意味しない。
 
 #### マイグレーション方針
 
@@ -1847,7 +1852,7 @@ DDL と DML の双方をカバーする Oracle 互換 SQL 記述規約を定め�
 
 Oracle ではスキーマ＝ユーザであるため、スキーマによる所有権分離は権限管理を複雑にする。**接頭辞方式（§16.7.1）が単純であり、Oracle 適合にも適する。**
 
-Oracle 正式対応時（Phase 4）には、専用 Integration Test と Migration 差分を提供する。
+Oracle正式対応時（Phase 4）には、対象とする本番Oracleのedition／versionとJDBC Driverをbaselineに固定し、専用Integration TestとMigration差分を提供する。
 
 ---
 
@@ -1952,21 +1957,28 @@ Level 2 到達までの期間、次を規約とする。
 | 用途 | 標準 |
 |---|---|
 | 同期 HTTP 呼出 | **`RestClient`** |
-| 宣言的クライアント | **`@HttpServiceClient` ＋ `@ImportHttpServices`** |
+| 宣言的クライアント | **HTTP Service Interface ＋ `@ImportHttpServices`** |
 | JMS | `JmsClient` |
 | **使用しない** | `RestTemplate`（新規コード）、`WebClient`（§4.3 でリアクティブを対象外とするため）、`HttpServiceProxyFactory`（`@ImportHttpServices` に置き換え済み） |
 
 `RestTemplate` の新規使用禁止は ArchUnit で検査する。
 
 ```java
-@HttpServiceClient("inventory")
+@HttpExchange
 public interface InventoryClient {
     @GetExchange("/items/{id}")
-    @Retryable(includes = { ... }, maxAttempts = 3, delay = 100, multiplier = 2, maxDelay = 1000)
+    @Retryable(includes = { ... }, maxRetries = 2, delay = 100, multiplier = 2, maxDelay = 1000)
     @ConcurrencyLimit(10)
     InventoryItem findItem(@PathVariable String id);
 }
+
+@Configuration(proxyBeanMethods = false)
+@ImportHttpServices(group = "inventory", types = InventoryClient.class)
+class InventoryHttpClientConfiguration {
+}
 ```
+
+`maxRetries` は初回実行を含まない再試行回数である。上記例の最大試行回数は、初回1回と再試2回の合計3回となる。
 
 外部 API がバージョニングされている場合は `ApiVersionInserter` を用いる（§12.2）。
 
@@ -1975,7 +1987,7 @@ public interface InventoryClient {
 | 項目 | 実現手段 |
 |---|---|
 | Connection／Read Timeout | `RestClient` / HTTP クライアントの設定。**KOIKI が既定値を提供する** |
-| Retry | **Spring コアの `@Retryable`**（`includes`、`maxAttempts`、`delay`、`jitter`、`multiplier`、`maxDelay`） |
+| Retry | **Spring コアの `@Retryable`**（`includes`、`maxRetries`、`delay`、`jitter`、`multiplier`、`maxDelay`） |
 | Bulkhead | **Spring コアの `@ConcurrencyLimit`** |
 | Fallback | コアに専用機構がないため、例外ハンドリングで実装する |
 | **Circuit Breaker** | **コアに含まれない。Phase 4 で Resilience4j の採用を評価する**（§8.7 の第三者ライブラリ採用基準を適用） |
@@ -2518,7 +2530,7 @@ JVM をコンテナで運用する際、既定値のままでは性能を発揮�
 
 #### 根拠
 
-§6.2 のとおり最低実行環境を Java 21 と定めた。**Java 21 では `synchronized` ブロック内のブロッキング操作でキャリアスレッドが pin され、負荷時にスレッド枯渇やデッドロックを招きうる。**この問題は Java 24 で解消されたが、最低実行環境が Java 21 である以上、既定有効化は安全ではない。
+§6.2のとおり最低実行環境をJava 21と定めた。**Java 21では`synchronized`ブロック内のブロッキング操作でキャリアスレッドがpinされ、負荷時にスレッド枯渇やデッドロックを招きうる。**Java 24でJEP 491が`synchronized`に起因するpinningのほぼすべてを解消したが、native codeやclass initialization等に起因する残存ケースがある。また、最低実行環境がJava 21である以上、既定有効化は安全ではない。
 
 #### 有効化時のチェックリスト
 
@@ -2526,7 +2538,7 @@ JVM をコンテナで運用する際、既定値のままでは性能を発揮�
 2. コンテキスト伝播が機能すること（Micrometer Context Propagation の `TaskDecorator`。§20.1）
 3. **DB コネクションプールのサイジング見直し** — 仮想スレッドは無制限に増えるため、プールがボトルネックとなり待機が積み上がる
 4. **`@ConcurrencyLimit` による流量制限の設定** — 従来のスレッドプールが暗黙に果たしていた流量制限が失われるため
-5. `synchronized` を内部使用するライブラリ（古い JDBC ドライバ等）の棚卸し
+5. native code、class initialization、JDBCドライバ等のブロッキングを含む依存ライブラリの棚卸しと負荷計測
 
 Phase 4 で検証し、Phase 5 で正式ガイドを提供する。CI にも有効時の検証系統を設ける（§21.5）。
 
@@ -2784,7 +2796,7 @@ expense.adapter.inbound.event   未処理申請を検査 → 存在すれば例�
 |---|---|
 | 責務 | 精算済み申請から仕訳データを生成し、会計システムへ連携する |
 | テーブル | **既存スキーマを模擬**し、接頭辞なしのテーブル名とする。§16.7.1 の「既存スキーマは接頭辞規約の対象外」という現実を示す |
-| 実証する内容 | **モデル分離オプトイン**（トリガ1: 永続化スキーマを変更できない）／**MyBatis 分離方式の構造**（`entity` / `converter` / `mapper`）／**楽観ロックの手動実装**／**`databaseIdProvider` による PostgreSQL・Oracle 切り替え**／`domain.gateway` と `@HttpServiceClient` による外部連携／`@Retryable` / `@ConcurrencyLimit` |
+| 実証する内容 | **モデル分離オプトイン**（トリガ1: 永続化スキーマを変更できない）／**MyBatis 分離方式の構造**（`entity` / `converter` / `mapper`）／**楽観ロックの手動実装**／**`databaseIdProvider` による PostgreSQL・Oracle 切り替え**／`domain.gateway` とHTTP Service Clientによる外部連携／`@Retryable` / `@ConcurrencyLimit` |
 
 #### Phase 4 — `expense` への REST API 経路追加
 
@@ -2816,7 +2828,7 @@ expense.adapter.inbound.event   未処理申請を検査 → 存在すれば例�
 | ADR-030 Jackson 3 | `expense` REST API | 3 |
 | ADR-031 API Versioning | `expense` REST API | 3 |
 | ADR-032 Resilience | `accounting` 外部連携 | 4 |
-| ADR-033 HTTP Client | `accounting`（`@HttpServiceClient`） | 4 |
+| ADR-033 HTTP Client | `accounting`（HTTP Service Interface ＋ `@ImportHttpServices`） | 4 |
 | ADR-034 JSpecify | 全体 | 1a |
 | ADR-036 認証試行制御 | `identity` | 2 |
 | ADR-037 キャッシュ | `master`（コード値） | 3 |
@@ -2873,7 +2885,7 @@ Phase 0 を除く全 Phase に適用する。
 
 - 本グランドデザイン v0.2
 - 用語集（KOIKI-PYFW ⇔ Java 概念対応表、`converter` / `mapper` / `entity` / `reconstitute` / `readmodel`）
-- **ADR 40本**（「確定」「Phase 0 で検証」の区分付き）
+- **Phase 0で有効な全ADR**（「確定」「Phase 0で検証」の区分付き）
 - Module Dependency 図／Security 基本方針／Initial Scope・Non-scope／Repository 構成
 - **Walking Skeleton**（捨てる前提。設定は Phase 1a へ持ち込む）
 - Reference Application の業務仕様（経費申請の状態遷移図、不変条件、権限マトリクス）
@@ -2885,7 +2897,7 @@ Phase 0 を除く全 Phase に適用する。
 
 | # | 内容 |
 |---|---|
-| 0-1 | 40本の ADR が記述され、アーキテクチャオーナーが承認している。各 ADR に「確定」「Phase 0 で検証」の区分が付いている |
+| 0-1 | Phase 0で有効な全ADRが記述され、Architecture Ownerが承認している。各ADRに「確定」「Phase 0で検証」の区分が付いている |
 | 0-2 | 用語集が完成している |
 | 0-3 | **Walking Skeleton が完了し、検証項目すべてに回答が出ている** |
 | 0-4 | **Walking Skeleton の結果を受けた規約の調整が完了している。実装不能と判明した規約が残っていない** |
@@ -3207,7 +3219,8 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 
 ## 30. ADR 一覧
 
-**ADR は本書の設計判断を個別に記録する。**各 ADR には「確定」「Phase 0 で検証」の区分を付す。
+**ADRは本書の設計判断を個別に記録する。**区分、検証証拠、承認状態は
+`../adr/README.md`のADR registerを正本とする。
 
 > **採番に関する注記** — ADR-018 と ADR-021 は欠番である。検討過程で仮採番したが、内容がそれぞれ ADR-035（Virtual Threads）および ADR-006 改訂・ADR-026（UI 戦略）へ集約されたためである。
 
@@ -3264,7 +3277,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | ADR-019 | マルチテナンシー | **単一テナントを前提とする**（v1.0 のスコープ外） |
 | ADR-028 | Open Session in View | **無効化する** |
 | ADR-037 | キャッシュ | Spring Cache ＋ Caffeine。対象限定と TTL 必須 |
-| ADR-038 | read model | 単一集約は JPA 射影、複雑クエリは JdbcClient |
+| ADR-038 | read model | Query契約と`record`は`application.query`が所有。単一集約はJPAのclass-based射影、複雑queryはJdbcClient |
 | ADR-039 | MyBatis | 規約 ＋ BOM 管理（Level B）。モジュール単位で選択 |
 | ADR-042 | テーブル所有権と Flyway | 接頭辞規約 ＋ 所有者別の独立管理 |
 | ADR-044 | Oracle 検証戦略 | **Phase 2 から nightly スモーク。**vendor 分岐は先行導入しない |
@@ -3276,15 +3289,15 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | ADR-030 | JSON Processing | Jackson 3 全面採用。モジュールの自動検出を無効化 |
 | ADR-031 | API Versioning | Spring 標準機構、パスセグメント方式。RFC 9745 非推奨処理を採用 |
 | ADR-032 | Resilience | コアの `@Retryable`／`@ConcurrencyLimit` を標準。Circuit Breaker は Phase 4 で評価 |
-| ADR-033 | HTTP Client | `RestClient` ＋ `@HttpServiceClient` |
+| ADR-033 | HTTP Client | `RestClient` ＋ HTTP Service Interface（`@ImportHttpServices`で登録） |
 
 ### ガバナンスとリリース
 
 | ADR | テーマ | 決定 |
 |---|---|---|
-| ADR-017 | Support & Upgrade Policy | **年次2ライン並行サポート ＋ 商用延長サポートを顧客オプションとする** |
+| ADR-017 | Support & Upgrade Policy | **年次リリース、最新／直前の2ライン管理、Spring公式に合わせたOSSサポート終了日の明示。商用延長サポートを顧客オプションとする** |
 | ADR-029 | Migration Support | **KOIKI 独自の OpenRewrite レシピを提供する** |
-| ADR-040 | 昇格ポリシーの運用化 | チェックリスト7項目、アーキテクチャオーナーによる判定、ADR 記録 |
+| ADR-040 | 昇格ポリシーの運用化 | Reference／Customer／Walking Skeleton発の昇格候補にチェックリスト7項目を適用し、Architecture Ownerによる判定とADR記録を行う |
 | ADR-041 | Public API 境界 | `internal` パッケージ ＋ ArchUnit を基本、重要契約は Maven 分割。JPMS は採用しない |
 | ADR-045 | Agent Skills の設計方針 | **判断のみを Skill に書く。**5本構成。ArchUnit の `because()` にADR番号・影響・修正方法を記述 |
 
