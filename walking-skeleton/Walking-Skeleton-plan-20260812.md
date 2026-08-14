@@ -1,3 +1,9 @@
+> [!NOTE]
+> この文書は2026年8月12日に使用したBuild Foundation第1ラウンドの履歴です。
+> Flyway、ArchUnit、Tier 2、OpenSpec、Agent Skillsを含むWalking Skeleton全体は完了しています。
+> 現行の実行計画は`docs/development/KOIKI-JavaWeb-FW_WalkingSkeleton実装計画_v1.0.md`、
+> 完了判定は`docs/architecture/validation/walking-skeleton-phase0-completion.md`を参照してください。
+
 Walking Skeleton実装計画では、最初に **Root Reactor／Parent／BOM、Java 21 Build Contract、NullAway、Java 25 Runtime互換性**を確認し、コンテナビルドの型まで先に試す方針です。
 また、これはPhase 1a本実装ではなく、Phase 1aで必要になる Maven Multi-module、`<release>21</release>`、Toolchains、Enforcer、NullAway等が本当に成立するかを先行確認する作業です。
 

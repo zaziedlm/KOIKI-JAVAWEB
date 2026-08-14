@@ -3,6 +3,7 @@
 **版:** v1.0（最終整理版。マスタープラン／v0.1／v0.2を本書に統合し、以後は本書を起点とする）
 **作成日:** 2026年7月27日
 **位置づけ:** グランドデザイン v0.2 §27.3 の実行計画。一人プロジェクトのため、承認ゲートや複数文書間の版管理は行わず、本書1本で完結させる
+**状態:** Walking Skeleton Completed（2026年8月14日。完了記録: `../architecture/validation/walking-skeleton-phase0-completion.md`）
 
 ---
 
@@ -27,7 +28,7 @@
 
 ## 2. どこで作るか
 
-- 作業は1本のブランチ（例: `walking-skeleton`）で行い、**終わったら消す。**mainには正規のトップレベル構造だけを置く
+- 作業は`walking-skeleton`ブランチで行い、完了後も検証証拠として保持する。mainへはbranch全体を機械的にmergeせず、正規のトップレベル構造と正式成果物をPhase 1aで再構成する
 - 正規のトップレベル構造（最終形）は次のとおり。**Walking Skeleton中にこれを全部作る必要はない。**必要になったものだけ作る
 
 ```text
@@ -96,6 +97,10 @@ koiki-javaweb-fw/
 - [x] `expense`の実装をOpenSpecのワークフロー（提案→設計→タスク分解→実装→検証→アーカイブ）で進め、4 capabilityのmain spec同期を含めて実務に適用可能と判断する
 - [x] OpenSpecが生成するAI向け指示と、`docs/agent/skills/`が衝突しないことを確認する（検証記録: `docs/architecture/validation/walking-skeleton-agent-skills.md`）
 
+2026年8月14日の最終再検証で、上記チェックリストはすべてPASSとなった。これにより、
+グランドデザインのPhase 0 DoDのうち、Walking Skeletonが担当する0-3と0-4の技術的証拠を
+取得した。Phase 0全体の0-1〜0-8は、本検証とは分離して確認する。
+
 ---
 
 ## 4. 進め方（順序）
@@ -110,13 +115,15 @@ koiki-javaweb-fw/
 
 ## 5. 終わったらどうするか
 
-- ブランチごと捨てる。**コードそのものは残さない**
-- 次の設定・学びだけを正規リポジトリへ持っていく
+- `walking-skeleton`ブランチ全体をmainへ機械的にmergeして正式化しない
+- 検証branchは完了証拠として保持し、Phase 1aの正式成果物は検証済み設定と判断を参照して作り直す
+- 次の設定・学びを正規リポジトリへ持っていく
   - `koiki-parent`の実際のビルド設定値
   - `koiki-archunit-rules`のルール実装
-  - Flyway複数構成の実装（所属先が決まった状態のもの）
+  - Flyway複数構成の知見（正式な所属先をPhase 1bで決めてから実装する）
   - Dockerfileの型
   - Skillsの最小版の文面
+- Walking SkeletonのJavaクラス、Template、migration SQL、一時Maven座標は直接昇格させない
 - グランドデザイン側を直したほうがよい箇所があれば、メモとして残す（例: Flyway Starterの所属先、ArchUnitで記述不能と判明した規則のReview Checklistへの格下げ）。都度ADRを起票するかは実装しながら判断してよい
 
 ---

@@ -7,8 +7,8 @@
 | 検証 | 実結果 | 判断 |
 |---|---|---|
 | 最小Skill | `koiki-project-overview`と`koiki-business-feature-work`の2件を正本として作成した | PASS |
-| Codexからの発見 | 新規セッションのSkill一覧に2件が掲載され、`.agents/skills/`のアダプターから正本を参照できた | PASS |
-| Claude Codeからの発見 | 既存OpenSpec Skillと同じ`.claude/skills/`配置を使用し、アダプターから正本への相対参照を解決できた | PASS |
+| Codexからの発見 | 新規セッションのSkill一覧に2件が掲載され、スラッシュコマンドから呼び出して正本を参照できた | PASS |
+| Claude Codeからの発見 | `.claude/skills/`のアダプターをスラッシュコマンドから呼び出して正本を参照できた | PASS |
 | Skill構造 | Skill Creator付属の`quick_validate.py`で正本2件とアダプター4件がすべてvalidとなった | PASS |
 | OpenSpecとの責務分離 | OpenSpecは変更固有の要求・設計・タスク、KOIKI SkillはRepository横断の判断手順として分離できた | PASS |
 | OpenSpec成果物 | `openspec validate --all --strict`でmain spec 4件が成功した | PASS |
