@@ -684,7 +684,10 @@ Spring 公式ポートフォリオ外のライブラリを KOIKI の公式プロ
 
 ### 9.4 アーキテクチャオーナー
 
-**アーキテクチャオーナー1名と、その代理者1名を任命する。**代理者はオーナー不在時の判断停滞を防ぐために置く。
+**アーキテクチャオーナー1名を任命する。**本RepositoryではPrimary Maintainerがこの役割を担う。
+複数の意思決定可能なMaintainerが参加した時点で代理者1名を任命する。一人projectの間は
+実在しない代理者を形式的に置かず、Owner不在時の最終判断を停止し、設計文書、ADR、検証記録、
+Git履歴で継続性を確保する。詳細は`../governance/KOIKI-JavaWeb-FW_Architecture_Governance_v0.1.md`に定める。
 
 #### 責務
 
@@ -703,7 +706,8 @@ Spring 公式ポートフォリオ外のライブラリを KOIKI の公式プロ
 
 ### 9.5 四半期アーキテクチャレビュー
 
-四半期ごとに次のアジェンダでレビューを開催する。
+開発活動がある各四半期に、Architecture Ownerが次のアジェンダでreviewを実施する。
+一人projectでは自己reviewを認めるが、結果を`docs/architecture/reviews/`へ記録する。
 
 1. 昇格候補の審議（§9.2 のチェックリストによる）
 2. 業務モジュールの Tier 妥当性の見直し（§11.5）
@@ -713,6 +717,7 @@ Spring 公式ポートフォリオ外のライブラリを KOIKI の公式プロ
 6. Public API 変更の確認（japicmp レポートのレビュー）
 7. Agent Skills の妥当性確認（§24.2）
 8. 保留中の将来構想の再評価（§4.3）
+9. 未完了DoD、例外、risk、次四半期の再判断対象
 
 ### 9.6 Public API 境界
 
@@ -2873,7 +2878,7 @@ Phase 0 を除く全 Phase に適用する。
 - **Walking Skeleton**（捨てる前提。設定は Phase 1a へ持ち込む）
 - Reference Application の業務仕様（経費申請の状態遷移図、不変条件、権限マトリクス）
 - **全 Phase の DoD と規模見積もり**
-- アーキテクチャオーナー・代理者の任命、四半期レビューの標準アジェンダ
+- Architecture Ownerの任命、一人project中の代理・継続性方針、四半期reviewの標準agenda
 - KOIKI ⇔ Spring Boot ⇔ Java ベースライン対応表の公開場所と更新手順
 
 **完了条件**
@@ -2886,7 +2891,7 @@ Phase 0 を除く全 Phase に適用する。
 | 0-4 | **Walking Skeleton の結果を受けた規約の調整が完了している。実装不能と判明した規約が残っていない** |
 | 0-5 | **全 Phase の DoD と規模見積もりが存在し、Phase 1a〜5 の実現可能性が判断されている** |
 | 0-6 | Reference Application の業務仕様が確定している |
-| 0-7 | アーキテクチャオーナーと代理者が任命され、四半期レビューの標準アジェンダが文書化されている |
+| 0-7 | Architecture Ownerが任命され、一人project中の代理・継続性方針と四半期reviewの標準agendaが文書化されている |
 | 0-8 | KOIKI ⇔ Spring Boot ⇔ Java ベースライン対応表の公開場所と更新手順が定まっている |
 
 **0-3 と 0-4 が本 Phase の核心である。**設計判断の確定だけでは Phase 0 を完了としない。**規約が実装可能であることを実測で確認する。**
