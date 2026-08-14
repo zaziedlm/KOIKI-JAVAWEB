@@ -112,7 +112,7 @@ class KoikiArchitectureRulesTest {
         String report = result.getFailureReport().toString();
 
         assertTrue(result.hasViolation(), report);
-        assertTrue(report.contains("ADR-001"), report);
+        assertTrue(report.contains("ADR-014"), report);
         assertTrue(report.contains("CustomerType"), report);
     }
 
