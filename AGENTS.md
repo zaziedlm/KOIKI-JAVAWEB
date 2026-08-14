@@ -10,6 +10,11 @@ Phase 0 Walking Skeletonでは次を優先する。
 4. 未使用の将来Module / Packageを先行生成しない。
 5. 実装で確認できる事項は、文書上の推測より実装検証を優先する。
 6. 検証結果は `docs/architecture/validation/` に記録する。
-7. `docs/agent/skills/` は後続のWalking Skeleton工程で最小Skillを追加する。
+7. Repository内の作業を位置づけるときは、`docs/agent/skills/koiki-project-overview/SKILL.md`を読む。
+8. 業務機能を設計・実装・レビューするときは、加えて`docs/agent/skills/koiki-business-feature-work/SKILL.md`を読む。
 
-OpenSpecはWalking Skeleton中の試行対象であり、この初期構成では正式配置を固定しない。
+`docs/agent/skills/`をKOIKI固有Skillの正本とする。`.agents/skills/`と`.claude/skills/`は、
+各エージェントから正本を発見するための薄い導線とし、設計規則を複製しない。
+
+OpenSpecは変更固有の要求、設計、タスクを管理する。KOIKI固有Skillは横断的な判断手順を提供し、
+OpenSpec成果物を上書きしない。OpenSpecはWalking Skeleton中の試行対象であり、正式配置は固定しない。
