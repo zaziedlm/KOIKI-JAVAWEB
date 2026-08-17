@@ -22,11 +22,11 @@ REST API、Security、SPA、非同期event等の具体的な実装規約は、�
 | 0-3 Walking Skeleton | COMPLETE | 実装計画の全項目が完了し、`validation/walking-skeleton-phase0-completion.md`に最終再検証を記録した | なし | 完了状態を維持し、Walking Skeleton codeを正式成果物へ直接昇格させない |
 | 0-4 規約調整 | COMPLETE | V1〜V7がすべてPASS。ArchUnit ruleの実装中に判明した`package-info`等の調整も検証済み | なし | 実装不能なPhase 0規約を残さず、検証証拠から参照可能な状態を維持する |
 | 0-5 Phase計画 | PARTIAL | §27.4〜§27.9にPhase 1a〜5の成果物とDoDがある | DoD単位の規模見積りと、依存関係を踏まえた実現可能性の明示判定がない | 各DoDへ規模、依存、主要リスクを付け、各Phaseを実行可能／要分割／保留のいずれかで判定する |
-| 0-6 Reference Application仕様 | PARTIAL | §26に題材、module構成、状態遷移、不変条件、Phase別実証範囲がある | 独立した業務仕様、完全な状態遷移条件、権限matrix、代表use case、範囲外、受入条件が確定していない | 業務仕様を独立文書化し、状態遷移、不変条件、権限matrix、代表flow、非目標を一貫してレビューできる状態にする |
+| 0-6 Reference Application仕様 | COMPLETE | §26、ADR-043、Glossaryを照合し、`../reference/KOIKI-JavaWeb-FW_Reference_Application_Specification_v0.1.md`に独立した業務仕様を作成した。Scope、状態遷移、不変条件、権限matrix、代表Use Case、拒否flow、Phase別受入条件を一貫してreviewし、2026年8月17日にArchitecture Ownerが仕様全体をACCEPTED | なし | 業務scopeまたは実証範囲を変更する場合は、仕様のRevisit triggerとGovernanceに従って再reviewする |
 | 0-7 Governance | COMPLETE | `governance/KOIKI-JavaWeb-FW_Architecture_Governance_v0.1.md`でPrimary MaintainerをOwnerに任命し、代理・継続性、承認記録、四半期review、Phase判定を定めた | なし | Maintainerまたは運営体制の変更時にGovernanceを更新する |
 | 0-8 Baseline対応表 | PARTIAL | §8.1にKOIKI／Spring Boot／Javaの対応原則とreleaseごとの更新要求がある | 正本の配置場所、項目、更新契機、更新責任、review方法が定まっていない | 対応表の正本pathと更新手順を定め、初期baselineを記録する。具体的なsupport終了日の公開はPhase 5 DoD 5-3で行う |
 
-現状は、COMPLETE 5件、PARTIAL 3件、NOT STARTED 0件である。したがって、
+現状は、COMPLETE 6件、PARTIAL 2件、NOT STARTED 0件である。したがって、
 Phase 0全体は未完了である。
 
 ## 3. 正本間の不整合

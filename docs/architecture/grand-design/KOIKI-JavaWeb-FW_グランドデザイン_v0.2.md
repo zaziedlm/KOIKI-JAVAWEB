@@ -1,7 +1,7 @@
 # KOIKI-JavaWeb-FW グランドデザイン v0.2
 
 **文書版:** v0.2（構想確定・基本設計準備版）
-**改訂日:** 2026年7月27日
+**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（今回改訂）
 **文書状態:** Draft for Review
 **対象プロジェクト:** KOIKI-JavaWeb-FW
 **参照元:** KOIKI-PYFW dev/v0.8
@@ -2751,17 +2751,26 @@ koiki-reference-app
 |---|---|
 | 責務 | 経費申請・承認 |
 | テーブル | `kkref_expense_request`、`kkref_expense_line` |
-| 状態遷移 | `DRAFT` → `SUBMITTED` → `APPROVED` / `REJECTED` / `RETURNED` → `SETTLED` |
-| 不変条件 | 明細合計と申請額の一致（**複数エンティティにまたがる不変条件**）／承認済みは編集不可／自己承認の禁止 |
+| 状態遷移 | `DRAFT` → `SUBMITTED` → `APPROVED` → `SETTLED`。`SUBMITTED` → `REJECTED`、`SUBMITTED` → `RETURNED` → `DRAFT`を分岐として許可する |
+| 不変条件 | 明細合計と申請額の一致を新規作成・Draft編集・提出時に保証する（**複数エンティティにまたがる不変条件**）／編集可能なのは`DRAFT`のみ／自己承認の禁止 |
 | 業務モデル | `ExpenseRequest`（JPA Entity 兼用）、`ExpenseLine`、`Money`（Value Object、`@Embeddable`）、`ExpenseStatus` |
-| 業務メソッド | `submit()`、`approve(approver)`、`reject(approver, reason)`、`returnToDraft()`、`settle()` |
+| 業務メソッド | `submit()`、`approve(approver)`、`reject(approver, reason)`、差戻し、再編集開始、`settle()`。差戻しと再編集開始は別の状態遷移として実装する |
 | 実証する内容 | **Tier 2 昇格トリガの該当例**／兼用方式／`domain.repository` を Spring Data が実装／**read model は JdbcClient**（承認待ち一覧に申請者名・部門名を含むため複数集約にまたがる）／楽観ロック競合画面／業務監査 |
 
-**1モジュール内で JPA の射影と JdbcClient の両方が実演される。**§16.3 の使い分け基準を対比として示せる。
+**Reference Application内で JPA の射影と JdbcClient の両方が実演される。**§16.3 の使い分け基準を対比として示せる。
+
+#### Phase 3 — `expense` の最小 REST API
+
+MVC と同じ Application Use Case と業務認可を呼び出す最小 REST API を追加し、
+`/api/v1` のパスセグメント方式による API Versioning と Jackson 3 の契約を実証する。
+React SPA とブラウザ向け認証・CSRFの併用構成はPhase 4で追加する。
 
 #### Phase 3 — `master` ⇔ `expense` の同期イベント連携
 
 > **部門マスタで部門を廃止する際、当該部門に未処理の経費申請が残っていれば廃止を拒否する。**
+
+未処理申請は非終端状態の`DRAFT`、`SUBMITTED`、`RETURNED`、`APPROVED`とする。
+`REJECTED`と`SETTLED`は部門廃止を妨げない。
 
 ```text
 master.domain.event.DepartmentDeactivating   （公開パッケージ）
@@ -2795,17 +2804,20 @@ expense.adapter.inbound.event   未処理申請を検査 → 存在すれば例�
 | 項目 | 内容 |
 |---|---|
 | 責務 | 精算済み申請から仕訳データを生成し、会計システムへ連携する |
+| 連携 | `ExpenseSettled`を非同期受信し、申請ごとに仕訳を冪等に生成する |
 | テーブル | **既存スキーマを模擬**し、接頭辞なしのテーブル名とする。§16.7.1 の「既存スキーマは接頭辞規約の対象外」という現実を示す |
 | 実証する内容 | **モデル分離オプトイン**（トリガ1: 永続化スキーマを変更できない）／**MyBatis 分離方式の構造**（`entity` / `converter` / `mapper`）／**楽観ロックの手動実装**／**`databaseIdProvider` による PostgreSQL・Oracle 切り替え**／`domain.gateway` とHTTP Service Clientによる外部連携／`@Retryable` / `@ConcurrencyLimit` |
 
-#### Phase 4 — `expense` への REST API 経路追加
+#### Phase 4 — `expense` の React SPAとMVC / API併用構成
 
-同一の Application Use Case を REST Controller が呼び出す。**Thymeleaf と SPA の併用**（CSRF 設定の経路分離）、SPA 最小参照実装（React）、KOIKI-PYFW の SPA 認証契約の移植を実証する。
+Phase 3のREST APIとPhase 2の認証基盤を利用してSPA最小参照実装（React）を追加する。
+**Thymeleaf と SPA の併用**、ブラウザ経路ごとの認証・CSRF設定、およびKOIKI-PYFWの
+SPA認証契約の移植を実証する。
 
 #### Phase 4 — Spring Batch
 
 - 未処理申請のリマインド（`notification` へイベント発行）
-- 月次締め（`SETTLED` への一括遷移）
+- 月次締め（通常操作と同じ精算Application Use Caseを使った`SETTLED`への一括遷移）
 
 ### 26.4 設計判断と実証箇所の対応
 
@@ -3030,7 +3042,7 @@ Spring Security 標準構成／Local User・Role・Permission／**HTTP Session�
 
 **成果物**
 
-`notification`（非同期、Level 2）／`accounting`（MyBatis 分離）／`expense` への REST API 経路追加と **SPA 最小参照実装**／**Oracle Integration Baseline**／SAML Extension／External API Resilience／Spring Batch／File・Object Storage／OpenTelemetry／**Container・ECS Reference**／**Virtual Threads 有効化ガイドと CI 検証系統**
+`notification`（非同期、Level 2）／`accounting`（MyBatis 分離）／Phase 3の`expense` REST APIを利用する **SPA 最小参照実装**とMVC / SPA併用構成／**Oracle Integration Baseline**／SAML Extension／External API Resilience／Spring Batch／File・Object Storage／OpenTelemetry／**Container・ECS Reference**／**Virtual Threads 有効化ガイドと CI 検証系統**
 
 **完了条件**
 
