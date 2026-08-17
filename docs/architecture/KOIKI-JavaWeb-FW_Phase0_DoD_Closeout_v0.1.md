@@ -18,7 +18,7 @@ REST API、Security、SPA、非同期event等の具体的な実装規約は、�
 | DoD | 状態 | 現状と証拠 | 不足 | 完了条件 |
 |---|---|---|---|---|
 | 0-1 ADR | COMPLETE | グランドデザイン§30の有効ADR 43件を`adr/README.md`へ過不足なく登録し、区分（確定28件／Phase 0で検証15件）、証拠、検証scopeをreviewした。2026年8月15日に43件すべてをArchitecture Ownerが承認 | なし | 承認状態を維持し、後続証拠が前提を否定した場合はGovernanceに従って再reviewする |
-| 0-2 用語集 | NOT STARTED | §29で今後作成する文書として定義されている | KOIKI-PYFWとの概念対応、KOIKI固有語、Java/Spring用語の採用意味をまとめた正本がない | 用語、意味、使用箇所、非推奨表現、KOIKI-PYFWとの対応をレビュー可能な文書として確定する |
+| 0-2 用語集 | COMPLETE | `../standards/KOIKI-JavaWeb-FW_Glossary_v0.1.md`に45語、KOIKI-PYFW概念対応8項目、非推奨・限定表現10項目を整理した。§3〜§10のOwner Review、参照link、ArchUnit fixtureの責務整合とテスト13件成功を確認し、2026年8月17日にArchitecture Ownerが承認 | なし | 新語追加または意味変更時に用語集の更新要否と影響する正本・Skill・実装をreviewする |
 | 0-3 Walking Skeleton | COMPLETE | 実装計画の全項目が完了し、`validation/walking-skeleton-phase0-completion.md`に最終再検証を記録した | なし | 完了状態を維持し、Walking Skeleton codeを正式成果物へ直接昇格させない |
 | 0-4 規約調整 | COMPLETE | V1〜V7がすべてPASS。ArchUnit ruleの実装中に判明した`package-info`等の調整も検証済み | なし | 実装不能なPhase 0規約を残さず、検証証拠から参照可能な状態を維持する |
 | 0-5 Phase計画 | PARTIAL | §27.4〜§27.9にPhase 1a〜5の成果物とDoDがある | DoD単位の規模見積りと、依存関係を踏まえた実現可能性の明示判定がない | 各DoDへ規模、依存、主要リスクを付け、各Phaseを実行可能／要分割／保留のいずれかで判定する |
@@ -26,7 +26,7 @@ REST API、Security、SPA、非同期event等の具体的な実装規約は、�
 | 0-7 Governance | COMPLETE | `governance/KOIKI-JavaWeb-FW_Architecture_Governance_v0.1.md`でPrimary MaintainerをOwnerに任命し、代理・継続性、承認記録、四半期review、Phase判定を定めた | なし | Maintainerまたは運営体制の変更時にGovernanceを更新する |
 | 0-8 Baseline対応表 | PARTIAL | §8.1にKOIKI／Spring Boot／Javaの対応原則とreleaseごとの更新要求がある | 正本の配置場所、項目、更新契機、更新責任、review方法が定まっていない | 対応表の正本pathと更新手順を定め、初期baselineを記録する。具体的なsupport終了日の公開はPhase 5 DoD 5-3で行う |
 
-現状は、COMPLETE 4件、PARTIAL 3件、NOT STARTED 1件である。したがって、
+現状は、COMPLETE 5件、PARTIAL 3件、NOT STARTED 0件である。したがって、
 Phase 0全体は未完了である。
 
 ## 3. 正本間の不整合

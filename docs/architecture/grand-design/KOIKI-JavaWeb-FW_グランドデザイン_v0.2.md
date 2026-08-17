@@ -928,7 +928,7 @@ public interface OrderRepository extends Repository<Order, OrderId> {
 - 依存を最小化するため、`JpaRepository` ではなくマーカーの `Repository<T, ID>` を継承し、**必要なメソッドのみを宣言する**
 - **手書きの Outbound Adapter は、DB 以外の Outbound（外部 API、ファイル、メッセージング）にのみ用いる。**実装差し替えの現実味があるのはこれらであり、DB ではない
 - ただし永続化技術として MyBatis を採用する場合は例外とする（§11.7）
-- 複雑クエリ、集計、帳票は `adapter.outbound.persistence` に read model として置く（§16.3）
+- 複雑queryの契約とread modelは`application.query`に置き、`adapter.outbound.persistence`にmaterialize実装を置く（§16.3）
 
 #### 外部システム連携の Port
 
@@ -943,7 +943,7 @@ Tier 1 では `gateway` を設けず、Application Use Case が `adapter.outboun
 | Domain | 業務モデル（不変条件と状態遷移）、Value Object、Domain Service、Domain Event、Port | Controller、Spring Web、HTTP DTO、`EntityManager` の直接操作、SQL | Tier 2 のみ（`domain.event` を除く） |
 | Application | Use Case、トランザクション境界、権限呼出、処理調整、（Tier 1 では業務ルール） | HTTP 詳細、SQL、画面描画 | 共通 |
 | Inbound Adapter | REST、MVC、Event、Batch、Message の入力受付と応答整形、DTO 変換 | 業務ルール、永続化処理、**業務モデルの外部露出** | 共通 |
-| Outbound Adapter | 外部 API、File、Messaging、read model、複雑クエリ | Use Case の判断 | 共通 |
+| Outbound Adapter | 外部 API、File、Messaging、複雑queryとread modelのmaterialize実装 | Use Caseの判断、Application所有のQuery契約 | 共通 |
 | Configuration | Bean 構成、Adapter 選択 | 業務ルール | 共通 |
 
 ### 11.5 Tier の昇格
@@ -1022,7 +1022,7 @@ adapter/outbound/persistence/             adapter/outbound/persistence/
 ├── entity       # JPA Entity             ├── entity       # 永続化レコード（POJO）
 ├── converter    # Domain ⇔ entity        ├── converter    # Domain ⇔ entity
 ├── jpa          # Spring Data Repository ├── mapper       # MyBatis Mapper
-├── readmodel                             ├── readmodel
+├── query         # Query Port実装       ├── query        # Query Port実装
 └── *RepositoryAdapter                    └── *RepositoryAdapter
 ```
 
@@ -1033,7 +1033,7 @@ adapter/outbound/persistence/             adapter/outbound/persistence/
 | `entity` | 永続化専用モデル。DB のテーブル構造に対応する。JPA 方式では JPA Entity、MyBatis 方式では単純な POJO |
 | `converter` | 業務モデルと `entity` の相互変換。**手書きとし、リフレクションベースの自動マッピングを用いない**（§16.6） |
 | `jpa` / `mapper` | SQL 実行手段。**メソッドシグネチャに `domain.model` の型が現れてはならない**（ArchUnit で検査） |
-| `readmodel` | 参照専用の結果型。**`converter` を経由しない**（既に最終形であるため） |
+| `query` | `application.query`が所有するQuery Portの実装。Application所有のread modelを直接materializeし、**`converter`を経由しない** |
 | `*RepositoryAdapter` | `domain.repository` の Port 実装。SQL 実行手段と `converter` を組み合わせる。**楽観ロックの更新件数チェックはここで行う**（§12.5） |
 
 > **`mapper` という語は MyBatis の SQL 定義インターフェースを指す。**変換層は `converter` と呼び、両者を混同しない。
@@ -1086,7 +1086,7 @@ DB に既存の不正データが存在する場合に読み込めなくなる�
 
 これは兼用方式とも一貫する。兼用方式では JPA がリフレクションによりオブジェクトを復元するため、同様に不変条件の検証は行われない。
 
-**(3) `readmodel` は復元経路を持たない**
+**(3) read modelは復元経路を持たない**
 
 参照専用の結果型は業務モデルではないため、不変条件も復元用ファクトリも持たない。SQL 実行手段が直接マッピングする。
 
@@ -1703,7 +1703,7 @@ MyBatis-Spring は MyBatis を Spring トランザクションへ参加させ、
 
 - read modelは**Java `record`**として定義し、JPAのinterface-based射影は用いない
 - Query Portは`application.query`が所有し、Outbound Adapterがその契約を実装してApplication所有のread modelをmaterializeする
-- **Tier 1 では read model という専用概念を設けない。**Tier 1 には Domain 層が存在しないため、`application.dto` で足りる。`readmodel` パッケージが意味を持つのは Tier 2 のみである
+- **Tier 1ではread modelという専用概念を設けない。**Tier 1にはDomain層が存在しないため、`application.dto`で足りる。read modelを所有する`application.query`はTier 2でのみ使用する
 - 分離方式において、read model は `converter` を経由しない（既に最終形であるため）
 
 #### Oracle 適合への影響
@@ -2239,7 +2239,7 @@ PostgreSQL 等の実 DB、必要な外部 Middleware を Testcontainers で起�
 | 20 | MVC ハンドラメソッドの**戻り値**に `domain.model` が現れない |
 | 21 | `domain.model` の型が他モジュールから参照されない |
 | 22 | `domain.model` に public setter が存在しない |
-| 23 | `application.query` は `readmodel` を参照してよい（**明示例外**） |
+| 23 | `application.query`は同packageが所有するread modelを参照してよい（**明示例外**） |
 | 24 | `domain.gateway` の実装は `adapter.outbound.external` にのみ存在する |
 
 ##### Tier 2（分離オプトイン時に追加）
@@ -2251,7 +2251,7 @@ PostgreSQL 等の実 DB、必要な外部 Middleware を Testcontainers で起�
 | 27 | `domain.repository` の実装は `adapter.outbound.persistence` にのみ存在する |
 | 35 | `mapper`（MyBatis Mapper）のメソッドシグネチャに `domain.model` の型が現れない |
 | 36 | `jpa`（Spring Data Repository）のメソッドシグネチャに `domain.model` の型が現れない |
-| 37 | `readmodel` は `converter` を経由せず SQL 実行手段から直接生成される |
+| 37 | read modelは`converter`を経由せずSQL実行手段から直接生成される |
 
 ##### Spring Modulith 採用レベル別
 
@@ -2884,7 +2884,7 @@ Phase 0 を除く全 Phase に適用する。
 **成果物**
 
 - 本グランドデザイン v0.2
-- 用語集（KOIKI-PYFW ⇔ Java 概念対応表、`converter` / `mapper` / `entity` / `reconstitute` / `readmodel`）
+- [用語集](../../standards/KOIKI-JavaWeb-FW_Glossary_v0.1.md)（KOIKI-PYFW ⇔ Java概念対応表、`converter` / `mapper` / `entity` / `reconstitute` / read model）
 - **Phase 0で有効な全ADR**（「確定」「Phase 0で検証」の区分付き）
 - Module Dependency 図／Security 基本方針／Initial Scope・Non-scope／Repository 構成
 - **Walking Skeleton**（捨てる前提。設定は Phase 1a へ持ち込む）

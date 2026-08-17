@@ -131,7 +131,7 @@ class KoikiArchitectureRulesTest {
     }
 
     @Test
-    void explicitDomainEventAndReadModelExceptionsRemainAllowed() {
+    void domainEventExceptionAndApplicationOwnedReadModelRemainAllowed() {
         EvaluationResult moduleBoundary = KoikiArchitectureRules
                 .modulesMustNotCallOtherModulesDirectly(COMPLIANT_BASE)
                 .evaluate(compliantClasses);
