@@ -14,9 +14,11 @@
 - Tier 2実務感、OSIV境界、同期Domain Event
 - OpenSpecワークフローと最小Agent Skills
 
-完了判定とPhase 1aへの引継ぎ境界は
+Walking Skeletonの完了判定とPhase 1aへの引継ぎ境界は
 `docs/architecture/validation/walking-skeleton-phase0-completion.md`を参照してください。
-個別の証拠は`docs/architecture/validation/`に記録しています。
+Phase 0 Architecture Baseline全体の完了判定は
+`docs/architecture/KOIKI-JavaWeb-FW_Phase0_DoD_Closeout_v0.1.md`に記録しています。
+個別の実装証拠は`docs/architecture/validation/`に記録しています。
 
 ## 重要
 

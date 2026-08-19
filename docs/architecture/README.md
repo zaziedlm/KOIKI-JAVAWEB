@@ -2,7 +2,9 @@
 
 - `grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md`: 全体方針とPhase別DoDの正本
 - `KOIKI-JavaWeb-FW_Repository_Architecture_v0.1.md`: RepositoryとOwnershipの正本
-- `KOIKI-JavaWeb-FW_Phase0_DoD_Closeout_v0.1.md`: Phase 0全体DoDの現状と残件台帳
+- `KOIKI-JavaWeb-FW_Phase0_DoD_Closeout_v0.1.md`: Phase 0全体DoDの完了判定と証拠台帳
+- `KOIKI-JavaWeb-FW_Phase_Estimate_Feasibility_v0.1.md`: Phase 1a〜5のDoD別規模、依存、risk、実現可能性評価
+- `KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md`: KOIKI／Spring Boot／Javaの対応表と更新・support管理の正本
 - `governance/KOIKI-JavaWeb-FW_Architecture_Governance_v0.1.md`: Owner、代理・継続性、Architecture Review、Phase判定
 - `validation/`: Walking Skeleton等の実装検証証拠
 

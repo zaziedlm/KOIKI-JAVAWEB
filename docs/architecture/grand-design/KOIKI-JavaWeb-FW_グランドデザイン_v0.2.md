@@ -1,8 +1,10 @@
 # KOIKI-JavaWeb-FW グランドデザイン v0.2
 
 **文書版:** v0.2（構想確定・基本設計準備版）
-**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（今回改訂）
-**文書状態:** Draft for Review
+**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）
+**文書状態:** ACCEPTED（Phase 0 Architecture Baseline）
+**承認日:** 2026年8月19日
+**Architecture Owner:** Shuichi Kataoka
 **対象プロジェクト:** KOIKI-JavaWeb-FW
 **参照元:** KOIKI-PYFW dev/v0.8
 **前版:** v0.1（2026年7月22日）
