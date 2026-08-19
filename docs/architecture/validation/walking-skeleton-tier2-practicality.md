@@ -170,11 +170,12 @@ OpenSpecの`proposal.md`、4 delta specs、`design.md`、`tasks.md`を日本語�
 | `openspec/config.yaml` | OpenSpec成果物の日本語方針と、この試行changeの共通context |
 | change artifacts | `expense-tier2-walking-skeleton`固有の要求、設計、実装タスク |
 | `.agents/skills/openspec-*` | OpenSpec CLI操作workflow |
-| 将来の`docs/agent/skills/` | KOIKI固有の設計判断を簡潔に案内する正式候補 |
+| `docs/agent/skills/` | KOIKI固有の横断的な設計判断と参照先 |
 
-将来の`docs/agent/skills/`には要求一覧や実装手順を複製せず、ADRに基づく判断と参照先だけを置く。
+`docs/agent/skills/`には要求一覧や実装手順を複製せず、ADRに基づく判断と参照先だけを置く。
 OpenSpecはchange単位の計画正本、`AGENTS.md`はRepository統治、Skillは反復判断の導線とすれば
-衝突を避けられる。`docs/agent/skills/`は未作成なので、実ファイル同士の最終照合は後続工程に残す。
+衝突を避けられる。最小Skill 2件とCodex / Claude Codeの導線を作成し、実ファイル同士の照合と
+双方のスラッシュコマンドからの呼び出しを確認した。詳細は`walking-skeleton-agent-skills.md`に記録する。
 
 OpenSpecの提案から検証、4 capabilityのmain spec同期、およびarchiveまで一貫して実行できた。
 2026-08-13にchangeを`openspec/changes/archive/2026-08-13-expense-tier2-walking-skeleton/`へ

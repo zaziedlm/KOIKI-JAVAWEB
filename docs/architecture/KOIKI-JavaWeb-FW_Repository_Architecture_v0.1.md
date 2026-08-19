@@ -6,7 +6,9 @@ Repository Architectureでは「何をどこが所有するか」と
 「何を混ぜてはならないか」を先に固定する。
 
 Root Reactor / Parent / BOM、初期Maven Module、Package Naming、
-Flyway所属等の詳細はWalking Skeletonで試した後に確定する。
+Flyway構成等の詳細はWalking Skeletonで実装検証し、その結果をPhase 1a以降の
+正式成果物へ反映する。Walking Skeletonの完了判定は
+`validation/walking-skeleton-phase0-completion.md`に記録する。
 
 ## 2. Repository Scope
 
@@ -87,7 +89,7 @@ FrameworkからReference / Customerへの依存は禁止する。
 
 ## 8. Walking Skeleton
 
-次を実装検証してからPhase 1aの正規構成を決める。
+次の実装検証は2026年8月14日に完了した。
 
 - Reactor / Parent / BOM
 - Java Build Contract
@@ -100,5 +102,6 @@ FrameworkからReference / Customerへの依存は禁止する。
 - Agent Skills
 - OpenSpec試行
 
-Walking Skeleton codeは捨てる。
-設定・規約・知見のみPhase 1aへ持ち込む。
+`walking-skeleton`ブランチは検証証拠として保持するが、branch全体をmainへ機械的に
+mergeして正式化しない。Walking SkeletonのJava、Template、migration SQLは直接昇格させず、
+設定・規約・知見を基にPhase 1a以降の正式成果物を再構成する。

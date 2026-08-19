@@ -57,7 +57,7 @@ Tier 1 SIMPLEを開始点とし、次のいずれかに該当する場合はTier
 | Application Use Case | トランザクション、権限呼出、処理順序、Domain操作、イベント発行 | HTTP詳細、SQL、画面描画 |
 | Domain Model | Tier 2の不変条件、状態遷移、Value Object | Controller、HTTP DTO、SQL、`EntityManager`直接操作 |
 | Domain Service | ModelやValue Objectのどれにも自然に属さないTier 2業務判断 | 単なる処理手順、DTO変換、Repositoryの薄いラッパー |
-| Outbound Adapter | 外部API、File、Messaging、複雑query、read model | Use Caseの判断 |
+| Outbound Adapter | 外部API、File、Messaging、複雑queryとread modelのmaterialize実装 | Use Caseの判断、Application所有のQuery契約 |
 | Configuration | Bean構成とAdapter選択 | 業務ルール |
 
 `@Service`などのSpring stereotypeではなく、実際の責務で配置を判断する。
@@ -84,6 +84,7 @@ Tier 1 SIMPLEを開始点とし、次のいずれかに該当する場合はTier
 - 単一集約から導出する単純な一覧・詳細にはJPA射影を使う。
 - 複数集約、集計、帳票、既存SQLにはJdbcClientを使う。
 - MyBatisモジュールではMyBatis Mapperを使い、更新技術との一貫性を保つ。
+- Query契約と戻り値のread modelは`application.query`が所有し、Outbound Adapterが永続化技術で実装する。ApplicationからAdapterを直接参照しない。
 - Tier 2のread modelは`record`として最終形を返す。
 - Tier 1では専用read modelを先行導入せず、必要なApplication DTOを使う。
 

@@ -87,7 +87,7 @@ public final class KoikiArchitectureRules {
         String framework = normalize(frameworkBasePackage);
         return classes().that().resideInAPackage(framework + "..")
                 .should(new ForbiddenPackageDependencyCondition(consumerBasePackages))
-                .because("FrameworkはReference/Customerへ依存しない（ADR-001 / §9、規則5）。"
+                .because("FrameworkはReference/Customerへ依存しない（ADR-014 / §9、規則5）。"
                         + "所有権が逆転するとFrameworkを独立配布できない。依存をFramework API側へ反転すること。");
     }
 
