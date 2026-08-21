@@ -1,161 +1,58 @@
-# KOIKI-JavaWeb-FW — Phase 0 Walking Skeleton Base
+# KOIKI-JavaWeb-FW — Phase 1a Build Foundation
 
-この構成は、`KOIKI-JavaWeb-FW グランドデザイン v0.2` と
-`Walking Skeleton 実装計画 v1.0` に基づき、Phase 0 の最初の検証
-「リポジトリ・ビルドの土台」を開始するための **捨てる前提の検証用ベース** です。
+KOIKI-JavaWeb-FWは、Spring Bootを基盤として、企業向けJava Web Applicationを一貫した
+Architecture、build contract、品質規約のもとで構築するためのFramework projectです。
 
-## この構成で確認するもの
+Phase 0 Walking SkeletonとArchitecture Baselineは2026年8月19日に完了しました。
+現在はPhase 1a Build Foundationとして、検証済みの知見を正式なMaven成果物、Public API、
+CIおよび外部Consumer検証へ再構成しています。
 
-- Root Reactor / Parent / BOM の責務分離
-- Maven Multi-module build
-- Java 21 ターゲットバイトコード
-- Maven Enforcer による Build JDK 21 の強制
-- Maven Toolchains による JDK 21 選択
-- JSpecify `@NullMarked` + NullAway
-- Java 21 build artifact の Java 25 runtime 起動
-- Spring Boot の最小 executable JAR
-- Spring Boot tools jarmode を使ったコンテナレイヤ抽出の型
+## 現在の状態
 
-この時点では、Flyway / ArchUnit 本格ルール / Tier 1 / Tier 2 /
-Spring Modulith 本格検証は含めません。
+- Phase 0 Architecture Baseline: COMPLETE / ACCEPTED
+- Phase 1a Build Foundation: IN PROGRESS
+- 正式groupId / Java base package: `org.koikifw`
+- Build JDK / target bytecode: Java 21
+- Runtime compatibility target: Java 21 / Java 25
 
-## 重要
+Phase 1aの正式build構成は再実装中です。Root POMや`walking-skeleton/ws-smoke-*`には
+Phase 0の一時座標・検証moduleが残っており、正式な代替検証が成立するまで移行対象として扱います。
 
-`walking-skeleton/` 以下は正式な `koiki-reference-app` ではありません。
-検証終了後はコードを引き継がず、得られた設定値・知見だけを Phase 1a に反映します。
+## 正本
 
-## 一時 Maven 座標
+- [グランドデザイン v0.2](docs/architecture/grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md)
+- [Repository Architecture](docs/architecture/KOIKI-JavaWeb-FW_Repository_Architecture_v0.1.md)
+- [ADR Register](docs/architecture/adr/README.md)
+- [Phase 0 DoD Closeout](docs/architecture/KOIKI-JavaWeb-FW_Phase0_DoD_Closeout_v0.1.md)
+- [Baseline Compatibility](docs/architecture/KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md)
+- [Glossary](docs/standards/KOIKI-JavaWeb-FW_Glossary_v0.1.md)
+- [Phase 1a Walking Skeleton引継ぎ台帳](docs/development/KOIKI-JavaWeb-FW_Phase1a_WalkingSkeleton_Transition_Inventory_v0.1.md)
 
-Walking Skeleton の名前を正式仕様化しないため、一時 namespace を使用します。
+## Ownership
 
-```text
-dev.koiki.walkingskeleton
-```
+- Framework: 複数案件へ提供する、業務語彙を含まない正式KOIKI成果物
+- Reference: Frameworkの正規利用方法と受入条件を実証するApplication
+- Customer: 別Repositoryで管理する顧客固有業務・画面・外部連携・migration
+- Walking Skeleton: Phase 0の実装可能性を示す固定Commit上の検証証拠
 
-正式な `groupId` / Java base package は Walking Skeleton 後に確定します。
+Walking SkeletonのJava、Template、SQL、一時artifactを正式FrameworkまたはReferenceへ
+直接移植しません。設定、失敗条件、test観点を参照し、正式Ownershipで再設計・再実装します。
 
-## 前提
+## Phase 1aの範囲
 
-- JDK 21
-- Java 25（runtime compatibility test 用）
-- Maven 3.9.16
-- Docker / OCI-compatible container engine（コンテナ検証を行う場合）
+- Root Reactor / Parent / BOM / Maven Wrapper
+- Architecture ContractとArchUnit rules
+- Spring Modulith Level 0（2.1.0、test scope、runtime依存なし）
+- Tier 1 / Tier 2 Feature Template
+- JSpecify / NullAway
+- Public API inventoryとjapicmp
+- Java 21 build、Java 21 / 25 runtime matrix
+- CIとsnapshot artifactを用いたRepository外Consumer検証
 
-## Maven Wrapper
+Runtime Foundation、Security、Reference業務実装、REST、SPA、非同期event、正式Deploymentは
+所定の後続Phaseで扱います。未使用の将来ModuleやStarterは先行生成しません。
 
-この ZIP には Maven Wrapper を **公式Pluginから生成するためのbootstrap script** と
-期待設定templateを含めています。
+## Agent Guidance
 
-最初にローカル Maven で次を実行してください。
-
-PowerShell:
-
-```powershell
-.\build-support\scripts\bootstrap-maven-wrapper.ps1
-```
-
-sh:
-
-```sh
-./build-support/scripts/bootstrap-maven-wrapper.sh
-```
-
-以降は、
-
-```powershell
-.\mvnw.cmd clean verify
-```
-
-または、
-
-```sh
-./mvnw clean verify
-```
-
-を使用します。
-
-## 最初の実行
-
-### 1. Build環境確認
-
-```powershell
-.\build-support\scripts\check-build-environment.ps1
-```
-
-Maven自体もJava 21で実行してください。
-`koiki-parent` のEnforcerがJava 21以外を拒否します。
-
-### 2. JDK toolchain確認
-
-```powershell
-mvn org.apache.maven.plugins:maven-toolchains-plugin:3.3.0:display-discovered-jdk-toolchains
-```
-
-必要に応じて `build-support/maven/toolchains.xml.example` を
-`%USERPROFILE%\.m2\toolchains.xml` または `~/.m2/toolchains.xml`
-の参考にしてください。
-
-### 3. Build
-
-```powershell
-mvn clean verify
-```
-
-Wrapper生成後:
-
-```powershell
-.\mvnw.cmd clean verify
-```
-
-### 4. Java 21 class version確認
-
-```powershell
-.\build-support\scripts\verify-class-version.ps1
-```
-
-Java 21 の class major version `65` を確認します。
-
-### 5. Java 25 runtime確認
-
-Java 21でpackage後:
-
-```powershell
-$env:JAVA25_HOME = "C:\path\to\jdk-25"
-.\build-support\scripts\run-with-java25.ps1
-```
-
-## NullAway negative test
-
-正常系コードは最初からbuildが通る状態を意図しています。
-意図的違反の例は `walking-skeleton/negative-tests/nullaway/README.md` にあります。
-
-1. `mvn clean verify` → PASS
-2. READMEの違反コードを一時的に適用
-3. `mvn clean verify` → FAIL
-4. 元に戻す
-5. `mvn clean verify` → PASS
-
-## Container
-
-最初にJARを作成します。
-
-```powershell
-mvn clean package
-docker build -f walking-skeleton/ws-smoke-app/Dockerfile.ws -t koiki-ws-smoke .
-docker run --rm koiki-ws-smoke
-```
-
-## Walking Skeleton開始時のVersion Snapshot
-
-| 項目 | Version |
-|---|---:|
-| Spring Boot | 4.1.0 |
-| Maven | 3.9.16 |
-| Maven Compiler Plugin | 3.15.0 |
-| Maven Enforcer Plugin | 3.6.3 |
-| Maven Toolchains Plugin | 3.3.0 |
-| Error Prone | 2.50.0 |
-| NullAway | 0.13.8 |
-| JSpecify | 1.0.0 |
-
-これらは **Walking Skeletonの検証用固定値** であり、KOIKIの恒久固定値ではありません。
+Repository共通の作業指針は[AGENTS.md](AGENTS.md)、KOIKI固有Skillの正本は
+[docs/agent/skills/](docs/agent/skills/README.md)を参照してください。

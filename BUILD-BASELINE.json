@@ -1,22 +1,33 @@
 {
-  "artifact": "KOIKI-JavaWeb-FW Walking Skeleton Base",
-  "version": "v0.1",
-  "purpose": "Phase 0 repository/build foundation",
-  "temporaryGroupId": "dev.koiki.walkingskeleton",
+  "artifact": "KOIKI-JavaWeb-FW Build Baseline",
+  "version": "v0.2",
+  "purpose": "Phase 1a formal build foundation",
+  "groupId": "org.koikifw",
+  "developmentVersion": "0.1.0-SNAPSHOT",
+  "status": "G1_ACCEPTED_A3_COMPLETE_A4_COMPLETE",
   "versions": {
-    "springBoot": "4.1.0",
+    "springBoot": "4.1.1",
+    "springModulith": "2.1.0",
     "maven": "3.9.16",
     "mavenCompilerPlugin": "3.15.0",
     "mavenEnforcerPlugin": "3.6.3",
     "mavenToolchainsPlugin": "3.3.0",
+    "mavenSurefirePlugin": "3.5.6",
+    "actionsCheckout": "6.1.0",
+    "actionsSetupJava": "5.7.0",
     "errorProne": "2.50.0",
     "nullAway": "0.13.8",
     "jSpecify": "1.0.0"
   },
   "notes": [
-    "Walking Skeleton code is disposable.",
-    "Generate official Maven Wrapper scripts with the Apache Maven Wrapper Plugin.",
-    "Formal groupId/base package are intentionally deferred.",
+    "The Root POM aggregates modules only; the BOM owns dependency versions and the Parent owns build policy.",
+    "Build JDK and target bytecode are Java 21; Java 25 is a runtime compatibility target only.",
+    "Spring Modulith 2.1.0 is limited to Level 0 test usage in Phase 1a.",
+    "Maven Surefire Plugin 3.5.6 is Owner-approved and runs JUnit Platform tests through the Parent build policy.",
+    "GitHub Actions use Windows 2025 and Ubuntu 24.04 with Temurin 21; external actions are pinned to full commit SHAs.",
+    "Both Windows and Ubuntu verification jobs are required checks for changes targeting main.",
+    "The read-only CI checkout does not persist GitHub credentials after fetching the repository.",
+    "The official Maven Wrapper 3.3.4 bin distribution is used to avoid the known Windows PowerShell issue in the only-script distribution.",
     "Future product modules are not pre-created as empty Maven modules."
   ]
 }
