@@ -2,7 +2,7 @@
 
 **版:** v0.1  
 **作成日:** 2026年8月21日  
-**状態:** ACCEPTED（G1 Gateは実効検証待ち）  
+**状態:** ACCEPTED（G1 Gate ACCEPTED、A2 COMPLETE）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **承認日:** 2026年8月21日  
 **対象Phase:** Phase 1a Build Foundation  
@@ -42,13 +42,20 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 
 これらはPhase 1aの準備完了を示すが、DoD 1a-1〜1a-6の実装完了を意味しない。
 
-### 3.2 現在の移行状態
+### 3.2 A2着手前の移行状態
 
 - Root POM、Parent、BOMにはPhase 0の一時座標`dev.koiki.walkingskeleton`が残る。
 - Root Reactorには`walking-skeleton/ws-smoke-*`が含まれる。
 - 正式Maven Wrapper、Architecture Contract、ArchUnit rules、CI、japicmp baselineは未構成である。
 - `main`側のError Prone `fork=true`と社内SSL proxy・証明書対応は保持対象である。
 - OpenSpecとNode.jsはPhase 1aの必須build前提ではない。
+
+### 3.3 A2技術検証後の状態
+
+- Root Reactor、Parent、BOMおよびWrapperを正式座標と責務で再構成した。
+- 正式Reactorから`walking-skeleton/ws-smoke-*`を除外した。
+- G1候補の実効POM、dependency tree、Java 21正常系およびJava 25 build拒否を確認した。
+- Architecture Owner Reviewにより、A2を`COMPLETE`、G1を`ACCEPTED`とした。
 
 ## 4. Scope
 
@@ -99,7 +106,7 @@ Phase scopeが変わる場合は、Architecture Ownerの承認を得て、必要
 
 | Gate | 判断事項 | 完了条件 | 後続 | 状態 |
 |---|---|---|---|---|
-| G1 Baseline | Spring Boot、Spring Modulith、Java、Maven、build pluginの開始baseline | 承認済みbaselineを開始候補とし、公式情報の確認日、候補POM、実効POM、dependency treeを照合して変更要否を記録する | A2 | PENDING |
+| G1 Baseline | Spring Boot、Spring Modulith、Java、Maven、build pluginの開始baseline | 承認済みbaselineを開始候補とし、公式情報の確認日、候補POM、実効POM、dependency treeを照合して変更要否を記録する | A2 | ACCEPTED |
 | G2 Maven coordinates | 内部development / snapshot version、artifactId、同一version release unit、module graph、および確定済み`org.koikifw`の適用 | 一時座標と`ws-*`を含まず、内部snapshotと正式releaseを区別した座標表・依存図をOwnerが承認する | A2 / A3 | ACCEPTED |
 | G3 Architecture Contract | G2で確定したartifactIdに対するpackage、annotation属性、enum、retention、target、dependency、Public API scope | 依存なしまたは必要最小限のContractとし、承認した型だけをPublic API inventoryとjapicmp対象候補にする。`JDBC`や`SEPARATED`等の未検証方式を先行固定しない | A3 / B2 | ACCEPTED |
 | G4 CI / artifact repository | CI platformと内部snapshot repositoryを個別に判断し、Consumer認証、credential境界、保持・削除方針を定める | 両判断を個別記録し、外部Consumerが利用でき、秘密値を露出せず、正式releaseと誤認しない運用をOwnerが承認する | A4 / C1 | ACCEPTED |
@@ -123,7 +130,7 @@ G4のCI platformとartifact repositoryは別々の判断として記録する。
 
 | Gate | Decision | Decided by | Date | Evidence | ADR |
 |---|---|---|---|---|---|
-| G1 Baseline | CANDIDATE ACCEPTED / GATE PENDING | Shuichi Kataoka | 2026年8月21日 | §6.4、Baseline Compatibility v0.1、公式一次情報 | 不要（ADR-001〜003の範囲内。実効検証で方針変更時は再判定） |
+| G1 Baseline | ACCEPTED | Shuichi Kataoka | 2026年8月21日 | §6.4、`../architecture/validation/phase1a-build-foundation.md`、Baseline Compatibility v0.1、公式一次情報 | 不要（ADR-001〜003の範囲内） |
 | G2 Maven coordinates | ACCEPTED | Shuichi Kataoka | 2026年8月21日 | §6.5、Repository Architecture v0.1 | 不要（承認済みRepository Architectureの具体化） |
 | G3 Architecture Contract | ACCEPTED | Shuichi Kataoka | 2026年8月21日 | §6.6、Phase 1a引継ぎ台帳、ArchUnit Distribution Validation | 不要（グランドデザイン§11.2、§21.3およびADR-041の具体化） |
 | G4-CI CI platform | ACCEPTED | Shuichi Kataoka | 2026年8月21日 | §6.7、GitHub Actions公式文書 | 不要（Phase 1a CI実装方式の具体化） |
@@ -142,11 +149,11 @@ G4のCI platformとartifact repositoryは別々の判断として記録する。
 | Conditions | 後続WP単位の承認、Gate記録、G1の実効依存照合、G2の確定namespaceとversion区別、G3の最小Public API、G4の個別判断、G5の5違反とRule 19制約、G6のTooling所有と同一artifact証拠 |
 | Rationale | Public API、配布、CIおよびruntime fixtureを実装後に追認せず、未確定事項を後続WPへ先行固定しない統制として妥当である |
 
-### 6.4 G1 Baseline候補のOwner Review結果
+### 6.4 G1 BaselineのOwner Review結果
 
-2026年8月21日時点の公式一次情報とPhase 0の承認済みbaselineを照合し、次をPhase 1a開始baseline候補とする。
+2026年8月21日時点の公式一次情報とPhase 0の承認済みbaselineを照合し、次をPhase 1a開始baselineとする。
 
-| Component | Phase 1a候補 | 判断 |
+| Component | Phase 1a baseline | 判断 |
 |---|---:|---|
 | Spring Boot | 4.1.1 | 4.1 minorを維持し、Phase 0の4.1.0からpatch追従する |
 | Spring Modulith | 2.1.0 | 維持。Level 0の`spring-modulith-starter-test`をtest scopeに限定する |
@@ -156,12 +163,11 @@ G4のCI platformとartifact repositoryは別々の判断として記録する。
 | Maven Compiler / Enforcer / Toolchains Plugin | 3.15.0 / 3.6.3 / 3.3.0 | 維持 |
 | Error Prone / NullAway / JSpecify | 2.50.0 / 0.13.8 / 1.0.0 | 維持 |
 
-**Decision:** Phase 1a開始baseline候補としてACCEPTED（2026年8月21日、Shuichi Kataoka）  
-**Gate status:** PENDING
+**Decision:** ACCEPTED（2026年8月21日、Shuichi Kataoka）<br>
+**Gate status:** ACCEPTED
 
-この候補承認は、Baseline Compatibility v0.1のPhase 0 development行、POMまたはWrapperを
-未検証のまま上書きする承認ではない。A2の冒頭で正式候補POMとWrapperを構成し、次を確認して
-からG1を`ACCEPTED`へ更新する。
+この承認は、Baseline Compatibility v0.1のPhase 0 development行を未検証のまま上書きする
+ものではない。A2で正式POMとWrapperを構成し、次の条件を実効検証した結果に基づく。
 
 1. 候補POM、実効POMおよびdependency treeが一致する。
 2. Spring FrameworkがSpring Boot 4.1.1の管理する7系へ統一される。
@@ -169,6 +175,12 @@ G4のCI platformとartifact repositoryは別々の判断として記録する。
 4. Spring Modulith 2.1.0を使用し、`spring-modulith-starter-test`がtest scopeに限定される。
 5. Spring Modulithのruntime用artifactがproduction runtimeへ混入しない。
 6. 公式Maven Wrapper 3.9.16とBuild JDK 21で正式Reactorのbuildが成功する。
+
+2026年8月21日にA2の正式POM、公式Wrapper、実効POMおよびdependency treeを用いて上記6点を
+技術検証し、すべて成立した。加えて、異なるversionのConsumerから正式Parentを継承しても
+KOIKI BOM `0.1.0-SNAPSHOT`が解決されること、Java 25によるbuildがEnforcerで拒否されることを
+確認した。実結果とscopeは`../architecture/validation/phase1a-build-foundation.md`へ記録する。
+Architecture Owner Reviewにより、この証拠を承認し、G1を`ACCEPTED`とした。
 
 確認した公式一次情報:
 
@@ -495,7 +507,7 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 | WP | 作業 | 主な成果物 | 検証・判定 |
 |---|---|---|---|
 | A1 | G1〜G4の設計判断 | 座標表、module graph、Public API候補、CI / repository方針、必要なADR | Owner Review |
-| A2 | Root Reactor / Parent / BOM / Wrapper再構成 | 正式POM、公式Wrapper、Enforcer、Toolchains、build-support | Java 21で`clean verify`、Enforcer負例、POM責務review |
+| A2 | Root Reactor / Parent / BOM / Wrapper再構成 | 正式POM、公式Wrapper、Enforcer、Toolchains、build-support | COMPLETE（2026年8月21日、Owner Review済み） |
 | A3 | Architecture Contract再実装 | `@KoikiModule`等の最小artifact、JSpecify適用、API test | artifact単体test、package annotation併記、API inventory候補確認 |
 | A4 | CI骨格 | PR quality gate、cache・secret境界、Level 0 test経路 | 同一commandのlocal / CI成功、意図的CI負例 |
 
@@ -639,7 +651,7 @@ Phase scopeを変更する修正は独立してreviewする。
 | Decided by | Shuichi Kataoka |
 | Date | 2026年8月21日 |
 | Scope | §1〜§14のPhase 1a実行計画、G1 baseline候補、およびG2〜G6の個別設計判断 |
-| Conditions | G1は候補承認に留め、A2の正式POM、実効POM、dependency treeおよびbuild結果を確認するまでGateを`PENDING`とする。各Milestoneの実装・Validation・Closeoutは本承認と分離して実証する |
+| Conditions | G1はA2の正式POM、実効POM、dependency treeおよびbuild結果に基づき`ACCEPTED`とする。A3以降の各Milestone実装・Validation・Closeoutは本承認と分離して実証する |
 | Rationale | Walking Skeletonを直接昇格させず、Ownership、Public API、配布、CIおよびruntime互換性を独立WPと判断Gateで管理する実行計画として妥当である |
 
 ## 14. 参照

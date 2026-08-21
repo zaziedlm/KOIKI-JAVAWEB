@@ -7,6 +7,7 @@
 - `KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md`: KOIKI／Spring Boot／Javaの対応表と更新・support管理の正本
 - `governance/KOIKI-JavaWeb-FW_Architecture_Governance_v0.1.md`: Owner、代理・継続性、Architecture Review、Phase判定
 - `validation/`: Walking Skeleton等の実装検証証拠
+- `validation/phase1a-build-foundation.md`: Phase 1a A2 / G1の正式build baseline実効検証
 
 Phase 0では次を中心に管理し、承認済み成果をPhase 1aの判断基準として維持します。
 

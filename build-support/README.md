@@ -1,9 +1,22 @@
 # build-support
 
-KOIKI自身のBuild / Quality Gate検証を補助する資材を配置します。
+KOIKI自身のBuild / Quality Gate検証を補助するTooling所有の資材を配置します。
 
-Walking Skeletonでは、Maven Toolchains例、Wrapper bootstrap、
-class version確認、Java 25 runtime確認等を置いています。
+`maven/g1-baseline-consumer-pom.xml`は、正式Parentを異なるversionのConsumerから継承し、
+BOMの実効versionとtest / runtime scopeを照合する非配布fixtureです。Root Reactorおよび
+Phase 1a release unitには含めません。
+
+```powershell
+.\mvnw.cmd -DskipTests install
+.\mvnw.cmd -f build-support/maven/g1-baseline-consumer-pom.xml help:effective-pom
+.\mvnw.cmd -f build-support/maven/g1-baseline-consumer-pom.xml dependency:tree -Dverbose
+.\mvnw.cmd -f build-support/maven/g1-baseline-consumer-pom.xml dependency:tree -Dscope=runtime
+```
+
+最初の`install`はA2のローカル実効検証専用です。Repository外Consumerの配布証明には使用しません。
+
+Walking Skeleton由来のMaven Toolchains例、class version確認、Java 25 runtime確認等は、
+正式な代替検証が成立するまで履歴・比較用資材として残します。
 
 ## 社内SSLインスペクションProxy環境でのMavenビルドエラー対応
 

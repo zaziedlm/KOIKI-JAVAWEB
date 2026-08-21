@@ -5,16 +5,17 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <!-- Walking Skeleton candidate BOM. It intentionally has no parent. -->
-  <groupId>dev.koiki.walkingskeleton</groupId>
+  <!-- The BOM intentionally has no parent. -->
+  <groupId>org.koikifw</groupId>
   <artifactId>koiki-dependencies-bom</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>KOIKI Walking Skeleton Dependencies BOM</name>
+  <name>KOIKI Dependencies BOM</name>
 
   <properties>
-    <spring-boot.version>4.1.0</spring-boot.version>
+    <spring-boot.version>4.1.1</spring-boot.version>
+    <spring-modulith.version>2.1.0</spring-modulith.version>
     <jspecify.version>1.0.0</jspecify.version>
   </properties>
 
@@ -24,6 +25,14 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
         <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.modulith</groupId>
+        <artifactId>spring-modulith-bom</artifactId>
+        <version>${spring-modulith.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

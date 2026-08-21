@@ -5,13 +5,13 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <!-- Walking Skeleton candidate Parent, separate from the Root Reactor. -->
-  <groupId>dev.koiki.walkingskeleton</groupId>
+  <!-- The Parent is separate from the Root Reactor. -->
+  <groupId>org.koikifw</groupId>
   <artifactId>koiki-parent</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>KOIKI Walking Skeleton Parent</name>
+  <name>KOIKI Parent</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,6 +23,7 @@
     <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
     <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
     <maven-toolchains-plugin.version>3.3.0</maven-toolchains-plugin.version>
+    <spring-boot-maven-plugin.version>4.1.1</spring-boot-maven-plugin.version>
 
     <error-prone.version>2.50.0</error-prone.version>
     <nullaway.version>0.13.8</nullaway.version>
@@ -31,9 +32,9 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>dev.koiki.walkingskeleton</groupId>
+        <groupId>org.koikifw</groupId>
         <artifactId>koiki-dependencies-bom</artifactId>
-        <version>${project.version}</version>
+        <version>0.1.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -59,14 +60,15 @@
                 <requireMavenVersion>
                   <version>[${maven.minimum.version},3.10.0)</version>
                   <message>
-                    Walking Skeleton requires Maven 3.9.16.x. Use the generated Maven Wrapper.
+                    KOIKI requires Maven 3.9.16 or a compatible Maven 3.9.x version.
+                    Use the Repository Maven Wrapper.
                   </message>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>[21,22)</version>
                   <message>
-                    KOIKI Walking Skeleton build must run with JDK 21.
-                    Java 25 is a runtime compatibility target for this validation.
+                    KOIKI build must run with JDK 21.
+                    Java 25 is a runtime compatibility target and must not compile KOIKI artifacts.
                   </message>
                 </requireJavaVersion>
               </rules>
@@ -94,7 +96,7 @@
         </executions>
       </plugin>
 
-      <!-- Java release 21, Error Prone, NullAway and JSpecify validation. -->
+      <!-- Java release 21, Error Prone and NullAway validation. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -145,7 +147,7 @@
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
-          <version>4.1.0</version>
+          <version>${spring-boot-maven-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>

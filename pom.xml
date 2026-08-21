@@ -5,19 +5,17 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <!-- Walking Skeleton candidate: Root POM is Reactor/Aggregator only. -->
-  <groupId>dev.koiki.walkingskeleton</groupId>
+  <!-- The Root POM is a Reactor/Aggregator only. -->
+  <groupId>org.koikifw</groupId>
   <artifactId>koiki-javaweb-fw-reactor</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>KOIKI-JavaWeb-FW Walking Skeleton Reactor</name>
+  <name>KOIKI-JavaWeb-FW Reactor</name>
 
   <modules>
     <module>koiki-dependencies-bom</module>
     <module>koiki-parent</module>
-    <module>walking-skeleton/ws-smoke-lib</module>
-    <module>walking-skeleton/ws-smoke-app</module>
   </modules>
 
 </project>
