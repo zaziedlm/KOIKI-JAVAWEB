@@ -2,7 +2,7 @@
 
 **版:** v0.1  
 **作成日:** 2026年8月21日  
-**状態:** ACCEPTED（A2・A3 COMPLETE、A4条件付きACCEPTED／GitHub正常系PASS・負例待ち）<br>
+**状態:** ACCEPTED（A2・A3 COMPLETE、A4条件付きACCEPTED／GitHub正常系・負例PASS・required check確認待ち）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **承認日:** 2026年8月21日  
 **対象Phase:** Phase 1a Build Foundation  
@@ -70,7 +70,8 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 - 外部Actionをfull commit SHAで固定し、secretとpackage書込み権限をCIから分離した。
 - checkout credentialを保持しない構成を含め、CI骨格をArchitecture Ownerが条件付き承認した。
 - PR #6でWindows / Ubuntu両jobの正常系成功を確認した。
-- A4は意図的負例、required checkおよび実行結果の最終Owner確認後に完了状態を更新する。
+- PR #7の意図的負例でWindows / Ubuntu両jobが失敗し、PRをmergeせずcloseした。
+- A4はrequired checkおよび実行結果の最終Owner確認後に完了状態を更新する。
 
 ## 4. Scope
 
@@ -525,7 +526,7 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 | A1 | G1〜G4の設計判断 | 座標表、module graph、Public API候補、CI / repository方針、必要なADR | Owner Review |
 | A2 | Root Reactor / Parent / BOM / Wrapper再構成 | 正式POM、公式Wrapper、Enforcer、Toolchains、build-support | COMPLETE（2026年8月21日、Owner Review済み） |
 | A3 | Architecture Contract再実装 | `@KoikiModule`等の最小artifact、JSpecify適用、API test | COMPLETE（2026年8月21日、Owner Review済み） |
-| A4 | CI骨格 | PR quality gate、cache・secret境界、Level 0 test経路 | 条件付きACCEPTED。GitHub正常系PASS、意図的負例・required check・最終Owner確認待ち |
+| A4 | CI骨格 | PR quality gate、cache・secret境界、Level 0 test経路 | 条件付きACCEPTED。GitHub正常系・負例PASS、required check・最終Owner確認待ち |
 
 **Exit criteria:**
 

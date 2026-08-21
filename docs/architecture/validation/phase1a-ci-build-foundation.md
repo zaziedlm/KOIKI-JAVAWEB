@@ -2,7 +2,7 @@
 
 **検証日:** 2026年8月21日<br>
 **対象branch:** `feature/phase1a-build-foundation`<br>
-**状態:** CONDITIONALLY ACCEPTED（GitHub正常系PASS、負例待ち）<br>
+**状態:** CONDITIONALLY ACCEPTED（GitHub正常系・負例PASS、required check確認待ち）<br>
 **A4 status:** IN PROGRESS<br>
 **Architecture Owner:** Shuichi Kataoka<br>
 **条件付き承認日:** 2026年8月21日<br>
@@ -21,8 +21,9 @@ G4-CIで承認した最小CI骨格を実装した。
 - 外部Actionをfull commit SHAで固定する。
 - 同一workflow / Git refの旧実行を`concurrency`で取り消す。
 
-ローカルとPR #6のGitHub Actionsで正式Reactorの`clean verify`が成功した。A4の`COMPLETE`判定には、
-残る意図的負例、required checkおよびArchitecture Ownerの最終確認を必要とする。
+ローカルとPR #6のGitHub Actionsで正式Reactorの`clean verify`が成功し、マージしないPR #7の
+意図的負例でWindows / Ubuntu両jobが失敗することを確認した。A4の`COMPLETE`判定には、
+残るrequired check設定およびArchitecture Ownerの最終確認を必要とする。
 
 ## 2. Workflow契約
 
@@ -77,26 +78,38 @@ Linux実行はローカル結果で代替せず、次節のGitHub実行で確認
 | 項目 | 結果 |
 |---|---|
 | Pull request | [PR #6](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/6) |
-| 対象commit | `905c20af4e846f2866349bc86a97dfb52809be99` |
-| Workflow run | [CI run 32468357385](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32468357385)、success |
-| Ubuntu job | `Verify (ubuntu-24.04)`、job `96729719242`、success |
-| Windows job | `Verify (windows-2025)`、job `96729719343`、success |
+| 対象commit | `9abae4f942550f0dbae144d96b223257aba10662` |
+| Workflow run | [CI run 32469044849](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32469044849)、success |
+| Ubuntu job | `Verify (ubuntu-24.04)`、job `96731764846`、success |
+| Windows job | `Verify (windows-2025)`、job `96731764585`、success |
 
 各jobでは対象OSのMaven Wrapper stepが成功し、他OS用stepは条件どおりskippedとなった。
 
-## 7. A4完了前の残件
+## 7. GitHub負例検証
 
-1. Ownerが管理する一時branchのJUnit testへ意図的なfailureを追加した一時commitを作成し、
-   pull requestのWindows / Ubuntu両jobが失敗することを確認する。負例は正式branchへmergeせず、
-   検証後に一時branchを破棄する。
-2. required check名とbranch protection設定を確認する。
-3. 負例のpull request、commitおよびjob結果を本書へ追記する。
-4. Architecture OwnerがGitHub実行結果を最終確認し、本書を`ACCEPTED`、A4を`COMPLETE`へ更新する。
+| 項目 | 結果 |
+|---|---|
+| Pull request | [PR #7](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/7)、closed、未merge |
+| 対象commit | `85db8e827254d6acee060a8a5dedd5291d7c3ba8` |
+| 変更 | `KoikiModuleContractTest`へ識別可能な意図的failureを1件だけ追加 |
+| Workflow run | [CI run 32469817969](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32469817969)、failure（期待結果） |
+| Ubuntu job | `Verify (ubuntu-24.04)`、job `96734072364`、failure（期待結果） |
+| Windows job | `Verify (windows-2025)`、job `96734072610`、failure（期待結果） |
+| failure marker | `A4 intentional CI negative verification` |
+
+ローカルでも同じ一時commitに対する`clean verify`が終了コード`1`となり、5 test中、意図的に追加した
+1 testだけがfailureとなった。PR #7は正式branchへmergeせずcloseしたため、Frameworkのproduction source、
+Public APIおよび正式test suiteへ負例を混入させていない。
+
+## 8. A4完了前の残件
+
+1. required check名とbranch protection設定を確認する。
+2. Architecture OwnerがGitHub実行結果を最終確認し、本書を`ACCEPTED`、A4を`COMPLETE`へ更新する。
 
 CI骨格の設計、ローカル検証およびcredential境界は、2026年8月21日にArchitecture Ownerが
-条件付き承認した。正常系は成立したが、本節1〜3の残件を満たすまでA4を完了扱いしない。
+条件付き承認した。正常系・負例は成立したが、本節の残件を満たすまでA4を完了扱いしない。
 
-## 8. Deferred
+## 9. Deferred
 
 - Java 21で生成した同一artifactのJava 21 / 25 runtime検証はC4で扱う。
 - snapshot公開、`packages: write`、Consumer認証およびchecksum記録はC1で扱う。
