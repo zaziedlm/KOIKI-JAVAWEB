@@ -2,10 +2,10 @@
 
 **検証日:** 2026年8月21日<br>
 **対象branch:** `feature/phase1a-build-foundation`<br>
-**状態:** CONDITIONALLY ACCEPTED（GitHub正常系・負例PASS、required check確認待ち）<br>
-**A4 status:** IN PROGRESS<br>
+**状態:** ACCEPTED<br>
+**A4 status:** COMPLETE<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**条件付き承認日:** 2026年8月21日<br>
+**承認日:** 2026年8月21日<br>
 **Ownership:** Tooling<br>
 **対象:** A4 `.github/workflows/ci.yml`
 
@@ -22,8 +22,9 @@ G4-CIで承認した最小CI骨格を実装した。
 - 同一workflow / Git refの旧実行を`concurrency`で取り消す。
 
 ローカルとPR #6のGitHub Actionsで正式Reactorの`clean verify`が成功し、マージしないPR #7の
-意図的負例でWindows / Ubuntu両jobが失敗することを確認した。A4の`COMPLETE`判定には、
-残るrequired check設定およびArchitecture Ownerの最終確認を必要とする。
+意図的負例でWindows / Ubuntu両jobが失敗することを確認した。さらに`main`の保護規則で両jobを
+required checkとし、最新pushでマージ条件を満たすことを確認した。Architecture Owner Reviewにより、
+本書を`ACCEPTED`、A4を`COMPLETE`とする。
 
 ## 2. Workflow契約
 
@@ -78,10 +79,10 @@ Linux実行はローカル結果で代替せず、次節のGitHub実行で確認
 | 項目 | 結果 |
 |---|---|
 | Pull request | [PR #6](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/6) |
-| 対象commit | `9abae4f942550f0dbae144d96b223257aba10662` |
-| Workflow run | [CI run 32469044849](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32469044849)、success |
-| Ubuntu job | `Verify (ubuntu-24.04)`、job `96731764846`、success |
-| Windows job | `Verify (windows-2025)`、job `96731764585`、success |
+| 対象commit | `a7b07d31cbacdd087ef74bb1fe7e69c77205ac61` |
+| Workflow run | [CI run 32471707932](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32471707932)、success |
+| Ubuntu job | `Verify (ubuntu-24.04)`、job `96739675841`、success、Required |
+| Windows job | `Verify (windows-2025)`、job `96739676064`、success、Required |
 
 各jobでは対象OSのMaven Wrapper stepが成功し、他OS用stepは条件どおりskippedとなった。
 
@@ -96,18 +97,29 @@ Linux実行はローカル結果で代替せず、次節のGitHub実行で確認
 | Ubuntu job | `Verify (ubuntu-24.04)`、job `96734072364`、failure（期待結果） |
 | Windows job | `Verify (windows-2025)`、job `96734072610`、failure（期待結果） |
 | failure marker | `A4 intentional CI negative verification` |
+| 一時branch | `test/a4-ci-negative`をremote / localから削除済み |
 
 ローカルでも同じ一時commitに対する`clean verify`が終了コード`1`となり、5 test中、意図的に追加した
-1 testだけがfailureとなった。PR #7は正式branchへmergeせずcloseしたため、Frameworkのproduction source、
-Public APIおよび正式test suiteへ負例を混入させていない。
+1 testだけがfailureとなった。PR #7は正式branchへmergeせずcloseし、一時branchも削除したため、
+Frameworkのproduction source、Public APIおよび正式test suiteへ負例を混入させていない。
 
-## 8. A4完了前の残件
+## 8. Required checksとOwner Review
 
-1. required check名とbranch protection設定を確認する。
-2. Architecture OwnerがGitHub実行結果を最終確認し、本書を`ACCEPTED`、A4を`COMPLETE`へ更新する。
+| 項目 | 判定 |
+|---|---|
+| 保護対象 | `main` |
+| Required check 1 | `Verify (windows-2025)` |
+| Required check 2 | `Verify (ubuntu-24.04)` |
+| 動作確認 | PR #6の最新pushで両checkが一旦pendingとなり、成功後にマージ条件を満たした |
+| Negative check | PR #7で両checkがfailureとなり、PRをmergeせずcloseした |
+| Decision | ACCEPTED |
+| A4 status | COMPLETE |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月21日 |
 
-CI骨格の設計、ローカル検証およびcredential境界は、2026年8月21日にArchitecture Ownerが
-条件付き承認した。正常系・負例は成立したが、本節の残件を満たすまでA4を完了扱いしない。
+Architecture Ownerは、正常系、負例、required check、read-only permission、credential非保持、
+外部Actionのfull commit SHA固定および意図的failureの非混入を確認した。A4に残件はなく、後続WPが
+同じPR quality gateへtestを追加できるCI基盤として承認する。
 
 ## 9. Deferred
 

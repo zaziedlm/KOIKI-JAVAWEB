@@ -4,7 +4,7 @@
   "purpose": "Phase 1a formal build foundation",
   "groupId": "org.koikifw",
   "developmentVersion": "0.1.0-SNAPSHOT",
-  "status": "G1_ACCEPTED_A3_COMPLETE_A4_CONDITIONALLY_ACCEPTED_REQUIRED_CHECK_VALIDATION_PENDING",
+  "status": "G1_ACCEPTED_A3_COMPLETE_A4_COMPLETE",
   "versions": {
     "springBoot": "4.1.1",
     "springModulith": "2.1.0",
@@ -25,6 +25,7 @@
     "Spring Modulith 2.1.0 is limited to Level 0 test usage in Phase 1a.",
     "Maven Surefire Plugin 3.5.6 is Owner-approved and runs JUnit Platform tests through the Parent build policy.",
     "GitHub Actions use Windows 2025 and Ubuntu 24.04 with Temurin 21; external actions are pinned to full commit SHAs.",
+    "Both Windows and Ubuntu verification jobs are required checks for changes targeting main.",
     "The read-only CI checkout does not persist GitHub credentials after fetching the repository.",
     "The official Maven Wrapper 3.3.4 bin distribution is used to avoid the known Windows PowerShell issue in the only-script distribution.",
     "Future product modules are not pre-created as empty Maven modules."
