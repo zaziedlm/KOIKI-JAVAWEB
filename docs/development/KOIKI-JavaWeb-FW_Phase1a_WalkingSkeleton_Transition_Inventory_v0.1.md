@@ -178,6 +178,26 @@ Phase 1aの実装計画として再利用しない。
 7. Phase 0証拠の誤りを発見した場合は過去Commitを書き換えず、新しいValidation記録、影響する
    ADR・正本の再review、およびPhase 1a判断への影響をGovernanceに従って記録する。
 
+### 6.2 Evidence Provenance
+
+Walking Skeletonの検証証拠は、可変のbranch名だけでなく次の固定Commitから参照する。
+`b3ba79f`をA区分の正式配置元と比較した最終snapshotとし、個別文書の内容と後続訂正は
+次の対応で追跡する。
+
+| Evidence | 記録Commit | 補足 |
+|---|---|---|
+| Agent Skills Validation | `3bfac88` | Phase 0完了時のREADME・Validation整合を含む |
+| ArchUnit Rules and Distribution Validation | `d7706ba` | V1主要規則の検証記録。ADR参照訂正は`681c406` |
+| Build Foundation Validation | `9954cc4` | Build FoundationのCompleted更新 |
+| Flyway Two-tier Validation | `5e3882a` | Walking Skeleton検証状態との同期を含む |
+| Phase 0 Completion | `3bfac88` | Walking Skeleton全体の完了記録 |
+| Tier 2 Practicality Validation | `3bfac88` | Phase 0完了時の最終Validation文書 |
+| Expense Tier 2 OpenSpec archive | `ebe7cb3` | archive済みchangeとmain spec同期の証拠 |
+| 最終比較snapshot | `b3ba79f` | Phase 0 Closeoutを含む`walking-skeleton` branchの固定snapshot |
+
+本表の記録Commitは正式成果物へcodeを移植する起点ではない。B区分の再実装時に、検証条件、
+失敗例、訂正履歴および判断根拠を再現するための参照点として使用する。
+
 ## 7. D: Phase 1a対象外
 
 **Owner Review:** ACCEPTED（2026年8月21日、Shuichi Kataoka）  

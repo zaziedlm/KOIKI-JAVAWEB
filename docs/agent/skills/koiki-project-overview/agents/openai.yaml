@@ -1,0 +1,4 @@
+interface:
+  display_name: "KOIKI Project Overview"
+  short_description: "Orient KOIKI ownership, modules, phases, and workflow"
+  default_prompt: "Use $koiki-project-overview to orient this task within the KOIKI repository."

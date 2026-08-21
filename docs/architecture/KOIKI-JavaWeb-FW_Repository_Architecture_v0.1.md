@@ -6,7 +6,9 @@ Repository Architectureでは「何をどこが所有するか」と
 「何を混ぜてはならないか」を先に固定する。
 
 Root Reactor / Parent / BOM、初期Maven Module、Package Naming、
-Flyway所属等の詳細はWalking Skeletonで試した後に確定する。
+Flyway構成等の詳細はWalking Skeletonで実装検証し、その結果をPhase 1a以降の
+正式成果物へ反映する。Walking Skeletonの完了判定は
+`validation/walking-skeleton-phase0-completion.md`に記録する。
 
 ## 2. Repository Scope
 
@@ -49,15 +51,22 @@ koiki-javaweb-fw/
 基本方式:
 
 ```text
-Public:   com.koiki.<module>....
-Internal: com.koiki.<module>.internal....
+Public:   org.koikifw.<module>....
+Internal: org.koikifw.<module>.internal....
 ```
 
 `internal`参照禁止はArchUnitで機械検査する。
 重要SPIのみ必要に応じて `-api` / `-impl` 分割する。
 JPMSは採用しない。
 
-正式base packageはWalking Skeleton後に確定する。
+正式なMaven `groupId`とJava base packageは、KOIKIが保有する
+`koikifw.org`の逆ドメイン名である`org.koikifw`とする。
+
+別プロジェクトで使用している`org.koikifw.libkoiki.batch`は、
+バッチ実行基盤固有のnamespaceであり、本Repositoryのpackage階層には持ち込まない。
+
+Walking Skeletonの`dev.koiki.walkingskeleton`は検証用の一時namespaceとして維持し、
+Phase 1aの正式成果物へは引き継がない。
 
 ## 6. Dependency Principle
 
@@ -80,7 +89,7 @@ FrameworkからReference / Customerへの依存は禁止する。
 
 ## 8. Walking Skeleton
 
-次を実装検証してからPhase 1aの正規構成を決める。
+次の実装検証は2026年8月14日に完了した。
 
 - Reactor / Parent / BOM
 - Java Build Contract
@@ -93,5 +102,6 @@ FrameworkからReference / Customerへの依存は禁止する。
 - Agent Skills
 - OpenSpec試行
 
-Walking Skeleton codeは捨てる。
-設定・規約・知見のみPhase 1aへ持ち込む。
+`walking-skeleton`ブランチは検証証拠として保持するが、branch全体をmainへ機械的に
+mergeして正式化しない。Walking SkeletonのJava、Template、migration SQLは直接昇格させず、
+設定・規約・知見を基にPhase 1a以降の正式成果物を再構成する。

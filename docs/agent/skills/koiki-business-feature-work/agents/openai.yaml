@@ -1,0 +1,4 @@
+interface:
+  display_name: "KOIKI Business Feature Work"
+  short_description: "Guide KOIKI business-module architecture decisions"
+  default_prompt: "Use $koiki-business-feature-work to plan and implement this KOIKI business feature."
