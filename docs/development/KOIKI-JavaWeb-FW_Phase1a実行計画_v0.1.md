@@ -2,7 +2,7 @@
 
 **版:** v0.1  
 **作成日:** 2026年8月21日  
-**状態:** ACCEPTED（G1 Gate ACCEPTED、A2 COMPLETE）<br>
+**状態:** ACCEPTED（A2・A3 COMPLETE）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **承認日:** 2026年8月21日  
 **対象Phase:** Phase 1a Build Foundation  
@@ -56,6 +56,13 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 - 正式Reactorから`walking-skeleton/ws-smoke-*`を除外した。
 - G1候補の実効POM、dependency tree、Java 21正常系およびJava 25 build拒否を確認した。
 - Architecture Owner Reviewにより、A2を`COMPLETE`、G1を`ACCEPTED`とした。
+
+### 3.4 A3完了後の状態
+
+- `koiki-architecture-contract`を正式Reactorへ追加し、G3で承認した4 Public APIだけを実装した。
+- reflection、Customer相当package、依存scope、JAR内容およびPublic API inventoryを検証した。
+- 隔離Maven repositoryから正式Reactorの対象buildを再現し、Parent / BOM前提とC1 / C2の境界を確認した。
+- Architecture Owner Reviewにより、A3検証証拠を`ACCEPTED`、A3を`COMPLETE`とした。
 
 ## 4. Scope
 
@@ -262,7 +269,8 @@ artifactとし、次の8点を承認条件とする。
 
 A3では次を検証する。
 
-1. artifact単体の`mvn verify`が成功する。
+1. Repository内では正式Reactorから`-pl koiki-architecture-contract -am verify`が成功する。
+   `-f`による直接実行はParent / BOMを解決できることを前提とし、公開snapshotからの独立解決はC1 / C2で検証する。
 2. reflection testで`@Target(PACKAGE)`、`@Retention(RUNTIME)`、`@Documented`を確認する。
 3. annotation属性、defaultなし、およびenum定数が承認内容と一致する。
 4. 同じ`package-info.java`に`@NullMarked`と`@KoikiModule`を併記できる。
@@ -508,7 +516,7 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 |---|---|---|---|
 | A1 | G1〜G4の設計判断 | 座標表、module graph、Public API候補、CI / repository方針、必要なADR | Owner Review |
 | A2 | Root Reactor / Parent / BOM / Wrapper再構成 | 正式POM、公式Wrapper、Enforcer、Toolchains、build-support | COMPLETE（2026年8月21日、Owner Review済み） |
-| A3 | Architecture Contract再実装 | `@KoikiModule`等の最小artifact、JSpecify適用、API test | artifact単体test、package annotation併記、API inventory候補確認 |
+| A3 | Architecture Contract再実装 | `@KoikiModule`等の最小artifact、JSpecify適用、API test | COMPLETE（2026年8月21日、Owner Review済み） |
 | A4 | CI骨格 | PR quality gate、cache・secret境界、Level 0 test経路 | 同一commandのlocal / CI成功、意図的CI負例 |
 
 **Exit criteria:**
