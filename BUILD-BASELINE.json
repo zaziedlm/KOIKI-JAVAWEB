@@ -4,7 +4,7 @@
   "purpose": "Phase 1a formal build foundation",
   "groupId": "org.koikifw",
   "developmentVersion": "0.1.0-SNAPSHOT",
-  "status": "G1_ACCEPTED_A3_COMPLETE_A4_CONDITIONALLY_ACCEPTED_CI_VALIDATION_PENDING",
+  "status": "G1_ACCEPTED_A3_COMPLETE_A4_CONDITIONALLY_ACCEPTED_NEGATIVE_CI_VALIDATION_PENDING",
   "versions": {
     "springBoot": "4.1.1",
     "springModulith": "2.1.0",

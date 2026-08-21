@@ -2,7 +2,7 @@
 
 **検証日:** 2026年8月21日<br>
 **対象branch:** `feature/phase1a-build-foundation`<br>
-**状態:** CONDITIONALLY ACCEPTED（GitHub実行待ち）<br>
+**状態:** CONDITIONALLY ACCEPTED（GitHub正常系PASS、負例待ち）<br>
 **A4 status:** IN PROGRESS<br>
 **Architecture Owner:** Shuichi Kataoka<br>
 **条件付き承認日:** 2026年8月21日<br>
@@ -21,16 +21,16 @@ G4-CIで承認した最小CI骨格を実装した。
 - 外部Actionをfull commit SHAで固定する。
 - 同一workflow / Git refの旧実行を`concurrency`で取り消す。
 
-ローカルでは正式Reactorの`clean verify`が成功している。A4の`COMPLETE`判定には、このworkflowを
-GitHub上で実行し、Windows / Ubuntu両jobの成功と意図的負例による失敗を確認する必要がある。
+ローカルとPR #6のGitHub Actionsで正式Reactorの`clean verify`が成功した。A4の`COMPLETE`判定には、
+残る意図的負例、required checkおよびArchitecture Ownerの最終確認を必要とする。
 
 ## 2. Workflow契約
 
 | 観点 | 実装 | 現在の判定 |
 |---|---|---|
 | trigger | `pull_request`、`main`への`push` | STATIC PASS |
-| Windows | `windows-2025`、Temurin 21、`mvnw.cmd clean verify` | 実行待ち |
-| Linux | `ubuntu-24.04`、Temurin 21、`./mvnw clean verify` | 実行待ち |
+| Windows | `windows-2025`、Temurin 21、`mvnw.cmd clean verify` | PASS |
+| Linux | `ubuntu-24.04`、Temurin 21、`./mvnw clean verify` | PASS |
 | permissions | `contents: read`だけ | STATIC PASS |
 | secret | 参照なし | STATIC PASS |
 | package write | 付与なし | STATIC PASS |
@@ -70,22 +70,33 @@ Level 0 testの実行証拠はB1 / B5で追加し、runtime依存への混入が
 | `git diff --check` | 問題なし |
 
 ローカル検証はWindows / JDK 21で実施した。GitHub hosted runner固有のimage、Action実行、cacheおよび
-Linux実行はローカル結果で代替せず、次節の実行待ちとして扱う。
+Linux実行はローカル結果で代替せず、次節のGitHub実行で確認した。
 
-## 6. A4完了前の残件
+## 6. GitHub正常系検証
 
-1. このbranchをpushし、pull requestでWindows / Ubuntu両jobが成功することを確認する。
-2. Ownerが管理する一時branchのJUnit testへ意図的なfailureを追加した一時commitを作成し、
+| 項目 | 結果 |
+|---|---|
+| Pull request | [PR #6](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/6) |
+| 対象commit | `905c20af4e846f2866349bc86a97dfb52809be99` |
+| Workflow run | [CI run 32468357385](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32468357385)、success |
+| Ubuntu job | `Verify (ubuntu-24.04)`、job `96729719242`、success |
+| Windows job | `Verify (windows-2025)`、job `96729719343`、success |
+
+各jobでは対象OSのMaven Wrapper stepが成功し、他OS用stepは条件どおりskippedとなった。
+
+## 7. A4完了前の残件
+
+1. Ownerが管理する一時branchのJUnit testへ意図的なfailureを追加した一時commitを作成し、
    pull requestのWindows / Ubuntu両jobが失敗することを確認する。負例は正式branchへmergeせず、
    検証後に一時branchを破棄する。
-3. required check名とbranch protection設定を確認する。
-4. GitHub実行URL、commit、job結果を本書へ追記する。
-5. Architecture OwnerがGitHub実行結果を最終確認し、本書を`ACCEPTED`、A4を`COMPLETE`へ更新する。
+2. required check名とbranch protection設定を確認する。
+3. 負例のpull request、commitおよびjob結果を本書へ追記する。
+4. Architecture OwnerがGitHub実行結果を最終確認し、本書を`ACCEPTED`、A4を`COMPLETE`へ更新する。
 
 CI骨格の設計、ローカル検証およびcredential境界は、2026年8月21日にArchitecture Ownerが
-条件付き承認した。条件は本節1〜4のGitHub実証であり、未実行の状態ではA4を完了扱いしない。
+条件付き承認した。正常系は成立したが、本節1〜3の残件を満たすまでA4を完了扱いしない。
 
-## 7. Deferred
+## 8. Deferred
 
 - Java 21で生成した同一artifactのJava 21 / 25 runtime検証はC4で扱う。
 - snapshot公開、`packages: write`、Consumer認証およびchecksum記録はC1で扱う。
