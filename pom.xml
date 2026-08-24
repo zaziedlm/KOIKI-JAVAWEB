@@ -17,6 +17,7 @@
     <module>koiki-dependencies-bom</module>
     <module>koiki-parent</module>
     <module>koiki-architecture-contract</module>
+    <module>koiki-archunit-rules</module>
   </modules>
 
 </project>
