@@ -57,6 +57,18 @@ final class PackageName {
         return value;
     }
 
+    boolean containsPackage(String packageName) {
+        return value.equals(packageName) || packageName.startsWith(value + ".");
+    }
+
+    boolean isInternalPackage(String packageName) {
+        if (!containsPackage(packageName) || value.equals(packageName)) {
+            return false;
+        }
+        String relativeName = packageName.substring(value.length() + 1);
+        return ("." + relativeName + ".").contains(".internal.");
+    }
+
     private boolean contains(PackageName other) {
         return value.equals(other.value) || other.value.startsWith(value + ".");
     }

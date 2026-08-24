@@ -2,7 +2,7 @@
 
 **準備日:** 2026年8月24日<br>
 **対象branch:** `feature/phase1a-archunit-rules`<br>
-**状態:** IMPLEMENTATION IN PROGRESS / GATE 1 ACCEPTED<br>
+**状態:** IMPLEMENTATION IN PROGRESS / GATE 2 ACCEPTED<br>
 **Ownership:** Tooling<br>
 **対象artifact:** `org.koikifw:koiki-archunit-rules:0.1.0-SNAPSHOT`<br>
 **開始baseline:** `main` / `b460b52`（B2 PR #9 merge）
@@ -94,7 +94,7 @@ Public facadeを一部ruleだけで公開する途中状態を避けるため、
 | Gate | Review対象 | 承認条件 | 初期状態 |
 |---:|---|---|---|
 | 1 | Maven module、BOM、dependency、内部基盤 | 空moduleでなく、scopeと入力基盤がB2契約どおり | ACCEPTED（2026年8月25日） |
-| 2 | Rule 1〜13、28、38〜39 | 共通・Ownership・Event ruleのfocused testとmessageが対応 | REVIEW PENDING |
+| 2 | Rule 1〜13、28、38〜39 | 共通・Ownership・Event ruleのfocused testとmessageが対応 | ACCEPTED（2026年8月25日） |
 | 3 | Rule 14〜24、Rule 19 | Tier / MVC、2許容predicate、Rule 19の正常・違反経路が成立 | REVIEW PENDING |
 | 4 | Public API、compliant fixture、必須5負例 | 1 class / 2 method、6 positive、5独立negative、25 messageが成立 | REVIEW PENDING |
 | 5 | Maven、dependency、CI、Validation、Deferred | Repository内証拠が揃い、B4 / B5 / C1以降へ境界を引き継げる | REVIEW PENDING |
@@ -220,3 +220,73 @@ ArchUnit実行時にはSLF4J provider未配置のNOP logger通知が出るが、
 - module単体とRoot Reactorのbuildが成功した。
 
 以上によりGate 1を`ACCEPTED`とし、Gate 2のRule 1〜13、28、38〜39へ進む。
+
+## 9. Gate 2実装・検証結果
+
+**実装日:** 2026年8月25日<br>
+**Owner Review:** ACCEPTED（2026年8月25日、Shuichi Kataoka）
+
+### 9.1 実装結果
+
+| 対象 | 結果 |
+|---|---|
+| Business rules | Rule 1〜4、6〜9、11〜12、28、38〜39のpackage-private実装 |
+| Ownership rules | Rule 5、13のpackage-private実装 |
+| Rule 10 | 独立`ArchRule`を作らず、Rule 3の他module `domain.event`許容predicateとして実装 |
+| Rule 4 | 直接dependencyからmodule graphを構築し、cycleを構成するdependencyを個別報告 |
+| Rule 7 / 8 | import済みmodule rootごとに`@KoikiModule`と宣言値を検査 |
+| Rule 11 | 非record、および直接／generic field typeの`domain.model`露出を検査 |
+| Rule 28 | 直接、meta-annotationおよび`@ApplicationModuleListener`を検出 |
+| Rule 38 | 直接`@EventListener`と`@ApplicationModuleListener`の配置を検査 |
+| Message | 15 failure ruleすべてに単独ID、ADR、影響、修正、具体的違反箇所 |
+| Public API | 未追加。個別rule methodとRuleSetはpackage-private |
+
+### 9.2 focused test結果
+
+| Test | 件数 | 結果 |
+|---|---:|---|
+| `BusinessModuleRuleSetTest` | 17 | PASS |
+| `FrameworkOwnershipRuleSetTest` | 2 | PASS |
+| Gate 2 focused test合計 | 19 | PASS |
+| Rules module全test | 34 | PASS |
+| 既存Architecture Contract | 4 | PASS |
+
+focused testでは各failure ruleを個別に評価し、最終`FailureReport`にrule ID、ADR、`違反内容`、`影響`、
+`修正`が同時に含まれることを確認した。追加で次の境界を検証した。
+
+- Rule 6はController接尾辞と`@Controller`の両方を検出する。
+- Rule 7は宣言欠落とmodule名不一致を拒否し、承認済みSIMPLE / RICH宣言を許容する。
+- Rule 8は宣言欠落を拒否し、承認済みpersistence宣言を許容する。
+- Rule 10は他moduleの`domain.event`だけをRule 3から除外し、成功ruleまたは成功messageを生成しない。
+- Rule 11は非record、直接componentおよびgeneric componentのDomain Model露出を検出する。
+- Rule 13は完全な`internal` package segmentだけを対象とし、`internalized`を誤検出しない。
+- Rule 28は直接、meta-annotation、`@ApplicationModuleListener`の3経路を検出する。
+
+### 9.3 build evidence
+
+```powershell
+.\mvnw.cmd --offline --batch-mode --no-transfer-progress `
+  -pl koiki-archunit-rules -am clean verify
+
+.\mvnw.cmd --offline --batch-mode --no-transfer-progress clean verify
+```
+
+| 検証 | 結果 |
+|---|---|
+| Rules module `clean verify` | BUILD SUCCESS |
+| Root Reactor `clean verify` | 5 moduleすべてSUCCESS |
+| Error Prone / NullAway | PASS、Gate 2 fixture固有warningなし |
+| `git diff --check` | PASS |
+| dependency | Gate 1から変更なし |
+
+Gate 1で記録したCDS / Surefire native stream warningとSLF4J NOP logger通知は継続しているが、test件数、
+failure / errorおよびbuild結果には影響しない。
+
+### 9.4 Gate 2判定
+
+- 15 failure ruleとRule 10 allowanceをB2 matrixどおりに実装した。
+- 各failure ruleをfocused testと単独message IDへ対応付けた。
+- Rule 28のmeta-annotation解決がArchUnit 1.5.0で成立したため、B2 stop conditionには該当しない。
+- Public Facade、Rule 14以降、Rule 23、compliant / 必須5 negative fixtureを先行実装していない。
+
+以上によりGate 2を`ACCEPTED`とし、Gate 3のRule 14〜24、Rule 19およびRule 23 allowanceへ進む。
