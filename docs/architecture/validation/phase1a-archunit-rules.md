@@ -95,7 +95,7 @@ Public facadeを一部ruleだけで公開する途中状態を避けるため、
 |---:|---|---|---|
 | 1 | Maven module、BOM、dependency、内部基盤 | 空moduleでなく、scopeと入力基盤がB2契約どおり | ACCEPTED（2026年8月25日） |
 | 2 | Rule 1〜13、28、38〜39 | 共通・Ownership・Event ruleのfocused testとmessageが対応 | ACCEPTED（2026年8月25日） |
-| 3 | Rule 14〜24、Rule 19 | Tier / MVC、2許容predicate、Rule 19の正常・違反経路が成立 | REVIEW PENDING |
+| 3 | Rule 14〜24、Rule 19 | Tier / MVC、2許容predicate、Rule 19の正常・違反経路が成立 | ACCEPTED（2026年8月25日） |
 | 4 | Public API、compliant fixture、必須5負例 | 1 class / 2 method、6 positive、5独立negative、25 messageが成立 | REVIEW PENDING |
 | 5 | Maven、dependency、CI、Validation、Deferred | Repository内証拠が揃い、B4 / B5 / C1以降へ境界を引き継げる | REVIEW PENDING |
 
@@ -290,3 +290,80 @@ failure / errorおよびbuild結果には影響しない。
 - Public Facade、Rule 14以降、Rule 23、compliant / 必須5 negative fixtureを先行実装していない。
 
 以上によりGate 2を`ACCEPTED`とし、Gate 3のRule 14〜24、Rule 19およびRule 23 allowanceへ進む。
+
+## 10. Gate 3実装・検証結果（2026年8月25日）
+
+### 10.1 実装結果
+
+| 対象 | 結果 |
+|---|---|
+| SIMPLE | Rule 14で`domain.model`、`domain.service`、`domain.repository`、`domain.gateway`を拒否し、`domain.event`は許容 |
+| RICH Domain | Rule 15でAdapter、Spring Web / MVC、`EntityManager`への依存を拒否し、JPA annotationとSpring Data Commonsは許容 |
+| Repository | Rule 16でCommons `Repository<T, ID>`継承を要求し、`JpaRepository`継承を拒否 |
+| Inbound / MVC | Rule 17〜20でraw method signature、mapped handler引数／戻り値、MVC Modelへの直接引渡しを個別検査 |
+| Module boundary | Rule 21で他moduleのRICH `domain.model`参照を拒否 |
+| Domain Model | Rule 22でpublicな1引数`set*` methodを拒否 |
+| Rule 23 | 独立`ArchRule`を作らず、同一moduleの`application.query`所有read modelを識別するallowance predicateとして実装 |
+| Gateway | Rule 24で同一moduleの`domain.gateway`具象実装を`adapter.outbound.external`へ限定 |
+| Message | Gate 3の10 failure ruleすべてに単独ID、ADR、影響、修正、具体的違反箇所 |
+| Public API | 未追加。個別rule method、allowance predicateおよびRuleSetはpackage-private |
+
+### 10.2 focused test結果
+
+| Test | 件数 | 結果 |
+|---|---:|---|
+| `TierAndMvcRuleSetTest` | 14 | PASS |
+| Rules module全test | 48 | PASS |
+| 既存Architecture Contract | 4 | PASS |
+
+focused testではRule 14〜22、24のfailureとRule 23 allowanceを個別に評価した。JPA annotation／Commons
+Repositoryの許容、`JpaRepository`／`EntityManager`の拒否、MVC handlerのraw引数／戻り値、module間Domain
+Model参照、setterおよびGateway実装配置をそれぞれ確認した。
+
+### 10.3 Rule 19検証と保証限界
+
+Rule 19はArchUnit 1.5.0が提供するcallとsource lineを使い、同一MVC handlerの同一source line上で次の
+source / sinkが組み合わされた代表経路を検出する。
+
+- source: `domain.model`を返すmethod call、または`domain.model` constructor call
+- sink: `Model.addAttribute`、`ModelAndView.addObject`、またはmodel値を受け取る`ModelAndView` constructor
+
+この近似により、Use Case戻り値およびconstructor生成値の直接引渡しは`KOIKI-ARCH-019`で失敗し、Domain
+Model取得後にDTOへ変換してDTOだけをModelへ渡す経路は成功した。
+
+完全なargument data-flow解析ではないため、helperで`Object`へ型消去した値、field経由、複数method間、
+reflection経由、およびsource / sinkを別行へ分離した経路は検出保証外である。focused fixtureではDTO変換の
+成功に加え、helper、fieldおよびreflection経路を保証外として非検出確認した。Rule 19単独でEntity露出を完全に
+防止できるとは扱わず、後続PhaseのOSIV無効化と実レンダリングWeb testを含む三層防御へ引き継ぐ。
+
+### 10.4 build evidence
+
+```powershell
+.\mvnw.cmd --offline --batch-mode --no-transfer-progress `
+  -pl koiki-archunit-rules -am "-Dtest=TierAndMvcRuleSetTest" `
+  "-Dsurefire.failIfNoSpecifiedTests=false" test
+
+.\mvnw.cmd --offline --batch-mode --no-transfer-progress clean verify
+```
+
+| 検証 | 結果 |
+|---|---|
+| Gate 3 focused test | 14件、failure / error 0、BUILD SUCCESS |
+| Root Reactor `clean verify` | 5 moduleすべてSUCCESS |
+| Rules module全test | 48件、failure / error 0 |
+| Architecture Contract | 4件、failure / error 0 |
+| Error Prone / NullAway | PASS、Gate 3 fixture固有warningなし |
+| `git diff --check` | PASS |
+| dependency | Gate 1から変更なし |
+
+Gate 1で記録したCDS / Surefire native stream warningとSLF4J NOP logger通知は継続しているが、test件数、
+failure / errorおよびbuild結果には影響しない。
+
+### 10.5 Gate 3判定
+
+- Rule 14〜22、24とRule 23 allowanceをB2 matrixどおりに実装した。
+- Rule 19の代表failure、DTO変換passおよび保証外経路の記録を同時に満たした。
+- 個別ruleとfocused fixtureはpackage-private境界に留まり、Gate 4のPublic Facadeを先行実装していない。
+- 2026年8月25日のOwner ReviewでGate 3対応内容と検証結果が承認された。
+
+以上によりGate 3を`ACCEPTED`とし、Gate 4のPublic API、compliant fixture、必須5負例およびmessage contractへ進む。

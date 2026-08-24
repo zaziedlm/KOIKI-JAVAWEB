@@ -3,8 +3,12 @@ package org.koikifw.archunit;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 import com.tngtech.archunit.core.domain.Dependency;
+import com.tngtech.archunit.core.domain.JavaAccess;
 import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaConstructorCall;
 import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.JavaMethodCall;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.domain.JavaPackage;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
@@ -21,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import org.jspecify.annotations.Nullable;
 import org.koikifw.architecture.ModuleTier;
 import org.koikifw.architecture.PersistenceModel;
@@ -42,6 +47,14 @@ final class BusinessModuleRuleSet {
             "org.springframework.transaction.event.TransactionalEventListener";
     private static final String APPLICATION_MODULE_LISTENER =
             "org.springframework.modulith.events.ApplicationModuleListener";
+    private static final String ENTITY_MANAGER = "jakarta.persistence.EntityManager";
+    private static final String JPA_REPOSITORY =
+            "org.springframework.data.jpa.repository.JpaRepository";
+    private static final String REQUEST_MAPPING =
+            "org.springframework.web.bind.annotation.RequestMapping";
+    private static final String MODEL = "org.springframework.ui.Model";
+    private static final String MODEL_AND_VIEW =
+            "org.springframework.web.servlet.ModelAndView";
 
     private BusinessModuleRuleSet() {
     }
@@ -57,6 +70,16 @@ final class BusinessModuleRuleSet {
                 .and(rule9(basePackage))
                 .and(rule11(basePackage))
                 .and(rule12(basePackage))
+                .and(rule14(basePackage))
+                .and(rule15(basePackage))
+                .and(rule16(basePackage))
+                .and(rule17(basePackage))
+                .and(rule18(basePackage))
+                .and(rule19(basePackage))
+                .and(rule20(basePackage))
+                .and(rule21(basePackage))
+                .and(rule22(basePackage))
+                .and(rule24(basePackage))
                 .and(rule28(basePackage))
                 .and(rule38(basePackage))
                 .and(rule39(basePackage));
@@ -210,6 +233,238 @@ final class BusinessModuleRuleSet {
                 target -> target.getName().equals(REST_TEMPLATE));
     }
 
+    static ArchRule rule14(PackageName basePackage) {
+        RuleMessage message = RuleMessage.of(
+                14,
+                List.of("ADR-022"),
+                "SIMPLE moduleへ未使用のRich Domain構造が入り複雑性が増す",
+                "判断をApplicationへ置くか、昇格条件を満たす場合にmodule全体をRICHへ変更する");
+        ArchCondition<JavaClass> condition = new ArchCondition<>(
+                "not place Rich Domain packages in SIMPLE modules") {
+            @Override
+            public void check(JavaClass item, ConditionEvents events) {
+                if (isTier(item, basePackage, ModuleTier.SIMPLE)
+                        && (isInRole(item, basePackage, "domain.model")
+                                || isInRole(item, basePackage, "domain.service")
+                                || isInRole(item, basePackage, "domain.repository")
+                                || isInRole(item, basePackage, "domain.gateway"))) {
+                    addViolation(
+                            events,
+                            item,
+                            message,
+                            item.getDescription() + " is a Rich Domain type in a SIMPLE module");
+                }
+            }
+        };
+        return classes().should(condition).because(message.description()).allowEmptyShould(true);
+    }
+
+    static ArchRule rule15(PackageName basePackage) {
+        RuleMessage message = RuleMessage.of(
+                15,
+                List.of("ADR-022", "ADR-023"),
+                "DomainがAdapter／Web／永続化操作へ結合し業務規則を独立維持できない",
+                "技術処理をAdapterへ移し、許容されたannotation／Repository contractだけを残す");
+        return dependencyRule(
+                "not depend from RICH domains on adapters, Web, MVC, or EntityManager",
+                message,
+                source -> isTier(source, basePackage, ModuleTier.RICH)
+                        && isInRole(source, basePackage, "domain"),
+                target -> isInRole(target, basePackage, "adapter")
+                        || target.getPackageName().startsWith("org.springframework.web")
+                        || target.getName().equals(ENTITY_MANAGER));
+    }
+
+    static ArchRule rule16(PackageName basePackage) {
+        RuleMessage message = RuleMessage.of(
+                16,
+                List.of("ADR-024"),
+                "Domain RepositoryがJPA固有操作を公開し永続化境界が漏れる",
+                "Spring Data Commons Repository<T, ID>だけを継承する");
+        ArchCondition<JavaClass> condition = new ArchCondition<>(
+                "extend Spring Data Commons Repository but not JpaRepository") {
+            @Override
+            public void check(JavaClass item, ConditionEvents events) {
+                if (!isTier(item, basePackage, ModuleTier.RICH)
+                        || !isInRole(item, basePackage, "domain.repository")) {
+                    return;
+                }
+                if (!item.isInterface() || !item.isAssignableTo(SPRING_DATA_REPOSITORY)) {
+                    addViolation(
+                            events,
+                            item,
+                            message,
+                            item.getDescription() + " does not extend " + SPRING_DATA_REPOSITORY);
+                }
+                if (item.isAssignableTo(JPA_REPOSITORY)) {
+                    addViolation(
+                            events,
+                            item,
+                            message,
+                            item.getDescription() + " extends " + JPA_REPOSITORY);
+                }
+            }
+        };
+        return classes().should(condition).because(message.description()).allowEmptyShould(true);
+    }
+
+    static ArchRule rule17(PackageName basePackage) {
+        RuleMessage message = RuleMessage.of(
+                17,
+                List.of("ADR-023"),
+                "Inbound APIへDomain Modelが露出し遅延loadと変更波及を招く",
+                "Form、DTOまたはread modelへ変換する");
+        return methodSignatureRule(
+                "not expose Domain Models in inbound method signatures",
+                message,
+                basePackage,
+                item -> isInRole(item.getOwner(), basePackage, "adapter.inbound"),
+                true,
+                true);
+    }
+
+    static ArchRule rule18(PackageName basePackage) {
+        RuleMessage message = RuleMessage.of(
+                18,
+                List.of("ADR-023"),
+                "HTTP bindingがDomain Modelを直接変更し不変条件を迂回する",
+                "入力Form／DTOを受け取りUse Caseへ変換する");
+        return methodSignatureRule(
+                "not bind Domain Models as MVC handler arguments",
+                message,
+                basePackage,
+                item -> isInRole(item.getOwner(), basePackage, "adapter.inbound") && isMvcHandler(item),
+                true,
+                false);
+    }
+
+    static ArchRule rule19(PackageName basePackage) {
+        RuleMessage message = RuleMessage.of(
+                19,
+                List.of("ADR-023", "ADR-028"),
+                "view描画時の遅延loadやresponse送信後の失敗を招く",
+                "transaction内でDTO／read modelへ変換してからModelへ渡す");
+        ArchCondition<JavaClass> condition = new ArchCondition<>(
+                "not pass Domain Models directly to MVC model sinks") {
+            @Override
+            public void check(JavaClass item, ConditionEvents events) {
+                if (!isTier(item, basePackage, ModuleTier.RICH)) {
+                    return;
+                }
+                item.getMethods().stream()
+                        .filter(BusinessModuleRuleSet::isMvcHandler)
+                        .forEach(method -> checkRule19Handler(method, basePackage, message, events));
+            }
+        };
+        return classes().should(condition).because(message.description()).allowEmptyShould(true);
+    }
+
+    static ArchRule rule20(PackageName basePackage) {
+        RuleMessage message = RuleMessage.of(
+                20,
+                List.of("ADR-023"),
+                "MVC戻り値としてDomain Modelが外部境界へ露出する",
+                "DTO、view名またはread modelを返す");
+        return methodSignatureRule(
+                "not return Domain Models from MVC handlers",
+                message,
+                basePackage,
+                item -> isInRole(item.getOwner(), basePackage, "adapter.inbound") && isMvcHandler(item),
+                false,
+                true);
+    }
+
+    static ArchRule rule21(PackageName basePackage) {
+        RuleMessage message = RuleMessage.of(
+                21,
+                List.of("ADR-023", "ADR-025"),
+                "他moduleがDomain内部表現へ結合し独立変更できない",
+                "所有module内へ参照を戻し、module間はeventで連携する");
+        return dependencyRule(
+                "not reference a RICH Domain Model from another module",
+                message,
+                source -> moduleOf(source, basePackage) != null,
+                target -> isTier(target, basePackage, ModuleTier.RICH)
+                        && isInRole(target, basePackage, "domain.model"),
+                dependency -> isCrossModule(dependency, basePackage));
+    }
+
+    static ArchRule rule22(PackageName basePackage) {
+        RuleMessage message = RuleMessage.of(
+                22,
+                List.of("ADR-023"),
+                "setterが不変条件を迂回し任意状態変更を許す",
+                "意味のある状態遷移methodへ閉じ込める");
+        ArchCondition<JavaClass> condition = new ArchCondition<>(
+                "not declare public setters on Domain Models") {
+            @Override
+            public void check(JavaClass item, ConditionEvents events) {
+                if (!isTier(item, basePackage, ModuleTier.RICH)
+                        || !isInRole(item, basePackage, "domain.model")) {
+                    return;
+                }
+                item.getMethods().stream()
+                        .filter(method -> method.getModifiers().contains(JavaModifier.PUBLIC))
+                        .filter(method -> method.getName().startsWith("set"))
+                        .filter(method -> method.getRawParameterTypes().size() == 1)
+                        .forEach(method -> addViolation(
+                                events,
+                                method,
+                                message,
+                                method.getDescription() + " is a public setter"));
+            }
+        };
+        return classes().should(condition).because(message.description()).allowEmptyShould(true);
+    }
+
+    static boolean isOwnedQueryReadModel(
+            Dependency dependency,
+            PackageName basePackage) {
+        JavaClass source = dependency.getOriginClass();
+        JavaClass target = dependency.getTargetClass();
+        String sourceModule = moduleOf(source, basePackage);
+        String targetModule = moduleOf(target, basePackage);
+        if (sourceModule == null || !sourceModule.equals(targetModule)
+                || !isInRole(source, basePackage, "application.query")) {
+            return false;
+        }
+        return target.getPackageName().equals(source.getPackageName())
+                || target.getPackageName().startsWith(source.getPackageName() + ".");
+    }
+
+    static ArchRule rule24(PackageName basePackage) {
+        RuleMessage message = RuleMessage.of(
+                24,
+                List.of("ADR-022"),
+                "外部I/O実装がDomainへ混入し技術詳細に結合する",
+                "実装をadapter.outbound.externalへ移す");
+        ArchCondition<JavaClass> condition = new ArchCondition<>(
+                "place Domain Gateway implementations in outbound external adapters") {
+            @Override
+            public void check(JavaClass item, ConditionEvents events) {
+                if (!isTier(item, basePackage, ModuleTier.RICH)
+                        || item.isInterface()
+                        || item.getModifiers().contains(JavaModifier.ABSTRACT)) {
+                    return;
+                }
+                item.getAllRawInterfaces().stream()
+                        .filter(gateway -> sameModule(item, gateway, basePackage))
+                        .filter(gateway -> isInRole(gateway, basePackage, "domain.gateway"))
+                        .filter(gateway -> !isInRole(
+                                item,
+                                basePackage,
+                                "adapter.outbound.external"))
+                        .forEach(gateway -> addViolation(
+                                events,
+                                item,
+                                message,
+                                item.getDescription() + " implements " + gateway.getName()
+                                        + " outside adapter.outbound.external"));
+            }
+        };
+        return classes().should(condition).because(message.description()).allowEmptyShould(true);
+    }
+
     static ArchRule rule28(PackageName basePackage) {
         RuleMessage message = RuleMessage.of(
                 28,
@@ -285,6 +540,106 @@ final class BusinessModuleRuleSet {
                 .allowEmptyShould(true);
     }
 
+    private static ArchRule methodSignatureRule(
+            String description,
+            RuleMessage message,
+            PackageName basePackage,
+            Predicate<JavaMethod> methodPredicate,
+            boolean checkParameters,
+            boolean checkReturnType) {
+        ArchCondition<JavaClass> condition = new ArchCondition<>(description) {
+            @Override
+            public void check(JavaClass item, ConditionEvents events) {
+                if (!isTier(item, basePackage, ModuleTier.RICH)) {
+                    return;
+                }
+                item.getMethods().stream()
+                        .filter(methodPredicate)
+                        .forEach(method -> {
+                            if (checkParameters) {
+                                method.getRawParameterTypes().stream()
+                                        .filter(type -> isInRole(type, basePackage, "domain.model"))
+                                        .forEach(type -> addViolation(
+                                                events,
+                                                method,
+                                                message,
+                                                method.getDescription() + " exposes parameter "
+                                                        + type.getName()));
+                            }
+                            if (checkReturnType
+                                    && isInRole(
+                                            method.getRawReturnType(),
+                                            basePackage,
+                                            "domain.model")) {
+                                addViolation(
+                                        events,
+                                        method,
+                                        message,
+                                        method.getDescription() + " exposes return type "
+                                                + method.getRawReturnType().getName());
+                            }
+                        });
+            }
+        };
+        return classes().should(condition).because(message.description()).allowEmptyShould(true);
+    }
+
+    private static void checkRule19Handler(
+            JavaMethod method,
+            PackageName basePackage,
+            RuleMessage message,
+            ConditionEvents events) {
+        // ArchUnit exposes calls and line numbers, but not complete argument data flow. Matching
+        // source and sink on one line catches the approved direct forms without rejecting a DTO
+        // conversion performed on intervening lines.
+        List<JavaAccess<?>> sources = Stream.concat(
+                        method.getMethodCallsFromSelf().stream()
+                                .filter(call -> isInRole(
+                                        call.getTarget().getRawReturnType(),
+                                        basePackage,
+                                        "domain.model"))
+                                .map(call -> (JavaAccess<?>) call),
+                        method.getConstructorCallsFromSelf().stream()
+                                .filter(call -> isInRole(
+                                        call.getTargetOwner(),
+                                        basePackage,
+                                        "domain.model"))
+                                .map(call -> (JavaAccess<?>) call))
+                .toList();
+        List<JavaAccess<?>> sinks = Stream.concat(
+                        method.getMethodCallsFromSelf().stream()
+                                .filter(BusinessModuleRuleSet::isMvcModelSink)
+                                .map(call -> (JavaAccess<?>) call),
+                        method.getConstructorCallsFromSelf().stream()
+                                .filter(BusinessModuleRuleSet::isModelAndViewSink)
+                                .map(call -> (JavaAccess<?>) call))
+                .toList();
+        for (JavaAccess<?> source : sources) {
+            sinks.stream()
+                    .filter(sink -> source.getLineNumber() == sink.getLineNumber())
+                    .forEach(sink -> addViolation(
+                            events,
+                            method,
+                            message,
+                            method.getDescription() + " directly combines "
+                                    + source.getDescription() + " with " + sink.getDescription()));
+        }
+    }
+
+    private static boolean isMvcModelSink(JavaMethodCall call) {
+        String owner = call.getTargetOwner().getName();
+        return (owner.equals(MODEL) && call.getName().equals("addAttribute"))
+                || (owner.equals(MODEL_AND_VIEW) && call.getName().equals("addObject"));
+    }
+
+    private static boolean isModelAndViewSink(JavaConstructorCall call) {
+        return call.getTargetOwner().getName().equals(MODEL_AND_VIEW)
+                && call.getTarget().getRawParameterTypes().stream()
+                        .map(JavaClass::getName)
+                        .anyMatch(type -> type.equals(Object.class.getName())
+                                || type.equals(Map.class.getName()));
+    }
+
     private static ArchRule dependencyRule(
             String description,
             RuleMessage message,
@@ -350,10 +705,61 @@ final class BusinessModuleRuleSet {
                 || method.isAnnotatedWith(APPLICATION_MODULE_LISTENER);
     }
 
+    private static boolean isMvcHandler(JavaMethod method) {
+        return method.isAnnotatedWith(REQUEST_MAPPING)
+                || method.isMetaAnnotatedWith(REQUEST_MAPPING);
+    }
+
     private static boolean isCrossModule(Dependency dependency, PackageName basePackage) {
         String sourceModule = moduleOf(dependency.getOriginClass(), basePackage);
         String targetModule = moduleOf(dependency.getTargetClass(), basePackage);
         return sourceModule != null && targetModule != null && !sourceModule.equals(targetModule);
+    }
+
+    private static boolean sameModule(
+            JavaClass first,
+            JavaClass second,
+            PackageName basePackage) {
+        String firstModule = moduleOf(first, basePackage);
+        String secondModule = moduleOf(second, basePackage);
+        return firstModule != null && firstModule.equals(secondModule);
+    }
+
+    private static boolean isTier(
+            JavaClass item,
+            PackageName basePackage,
+            ModuleTier tier) {
+        return metadataOf(item, basePackage)
+                .map(ModuleMetadata::tier)
+                .filter(tier::equals)
+                .isPresent();
+    }
+
+    private static java.util.Optional<ModuleMetadata> metadataOf(
+            JavaClass item,
+            PackageName basePackage) {
+        String module = moduleOf(item, basePackage);
+        if (module == null) {
+            return java.util.Optional.empty();
+        }
+        return findPackage(item.getPackage(), basePackage.value() + "." + module)
+                .flatMap(ModuleMetadata::from);
+    }
+
+    private static java.util.Optional<JavaPackage> findPackage(
+            JavaPackage start,
+            String packageName) {
+        JavaPackage current = Objects.requireNonNull(start);
+        while (true) {
+            if (current.getName().equals(packageName)) {
+                return java.util.Optional.of(current);
+            }
+            java.util.Optional<JavaPackage> parent = current.getParent();
+            if (parent.isEmpty()) {
+                return java.util.Optional.empty();
+            }
+            current = parent.orElseThrow();
+        }
     }
 
     private static boolean isInRole(
@@ -475,7 +881,9 @@ final class BusinessModuleRuleSet {
             for (JavaClass item : allObjectsToTest) {
                 String module = moduleOf(item, basePackage);
                 if (module != null) {
-                    findPackage(item.getPackage(), basePackage.value() + "." + module)
+                    BusinessModuleRuleSet.findPackage(
+                                    item.getPackage(),
+                                    basePackage.value() + "." + module)
                             .ifPresent(modulePackage -> result.putIfAbsent(module, modulePackage));
                 }
             }
@@ -527,20 +935,5 @@ final class BusinessModuleRuleSet {
             });
         }
 
-        private static java.util.Optional<JavaPackage> findPackage(
-                JavaPackage start,
-                String packageName) {
-            JavaPackage current = Objects.requireNonNull(start);
-            while (true) {
-                if (current.getName().equals(packageName)) {
-                    return java.util.Optional.of(current);
-                }
-                java.util.Optional<JavaPackage> parent = current.getParent();
-                if (parent.isEmpty()) {
-                    return java.util.Optional.empty();
-                }
-                current = parent.orElseThrow();
-            }
-        }
     }
 }
