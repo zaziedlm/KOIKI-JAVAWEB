@@ -1,0 +1,23 @@
+package __FEATURE_PACKAGE__.application.usecase;
+
+import java.util.Objects;
+import java.util.UUID;
+import __FEATURE_PACKAGE__.domain.model.__CLASS_NAME__;
+import __FEATURE_PACKAGE__.domain.repository.__CLASS_NAME__Repository;
+
+/** Coordinates a state transition owned by the Tier 2 Domain Model. */
+public final class Submit__CLASS_NAME__UseCase {
+
+    private final __CLASS_NAME__Repository repository;
+
+    public Submit__CLASS_NAME__UseCase(__CLASS_NAME__Repository repository) {
+        this.repository = Objects.requireNonNull(repository, "repository");
+    }
+
+    public void submit(UUID id) {
+        __CLASS_NAME__ __CLASS_VARIABLE__ = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("feature model not found: " + id));
+        __CLASS_VARIABLE__.submit();
+        repository.save(__CLASS_VARIABLE__);
+    }
+}

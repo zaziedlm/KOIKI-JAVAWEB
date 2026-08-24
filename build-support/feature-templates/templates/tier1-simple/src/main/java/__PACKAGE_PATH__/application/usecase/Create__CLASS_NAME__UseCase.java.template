@@ -1,0 +1,24 @@
+package __FEATURE_PACKAGE__.application.usecase;
+
+import java.util.Objects;
+import java.util.UUID;
+import __FEATURE_PACKAGE__.adapter.outbound.persistence.__CLASS_NAME__;
+import __FEATURE_PACKAGE__.adapter.outbound.persistence.__CLASS_NAME__Repository;
+
+/** Coordinates creation and owns the simple Tier 1 business decision. */
+public final class Create__CLASS_NAME__UseCase {
+
+    private final __CLASS_NAME__Repository repository;
+
+    public Create__CLASS_NAME__UseCase(__CLASS_NAME__Repository repository) {
+        this.repository = Objects.requireNonNull(repository, "repository");
+    }
+
+    public UUID create(String label) {
+        if (label == null || label.isBlank()) {
+            throw new IllegalArgumentException("label must not be blank");
+        }
+        __CLASS_NAME__ created = new __CLASS_NAME__(UUID.randomUUID(), label);
+        return repository.save(created).getId();
+    }
+}

@@ -1,0 +1,47 @@
+package __FEATURE_PACKAGE__.domain.model;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
+
+class __CLASS_NAME__Test {
+
+    @Test
+    void ownsTheValidStateTransitions() {
+        __CLASS_NAME__ __CLASS_VARIABLE__ = new __CLASS_NAME__(UUID.randomUUID(), "example");
+
+        __CLASS_VARIABLE__.submit();
+        __CLASS_VARIABLE__.approve();
+
+        assertEquals(__CLASS_NAME__.Status.APPROVED, __CLASS_VARIABLE__.getStatus());
+    }
+
+    @Test
+    void rejectsAnInvalidTransition() {
+        __CLASS_NAME__ __CLASS_VARIABLE__ = new __CLASS_NAME__(UUID.randomUUID(), "example");
+
+        assertThrows(IllegalStateException.class, __CLASS_VARIABLE__::approve);
+    }
+
+    @Test
+    void comparesByIdentifierWithoutExactClassMatching() {
+        UUID id = UUID.randomUUID();
+        __CLASS_NAME__ __CLASS_VARIABLE__ = new __CLASS_NAME__(id, "example");
+        __CLASS_NAME__ proxyLike = new ProxyLike__CLASS_NAME__(id, "proxy");
+
+        assertEquals(__CLASS_VARIABLE__, proxyLike);
+        assertEquals(proxyLike, __CLASS_VARIABLE__);
+        assertEquals(__CLASS_VARIABLE__.hashCode(), proxyLike.hashCode());
+        assertNotEquals(__CLASS_VARIABLE__, new __CLASS_NAME__(UUID.randomUUID(), "other"));
+    }
+
+    private static final class ProxyLike__CLASS_NAME__ extends __CLASS_NAME__ {
+
+        private ProxyLike__CLASS_NAME__(UUID id, String description) {
+            super(id, description);
+        }
+    }
+}

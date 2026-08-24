@@ -1,0 +1,82 @@
+package __FEATURE_PACKAGE__.domain.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import java.util.Objects;
+import java.util.UUID;
+
+/** Shared domain and JPA model with explicit state transitions. */
+@Entity
+public class __CLASS_NAME__ {
+
+    @Id
+    private UUID id = UUID.randomUUID();
+
+    private String description = "";
+
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.DRAFT;
+
+    protected __CLASS_NAME__() {
+    }
+
+    public __CLASS_NAME__(UUID id, String description) {
+        this.id = Objects.requireNonNull(id, "id");
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("description must not be blank");
+        }
+        this.description = description;
+    }
+
+    public void submit() {
+        requireStatus(Status.DRAFT);
+        status = Status.SUBMITTED;
+    }
+
+    public void approve() {
+        requireStatus(Status.SUBMITTED);
+        status = Status.APPROVED;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    @Override
+    public final boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof __CLASS_NAME__ candidate)) {
+            return false;
+        }
+        return id.equals(candidate.id);
+    }
+
+    @Override
+    public final int hashCode() {
+        return id.hashCode();
+    }
+
+    private void requireStatus(Status expected) {
+        if (status != expected) {
+            throw new IllegalStateException("expected " + expected + " but was " + status);
+        }
+    }
+
+    public enum Status {
+        DRAFT,
+        SUBMITTED,
+        APPROVED
+    }
+}
