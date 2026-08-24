@@ -2,7 +2,7 @@
 
 **準備日:** 2026年8月24日<br>
 **対象branch:** `feature/phase1a-archunit-rules`<br>
-**状態:** IMPLEMENTATION IN PROGRESS / GATE 2 ACCEPTED<br>
+**状態:** COMPLETE / GATE 5 ACCEPTED<br>
 **Ownership:** Tooling<br>
 **対象artifact:** `org.koikifw:koiki-archunit-rules:0.1.0-SNAPSHOT`<br>
 **開始baseline:** `main` / `b460b52`（B2 PR #9 merge）
@@ -97,7 +97,7 @@ Public facadeを一部ruleだけで公開する途中状態を避けるため、
 | 2 | Rule 1〜13、28、38〜39 | 共通・Ownership・Event ruleのfocused testとmessageが対応 | ACCEPTED（2026年8月25日） |
 | 3 | Rule 14〜24、Rule 19 | Tier / MVC、2許容predicate、Rule 19の正常・違反経路が成立 | ACCEPTED（2026年8月25日） |
 | 4 | Public API、compliant fixture、必須5負例 | 1 class / 2 method、6 positive、5独立negative、25 messageが成立 | ACCEPTED（2026年8月25日） |
-| 5 | Maven、dependency、CI、Validation、Deferred | Repository内証拠が揃い、B4 / B5 / C1以降へ境界を引き継げる | REVIEW PENDING |
+| 5 | Maven、dependency、CI、Validation、Deferred | Repository内証拠が揃い、B4 / B5 / C1以降へ境界を引き継げる | ACCEPTED（2026年8月25日） |
 
 Gateごとに実装差分と検証結果を区切ってOwner Reviewする。承認前にPublic API追加、scope拡張または
 後続Phaseの実装が必要になった場合は、そのGateを進めずB2のstop / return conditionに従う。
@@ -465,3 +465,124 @@ failure / errorおよびbuild結果には影響しない。
 - 2026年8月25日のOwner ReviewでGate 4対応内容と検証結果が承認された。
 
 以上によりGate 4を`ACCEPTED`とし、Gate 5のMaven、dependency、CI、ValidationおよびDeferred最終確認へ進む。
+
+## 12. Gate 5最終検証結果（2026年8月25日）
+
+### 12.1 検証対象
+
+Gate 5は、Gate 4承認済みの次のcommitを実装基準とした。
+
+| 項目 | 値 |
+|---|---|
+| Branch | `feature/phase1a-archunit-rules` |
+| Commit | `0a989904ee1599aa2eea376ddcfca64921012708` |
+| Pull Request | [PR #10](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/10) |
+| Maven | 3.9.16（Repository同梱Wrapper） |
+| Java | Eclipse Temurin / OpenJDK 21.0.12 |
+| Local OS / encoding | Windows 11 / UTF-8 |
+
+Gate 5では実装、Public API、dependency scopeを変更していない。Gate 1〜4で成立した成果物を同一commitから
+再構築し、Repository内のローカルbuildとPR CIで再現できることを確認した。
+
+### 12.2 Maven build evidence
+
+```powershell
+.\mvnw.cmd --offline --batch-mode --no-transfer-progress `
+  -pl koiki-archunit-rules -am clean verify
+
+.\mvnw.cmd --offline --batch-mode --no-transfer-progress clean verify
+```
+
+| 検証 | 結果 |
+|---|---|
+| Rules module＋依存module `clean verify` | BUILD SUCCESS |
+| Root Reactor `clean verify` | 5 moduleすべてSUCCESS |
+| Rules module全test | 64件、failure / error 0 |
+| Architecture Contract | 4件、failure / error 0 |
+| Error Prone / NullAway | PASS |
+
+Gate 1から継続するJDK CDS archive mismatch、Surefire native streamおよびSLF4J NOP providerの通知はあるが、
+test件数、failure / error、artifact生成およびbuild結果には影響しない。通知を消すためだけのproduction dependencyは
+追加していない。
+
+### 12.3 dependency boundary
+
+`dependency:tree`でcompile dependencyとtest fixture dependencyを再確認した。
+
+| Scope | Dependency | 判定 |
+|---|---|---|
+| compile / direct | `org.koikifw:koiki-architecture-contract:0.1.0-SNAPSHOT` | B2契約どおり |
+| compile / direct | `com.tngtech.archunit:archunit:1.5.0` | B2契約どおり |
+| compile / direct | `org.jspecify:jspecify:1.0.0` | B2契約どおり |
+| compile / transitive | `org.slf4j:slf4j-api:2.0.18`（ArchUnit経由） | 直接依存へ昇格しない |
+| test | JUnit Jupiter 6.0.3 | test限定 |
+| test | Spring Context / Web / Web MVC / TX 7.0.9 | test限定 |
+| test | Spring Data Commons / JPA 4.1.1 | test限定 |
+| test | Jakarta Persistence 3.2.0 | test限定 |
+| test | Spring Modulith Events API 2.1.0 | test限定 |
+
+Spring Web / MVC、Spring Data、JPA、Spring Modulithはfixtureのbytecodeを構築・importするためだけに使用し、
+production dependencyおよび公開契約へ混入していない。Runtime、Security、Reference業務、REST、Starter、
+MyBatisのproduction dependencyも追加していない。
+
+### 12.4 artifact・Public API・rule traceability
+
+| 検証 | 結果 |
+|---|---|
+| Artifact | `koiki-archunit-rules-0.1.0-SNAPSHOT.jar` |
+| SHA-256 | `E6B976DFDB9BB3D26A9CAE38B3CA229666C107EDC81C9CE043F4445E1698FC63` |
+| JAR inventory | production classだけ。test fixture非混入 |
+| Public class | `org.koikifw.archunit.KoikiArchitectureRules`だけ |
+| Public method | `businessModuleRules(String)`、`frameworkOwnershipRules(String, String...)`だけ |
+| Failure rule | 25件を実装し、各IDとfocused testを対応付け済み |
+| Allowance predicate | Rule 10 / 23の2件。独立no-op ruleなし |
+| Compliant / negative | 6 positive、必須5独立negativeがPASS |
+
+`javap -public`の結果は§11.1記載の1 class / 2 static methodと一致した。Rule実装inventoryではRule 1〜9、
+11〜22、24、28、38、39の25 failure ruleとRule 10 / 23のallowance predicateを確認した。Rule 19の保証範囲と
+保証外経路は§10.3から変更していない。
+
+### 12.5 remote CI evidence
+
+PR #10のcommit `0a98990`に対して、GitHub Actionsの
+[CI run #32760884912](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32760884912)が完了し、
+次の両環境で成功した。
+
+| Job | Runner | 結果 |
+|---|---|---|
+| [Verify (windows-2025)](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32760884912/job/97539190079) | Windows / Temurin 21 | SUCCESS |
+| [Verify (ubuntu-24.04)](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32760884912/job/97539190495) | Ubuntu / Temurin 21 | SUCCESS |
+
+CIはRoot Reactorの`clean verify`とFeature Template検証を実行しており、snapshot公開やpackage publishは行わない。
+
+### 12.6 Deferredと後続work packageへの引継ぎ
+
+| 引継ぎ先 | 引継ぎ内容 |
+|---|---|
+| B4 | ParentのNullAway positive / negative / restore検証 |
+| B5 | ArchUnit、NullAway、Spring Modulith Level 0をFeature Templateへ統合 |
+| C1 | Repository内で同一versionのsnapshot artifactを利用する検証 |
+| C2 | Repository外Consumerからsnapshotを利用する検証 |
+| C3 | 正式Public API inventory、ArchUnit互換性、japicmp baseline |
+| Phase 1b以降 | Runtime、OSIV無効化、実レンダリングWeb test、Named Interface |
+| Modulith Level 2 | Rule 28 / 29と`@ApplicationModuleListener`の最終方針を再検討 |
+| Phase 3 / 4 | MyBatis、Tier 2分離model、Mapper / JPA signatureとDeferred rule 25〜27、29〜37 |
+
+Deferred 12件は実装していない。内訳はTier 2分離modelのRule 25〜27、Level 2 listener / I/OのRule 29、
+MyBatisのRule 30〜34、分離modelのMapper / JPA signatureに関するRule 35〜37である。未使用の将来module、
+package、StarterまたはPublic APIも生成していない。
+
+B3実装はB2の承認済み設計から逸脱せず、新規のarchitecture decisionを導入していないため、ADRの追加・変更は
+不要と判定した。migration / schema変更もない。既存SkillがOwnershipと業務module境界を扱い、今回の規則は
+artifactとtestで機械的に保証するため、Skill正本の変更も行わない。
+
+### 12.7 Gate 5判定
+
+- Gate 1〜4で承認された実装を、ローカルmodule／Root ReactorとWindows／Ubuntu CIで再現した。
+- production dependency、JAR内容、Public APIおよび25 failure rule＋2 allowanceの境界を確認した。
+- Deferredを先行実装せず、B4 / B5 / C1以降へ責務と検証事項を明示した。
+- PR #10はレビュー可能な状態にあり、B3成果物を正式配布またはmergeしていない。
+- 2026年8月25日のOwner ReviewでGate 5の状態、対応内容および検証結果が承認された。
+
+以上によりGate 5を`ACCEPTED`、B3を`COMPLETE`とする。B3成果物のmerge、snapshot公開および後続work packageの
+開始は、それぞれのOwner判断と手順に従う。
