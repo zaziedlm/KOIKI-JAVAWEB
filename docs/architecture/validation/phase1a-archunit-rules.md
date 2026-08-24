@@ -96,7 +96,7 @@ Public facadeを一部ruleだけで公開する途中状態を避けるため、
 | 1 | Maven module、BOM、dependency、内部基盤 | 空moduleでなく、scopeと入力基盤がB2契約どおり | ACCEPTED（2026年8月25日） |
 | 2 | Rule 1〜13、28、38〜39 | 共通・Ownership・Event ruleのfocused testとmessageが対応 | ACCEPTED（2026年8月25日） |
 | 3 | Rule 14〜24、Rule 19 | Tier / MVC、2許容predicate、Rule 19の正常・違反経路が成立 | ACCEPTED（2026年8月25日） |
-| 4 | Public API、compliant fixture、必須5負例 | 1 class / 2 method、6 positive、5独立negative、25 messageが成立 | REVIEW PENDING |
+| 4 | Public API、compliant fixture、必須5負例 | 1 class / 2 method、6 positive、5独立negative、25 messageが成立 | ACCEPTED（2026年8月25日） |
 | 5 | Maven、dependency、CI、Validation、Deferred | Repository内証拠が揃い、B4 / B5 / C1以降へ境界を引き継げる | REVIEW PENDING |
 
 Gateごとに実装差分と検証結果を区切ってOwner Reviewする。承認前にPublic API追加、scope拡張または
@@ -367,3 +367,101 @@ failure / errorおよびbuild結果には影響しない。
 - 2026年8月25日のOwner ReviewでGate 3対応内容と検証結果が承認された。
 
 以上によりGate 3を`ACCEPTED`とし、Gate 4のPublic API、compliant fixture、必須5負例およびmessage contractへ進む。
+
+## 11. Gate 4実装・検証結果（2026年8月25日）
+
+### 11.1 Public APIと入力契約
+
+| 対象 | 結果 |
+|---|---|
+| Public class | `org.koikifw.archunit.KoikiArchitectureRules`の1 classだけ |
+| Public method | `businessModuleRules(String)`と`frameworkOwnershipRules(String, String...)`の2 static methodだけ |
+| constructor | private。public constructorなし |
+| Null Safety | root packageの`@NullMarked`を維持し、Public APIはnon-null contract |
+| package入力 | Java 21の完全修飾package名だけを受理し、trimやwildcard補正を行わない |
+| Ownership入力 | Consumer 1件以上、Framework / Consumer間とConsumer相互の重複・包含を拒否 |
+| varargs | immutable listへ防御的copyし、呼出し元の配列変更を保持しない |
+| root discovery | 設定rootにimport済みclassが存在しない場合はparameter名とrootを含むfailureを生成 |
+| private実装 | RuleSet、metadata、message、package入力、root guardはpackage-private |
+
+`javap -public`で確認したsignatureは次の2件だけである。
+
+```text
+public final class org.koikifw.archunit.KoikiArchitectureRules {
+  public static com.tngtech.archunit.lang.ArchRule businessModuleRules(java.lang.String);
+  public static com.tngtech.archunit.lang.ArchRule frameworkOwnershipRules(
+      java.lang.String, java.lang.String...);
+}
+```
+
+### 11.2 compliant fixtureとpositive test
+
+B2 §10で確定したTooling所有fixtureを`src/test/java/org/koikifw/archunit/fixture/compliant`へ実装した。
+SIMPLEにはRich Domain責務を作らず、RICHにはJPA共有Domain Model、Commons Repository、Gateway、DTO変換、
+同期listenerを必要最小限で配置した。Ownership fixtureではFramework、Reference、Customer rootを分離した。
+
+| Test | 結果 |
+|---|---|
+| `compliantBusinessRulesPass` | PASS |
+| `explicitAllowancesPass` | PASS。Rule 10 / 23 allowanceを確認 |
+| `optionalResponsibilitiesMayBeAbsent` | PASS。root discoveryと任意責務emptyを区別 |
+| `richJpaSharedBoundaryPasses` | PASS |
+| `rule19AllowsDtoConversion` | PASS |
+| `compliantOwnershipRulesPass` | PASS。2 Consumer rootを同時検査 |
+
+DTO変換fixtureの初回実装ではInbound DTOのstatic factoryがraw `RichAggregate`引数を受け、Rule 17が正当に
+検出した。ruleを弱めず、ControllerでDomain Modelからscalar値を取得して`RichView` constructorへ渡す形へ
+修正し、承認済みView境界を満たした。
+
+### 11.3 必須5負例とmessage contract
+
+必須5負例は`src/test/java/org/koikifw/archunit/fixture/negative`へ相互に独立したpackageとして実装した。
+
+| 負例 | Public composite | 個別failure rule |
+|---|---|---|
+| Tier宣言欠落 | FAIL | 007 / 008だけ |
+| ControllerのDomain Model露出 | FAIL | 017 / 018 / 019 / 020だけ |
+| Framework `internal`外部参照 | FAIL | 013だけ |
+| 所定listener packageの`@TransactionalEventListener` | FAIL | 028だけ。Rule 38なし |
+| module間直接Bean参照 | FAIL | 003 / 009だけ。cycleなし |
+
+各負例ではPublic compositeが違反を返すことに加え、同じimport結果を25個別failure ruleへ評価し、期待ID以外が
+失敗しないことを確認した。ArchUnitの`CompositeArchRule`は個別ruleの`because`を合成descriptionへまとめるため、
+独立性判定は合成headerの文字列検索ではなく個別ruleの`EvaluationResult`で行った。Gate 2 / 3のfocused testと
+合わせ、25 failure reportすべてで単独ID、ADR、具体的な`違反内容`、`影響`、`修正`を確認している。
+
+### 11.4 build / artifact evidence
+
+```powershell
+.\mvnw.cmd --offline --batch-mode --no-transfer-progress clean verify
+
+javap -public -classpath koiki-archunit-rules/target/classes `
+  org.koikifw.archunit.KoikiArchitectureRules
+
+jar tf koiki-archunit-rules/target/koiki-archunit-rules-0.1.0-SNAPSHOT.jar
+```
+
+| 検証 | 結果 |
+|---|---|
+| Public API / input contract | 5件PASS |
+| compliant positive | 6件PASS |
+| 必須5負例 | 5件PASS |
+| Rules module全test | 64件、failure / error 0 |
+| Architecture Contract | 4件、failure / error 0 |
+| Root Reactor `clean verify` | 5 moduleすべてSUCCESS |
+| Error Prone / NullAway | PASS。意図的null負例だけ局所抑制 |
+| JAR内容 | production classだけ。compliant / negative fixture非混入 |
+| `git diff --check` | PASS |
+
+Gate 1で記録したCDS / Surefire native stream warningとSLF4J NOP logger通知は継続しているが、test件数、
+failure / errorおよびbuild結果には影響しない。
+
+### 11.5 Gate 4判定
+
+- 1 public class / 2 public static method、Javadoc、入力契約およびroot discovery guardを実装した。
+- B2で確定した6 positive testと必須5独立negativeをPublic API経由で成立させた。
+- 25 failure ruleのmessage contractをfocused testと独立negative評価で確認した。
+- fixtureはTooling test sourceに限定し、JARや他Ownershipへ混入していない。
+- 2026年8月25日のOwner ReviewでGate 4対応内容と検証結果が承認された。
+
+以上によりGate 4を`ACCEPTED`とし、Gate 5のMaven、dependency、CI、ValidationおよびDeferred最終確認へ進む。
