@@ -1,5 +1,5 @@
 /**
- * Internal implementation of KOIKI architecture rules.
+ * Public entry point and internal implementation of KOIKI architecture rules.
  */
 @NullMarked
 package org.koikifw.archunit;
