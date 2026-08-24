@@ -402,7 +402,9 @@ Walking Skeleton固有の`representativeRules`、`phaseZeroRules`、`layerAndTie
 | MyBatis詳細規約まで保留 | 30〜34 | Phase 3末尾〜Phase 4で判断 |
 
 規則10と23のような明示的許容もmatrixへ含めるが、違反を発生させる独立ruleとは数えない。
-規則28はPhase 1aからLevel 1までの予防的禁止として適用し、Level 2採用時に再判定する。
+規則28はPhase 1aからLevel 1までの予防的禁止として、直接またはmeta-annotation経由の
+`@TransactionalEventListener`へ適用する。`@ApplicationModuleListener`もPhase 1aではRule 28違反とし、
+Level 2採用時にRule 29と合わせて再判定する。
 
 #### 6.8.3 DoD 1a-2の必須5違反
 
@@ -436,6 +438,8 @@ rule numberは`KOIKI-ARCH-007`のように3桁で表し、グランドデザイ�
 規則19は、同じMVC handler内で`domain.model`を生成する、または`domain.model`を返すUse Caseを
 呼び出し、`Model.addAttribute`もしくは`ModelAndView`へ渡す代表経路を検出する近似ruleとする。
 `Object`へ型消去したhelper、field経由、複数method間、reflection等の任意data flowは保証しない。
+また、sourceとModel書込みの同居だけで判定すると、domain.modelをDTOへ変換してDTOだけを渡す正常経路を
+誤検出し得る。B3では代表違反の失敗、DTO変換正常経路の成功、保証外経路の記録を同時に満たす。
 
 ```text
 ArchUnit近似検査 + OSIV無効化 + 実レンダリングWeb test
@@ -449,7 +453,7 @@ production依存は`koiki-architecture-contract`、ArchUnitおよびJSpecifyに�
 Spring Framework、Spring Modulith、JPAおよびMyBatisは完全修飾名で検出し、必要なfixture依存を
 test scopeだけへ置く。Consumerは`koiki-archunit-rules`をtest scopeで利用する。
 
-B2 / B3では次を検証する。
+B2で検証契約を設計し、実行証拠は次のWPで取得する。
 
 1. Tier 1 / Tier 2 compliant fixtureが成功する。
 2. 必須5違反が独立fixtureでそれぞれ失敗する。
@@ -458,15 +462,36 @@ B2 / B3では次を検証する。
 5. 規則19の代表違反を検出し、その保証限界をREADMEとValidationへ記録する。
 6. 全failureにrule ID、ADRまたは設計節、影響、修正方法および違反箇所を含める。
 7. Spring等がproduction dependencyへ混入しない。
-8. GitHub PackagesのsnapshotをRepository外Consumerから解決して同じ違反を検出する。
-9. Public API inventoryを生成し、japicmp対象候補を確認する。
+8. C1 / C2でGitHub PackagesのsnapshotをRepository外Consumerから解決して同じ違反を検出する。
+9. C3で正式Public API inventoryを生成し、japicmp baselineとArchUnit dependency互換性を確認する。
+
+B3は1〜7をRepository内の正式rule実装、fixture、dependency treeおよびCIで実証する。8はsnapshot公開を
+所有するC1 / C2、9は互換性baselineを所有するC3の完了条件とし、B2 / B3の完了を先行WPの成果で代用しない。
 
 **Decision:** ACCEPTED（2026年8月21日、Shuichi Kataoka）  
 **Gate status:** ACCEPTED
 
 G5はPhase 1aの公開entry point、適用rule、message contractおよび既知の検査限界を確定する。
-分離方式、Level 2、MyBatis詳細規則、OSIV・Web test実装、Named InterfaceおよびArchUnit本体の
-最終versionはこの承認に含めない。
+分離方式、Level 2、MyBatis詳細規則、OSIV・Web test実装およびNamed Interfaceはこの承認に含めない。
+2026年8月21日のG5承認時点ではArchUnit本体versionを未選定としたが、B2 Gate 4で2026年8月24日時点の
+Phase 1a baselineを1.5.0に確定した。後続versionへの更新はC3の互換性検証対象とする。
+
+#### 6.8.7 B2 / B3実行境界（B2 Gate 1）
+
+| WP | 完了対象 | このWPで行わないこと |
+|---|---|---|
+| B2 | Public API、入力契約、dependency、39規則matrix、message contract、Rule 19制約、compliant fixture仕様のOwner承認 | no-op rule、正式Maven module、rule実装、fixture実行結果を作らない |
+| B3 | 正式`koiki-archunit-rules`、25 failure rule＋2許容predicate、全rule focused test、compliant fixture成功、必須5負例の独立failure、CI証拠 | B2承認済みPublic APIや適用Phaseを実装都合で変更しない |
+
+§7.2のB2に記載した「compliant fixture成功」は、B2でfixtureと期待結果を設計し、B3のrule実装後に
+実行成功を得る連続した受入条件として扱う。B2を形式的に完了させるためのno-op ruleまたは一部ruleだけの
+暫定Public APIは作成しない。B2は設計のOwner承認で完了し、実行証拠はB3の完了条件とする。
+
+**Decision:** ACCEPTED（2026年8月24日、Shuichi Kataoka）<br>
+**Gate status:** B2 GATE 1 ACCEPTED
+
+B2のGate 2〜5は`../architecture/validation/phase1a-archunit-api-design.md`でOwner Reviewし、
+2026年8月24日に全Gate ACCEPTED、B2 COMPLETEとした。
 
 ### 6.9 G6 Runtime fixtureのOwner Review結果
 
@@ -543,8 +568,8 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 | WP | 作業 | 主な成果物 | 検証・判定 |
 |---|---|---|---|
 | B1 | Feature Template設計・実装 | 最小Tier 1 / Tier 2 template、生成・利用手順 | 両templateから生成し`mvn verify`成功 |
-| B2 | ArchUnit APIとrule matrix設計 | 安定した公開entry point、Phase 1a適用rule、ADR message contract | API review、compliant fixture成功 |
-| B3 | ArchUnit rules再実装 | `koiki-archunit-rules`、positive / negative fixture | 5必須違反で失敗し、ADR・影響・修正方法を表示 |
+| B2 | ArchUnit APIとrule matrix設計 | 安定した公開entry point、Phase 1a適用rule、ADR message contract、compliant fixture仕様 | COMPLETE（2026年8月24日、Gate 1〜5 Owner Review済み） |
+| B3 | ArchUnit rules再実装 | `koiki-archunit-rules`、positive / negative fixture | compliant fixture成功。5必須違反で失敗し、ADR・影響・修正方法を表示 |
 | B4 | Null Safety正式化 | Parent compiler設定、`@NullMarked`方針、negative test | 正常→違反失敗→復元成功 |
 | B5 | Template統合検証 | ArchUnit、Level 0、NullAwayを両Tier templateへ適用 | 生成直後成功、意図的違反失敗 |
 
