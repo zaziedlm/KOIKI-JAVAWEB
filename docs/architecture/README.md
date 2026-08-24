@@ -10,6 +10,7 @@
 - `validation/phase1a-build-foundation.md`: Phase 1a A2 / G1の正式build baseline実効検証
 - `validation/phase1a-architecture-contract.md`: Phase 1a A3の最小Architecture Public API実効検証
 - `validation/phase1a-ci-build-foundation.md`: Phase 1a A4のWindows / Ubuntu CI Build Foundation実効検証
+- `validation/phase1a-feature-template.md`: Phase 1a B1のTier 1 / Tier 2 Feature Template実効検証
 
 Phase 0では次を中心に管理し、承認済み成果をPhase 1aの判断基準として維持します。
 

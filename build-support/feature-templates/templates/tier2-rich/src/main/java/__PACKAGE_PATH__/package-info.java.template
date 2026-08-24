@@ -1,0 +1,14 @@
+/** Tier 2 RICH business module using the shared JPA model. */
+@NullMarked
+@KoikiModule(
+        name = "__MODULE_NAME__",
+        tier = ModuleTier.RICH,
+        persistence = PersistenceTechnology.JPA,
+        persistenceModel = PersistenceModel.SHARED)
+package __FEATURE_PACKAGE__;
+
+import org.jspecify.annotations.NullMarked;
+import org.koikifw.architecture.KoikiModule;
+import org.koikifw.architecture.ModuleTier;
+import org.koikifw.architecture.PersistenceModel;
+import org.koikifw.architecture.PersistenceTechnology;

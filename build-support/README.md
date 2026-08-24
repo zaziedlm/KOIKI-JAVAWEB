@@ -2,6 +2,13 @@
 
 KOIKI自身のBuild / Quality Gate検証を補助するTooling所有の資材を配置します。
 
+## Feature Template
+
+`feature-templates/`はPhase 1a B1のTooling所有Tier 1 SIMPLE / Tier 2 RICH生成資材です。
+生成された業務moduleはCustomerまたはReference等の生成先Applicationが所有します。
+正式Maven artifactおよびPhase 5のProject Templateではありません。生成方法とRepository内の
+positive verificationは`feature-templates/README.md`を参照してください。
+
 `maven/g1-baseline-consumer-pom.xml`は、正式Parentを異なるversionのConsumerから継承し、
 BOMの実効versionとtest / runtime scopeを照合する非配布fixtureです。Root Reactorおよび
 Phase 1a release unitには含めません。

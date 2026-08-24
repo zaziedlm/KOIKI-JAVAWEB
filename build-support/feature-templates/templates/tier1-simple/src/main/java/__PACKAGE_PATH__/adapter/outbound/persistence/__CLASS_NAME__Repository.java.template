@@ -1,0 +1,13 @@
+package __FEATURE_PACKAGE__.adapter.outbound.persistence;
+
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.data.repository.Repository;
+
+/** Spring Data repository used directly by the Tier 1 Application Use Case. */
+public interface __CLASS_NAME__Repository extends Repository<__CLASS_NAME__, UUID> {
+
+    Optional<__CLASS_NAME__> findById(UUID id);
+
+    __CLASS_NAME__ save(__CLASS_NAME__ __CLASS_VARIABLE__);
+}

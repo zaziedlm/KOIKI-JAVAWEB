@@ -1,0 +1,32 @@
+package __FEATURE_PACKAGE__.adapter.outbound.persistence;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import java.util.Objects;
+import java.util.UUID;
+
+/** Behavior-free persistence model for the Tier 1 feature. */
+@Entity
+public class __CLASS_NAME__ {
+
+    @Id
+    private UUID id = UUID.randomUUID();
+
+    private String label = "";
+
+    protected __CLASS_NAME__() {
+    }
+
+    public __CLASS_NAME__(UUID id, String label) {
+        this.id = Objects.requireNonNull(id, "id");
+        this.label = Objects.requireNonNull(label, "label");
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+}

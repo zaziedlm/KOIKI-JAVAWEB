@@ -29,3 +29,6 @@ tmp/
 
 # Walking Skeleton local outputs
 walking-skeleton/.work/
+
+# Generated Feature Template verification modules
+build-support/feature-templates/verification/generated/

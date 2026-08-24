@@ -1,0 +1,47 @@
+package __FEATURE_PACKAGE__.application.usecase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
+import __FEATURE_PACKAGE__.adapter.outbound.persistence.__CLASS_NAME__;
+import __FEATURE_PACKAGE__.adapter.outbound.persistence.__CLASS_NAME__Repository;
+
+class Create__CLASS_NAME__UseCaseTest {
+
+    @Test
+    void createsAValidPersistenceModel() {
+        InMemoryRepository repository = new InMemoryRepository();
+        Create__CLASS_NAME__UseCase useCase = new Create__CLASS_NAME__UseCase(repository);
+
+        UUID id = useCase.create("example");
+
+        assertEquals(id, repository.saved.getId());
+        assertEquals("example", repository.saved.getLabel());
+    }
+
+    @Test
+    void rejectsBlankLabelInTheApplicationLayer() {
+        Create__CLASS_NAME__UseCase useCase = new Create__CLASS_NAME__UseCase(new InMemoryRepository());
+
+        assertThrows(IllegalArgumentException.class, () -> useCase.create(" "));
+    }
+
+    private static final class InMemoryRepository implements __CLASS_NAME__Repository {
+
+        private __CLASS_NAME__ saved = new __CLASS_NAME__(UUID.randomUUID(), "initial");
+
+        @Override
+        public Optional<__CLASS_NAME__> findById(UUID id) {
+            return saved.getId().equals(id) ? Optional.of(saved) : Optional.empty();
+        }
+
+        @Override
+        public __CLASS_NAME__ save(__CLASS_NAME__ __CLASS_VARIABLE__) {
+            saved = __CLASS_VARIABLE__;
+            return __CLASS_VARIABLE__;
+        }
+    }
+}
