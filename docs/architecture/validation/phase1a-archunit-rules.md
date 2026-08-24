@@ -2,7 +2,7 @@
 
 **準備日:** 2026年8月24日<br>
 **対象branch:** `feature/phase1a-archunit-rules`<br>
-**状態:** IMPLEMENTATION PLAN DRAFT / IMPLEMENTATION NOT STARTED<br>
+**状態:** IMPLEMENTATION IN PROGRESS / GATE 1 ACCEPTED<br>
 **Ownership:** Tooling<br>
 **対象artifact:** `org.koikifw:koiki-archunit-rules:0.1.0-SNAPSHOT`<br>
 **開始baseline:** `main` / `b460b52`（B2 PR #9 merge）
@@ -93,7 +93,7 @@ Public facadeを一部ruleだけで公開する途中状態を避けるため、
 
 | Gate | Review対象 | 承認条件 | 初期状態 |
 |---:|---|---|---|
-| 1 | Maven module、BOM、dependency、内部基盤 | 空moduleでなく、scopeと入力基盤がB2契約どおり | REVIEW PENDING |
+| 1 | Maven module、BOM、dependency、内部基盤 | 空moduleでなく、scopeと入力基盤がB2契約どおり | ACCEPTED（2026年8月25日） |
 | 2 | Rule 1〜13、28、38〜39 | 共通・Ownership・Event ruleのfocused testとmessageが対応 | REVIEW PENDING |
 | 3 | Rule 14〜24、Rule 19 | Tier / MVC、2許容predicate、Rule 19の正常・違反経路が成立 | REVIEW PENDING |
 | 4 | Public API、compliant fixture、必須5負例 | 1 class / 2 method、6 positive、5独立negative、25 messageが成立 | REVIEW PENDING |
@@ -142,3 +142,81 @@ commit境界に残さない。
 | Implementation | 未着手。POM、Java source、fixtureは変更していない |
 
 次回はGate 1の実装前確認から開始し、Stage 1のMaven / dependency差分を作成する。
+
+## 8. Gate 1実装・検証結果
+
+**実装日:** 2026年8月24日〜25日<br>
+**Owner Review:** ACCEPTED（2026年8月25日、Shuichi Kataoka）
+
+### 8.1 実装結果
+
+| 対象 | 結果 |
+|---|---|
+| Root Reactor | `koiki-archunit-rules`を正式moduleとして追加 |
+| BOM | ArchUnit `1.5.0`とRules artifactをdependency managementへ追加 |
+| Rules POM | `koiki-parent`継承、production直接3件、JUnit 1件＋test fixture 8件 |
+| Null Safety | `org.koikifw.archunit`へ`@NullMarked`を適用 |
+| 入力基盤 | `PackageName`でJava 21 package名、null、不正値、重複・包含、defensive copyを検査 |
+| metadata基盤 | `ModuleMetadata`でArchUnitのimport済みpackageから`@KoikiModule`全属性を読取り |
+| message基盤 | `RuleMessage`で25 failure ID、根拠、影響、修正方針、違反内容を分離構成 |
+| visibility | `PackageName`、`ModuleMetadata`、`RuleMessage`は同一packageのpackage-private型 |
+| Public API | Gate 1では未追加。Facade、個別rule method、公開内部型なし |
+
+### 8.2 test結果
+
+| Test | 件数 | 結果 |
+|---|---:|---|
+| `PackageNameTest` | 6 | PASS |
+| `ModuleMetadataTest` | 3 | PASS |
+| `RuleMessageTest` | 5 | PASS |
+| Rules module合計 | 14 | PASS |
+| 既存Architecture Contract | 4 | PASS |
+
+入力testでは、null、empty、blank、前後空白、wildcard、Java keyword、先頭・末尾`.`、空segment、
+不正identifier、Framework / ConsumerおよびConsumer同士の重複・包含、varargsの防御的copyを確認した。
+metadata testではSIMPLE / RICHの全宣言値とannotation未宣言を確認し、未宣言時にdefaultを推測しない。
+message testでは複数ADRを個別の角括弧で出力し、Rule 10 / 23および未適用IDへfailure messageを作れないことを
+確認した。
+
+### 8.3 build・dependency・visibility evidence
+
+実行環境はApache Maven `3.9.16`、Eclipse Temurin `21.0.12`、Windows 11、UTF-8である。
+依存取得後の再現確認は`--offline`で行った。
+
+```powershell
+.\mvnw.cmd --offline --batch-mode --no-transfer-progress `
+  -pl koiki-archunit-rules -am clean verify
+
+.\mvnw.cmd --offline --batch-mode --no-transfer-progress clean verify
+
+.\mvnw.cmd --offline --batch-mode --no-transfer-progress `
+  -pl koiki-archunit-rules -am dependency:tree -Dscope=compile
+
+.\mvnw.cmd --offline --batch-mode --no-transfer-progress `
+  -pl koiki-archunit-rules -am dependency:tree `
+  "-Dincludes=org.springframework:*,org.springframework.data:*,org.springframework.modulith:*,jakarta.persistence:jakarta.persistence-api,org.junit.jupiter:*"
+```
+
+| 検証 | 結果 |
+|---|---|
+| Rules module `clean verify` | BUILD SUCCESS |
+| Root Reactor `clean verify` | 5 moduleすべてSUCCESS |
+| production直接依存 | Contract、ArchUnit、JSpecifyの3件 |
+| production推移依存 | ArchUnit由来のSLF4J APIだけ |
+| Spring / Data / JPA / Modulith / JUnit | test scopeだけ |
+| JAR inventory / `javap` | `package-info`＋3 package-private型、public型なし |
+| `git diff --check` | PASS |
+
+JDKのCDS archive差異によりforked JVMがnative streamへwarningを出すため、Surefireはcorrupted channel warningを
+記録した。これは変更前baselineとGate 1の両方で発生し、test件数、failure / errorおよびbuild結果には影響しない。
+ArchUnit実行時にはSLF4J provider未配置のNOP logger通知が出るが、test用またはproduction用logging実装を
+追加してdependency境界を拡張しない。
+
+### 8.4 Gate 1判定
+
+- 空moduleではなく、内部基盤とcontract testを同じ変更単位で実装した。
+- B2で承認したdependency scope、入力契約、Null Safety、package-private境界を維持した。
+- Public Facade、Rule 1以降、compliant / negative fixtureおよび後続Phase成果を先行実装していない。
+- module単体とRoot Reactorのbuildが成功した。
+
+以上によりGate 1を`ACCEPTED`とし、Gate 2のRule 1〜13、28、38〜39へ進む。
