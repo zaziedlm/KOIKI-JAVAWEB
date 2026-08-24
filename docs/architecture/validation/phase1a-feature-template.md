@@ -180,6 +180,7 @@ pwsh -NoProfile -File build-support/feature-templates/verify-feature-templates.p
 |---|---|
 | Architecture Contract | 4 tests、failure 0、error 0、skipped 0 |
 | Tier 1 Application Use Case | 2 tests、failure 0、error 0、skipped 0 |
+| Tier 2 Application Use Case | 2 tests、failure 0、error 0、skipped 0 |
 | Tier 2 Domain Model | 3 tests、failure 0、error 0、skipped 0 |
 | Spring Modulith Level 0 | 1 test、failure 0、error 0、skipped 0 |
 | Reactor | 6 projects、BUILD SUCCESS |
@@ -189,6 +190,21 @@ pwsh -NoProfile -File build-support/feature-templates/verify-feature-templates.p
 
 Spring Modulithの検証rootはtest classへ`@Modulithic`を付与している。Modulith APIをproduction
 sourceから参照せず、`spring-modulith-starter-test`をtest scopeだけに保つ。
+
+### 7.1 Gate 4 Owner Review結果
+
+| 項目 | 判断 |
+|---|---|
+| Decision | ACCEPTED WITH CONDITIONS SATISFIED |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月24日 |
+| Maven fixture | 正式BOM / Architecture Contractを含む6-project ReactorとJDK 21 buildを承認 |
+| Level 0 | `catalog`と`approval`の両module発見を明示assertしたうえで`verify()`する |
+| Tier tests | Tier 1 Application、Tier 2 Application、Tier 2 Domainの成功・拒否経路を承認 |
+| Runtime依存 | Spring Modulithをtest scopeに限定し、runtime dependency treeに存在しないことを承認 |
+
+Owner Reviewで指摘したLevel 0のmodule発見証拠とTier 2 Application Use Caseの直接testを追加し、
+同じ検証commandの成功を確認した。これによりGate 4の承認条件は充足し、Gate 4をクローズする。
 
 ## 8. 実装中に得た知見
 

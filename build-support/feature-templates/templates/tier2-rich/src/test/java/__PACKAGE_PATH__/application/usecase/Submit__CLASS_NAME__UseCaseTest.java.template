@@ -1,0 +1,65 @@
+package __FEATURE_PACKAGE__.application.usecase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
+import __FEATURE_PACKAGE__.domain.model.__CLASS_NAME__;
+import __FEATURE_PACKAGE__.domain.repository.__CLASS_NAME__Repository;
+
+class Submit__CLASS_NAME__UseCaseTest {
+
+    @Test
+    void submitsAndSavesAnExistingDomainModel() {
+        UUID id = UUID.randomUUID();
+        __CLASS_NAME__ existing = new __CLASS_NAME__(id, "example");
+        InMemoryRepository repository = new InMemoryRepository(existing);
+        Submit__CLASS_NAME__UseCase useCase = new Submit__CLASS_NAME__UseCase(repository);
+
+        useCase.submit(id);
+
+        assertEquals(__CLASS_NAME__.Status.SUBMITTED, existing.getStatus());
+        assertSame(existing, repository.saved);
+        assertTrue(repository.saveCalled);
+    }
+
+    @Test
+    void rejectsAMissingDomainModelWithoutSaving() {
+        __CLASS_NAME__ existing = new __CLASS_NAME__(UUID.randomUUID(), "example");
+        InMemoryRepository repository = new InMemoryRepository(existing);
+        Submit__CLASS_NAME__UseCase useCase = new Submit__CLASS_NAME__UseCase(repository);
+
+        assertThrows(IllegalArgumentException.class, () -> useCase.submit(UUID.randomUUID()));
+
+        assertFalse(repository.saveCalled);
+    }
+
+    private static final class InMemoryRepository implements __CLASS_NAME__Repository {
+
+        private final __CLASS_NAME__ existing;
+        private __CLASS_NAME__ saved;
+        private boolean saveCalled;
+
+        private InMemoryRepository(__CLASS_NAME__ existing) {
+            this.existing = existing;
+            this.saved = existing;
+        }
+
+        @Override
+        public Optional<__CLASS_NAME__> findById(UUID id) {
+            return existing.getId().equals(id) ? Optional.of(existing) : Optional.empty();
+        }
+
+        @Override
+        public __CLASS_NAME__ save(__CLASS_NAME__ __CLASS_VARIABLE__) {
+            saved = __CLASS_VARIABLE__;
+            saveCalled = true;
+            return __CLASS_VARIABLE__;
+        }
+    }
+}
