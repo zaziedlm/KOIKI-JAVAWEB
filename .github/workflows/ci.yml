@@ -47,3 +47,7 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: ./mvnw --batch-mode --no-transfer-progress clean verify
+
+      - name: Verify Tier 1 and Tier 2 Feature Templates
+        shell: pwsh
+        run: pwsh -NoProfile -File build-support/feature-templates/verify-feature-templates.ps1
