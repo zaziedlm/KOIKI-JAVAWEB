@@ -2,10 +2,10 @@
 
 **検証日:** 2026年8月24日<br>
 **対象branch:** `feature/phase1a-feature-template`<br>
-**状態:** IMPLEMENTED / LOCAL PASS<br>
-**B1 status:** OWNER IMPLEMENTATION REVIEW<br>
+**状態:** ACCEPTED<br>
+**B1 status:** COMPLETE<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**設計承認日:** 2026年8月24日<br>
+**承認日:** 2026年8月24日<br>
 **Ownership:** Tooling<br>
 **対象:** B1 Tier 1 SIMPLE / Tier 2 RICH Feature Template
 
@@ -21,9 +21,8 @@ Phase 1aのTier構造検証に限定した2種類のFeature Templateを、Walkin
 - Customer相当の検証Reactorへ両Tierを生成し、Java 21で`clean verify`が成功した。
 - Spring Modulith 2.1.0 Level 0をtest scopeだけで実行し、runtime dependencyへ混入しなかった。
 
-GitHub ActionsのWindows / Ubuntu jobへ同じ検証commandを追加した。remote CI結果とOwnerによる
-実装Reviewが完了するまでは、本書の状態を`IMPLEMENTED / LOCAL PASS`、B1を
-`OWNER IMPLEMENTATION REVIEW`とする。
+GitHub ActionsのWindows / Ubuntu jobへ同じ検証commandを追加し、PR #8の両jobで成功した。
+Owner Review Gate 1〜5を完了したため、本書を`ACCEPTED`、B1を`COMPLETE`とする。
 
 ## 2. Owner Review済み設計判断
 
@@ -223,9 +222,37 @@ local installを使わず解決した。外部配布成立の証拠とは表現�
 ## 9. CI適用
 
 既存の`Verify (windows-2025)`と`Verify (ubuntu-24.04)`へ、正式Reactorの`clean verify`後に
-同じ`verify-feature-templates.ps1`を実行するstepを追加した。GitHub hosted runnerでの結果は、
-Pull Request作成後に本書へ追記する。`push` triggerは`main`だけを対象とするため、feature branchの
-remote検証は`pull_request` triggerで実行する。
+同じ`verify-feature-templates.ps1`を実行するstepを追加した。`push` triggerは`main`だけを対象とするため、
+feature branchのremote検証は`pull_request` triggerで実行する。PR #8で両jobの成功を確認し、
+次節へ結果を記録する。
+
+### 9.1 GitHub正常系検証
+
+| 項目 | 結果 |
+|---|---|
+| Pull request | [PR #8](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/8) |
+| 対象commit | `b8bcdae479071e73e46ad13c552a6bc86fc3d9d7` |
+| Workflow run | [CI run 32697056463](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32697056463)、success |
+| Ubuntu job | [`Verify (ubuntu-24.04)`](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32697056463/job/97341064208)、success |
+| Windows job | [`Verify (windows-2025)`](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32697056463/job/97341064001)、success |
+
+両jobで正式Root Reactorの`clean verify`後にFeature Template検証を実行し、Tier 1 / Tier 2生成、
+6-project Reactor、Level 0およびruntime dependency検査が成功した。
+
+### 9.2 Gate 5 Owner Review結果
+
+| 項目 | 判断 |
+|---|---|
+| Decision | ACCEPTED |
+| B1 status | COMPLETE |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月24日 |
+| CI | Windows / Ubuntu両jobの成功を確認 |
+| Validation | Local結果、Owner Review Gate 1〜4、remote CI証拠を記録 |
+| Deferred | B2〜B5、C1 / C2および後続Phaseとの境界を維持 |
+
+Architecture Ownerは、CI、Validation、DeferredおよびB1の実装範囲を確認した。Gate 5に残件はなく、
+B1 Feature Template設計・実装を最終承認し、Gate 5とB1をクローズする。
 
 ## 10. Deferred
 
