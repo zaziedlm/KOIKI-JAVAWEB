@@ -224,7 +224,8 @@ local installを使わず解決した。外部配布成立の証拠とは表現�
 
 既存の`Verify (windows-2025)`と`Verify (ubuntu-24.04)`へ、正式Reactorの`clean verify`後に
 同じ`verify-feature-templates.ps1`を実行するstepを追加した。GitHub hosted runnerでの結果は、
-branch push後に本書へ追記する。
+Pull Request作成後に本書へ追記する。`push` triggerは`main`だけを対象とするため、feature branchの
+remote検証は`pull_request` triggerで実行する。
 
 ## 10. Deferred
 
