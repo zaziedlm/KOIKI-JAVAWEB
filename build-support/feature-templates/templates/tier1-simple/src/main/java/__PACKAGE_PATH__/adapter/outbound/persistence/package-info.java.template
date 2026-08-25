@@ -1,0 +1,5 @@
+/** Persistence adapter owned by this Tier 1 feature. */
+@NullMarked
+package __FEATURE_PACKAGE__.adapter.outbound.persistence;
+
+import org.jspecify.annotations.NullMarked;

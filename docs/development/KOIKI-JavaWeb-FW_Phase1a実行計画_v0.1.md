@@ -3,7 +3,7 @@
 **版:** v0.1  
 **作成日:** 2026年8月21日  
 **文書状態:** ACCEPTED<br>
-**実行状態:** IN PROGRESS（Milestone A COMPLETE / Milestone BのB1〜B4 COMPLETE / B5 NEXT）<br>
+**実行状態:** IN PROGRESS（Milestone A・B COMPLETE / Milestone CのC1 NEXT）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **承認日:** 2026年8月21日  
 **最終状態更新日:** 2026年8月25日<br>
@@ -25,7 +25,7 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A COMPLETE、Milestone BのB1〜B4 COMPLETE、B5着手前 |
+| Phase / status | Phase 1a / Milestone A・B COMPLETE、Milestone CのC1着手前 |
 | Ownership | Framework: Architecture Contract、Tooling: Parent / BOM / Build Support / ArchUnit / CI |
 | 対象module | Root Reactor、`koiki-parent`、`koiki-dependencies-bom`、Architecture Contract、`koiki-archunit-rules`、検証用Consumer |
 | 適用指針 | グランドデザイン v0.2、Repository Architecture、ADR Register、Baseline Compatibility、Phase 1a引継ぎ台帳 |
@@ -84,6 +84,15 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 - B4 PR #11をmerge commit `b742ecf`で`main`へmergeし、push後のCI run #32803500566で両OS jobの成功を確認した。
 - Architecture Owner Reviewにより、B1〜B4は`COMPLETE`。Milestone Bの次回WPはB5 Template統合検証とする。
 - B5、C1以降および後続Phaseの成果物は未実装である。
+
+### 3.7 B5完了後の状態
+
+- B5でTier 1 / Tier 2 Feature TemplateへArchUnit、Spring Modulith Level 0、NullAwayを統合した。
+- 全7 production packageの`@NullMarked`宣言、正常系、Tier別ArchUnit負例2経路、
+  Tier別NullAway負例2経路、復元およびruntime依存境界を再現可能なscriptで検証した。
+- PR #13のCI run #32825065374でWindows / Ubuntu両jobの成功を確認し、
+  Architecture Owner ReviewによりGate 1〜4、B5およびMilestone Bを`COMPLETE`とした。
+- Phase 1aの次回WPはMilestone CのC1内部snapshot公開とする。C1以降および後続Phaseの成果物は未実装である。
 
 ## 4. Scope
 
@@ -582,7 +591,7 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 | B2 | ArchUnit APIとrule matrix設計 | 安定した公開entry point、Phase 1a適用rule、ADR message contract、compliant fixture仕様 | COMPLETE（2026年8月24日、Gate 1〜5 Owner Review済み） |
 | B3 | ArchUnit rules再実装 | `koiki-archunit-rules`、positive / negative fixture | COMPLETE（2026年8月25日、Gate 1〜5 Owner Review・Windows / Ubuntu CI済み） |
 | B4 | Null Safety正式化 | Parent compiler設定、`@NullMarked`方針、negative test | COMPLETE（2026年8月25日、Windows / Ubuntu CI・Gate 2 Owner Review済み） |
-| B5 | Template統合検証 | ArchUnit、Level 0、NullAwayを両Tier templateへ適用 | 生成直後成功、意図的違反失敗 |
+| B5 | Template統合検証 | ArchUnit、Level 0、NullAwayを両Tier templateへ適用 | COMPLETE（2026年8月25日、Gate 1〜4 Owner Review・PR #13 Windows / Ubuntu CI済み） |
 
 **Exit criteria:**
 
@@ -653,15 +662,14 @@ Phase 1a準備作業は完了しているが、Owner稼働時間を一貫して�
 開始rangeから控除しない。Milestone A完了時にWP別実績、待ち時間、AI支援比率、手戻りを記録し、
 Milestone B / Cのrangeを最初に再校正する。各Milestone終了時にも同じ方法で更新する。
 
-### 10.1 Milestone A完了時の再校正記録
+### 10.1 Milestone A・B完了時の再校正記録
 
-2026年8月25日の状態整合でMilestone Aの完了を確認したが、A1〜A4のOwner稼働時間、
-待ち時間、AI支援比率および手戻りを一貫した基準で計測していない。このため、過去の稼働日を
-推測で補完せず、Milestone B / Cの当初rangeは現時点で維持する。
+2026年8月25日にMilestone A・Bの完了を確認したが、A1〜B5のOwner稼働時間、待ち時間、
+AI支援比率および手戻りを一貫した基準で計測していない。このため、過去の稼働日を推測で補完せず、
+Milestone Cの当初rangeは現時点で維持する。
 
-B5の着手計画で、B1〜B4の実施結果から確認できる作業種別、待ち要因、手戻り要因を用いて
-B5の残作業を再見積もりする。Milestone CはB5完了時の実績と、artifact repository、
-外部Consumer、japicmp、Java 21 / 25 runtime環境の利用可否を確認したうえで再校正する。
+Milestone CはC1着手時に、artifact repository、外部Consumer、japicmp、Java 21 / 25 runtime環境の
+利用可否とB5 CIの実測を用いて再校正する。
 
 ## 11. Commit・Review境界
 

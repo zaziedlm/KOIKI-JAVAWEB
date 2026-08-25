@@ -1,0 +1,5 @@
+/** Domain model owned by this Tier 2 feature. */
+@NullMarked
+package __FEATURE_PACKAGE__.domain.model;
+
+import org.jspecify.annotations.NullMarked;

@@ -16,6 +16,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-archunit-rules</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.koikifw.templateverification</groupId>
       <artifactId>catalog-feature</artifactId>
       <version>${project.version}</version>
