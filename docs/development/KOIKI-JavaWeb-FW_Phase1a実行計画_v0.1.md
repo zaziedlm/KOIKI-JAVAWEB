@@ -570,7 +570,7 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 | B1 | Feature Template設計・実装 | 最小Tier 1 / Tier 2 template、生成・利用手順 | 両templateから生成し`mvn verify`成功 |
 | B2 | ArchUnit APIとrule matrix設計 | 安定した公開entry point、Phase 1a適用rule、ADR message contract、compliant fixture仕様 | COMPLETE（2026年8月24日、Gate 1〜5 Owner Review済み） |
 | B3 | ArchUnit rules再実装 | `koiki-archunit-rules`、positive / negative fixture | compliant fixture成功。5必須違反で失敗し、ADR・影響・修正方法を表示 |
-| B4 | Null Safety正式化 | Parent compiler設定、`@NullMarked`方針、negative test | IMPLEMENTED / LOCAL VERIFIED（2026年8月25日、remote CI・最終Owner Review待ち） |
+| B4 | Null Safety正式化 | Parent compiler設定、`@NullMarked`方針、negative test | COMPLETE（2026年8月25日、Windows / Ubuntu CI・Gate 2 Owner Review済み） |
 | B5 | Template統合検証 | ArchUnit、Level 0、NullAwayを両Tier templateへ適用 | 生成直後成功、意図的違反失敗 |
 
 **Exit criteria:**

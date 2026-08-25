@@ -2,7 +2,7 @@
 
 **実装・検証日:** 2026年8月25日<br>
 **対象branch:** `feature/phase1a-null-safety`<br>
-**状態:** IMPLEMENTED / LOCAL VERIFIED / REMOTE CI PENDING<br>
+**状態:** COMPLETE / GATE 2 ACCEPTED<br>
 **Ownership:** Tooling<br>
 **開始baseline:** `main` / `86b0033`（B3 PR #10 merge）
 
@@ -27,10 +27,11 @@ B4の完了条件は次のとおりとする。
 | Gate | Review対象 | 状態 |
 |---:|---|---|
 | 1 | 隔離fixture、profile切替、三段階script、CI統合、stop condition | ACCEPTED（2026年8月25日、Shuichi Kataoka） |
-| 2 | ローカル実装証拠、Windows / Ubuntu CI、Deferred、B4最終判定 | PENDING |
+| 2 | ローカル実装証拠、Windows / Ubuntu CI、Deferred、B4最終判定 | ACCEPTED（2026年8月25日、Shuichi Kataoka） |
 
 Gate 1では、tracked production sourceを一時変更してGit復元する方式を採らず、Reactor外fixtureの
-source directoryをprofileで切り替える方式を承認した。Gate 2はremote CI成功後に最終判定する。
+source directoryをprofileで切り替える方式を承認した。Gate 2ではローカル証拠、PR CI、Deferredおよび
+B4完了条件を確認し、2026年8月25日にOwner承認した。
 
 ## 3. ParentとJSpecifyの実効構成
 
@@ -145,7 +146,17 @@ artifact生成、NullAway diagnosticまたはbuild結果には影響しない。
 両OSでpositive、expected failure、restoreを同じ順序とdiagnostic契約で検査する。
 
 CIの権限は引き続き`contents: read`だけで、artifact公開、secret、`packages: write`またはlocal installを追加しない。
-remote CIのrun / job URLと結果はPR実行後に本書へ追記し、Gate 2を判定する。
+
+PR #11のcommit `882d0037b90627c0933a637ab492f91dc0b3b5d5`に対して、
+[CI run #32802594085](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32802594085)が完了した。
+
+| Job | Runner | Root / Template | NullAway positive / negative / restore | 結果 |
+|---|---|---|---|---|
+| [Verify (windows-2025)](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32802594085/job/97666268599) | Windows / Temurin 21 | SUCCESS | SUCCESS | SUCCESS |
+| [Verify (ubuntu-24.04)](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32802594085/job/97666268746) | Ubuntu / Temurin 21 | SUCCESS | SUCCESS | SUCCESS |
+
+両jobでRoot Reactor、Tier 1 / Tier 2 Feature Templateおよび
+`Verify NullAway positive, negative, and restore paths` stepが成功した。CI run全体の結論も`success`である。
 
 ## 8. Walking Skeletonとの差分
 
@@ -164,4 +175,5 @@ diagnosticだけを引き継ぎ、code、`dev.koiki.walkingskeleton` package、�
 B4実装は新規Public API、正式artifact、migrationまたはarchitecture decisionを追加しないため、ADR追加・変更は
 不要と判定した。機械検査はfixtureとCIが所有するため、KOIKI Skillへの規則複製も行わない。
 
-ローカル証拠は完了している。remote Windows / Ubuntu CI成功とOwner Review Gate 2承認後に、B4を`COMPLETE`とする。
+ローカルとremote Windows / Ubuntu CIで全完了条件を満たし、2026年8月25日のOwner ReviewでGate 2を
+`ACCEPTED`とした。以上によりB4を`COMPLETE`とする。
