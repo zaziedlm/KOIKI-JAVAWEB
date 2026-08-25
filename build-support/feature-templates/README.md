@@ -21,6 +21,8 @@ B1資材をPhase 5のProject Templateから内部利用するか、Phase 5向け
 
 使用しないController、DTO、Domain Service、Event、Gateway、Query Port、Configurationは生成しません。
 両Templateとも、モジュールrootの`package-info.java`で`@NullMarked`と`@KoikiModule`を宣言します。
+さらに、Javaのpackage annotationがsubpackageへ継承されないため、生成する各production subpackageも
+自身の`package-info.java`で`@NullMarked`を宣言します。未使用の将来subpackageは生成しません。
 
 ### 生成コードの位置づけ
 
@@ -108,14 +110,20 @@ base packageの配下で構成します。KOIKI自身の正式Public APIだけ�
 - 生成のall-or-nothing化、一時directoryからのmoveおよび自動cleanupは、正式な顧客向け運用を判断する
   Phase 5で再検討します。B1では削除処理を一般利用向け生成ツールへ追加しません。
 
-## Repository内positive verification
+## Repository内統合verification
 
 次のcommandはCustomer相当のAggregator配下へTier 1の`catalog`とTier 2の`approval`を生成し、
-unit testとSpring Modulith Level 0を含む`mvn verify`を実行します。
+unit test、正式ArchUnit rules、Spring Modulith Level 0およびNullAwayを含む`mvn verify`を実行します。
 
 ```powershell
 pwsh -NoProfile -File build-support/feature-templates/verify-feature-templates.ps1
 ```
 
-Spring Modulithは`architecture-tests`のtest scopeだけで利用し、runtime dependency treeへ含まれない
-ことも検査します。ArchUnit rulesの統合と負例、NullAwayの正式な負例はB2〜B5で追加します。
+続いて生成fixtureだけにTier別の意図的違反を注入し、次の4負例を検査します。
+
+- Tier 1 / Tier 2のmodule metadata欠落を正式ArchUnit rulesが`KOIKI-ARCH-007` / `008`で検出する。
+- Tier 1 / Tier 2のnon-null getter違反をNullAwayが対象source名と`[NullAway]`で検出する。
+
+負例後は追跡対象Templateから両Tierを再生成し、同じ正常系を再実行します。Spring Modulithは
+`architecture-tests`のtest scopeだけで利用し、生成moduleのruntime dependency treeへ含まれない
+ことも検査します。

@@ -1,0 +1,5 @@
+/** Application use cases for this Tier 2 feature. */
+@NullMarked
+package __FEATURE_PACKAGE__.application.usecase;
+
+import org.jspecify.annotations.NullMarked;

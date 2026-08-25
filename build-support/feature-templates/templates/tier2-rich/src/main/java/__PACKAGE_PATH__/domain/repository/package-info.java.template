@@ -1,0 +1,5 @@
+/** Domain-owned repository contract for this Tier 2 feature. */
+@NullMarked
+package __FEATURE_PACKAGE__.domain.repository;
+
+import org.jspecify.annotations.NullMarked;

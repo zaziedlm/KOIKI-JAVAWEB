@@ -3,7 +3,7 @@
 **版:** v0.1  
 **作成日:** 2026年8月21日  
 **文書状態:** ACCEPTED<br>
-**実行状態:** IN PROGRESS（Milestone A COMPLETE / Milestone BのB1〜B4 COMPLETE / B5 NEXT）<br>
+**実行状態:** IN PROGRESS（Milestone A COMPLETE / Milestone BのB1〜B4 COMPLETE / B5 IN PROGRESS）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **承認日:** 2026年8月21日  
 **最終状態更新日:** 2026年8月25日<br>
@@ -25,7 +25,7 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A COMPLETE、Milestone BのB1〜B4 COMPLETE、B5着手前 |
+| Phase / status | Phase 1a / Milestone A COMPLETE、Milestone BのB1〜B4 COMPLETE、B5実装・検証中 |
 | Ownership | Framework: Architecture Contract、Tooling: Parent / BOM / Build Support / ArchUnit / CI |
 | 対象module | Root Reactor、`koiki-parent`、`koiki-dependencies-bom`、Architecture Contract、`koiki-archunit-rules`、検証用Consumer |
 | 適用指針 | グランドデザイン v0.2、Repository Architecture、ADR Register、Baseline Compatibility、Phase 1a引継ぎ台帳 |
@@ -582,7 +582,7 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 | B2 | ArchUnit APIとrule matrix設計 | 安定した公開entry point、Phase 1a適用rule、ADR message contract、compliant fixture仕様 | COMPLETE（2026年8月24日、Gate 1〜5 Owner Review済み） |
 | B3 | ArchUnit rules再実装 | `koiki-archunit-rules`、positive / negative fixture | COMPLETE（2026年8月25日、Gate 1〜5 Owner Review・Windows / Ubuntu CI済み） |
 | B4 | Null Safety正式化 | Parent compiler設定、`@NullMarked`方針、negative test | COMPLETE（2026年8月25日、Windows / Ubuntu CI・Gate 2 Owner Review済み） |
-| B5 | Template統合検証 | ArchUnit、Level 0、NullAwayを両Tier templateへ適用 | 生成直後成功、意図的違反失敗 |
+| B5 | Template統合検証 | ArchUnit、Level 0、NullAwayを両Tier templateへ適用 | IN PROGRESS（Gate 1〜3 ACCEPTED、Gate 4 local成功・Windows / Ubuntu CI待ち） |
 
 **Exit criteria:**
 

@@ -14,6 +14,7 @@
 - `validation/phase1a-archunit-api-design.md`: Phase 1a B2 COMPLETEのArchUnit Public API・rule matrix設計とB3引継ぎ
 - `validation/phase1a-archunit-rules.md`: Phase 1a B3 COMPLETEのArchUnit Rules実装・検証記録
 - `validation/phase1a-null-safety.md`: Phase 1a B4 COMPLETEのJSpecify / NullAway正常・負例・復元検証
+- `validation/phase1a-template-integration.md`: Phase 1a B5のFeature Template quality gate統合・ローカル検証記録
 
 Phase 0では次を中心に管理し、承認済み成果をPhase 1aの判断基準として維持します。
 
