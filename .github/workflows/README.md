@@ -6,6 +6,7 @@ Phase 1aでは、CIとartifact公開を別の権限境界として扱います�
 
 - pull requestと`main`へのpushで実行します。
 - `windows-2025` / Temurin 21と`ubuntu-24.04` / Temurin 21で、Maven Wrapperから`clean verify`を実行します。
+- 両OSでNullAwayのpositive、意図的違反のexpected failure、restoreを隔離fixtureから検証します。
 - workflow権限は`contents: read`だけであり、secretや`packages: write`を使用しません。
 - checkout後に認証済みGit操作を行わないため、credentialをlocal Git configへ保持しません。
 - 外部Actionはfull commit SHAで固定します。tag更新時も差分reviewを必要とします。

@@ -51,3 +51,7 @@ jobs:
       - name: Verify Tier 1 and Tier 2 Feature Templates
         shell: pwsh
         run: pwsh -NoProfile -File build-support/feature-templates/verify-feature-templates.ps1
+
+      - name: Verify NullAway positive, negative, and restore paths
+        shell: pwsh
+        run: pwsh -NoProfile -File build-support/null-safety/verify-null-safety.ps1
