@@ -285,7 +285,8 @@ final class BusinessModuleRuleSet {
                 "extend Spring Data Commons Repository but not JpaRepository") {
             @Override
             public void check(JavaClass item, ConditionEvents events) {
-                if (!isTier(item, basePackage, ModuleTier.RICH)
+                if (item.getSimpleName().equals("package-info")
+                        || !isTier(item, basePackage, ModuleTier.RICH)
                         || !isInRole(item, basePackage, "domain.repository")) {
                     return;
                 }

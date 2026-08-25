@@ -85,6 +85,17 @@ class TierAndMvcRuleSetTest {
     }
 
     @Test
+    void rule16IgnoresNullMarkedPackageMetadata() {
+        PackageName compliantBase = PackageName.of(
+                "businessBasePackage",
+                "org.koikifw.archunit.fixture.compliant.business");
+
+        assertNoViolation(
+                BusinessModuleRuleSet.rule16(compliantBase),
+                new ClassFileImporter().importPackages(compliantBase.value() + ".rich"));
+    }
+
+    @Test
     void rule17RejectsDomainModelsInInboundSignatures() {
         String report = assertViolation(
                 BusinessModuleRuleSet.rule17(BUSINESS_BASE),
