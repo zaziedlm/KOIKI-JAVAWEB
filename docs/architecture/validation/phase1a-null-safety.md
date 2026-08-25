@@ -158,6 +158,17 @@ PR #11のcommit `882d0037b90627c0933a637ab492f91dc0b3b5d5`に対して、
 両jobでRoot Reactor、Tier 1 / Tier 2 Feature Templateおよび
 `Verify NullAway positive, negative, and restore paths` stepが成功した。CI run全体の結論も`success`である。
 
+### 7.1 `main` merge後の確認
+
+PR #11をmerge commit `b742ecf42603194d56d982914f6c4aae574050df`で`main`へmergeした。
+同commitを対象とするpush後の[CI run #32803500566](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32803500566)で、
+PR時と同じquality gateが再度成功した。
+
+| Job | Root Reactor | Tier 1 / Tier 2 Template | NullAway positive / negative / restore | 結果 |
+|---|---|---|---|---|
+| [Verify (windows-2025)](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32803500566/job/97668964319) | SUCCESS | SUCCESS | SUCCESS | SUCCESS |
+| [Verify (ubuntu-24.04)](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/32803500566/job/97668964605) | SUCCESS | SUCCESS | SUCCESS | SUCCESS |
+
 ## 8. Walking Skeletonとの差分
 
 Walking Skeletonでは正常sourceへ一時的に`return null`を追加し、検証後に手動復元していた。B4はその検証条件と
@@ -175,5 +186,6 @@ diagnosticだけを引き継ぎ、code、`dev.koiki.walkingskeleton` package、�
 B4実装は新規Public API、正式artifact、migrationまたはarchitecture decisionを追加しないため、ADR追加・変更は
 不要と判定した。機械検査はfixtureとCIが所有するため、KOIKI Skillへの規則複製も行わない。
 
-ローカルとremote Windows / Ubuntu CIで全完了条件を満たし、2026年8月25日のOwner ReviewでGate 2を
-`ACCEPTED`とした。以上によりB4を`COMPLETE`とする。
+ローカルとPRのremote Windows / Ubuntu CIで完了条件を満たし、2026年8月25日の
+Owner ReviewでGate 2を`ACCEPTED`、B4を`COMPLETE`とした。その後、`main` merge後の同日CIでも
+同じquality gateの成功を追加確認し、B4の最終判定を維持する。
