@@ -22,6 +22,18 @@ Phase 1a release unitには含めません。
 
 最初の`install`はA2のローカル実効検証専用です。Repository外Consumerの配布証明には使用しません。
 
+## Null Safety
+
+`null-safety/`はPhase 1a B4のTooling所有非配布fixtureです。Parentから継承するJSpecify / NullAwayを、
+正常production source、隔離した意図的違反、正常sourceへの復元の順に検証します。
+
+```powershell
+pwsh -NoProfile -File build-support/null-safety/verify-null-safety.ps1
+```
+
+検証scriptはtracked sourceを書き換えず、Root Reactorや配布artifactへnegative fixtureを含めません。
+詳細と期待diagnosticは`null-safety/README.md`を参照してください。
+
 Walking Skeleton由来のMaven Toolchains例、class version確認、Java 25 runtime確認等は、
 正式な代替検証が成立するまで履歴・比較用資材として残します。
 

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.koikifw.validation</groupId>
+    <artifactId>null-safety-verification</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>null-safety-fixture</artifactId>
+  <packaging>jar</packaging>
+
+  <name>KOIKI Null Safety Fixture</name>
+
+  <properties>
+    <null-safety.source-directory>${project.basedir}/src/positive/java</null-safety.source-directory>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>${null-safety.source-directory}</sourceDirectory>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>nullaway-negative</id>
+      <properties>
+        <null-safety.source-directory>${project.basedir}/src/negative/java</null-safety.source-directory>
+      </properties>
+    </profile>
+  </profiles>
+
+</project>
