@@ -2,7 +2,7 @@
 
 **準備日:** 2026年8月25日<br>
 **対象branch:** `feature/phase1a-template-integration`<br>
-**状態:** IN PROGRESS / GATE 1〜3 ACCEPTED / GATE 4 LOCAL PASSED・CI PENDING<br>
+**状態:** COMPLETE / GATE 1〜4 ACCEPTED<br>
 **Ownership:** Tooling<br>
 **対象:** B5 Tier 1 / Tier 2 Feature Template統合検証<br>
 **開始baseline:** `main` / `9c9f519`（B4完了後の状態整合PR #12 merge）
@@ -95,7 +95,7 @@ scriptは`finally`で生成fixtureを正常状態へ戻し、最後の正常buil
 | 1 | 所有権、subpackageのNull Safety、Reactor接続、負例注入、復元、Deferred | 現存production packageだけを`@NullMarked`にし、負例でtracked Templateを書き換えず、B1〜B4の承認済み契約を維持する | ACCEPTED（2026年8月25日、Shuichi Kataoka） |
 | 2 | 正常系実装 | 両TierでArchUnit、Level 0、NullAwayが同時成功 | ACCEPTED（2026年8月25日、Shuichi Kataoka） |
 | 3 | Tier別負例と復元 | 4負例が期待した識別可能なdiagnosticで失敗し、最後に正常復元 | ACCEPTED（2026年8月25日、Shuichi Kataoka） |
-| 4 | Regression、CI、Validation、Deferred | Root ReactorとWindows / Ubuntu CIが成功し、Milestone Bを閉じられる | LOCAL PASSED / CI PENDING |
+| 4 | Regression、CI、Validation、Deferred | Root ReactorとWindows / Ubuntu CIが成功し、Milestone Bを閉じられる | ACCEPTED（2026年8月25日、Shuichi Kataoka） |
 
 Gate 1でPublic API、Template生成契約、production dependencyまたはPhase scopeの変更が必要と
 判明した場合は実装へ進まず、Owner Reviewへ戻す。
@@ -145,14 +145,15 @@ ArchUnit Rules全65件が成功し、Rule 16の適用範囲がRepository contrac
 | Runtime dependency | 生成moduleのruntime dependency treeにSpring Modulithが含まれないことを確認 |
 | Root Reactor `clean verify` | SUCCESS。Architecture Contract 4件、ArchUnit Rules 65件成功 |
 | B4 `verify-null-safety.ps1` | SUCCESS。positive→negative→restoreが完走 |
+| PR #13 CI run #32825065374 | SUCCESS。`Verify (windows-2025)`と`Verify (ubuntu-24.04)`がともに成功 |
 
 負例では意図したNullAway診断に加えて、getterからfield参照を除いた結果としてError Proneの
 `UnusedVariable`も報告される。ただしscriptは終了コードだけに依存せず、対象source名と
 `[NullAway]`を必須条件として検査するため、Null Safety違反の検出証拠は分離できている。
 
-Ownerは2026年8月25日にローカル実装・検証結果を確認し、Gate 2 / 3を承認した。Gate 4は
-Root ReactorとB4回帰まで成功しているが、Windows / Ubuntu CIの成功とOwner承認までは
-完了扱いにしない。
+Ownerは2026年8月25日にローカル実装・検証結果を確認してGate 2 / 3を承認し、PR #13の
+Windows / Ubuntu CI成功を確認してGate 4を承認した。これによりGate 1〜4と完了条件1〜9を
+すべて満たしたため、B5およびMilestone Bを`COMPLETE`とする。
 
 ## 7. 見積もり再校正
 
@@ -160,11 +161,11 @@ B1〜B4の実施結果から設定したB5の開始rangeは、直接`4〜7標準
 AI支援Owner稼働`2〜5日`であった。これは経過日数または納期ではない。
 
 ローカル統合検証では、positive、Tier別ArchUnit負例2回、Tier別NullAway負例2回、restoreの
-合計6回の`clean verify`とruntime dependency tree検査が必要になった。現在の20分CI timeout内で
-実行可能と判断するが、Windows / Ubuntuでの実測が完了するまではtimeoutを変更しない。
+合計6回の`clean verify`とruntime dependency tree検査が必要になった。CI run #32825065374では、
+Ubuntu jobが約4分26秒、Windows jobが約6分48秒で成功し、20分timeout内に収まった。
 
-実装上の不確実性だったRule 16誤検出とTier別diagnostic分離はローカルで解消し、Gate 2 / 3の
-Owner Reviewも完了した。残る作業負荷は、Pull Request、両OS CI確認およびGate 4判定が中心となる。
+実装上の不確実性だったRule 16誤検出、Tier別diagnostic分離およびCI所要時間は解消した。
+B5の実装・Owner Reviewは完了し、残るPR記録更新後のCI再確認とmainへのmergeは統合作業として扱う。
 
 ## 8. Stop condition
 
