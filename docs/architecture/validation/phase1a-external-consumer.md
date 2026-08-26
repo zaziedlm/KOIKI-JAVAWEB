@@ -2,7 +2,7 @@
 
 **調査日:** 2026年8月26日<br>
 **対象branch:** `feature/phase1a-external-consumer`<br>
-**状態:** C2 GATE 1〜3 ACCEPTED / GATE 4 NEXT<br>
+**状態:** C2 COMPLETE / GATE 1〜4 ACCEPTED<br>
 **Ownership:** Tooling（独立Consumerは検証fixtureであり、Framework / Reference / Customer成果物ではない）<br>
 **対象:** C2 Repository外Consumer、認証運用、ArchUnit正常系・意図的違反<br>
 **開始baseline:** `a41dcde`（C2-0ドキュメント同期完了）<br>
@@ -38,7 +38,7 @@ C2は次をすべて満たしたときだけ`COMPLETE`とする。
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone C / C1・C2-0 COMPLETE / C2 Gate 1〜3 ACCEPTED／Gate 4 NEXT |
+| Phase / status | Phase 1a / Milestone C / C1・C2-0・C2 COMPLETE / C3 NEXT |
 | Ownership | Consumer Repository、fixture、workflow、検証scriptはTooling |
 | Framework成果物 | C1公開済み4成果物を変更せず利用する |
 | 本Repositoryの成果物 | 本Validation、実行計画・indexの状態更新だけ |
@@ -188,7 +188,7 @@ KOIKI FrameworkまたはCustomer業務コードではない。`business`も業�
 | 1 | read-only調査、Repository / Maven / fixture / 認証設計、完了・停止条件 | C2を別Repository・Tooling fixtureへ限定し、PAT / `GITHUB_TOKEN`、独立解決、正常系・負例の証拠を推測なく実装できる | ACCEPTED（2026年8月26日、Shuichi Kataoka） |
 | 2 | local独立Consumer、POM、Wrapper、settings template、PAT dry run | 空local repositoryからC1 snapshotだけを解決し、両Public API正常系と`KOIKI-ARCH-001`期待failureが成功する。credential非露出 | ACCEPTED — 2026年8月26日、Shuichi Kataoka |
 | 3 | GitHub Repository、package Actions access、workflow、remote CI | `GITHUB_TOKEN`の`packages: read`だけでfresh runnerが同じ検証に成功し、PAT secret・cache・KOIKI checkoutを使わない | ACCEPTED — 2026年8月26日、Shuichi Kataoka |
-| 4 | timestamp / checksum / dependency / CI / log Evidence、C2 closeout | C1 payloadとの一致、Consumer commit、再現手順、credential非露出が揃い、DoD 1a-3をC1 / C2の連続証拠で満たす | PENDING |
+| 4 | timestamp / checksum / dependency / CI / log Evidence、C2 closeout | C1 payloadとの一致、Consumer commit、再現手順、credential非露出が揃い、DoD 1a-3をC1 / C2の連続証拠で満たす | ACCEPTED — 2026年8月26日、Shuichi Kataoka |
 
 Gate 1承認により、Gate 2のlocal独立Consumer、POM、Wrapper、settings templateおよびPAT dry runへ進める。
 Gate 2承認前はGitHub Repositoryを作成・pushせず、package Actions accessも変更しない。Gate 3成功前に
@@ -441,3 +441,88 @@ Gate 3の技術条件は満たした。
 
 Architecture OwnerはGate 3の内容と結果、およびGate 1時点のpackage access想定との差分を承認した。
 C2は`IN PROGRESS`のままGate 4へ進み、Gate 4承認前にC2を完了扱いしない。
+
+## 15. Gate 4 closeout検証
+
+### 15.1 最終Consumer identity
+
+| 項目 | 結果 |
+|---|---|
+| Repository | `https://github.com/zaziedlm/KOIKI-JAVAWEB-PHASE1A-CONSUMER`、PUBLIC |
+| Default branch | `main` |
+| Final candidate commit | `178f5e90c867bb59d91e8c7f05a53124dbeae729` |
+| Local / remote | local `HEAD`と`origin/main`が同一commit |
+| Tracked tree | 20 files。Consumer POM / Wrapper / source / tests / workflow / scriptsだけ |
+| KOIKI本体 | Root ReactorへConsumerを追加せず、Framework artifact変更なし |
+
+final candidate commitでは、Gate 4 Evidence計画で未確定だったeffective POMとdependency treeのscope検証を
+`verify-local.ps1`へ追加した。生成物はGUID付きtemporary directoryだけへ置き、検証後に削除する。
+
+### 15.2 Dependency Evidence
+
+2026年8月26日23時28分（JST）開始のpush runで、effective POMとdependency treeをremote artifactから生成した。
+
+| Dependency | Effective scope | Dependency tree |
+|---|---:|---|
+| `org.koikifw:koiki-architecture-contract:0.1.0-SNAPSHOT` | compile | direct compile entry確認 |
+| `org.koikifw:koiki-archunit-rules:0.1.0-SNAPSHOT` | test | direct test entry確認 |
+| `org.junit.jupiter:junit-jupiter` | test | effective test scope確認 |
+
+Parentは`org.koikifw:koiki-parent:0.1.0-SNAPSHOT`を`<relativePath/>`でremote解決し、Dependencies BOM POMも
+空local repositoryへ取得してC1 SHA-256と一致した。通常の`~/.m2/repository`、Root Reactor、workspace reader、
+publisher checkoutまたは`install`は使用していない。
+
+### 15.3 最終remote CIとlog監査
+
+| 項目 | 結果 |
+|---|---|
+| Workflow run | `32980511364` |
+| URL | `https://github.com/zaziedlm/KOIKI-JAVAWEB-PHASE1A-CONSUMER/actions/runs/32980511364` |
+| Commit | `178f5e90c867bb59d91e8c7f05a53124dbeae729` |
+| Result | SUCCESS、job `98215726801`、約1分3秒 |
+| Runtime | Ubuntu 24.04、Temurin 21、Maven Wrapper 3.9.16 |
+| Token permission | Contents read、Metadata read、Packages read |
+| Secret inventory | Actions Repository secret 0件、追加PATなし |
+| Tests | 3件、Failures 0、Errors 0、Skipped 0 |
+| Artifact identity | `0.1.0-20260826.091429-1`、6 payload SHA-256 MATCH |
+| Dependency | effective POM scope 3件とKOIKI direct dependency tree 2件をassert |
+| Log scan | PAT形式、Bearer / Basic credential値、credential付きURLの検出0件 |
+
+GitHub標準Actionがcheckout中に利用するtoken表示は`***`へmaskされ、`persist-credentials: false`によりcheckout直後に
+削除された。Consumer scriptはtoken値、Maven Authorization header、settings実値またはeffective POMを出力・保存しない。
+
+### 15.4 C2完了条件traceability
+
+| §1 | 判定 | Evidence |
+|---:|---|---|
+| 1 | PASS | 別local Git Repositoryと別PUBLIC GitHub Repository、Root Reactor非追加 |
+| 2 | PASS | Wrapper 3.9.16 / JDK 21、正式4成果物をGitHub Packagesから解決 |
+| 3 | PASS | `<relativePath/>`、空local repository、KOIKI checkout / installなし |
+| 4 | PASS | local PAT classic `read:packages`のみ、Actions `GITHUB_TOKEN` packages readのみ |
+| 5 | PASS | tracked tree、local出力、成功run logにcredential実値なし |
+| 6 | PASS | 両Public APIのcompliant production fixture 2 tests成功 |
+| 7 | PASS | `KOIKI-ARCH-001`、ADR-022、影響、修正、source / targetを期待failureで確認 |
+| 8 | PASS | 意図的違反をJUnitで捕捉し、通常`verify`とCI green |
+| 9 | PASS | timestamp、公開元commit、6 SHA-256、commands、run、Consumer commitを記録 |
+| 10 | PASS | Gate 1〜4 ACCEPTED |
+
+DoD 1a-3は、C1の公開証拠とC2の独立Consumerによるlocal / remote取得・違反検出の連続証拠で満たした。
+
+## 16. Gate 4 Owner Review・C2 closeout結果
+
+| 項目 | 結果 |
+|---|---|
+| Gate 4 Decision | ACCEPTED |
+| C2 Decision | COMPLETE |
+| DoD | 1a-3 COMPLETE |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月26日 |
+| Scope | §15のConsumer identity、dependency、timestamp、checksum、CI、log、secret safety、traceability |
+| Next | C3 Public API Compatibility / japicmp |
+
+Architecture OwnerはGate 4の内容と結果を承認した。これにより§1の完了条件1〜10、Gate 1〜4および
+DoD 1a-3をすべて満たし、C2を`COMPLETE`とする。
+
+C2ではPublic API、Maven coordinates、C1 artifact、Root Reactor、ADR、Skillまたはmigrationを変更していない。
+ConsumerはTooling-ownedの非配布fixtureとして独立Repositoryに維持し、Framework、ReferenceまたはCustomer成果物へ
+昇格しない。Milestone Cの次回WPはC3とする。

@@ -12,7 +12,7 @@ CIおよび外部Consumer検証へ再構成しています。
 - Phase 0 Architecture Baseline: COMPLETE / ACCEPTED
 - Phase 1a Build Foundation: IN PROGRESS
 - Milestone A / B: COMPLETE
-- Milestone C: C1 COMPLETE / C2 IN PROGRESS（Gate 1〜3 ACCEPTED / Gate 4 NEXT）
+- Milestone C: C1・C2 COMPLETE / C3 NEXT
 - 正式groupId / Java base package: `org.koikifw`
 - Build JDK / target bytecode: Java 21
 - Runtime compatibility target: Java 21 / Java 25
@@ -20,7 +20,7 @@ CIおよび外部Consumer検証へ再構成しています。
 Root Reactorは、BOM、Parent、Architecture Contract、ArchUnit Rulesの正式4モジュールだけで構成します。
 Phase 0の`walking-skeleton/ws-smoke-*`はRepository内に履歴資産として残っていますが、Root Reactor、
 正式配布対象およびPhase 1aの実装基盤には含まれません。C1では正式4成果物の内部snapshot公開を完了し、
-C2ではそのsnapshotだけを利用するRepository外Consumerを検証します。
+C2ではそのsnapshotだけを利用するRepository外Consumerのlocal / remote検証を完了しました。
 
 ## 正本
 
