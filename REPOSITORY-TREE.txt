@@ -60,6 +60,7 @@ KOIKI-JAVAWEB/
 │   │   │   ├── phase1a-archunit-rules.md
 │   │   │   ├── phase1a-build-foundation.md
 │   │   │   ├── phase1a-ci-build-foundation.md
+│   │   │   ├── phase1a-external-consumer.md
 │   │   │   ├── phase1a-feature-template.md
 │   │   │   ├── phase1a-internal-snapshot.md
 │   │   │   ├── phase1a-null-safety.md
