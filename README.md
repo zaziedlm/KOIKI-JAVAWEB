@@ -11,12 +11,16 @@ CIおよび外部Consumer検証へ再構成しています。
 
 - Phase 0 Architecture Baseline: COMPLETE / ACCEPTED
 - Phase 1a Build Foundation: IN PROGRESS
+- Milestone A / B: COMPLETE
+- Milestone C: C1・C2 COMPLETE / C3 NEXT
 - 正式groupId / Java base package: `org.koikifw`
 - Build JDK / target bytecode: Java 21
 - Runtime compatibility target: Java 21 / Java 25
 
-Phase 1aの正式build構成は再実装中です。Root POMや`walking-skeleton/ws-smoke-*`には
-Phase 0の一時座標・検証moduleが残っており、正式な代替検証が成立するまで移行対象として扱います。
+Root Reactorは、BOM、Parent、Architecture Contract、ArchUnit Rulesの正式4モジュールだけで構成します。
+Phase 0の`walking-skeleton/ws-smoke-*`はRepository内に履歴資産として残っていますが、Root Reactor、
+正式配布対象およびPhase 1aの実装基盤には含まれません。C1では正式4成果物の内部snapshot公開を完了し、
+C2ではそのsnapshotだけを利用するRepository外Consumerのlocal / remote検証を完了しました。
 
 ## 正本
 
@@ -26,7 +30,9 @@ Phase 0の一時座標・検証moduleが残っており、正式な代替検証�
 - [Phase 0 DoD Closeout](docs/architecture/KOIKI-JavaWeb-FW_Phase0_DoD_Closeout_v0.1.md)
 - [Baseline Compatibility](docs/architecture/KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md)
 - [Glossary](docs/standards/KOIKI-JavaWeb-FW_Glossary_v0.1.md)
+- [Phase 1a実行計画](docs/development/KOIKI-JavaWeb-FW_Phase1a実行計画_v0.1.md)
 - [Phase 1a Walking Skeleton引継ぎ台帳](docs/development/KOIKI-JavaWeb-FW_Phase1a_WalkingSkeleton_Transition_Inventory_v0.1.md)
+- [Architecture / Validation index](docs/architecture/README.md)
 
 ## Ownership
 

@@ -1,97 +1,119 @@
-koiki-javaweb-fw-walking-skeleton-base-v0.1/
+KOIKI-JAVAWEB/
+├── .agents/
+│   └── skills/                         # KOIKI Skill adapters
+├── .claude/
+│   └── skills/                         # KOIKI Skill adapters
 ├── .github/
 │   ├── ISSUE_TEMPLATE/
 │   │   └── README.md
 │   ├── workflows/
+│   │   ├── ci.yml                      # Java 21 quality gate (Ubuntu; Windows temporarily disabled)
+│   │   ├── publish-snapshot.yml        # Four-artifact GitHub Packages publication
 │   │   └── README.md
 │   └── pull_request_template.md
 ├── .mvn/
 │   ├── wrapper/
-│   │   └── maven-wrapper.properties.template
+│   │   ├── maven-wrapper.jar
+│   │   └── maven-wrapper.properties
 │   └── README.md
 ├── build-support/
+│   ├── feature-templates/
+│   │   ├── templates/
+│   │   │   ├── tier1-simple/
+│   │   │   └── tier2-rich/
+│   │   ├── verification/
+│   │   │   ├── architecture-tests/
+│   │   │   └── pom.xml
+│   │   ├── GenerateFeature.java
+│   │   ├── verify-feature-templates.ps1
+│   │   └── README.md
 │   ├── maven/
+│   │   ├── g1-baseline-consumer-pom.xml
 │   │   └── toolchains.xml.example
+│   ├── null-safety/
+│   │   ├── verification/
+│   │   │   ├── fixture/
+│   │   │   └── pom.xml
+│   │   ├── verify-null-safety.ps1
+│   │   └── README.md
 │   ├── scripts/
 │   │   ├── bootstrap-maven-wrapper.ps1
 │   │   ├── bootstrap-maven-wrapper.sh
 │   │   ├── check-build-environment.ps1
+│   │   ├── import-corporate-root-ca.ps1
 │   │   ├── run-with-java25.ps1
 │   │   └── verify-class-version.ps1
 │   └── README.md
 ├── docs/
 │   ├── agent/
-│   │   ├── skills/
-│   │   │   └── README.md
-│   │   └── README.md
+│   │   └── skills/                     # KOIKI-specific Skill canonical sources
+│   │       ├── koiki-business-feature-work/
+│   │       └── koiki-project-overview/
 │   ├── architecture/
 │   │   ├── adr/
-│   │   │   └── README.md
 │   │   ├── diagrams/
-│   │   │   └── README.md
+│   │   ├── governance/
 │   │   ├── grand-design/
-│   │   │   └── KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md
-│   │   ├── validation/
-│   │   │   └── walking-skeleton-build-foundation.md
+│   │   ├── validation/                 # Phase 0 and Phase 1a implementation evidence
+│   │   │   ├── phase1a-architecture-contract.md
+│   │   │   ├── phase1a-archunit-api-design.md
+│   │   │   ├── phase1a-archunit-rules.md
+│   │   │   ├── phase1a-build-foundation.md
+│   │   │   ├── phase1a-ci-build-foundation.md
+│   │   │   ├── phase1a-external-consumer.md
+│   │   │   ├── phase1a-feature-template.md
+│   │   │   ├── phase1a-internal-snapshot.md
+│   │   │   ├── phase1a-null-safety.md
+│   │   │   ├── phase1a-template-integration.md
+│   │   │   └── walking-skeleton-*.md
+│   │   ├── KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md
+│   │   ├── KOIKI-JavaWeb-FW_Phase0_DoD_Closeout_v0.1.md
+│   │   ├── KOIKI-JavaWeb-FW_Phase_Estimate_Feasibility_v0.1.md
 │   │   ├── KOIKI-JavaWeb-FW_Repository_Architecture_v0.1.md
-│   │   └── README.md
+│   │   └── README.md                   # Architecture / Validation index
 │   ├── development/
+│   │   ├── KOIKI-JavaWeb-FW_Phase1a実行計画_v0.1.md
+│   │   ├── KOIKI-JavaWeb-FW_Phase1a_WalkingSkeleton_Transition_Inventory_v0.1.md
 │   │   ├── KOIKI-JavaWeb-FW_WalkingSkeleton実装計画_v1.0.md
+│   │   ├── phase1a-*-handoff-*.md
 │   │   └── README.md
+│   ├── reference/
 │   └── standards/
-│       └── README.md
-├── koiki-archunit-rules/
-│   └── README.md
-├── koiki-dependencies-bom/
+├── koiki-architecture-contract/        # Formal Reactor module / published artifact
+│   ├── src/
+│   │   ├── main/java/org/koikifw/architecture/
+│   │   └── test/java/org/koikifw/
 │   └── pom.xml
-├── koiki-framework/
+├── koiki-archunit-rules/               # Formal Reactor module / published artifact
+│   ├── src/
+│   │   ├── main/java/org/koikifw/archunit/
+│   │   └── test/java/org/koikifw/archunit/
+│   ├── pom.xml
 │   └── README.md
-├── koiki-parent/
+├── koiki-dependencies-bom/             # Formal Reactor module / published artifact
 │   └── pom.xml
-├── koiki-starters/
-│   └── README.md
-├── koiki-testing/
-│   └── README.md
-├── ops/
-│   └── README.md
-├── walking-skeleton/
+├── koiki-parent/                       # Formal Reactor module / published artifact
+│   └── pom.xml
+├── koiki-framework/                    # Reserved ownership directory; README only
+├── koiki-starters/                     # Reserved ownership directory; README only
+├── koiki-testing/                      # Reserved ownership directory; README only
+├── ops/                                # Reserved operations directory; README only
+├── walking-skeleton/                   # Phase 0 history; excluded from Root Reactor/publication
 │   ├── negative-tests/
-│   │   └── nullaway/
-│   │       └── README.md
 │   ├── ws-smoke-app/
-│   │   ├── src/
-│   │   │   └── main/
-│   │   │       ├── java/
-│   │   │       │   └── dev/
-│   │   │       │       └── koiki/
-│   │   │       │           └── walkingskeleton/
-│   │   │       │               └── smoke/
-│   │   │       │                   └── app/
-│   │   │       │                       ├── package-info.java
-│   │   │       │                       └── SmokeApplication.java
-│   │   │       └── resources/
-│   │   │           └── application.properties
-│   │   ├── Dockerfile.ws
-│   │   └── pom.xml
-│   └── ws-smoke-lib/
-│       ├── src/
-│       │   └── main/
-│       │       └── java/
-│       │           └── dev/
-│       │               └── koiki/
-│       │                   └── walkingskeleton/
-│       │                       └── smoke/
-│       │                           └── lib/
-│       │                               ├── GreetingService.java
-│       │                               └── package-info.java
-│       └── pom.xml
-├── .editorconfig
-├── .gitattributes
-├── .gitignore
+│   ├── ws-smoke-lib/
+│   └── Walking-Skeleton-plan-20260812.md
 ├── AGENTS.md
 ├── BUILD-BASELINE.json
+├── CLAUDE.md
 ├── CONTRIBUTING.md
 ├── LICENSE
-├── pom.xml
+├── mvnw
+├── mvnw.cmd
+├── pom.xml                              # Reactor: the four formal modules above only
 ├── README.md
+├── REPOSITORY-TREE.txt
 └── SECURITY.md
+
+This is a maintained structural overview, not an exhaustive source/fixture listing.
+Generated verification output and Maven target directories are intentionally omitted.
