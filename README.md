@@ -12,7 +12,7 @@ CIおよび外部Consumer検証へ再構成しています。
 - Phase 0 Architecture Baseline: COMPLETE / ACCEPTED
 - Phase 1a Build Foundation: IN PROGRESS
 - Milestone A / B: COMPLETE
-- Milestone C: C1 COMPLETE / C2 IN PROGRESS（Gate 1・2 ACCEPTED / Gate 3 NEXT）
+- Milestone C: C1 COMPLETE / C2 IN PROGRESS（Gate 1〜3 ACCEPTED / Gate 4 NEXT）
 - 正式groupId / Java base package: `org.koikifw`
 - Build JDK / target bytecode: Java 21
 - Runtime compatibility target: Java 21 / Java 25

@@ -2,7 +2,7 @@
 
 **調査日:** 2026年8月26日<br>
 **対象branch:** `feature/phase1a-external-consumer`<br>
-**状態:** C2 GATE 1・2 ACCEPTED / GATE 3 NEXT<br>
+**状態:** C2 GATE 1〜3 ACCEPTED / GATE 4 NEXT<br>
 **Ownership:** Tooling（独立Consumerは検証fixtureであり、Framework / Reference / Customer成果物ではない）<br>
 **対象:** C2 Repository外Consumer、認証運用、ArchUnit正常系・意図的違反<br>
 **開始baseline:** `a41dcde`（C2-0ドキュメント同期完了）<br>
@@ -38,7 +38,7 @@ C2は次をすべて満たしたときだけ`COMPLETE`とする。
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone C / C1・C2-0 COMPLETE / C2 Gate 1・2 ACCEPTED／Gate 3 NEXT |
+| Phase / status | Phase 1a / Milestone C / C1・C2-0 COMPLETE / C2 Gate 1〜3 ACCEPTED／Gate 4 NEXT |
 | Ownership | Consumer Repository、fixture、workflow、検証scriptはTooling |
 | Framework成果物 | C1公開済み4成果物を変更せず利用する |
 | 本Repositoryの成果物 | 本Validation、実行計画・indexの状態更新だけ |
@@ -187,7 +187,7 @@ KOIKI FrameworkまたはCustomer業務コードではない。`business`も業�
 |---:|---|---|---|
 | 1 | read-only調査、Repository / Maven / fixture / 認証設計、完了・停止条件 | C2を別Repository・Tooling fixtureへ限定し、PAT / `GITHUB_TOKEN`、独立解決、正常系・負例の証拠を推測なく実装できる | ACCEPTED（2026年8月26日、Shuichi Kataoka） |
 | 2 | local独立Consumer、POM、Wrapper、settings template、PAT dry run | 空local repositoryからC1 snapshotだけを解決し、両Public API正常系と`KOIKI-ARCH-001`期待failureが成功する。credential非露出 | ACCEPTED — 2026年8月26日、Shuichi Kataoka |
-| 3 | GitHub Repository、package Actions access、workflow、remote CI | `GITHUB_TOKEN`の`packages: read`だけでfresh runnerが同じ検証に成功し、PAT secret・cache・KOIKI checkoutを使わない | PENDING |
+| 3 | GitHub Repository、package Actions access、workflow、remote CI | `GITHUB_TOKEN`の`packages: read`だけでfresh runnerが同じ検証に成功し、PAT secret・cache・KOIKI checkoutを使わない | ACCEPTED — 2026年8月26日、Shuichi Kataoka |
 | 4 | timestamp / checksum / dependency / CI / log Evidence、C2 closeout | C1 payloadとの一致、Consumer commit、再現手順、credential非露出が揃い、DoD 1a-3をC1 / C2の連続証拠で満たす | PENDING |
 
 Gate 1承認により、Gate 2のlocal独立Consumer、POM、Wrapper、settings templateおよびPAT dry runへ進める。
@@ -355,3 +355,89 @@ Gate 2の実装・検証条件は満たした。
 
 Architecture OwnerはGate 2の内容と結果を承認した。C2は`IN PROGRESS`のままGate 3へ進み、Gate 3成功前に
 C2を完了扱いしない。
+
+## 13. Gate 3実装状況
+
+### 13.1 Consumer workflow
+
+Gate 3開始承認後、Consumerへ`.github/workflows/verify.yml`を実装し、初回local commitを作成した。
+
+| 項目 | 内容 |
+|---|---|
+| Consumer commits | `598c599b06477bb31f2f7a3a7482b9f89d17742c`（初回）、`e3504648377c4e1f2cf3f39fd917abfc613095ff`（Linux修正） |
+| Runner | `ubuntu-24.04`、Temurin 21 |
+| Workflow permissions | workflow既定`contents: read`、verify jobだけ`contents: read` / `packages: read` |
+| Authentication | `${{ secrets.GITHUB_TOKEN }}`を環境変数経由でMaven settingsへ渡す |
+| Independence | Maven cacheなし、GUID付き空local repository、KOIKI checkoutなし |
+| Checks | `clean verify`、3 tests、timestamped snapshot、6 payload SHA-256 |
+| Action pin | `actions/checkout`と`actions/setup-java`をfull commit SHA固定 |
+| Secret safety | PAT secretなし、`persist-credentials: false`、debug出力なし |
+
+`verify-local.ps1`はlocal PAT経路のscope検査を維持し、`-GitHubActions`は`GITHUB_ACTIONS=true`のrunnerでだけ
+利用可能とした。PowerShell AST、credential value scanおよび`git diff --check`は成功した。
+
+### 13.2 GitHub認証とRepository作成
+
+GitHub CLIの保存済み`zaziedlm`認証は失効しており、利用可能なサインイン済みbrowser接続もなかった。
+OwnerがGitHub CLIを再認証した後、次のPUBLIC Repositoryを作成し、Consumer `main`をpushした。
+
+```text
+https://github.com/zaziedlm/KOIKI-JAVAWEB-PHASE1A-CONSUMER
+```
+
+Repository IDは`R_kgDOUFAFrw`、default branchは`main`である。追加Actions secretは登録せず、Repositoryの
+default workflow permissionは`read`、pull request review承認権限は無効である。
+
+### 13.3 初回remote CIとcross-platform修正
+
+初回pushのrun `32979212106`は、package認証へ到達する前にConsumer scriptのcross-platform不備で失敗した。
+Linux runnerでWindows用`mvnw.cmd`を選択し、temporary path検査もWindows path separator固定だった。
+
+`verify-local.ps1`をOS中立化し、Linuxでは`mvnw`を選択して実行権限を付与し、path separatorと比較規則を
+OSごとに切り替えた。PowerShell AST検査後、commit `e3504648377c4e1f2cf3f39fd917abfc613095ff`としてpushした。
+C1 artifact、Architecture Contractまたはpackage認証の不具合ではない。
+
+### 13.4 成功remote CI
+
+修正後のpush runは次のとおり成功した。
+
+| 項目 | 結果 |
+|---|---|
+| Workflow run | `32979522941` |
+| URL | `https://github.com/zaziedlm/KOIKI-JAVAWEB-PHASE1A-CONSUMER/actions/runs/32979522941` |
+| Commit | `e3504648377c4e1f2cf3f39fd917abfc613095ff` |
+| Runner | GitHub-hosted Ubuntu 24.04.4、Temurin 21.0.12+8、fresh checkout |
+| Effective token permissions | Contents read、Metadata read、Packages read |
+| Authentication | Consumer Repositoryの`GITHUB_TOKEN`。追加PAT secretなし |
+| Maven isolation | cacheなし、GUID付き空temporary local repository、KOIKI checkoutなし |
+| Build | `clean verify`、終了コード`0`、BUILD SUCCESS |
+| Tests | 3件、Failures 0、Errors 0、Skipped 0 |
+| Timestamped snapshot | `0.1.0-20260826.091429-1` |
+| Payload | C1の6 POM / JARすべてでSHA-256 MATCH |
+| Credential safety | tokenはGitHubにより`***`へmaskされ、credential実値・認証付きURLの出力なし |
+
+### 13.5 package accessに関する実装確認
+
+Gate 1では4 packageそれぞれへのConsumer RepositoryのActions read access付与を想定した。一方、Apache Maven
+registryはrepository-scoped permissionで、C1の4 packageはすべてPUBLICかつ`zaziedlm/KOIKI-JAVAWEB`へ
+関連付いている。明示的なpackage access変更を行う前に、Consumerの`GITHUB_TOKEN`とjobの`packages: read`だけで
+4 packageの取得、timestampおよびSHA-256検証が成功した。
+
+したがって明示的なActions access変更は不要かつ実施していない。Gate 1の安全目的であるcross-repository
+`GITHUB_TOKEN`読取りは、より小さい外部状態変更で実証された。この実装確認をGate 3 Owner Review対象とする。
+
+Gate 3の技術条件は満たした。
+
+## 14. Gate 3 Owner Review結果
+
+| 項目 | 結果 |
+|---|---|
+| Decision | ACCEPTED |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月26日 |
+| Scope | §13のPUBLIC Consumer Repository、workflow、cross-platform修正、remote CI、token権限、package access実装確認 |
+| Variance accepted | repository-scoped PUBLIC Maven packageは明示的Actions access変更なしで`GITHUB_TOKEN`読取りに成功 |
+| Next | Gate 4 timestamp / checksum / dependency / CI / log EvidenceとC2 closeout |
+
+Architecture OwnerはGate 3の内容と結果、およびGate 1時点のpackage access想定との差分を承認した。
+C2は`IN PROGRESS`のままGate 4へ進み、Gate 4承認前にC2を完了扱いしない。
