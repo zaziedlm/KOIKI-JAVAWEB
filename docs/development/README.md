@@ -6,6 +6,7 @@
 - `phase1a-b3-handoff-20260824.md`: 別PC・新規AIセッションでPhase 1a B3を再開するための運用引継ぎ
 - `phase1a-b4-handoff-20260825.md`: B3完了後、新規AIセッションでPhase 1a B4を開始するための運用引継ぎ
 - `phase1a-c1-handoff-20260825.md`: Milestone B完了後、新規AIセッションでPhase 1a C1を開始するための運用引継ぎ
+- `phase1a-c1-closeout-handoff-20260826.md`: C1完了とCI Windows runner一時停止後、新規AIセッションで後続作業を開始するための運用引継ぎ
 
 Walking Skeletonの再実行方法と固定Commit上の証拠は、Repository rootの履歴と
 `../architecture/validation/`を参照してください。
