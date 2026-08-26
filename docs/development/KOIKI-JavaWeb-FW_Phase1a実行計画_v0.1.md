@@ -3,14 +3,15 @@
 **版:** v0.1  
 **作成日:** 2026年8月21日  
 **文書状態:** ACCEPTED<br>
-**実行状態:** IN PROGRESS（Milestone A・B COMPLETE / Milestone CのC1 NEXT）<br>
+**実行状態:** IN PROGRESS（Milestone A・B COMPLETE / Milestone CのC1 COMPLETE・C2 NEXT）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **承認日:** 2026年8月21日  
-**最終状態更新日:** 2026年8月25日<br>
+**最終状態更新日:** 2026年8月26日<br>
 **対象Phase:** Phase 1a Build Foundation  
 **実行方式:** `main`基準のWP別feature branch / Pull Request<br>
 **開始基準Commit:** `b5194b1`<br>
-**B4完了merge commit:** `b742ecf`（PR #11）
+**C1実装merge commit:** `9573b1c`（PR #14）、**C1完了Evidence merge commit:** `b92493b`（PR #15）<br>
+**CI Linux化merge commit:** `10c6ca2`（PR #16）
 
 ## 1. 目的
 
@@ -25,7 +26,7 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A・B COMPLETE、Milestone CのC1着手前 |
+| Phase / status | Phase 1a / Milestone A・B COMPLETE、Milestone CのC1 COMPLETE・C2着手前 |
 | Ownership | Framework: Architecture Contract、Tooling: Parent / BOM / Build Support / ArchUnit / CI |
 | 対象module | Root Reactor、`koiki-parent`、`koiki-dependencies-bom`、Architecture Contract、`koiki-archunit-rules`、検証用Consumer |
 | 適用指針 | グランドデザイン v0.2、Repository Architecture、ADR Register、Baseline Compatibility、Phase 1a引継ぎ台帳 |
@@ -93,6 +94,19 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 - PR #13のCI run #32825065374でWindows / Ubuntu両jobの成功を確認し、
   Architecture Owner ReviewによりGate 1〜4、B5およびMilestone Bを`COMPLETE`とした。
 - Phase 1aの次回WPはMilestone CのC1内部snapshot公開とする。C1以降および後続Phaseの成果物は未実装である。
+
+### 3.8 C1完了後の状態
+
+- C1でBOM、Parent、Architecture Contract、ArchUnit Rulesの4成果物を同一version release unitとして
+  GitHub Packagesへ公開した。
+- `org.koikifw:*:0.1.0-20260826.091429-1`のPOM / JAR、SHA-256、公開元commit、credential非露出および
+  隔離local repositoryからの依存解決を確認した。
+- Architecture Owner ReviewによりC1 Gate 1〜4を`ACCEPTED`、C1を`COMPLETE`とした。Evidence正本は
+  `../architecture/validation/phase1a-internal-snapshot.md`とする。
+- 開発初期のCI速度改善として、通常CIとsnapshot公開preflightは`ubuntu-24.04`だけを実行する。
+  `windows-2025`用stepは再有効化に備えてworkflowへ残し、GitHub Rulesetのrequired status checkも
+  `Verify (ubuntu-24.04)`だけへ同期済みである。
+- Phase 1aの次回WPはC2 Repository外Consumerとする。C2〜C5および後続Phaseの成果物は未実装である。
 
 ## 4. Scope
 
@@ -337,6 +351,11 @@ G4-RepositoryにGitHub PackagesのApache Maven registryを採用する。
    required check成功をmerge条件にする。
 8. Workflow artifactはjob間の同一artifact受渡しと一時的な検証証拠に限定し、
    Maven Consumer向けのdependency repositoryとして使用しない。
+
+**2026年8月26日 運用更新:** 開発初期のCI速度改善のため、`windows-2025` matrixは通常CIと
+snapshot公開preflightで一時停止し、`ubuntu-24.04`だけをrequired checkとする。Windows専用stepは
+再有効化に備えてworkflowへ残す。この更新はJava 21 / 25 runtime matrixのC4検証や、正式な
+platform support範囲の決定を変更しない。
 
 #### 6.7.2 G4-Repository: GitHub Packages
 
@@ -605,7 +624,8 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 
 | WP | 作業 | 主な成果物 | 検証・判定 |
 |---|---|---|---|
-| C1 | 内部snapshot公開 | BOM、Parent、Contract、ArchUnit rulesの同一version artifact | repository上のPOM・checksum・依存解決確認 |
+| C1 | 内部snapshot公開 | BOM、Parent、Contract、ArchUnit rulesの同一version artifact | COMPLETE（2026年8月26日、Gate 1〜4 Owner Review・GitHub Packages公開・Evidence記録済み） |
+| C2-0 | C2開始前ドキュメント同期 | Root README、実行計画、Repository Tree、Validation index | COMPLETE（2026年8月26日、Root POM・実ツリー・C1 Evidenceとの整合確認済み） |
 | C2 | Repository外Consumer | 独立Consumerと再現手順 | snapshotだけから解決し、意図的違反とADR messageを確認 |
 | C3 | Public API / japicmp | API inventory、baseline artifact、除外・例外方針 | Public API破壊で失敗、`internal`変更は規約どおり判定 |
 | C4 | Java runtime matrix | G6の起動fixture、Java 21 build artifact | Java 21 / 25で同一artifact起動、Java 25で再compileなし |
