@@ -2,7 +2,7 @@
 
 **調査日:** 2026年8月26日<br>
 **対象branch:** `feature/phase1a-external-consumer`<br>
-**状態:** C2 GATE 1 ACCEPTED / GATE 2 NEXT<br>
+**状態:** C2 GATE 1・2 ACCEPTED / GATE 3 NEXT<br>
 **Ownership:** Tooling（独立Consumerは検証fixtureであり、Framework / Reference / Customer成果物ではない）<br>
 **対象:** C2 Repository外Consumer、認証運用、ArchUnit正常系・意図的違反<br>
 **開始baseline:** `a41dcde`（C2-0ドキュメント同期完了）<br>
@@ -38,7 +38,7 @@ C2は次をすべて満たしたときだけ`COMPLETE`とする。
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone C / C1・C2-0 COMPLETE / C2 Gate 1 ACCEPTED・Gate 2 NEXT |
+| Phase / status | Phase 1a / Milestone C / C1・C2-0 COMPLETE / C2 Gate 1・2 ACCEPTED／Gate 3 NEXT |
 | Ownership | Consumer Repository、fixture、workflow、検証scriptはTooling |
 | Framework成果物 | C1公開済み4成果物を変更せず利用する |
 | 本Repositoryの成果物 | 本Validation、実行計画・indexの状態更新だけ |
@@ -186,7 +186,7 @@ KOIKI FrameworkまたはCustomer業務コードではない。`business`も業�
 | Gate | Review対象 | 承認条件 | 状態 |
 |---:|---|---|---|
 | 1 | read-only調査、Repository / Maven / fixture / 認証設計、完了・停止条件 | C2を別Repository・Tooling fixtureへ限定し、PAT / `GITHUB_TOKEN`、独立解決、正常系・負例の証拠を推測なく実装できる | ACCEPTED（2026年8月26日、Shuichi Kataoka） |
-| 2 | local独立Consumer、POM、Wrapper、settings template、PAT dry run | 空local repositoryからC1 snapshotだけを解決し、両Public API正常系と`KOIKI-ARCH-001`期待failureが成功する。credential非露出 | PENDING |
+| 2 | local独立Consumer、POM、Wrapper、settings template、PAT dry run | 空local repositoryからC1 snapshotだけを解決し、両Public API正常系と`KOIKI-ARCH-001`期待failureが成功する。credential非露出 | ACCEPTED — 2026年8月26日、Shuichi Kataoka |
 | 3 | GitHub Repository、package Actions access、workflow、remote CI | `GITHUB_TOKEN`の`packages: read`だけでfresh runnerが同じ検証に成功し、PAT secret・cache・KOIKI checkoutを使わない | PENDING |
 | 4 | timestamp / checksum / dependency / CI / log Evidence、C2 closeout | C1 payloadとの一致、Consumer commit、再現手順、credential非露出が揃い、DoD 1a-3をC1 / C2の連続証拠で満たす | PENDING |
 
@@ -259,3 +259,99 @@ Architecture Ownerは次の5項目を確認し、Gate 1として承認した。
 
 Gate 1承認はGate 2のlocal作業だけを許可する。GitHub Repository作成、push、package Actions access変更、
 secret登録またはworkflow実行はGate 2のEvidenceとOwner Review後まで行わない。
+
+## 11. Gate 2実装状況
+
+### 11.1 local独立Consumer
+
+2026年8月26日に、KOIKI本体のSibling directoryへ次の独立local Git Repositoryを作成した。
+
+```text
+C:\Users\kataoka\Desktop\KOIKI-JAVA\KOIKI-JAVAWEB-PHASE1A-CONSUMER
+```
+
+Gate 2検証時点ではGitHub Repository、remote、commit、workflowおよびpackage Actions accessは未作成であった。local Repositoryには
+次を実装した。
+
+- Consumer自身のMaven Wrapper 3.3.4 / Maven 3.9.16
+- remote Parentの`<relativePath/>`とC1 GitHub Packages URLを持つ単一Consumer POM
+- Architecture Contract通常scope、ArchUnit Rules / JUnit test scope
+- `settings.xml.example`の`${env.KOIKI_PACKAGES_USER}` / `${env.KOIKI_PACKAGES_TOKEN}`参照
+- `businessModuleRules`と`frameworkOwnershipRules`のcompliant production fixture
+- test sourceへ隔離した`adapter.inbound` → `adapter.outbound`の`KOIKI-ARCH-001`負例
+- PAT scope、空local Maven repository、C1 timestamp / SHA-256、後片付けを検証する`verify-local.ps1`
+
+### 11.2 実装静的検査
+
+| 検査 | 結果 |
+|---|---|
+| local Git Repository | 独立`.git`、branch `main`、commit / remoteなし |
+| 本Repository worktree | Consumer source非混入。Validation更新前はclean |
+| POM / settings | XML parse成功 |
+| `verify-local.ps1` | PowerShell parser error 0 |
+| credential literal scan | PAT形式、Authorization実値、Basic credential、固定passwordなし |
+| Parent fallback | `<relativePath/>`を明示 |
+| Wrapper | Maven Wrapper 3.3.4、Maven 3.9.16 distribution |
+
+### 11.3 PAT scope確認と現在の停止点
+
+利用可能だった既存GitHub tokenのOAuth scope headerは
+`gist, read:org, read:packages, repo, workflow`であり、Gate 1で承認した`read:packages`だけのPAT classicでは
+なかった。このtokenはMaven downloadへ使用していない。
+
+`verify-local.ps1`へ既存tokenを渡し、scope検査がMaven起動前に期待どおり拒否することを確認した。
+credential値はcommand、出力、tracked fileまたはValidationへ記録していない。
+
+### 11.4 初回PAT dry runとfixture修正
+
+`read:packages`だけのPAT classicを用いた初回dry runでは、scope検査とremote snapshot解決に成功し、
+Consumerのcompile / testCompileおよびPublic API正常系2テストが成功した。credential値は共有された出力へ露出していない。
+
+意図的違反テストは`KOIKI-ARCH-001`を検出したが、Consumer testが違反明細数を固定値`1`と仮定していたため、
+実際の`2`明細に対して失敗した。fixtureの1つのJava依存が戻り値型とコンストラクタ呼出しの2明細として報告されるためであり、
+C1 artifactの解決・Public APIまたはArchitecture Contractの不具合ではない。
+
+Consumer testは件数固定を廃止し、すべての違反明細が同じ`NegativeInbound`から`NegativeOutbound`への依存を
+示すことを検証するよう修正した。
+
+### 11.5 Gate 2再実行結果
+
+2026年8月26日23時01分（JST）に、修正後の`verify-local.ps1`を再実行し、終了コード`0`で完走した。
+
+| 検証 | 結果 |
+|---|---|
+| 認証 | PAT classic、OAuth scopeは`read:packages`だけ |
+| 独立解決 | GUID付きの空temporary Maven repositoryからGitHub Packagesを解決 |
+| Build runtime | Maven 3.9.16、JDK 21、`clean verify`成功 |
+| Public API正常系 | `CompliantArchitectureTest` 2件成功（business module / framework ownership） |
+| 意図的違反 | `IntentionalViolationContractTest` 1件成功（`KOIKI-ARCH-001` / ADR-022、source / target確認） |
+| Test合計 | 3件、Failures 0、Errors 0、Skipped 0 |
+| Timestamped snapshot | `0.1.0-20260826.091429-1`だけを確認 |
+| Secret safety | secure promptを使用し、共有出力にPAT、Authorization header、認証付きURLなし |
+| Cleanup | 実行後に`koiki-phase1a-consumer-*` temporary directory残存なし |
+
+取得したC1 payloadは次のSHA-256とすべて一致した。
+
+| Payload | SHA-256 | 結果 |
+|---|---|---|
+| Dependencies BOM POM | `63C7AB55E1BB2FE290E795A59212B6314F0347104DC9B536BD4EBDBE903183DF` | MATCH |
+| Parent POM | `ADC149D5C693BDCCBA008FD5F6BE8D5DF3BE5F43DCEBACCB47A72892C4BDAE37` | MATCH |
+| Architecture Contract POM | `7BE7635FE5E776FB0F5B5E4935DB0054D08F6D3CCE01EE7016275C685E1D926F` | MATCH |
+| Architecture Contract JAR | `947EE8CF0E109FE58D81E6008A56C06C8F4C035FF76BDF462F8F6BD9BB50DE45` | MATCH |
+| ArchUnit Rules POM | `7B24A824B9EBD55794B7A626AE0FBB52A0781FFD1ECEFC18A899B629F4FEDA45` | MATCH |
+| ArchUnit Rules JAR | `A51E26E7386D19E53C18BD63BC4E4F95EC1EAE471F39D519D6AE0CBC7C2DF3F2` | MATCH |
+
+Gate 2の実装・検証条件は満たした。
+
+## 12. Gate 2 Owner Review結果
+
+| 項目 | 結果 |
+|---|---|
+| Decision | ACCEPTED |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月26日 |
+| Scope | §11のlocal独立Consumer、PAT scope、remote snapshot解決、正常系・意図的違反、timestamp・SHA-256、credential非露出 |
+| Next | Gate 3 GitHub Repository、package Actions access、workflow、remote CI |
+
+Architecture OwnerはGate 2の内容と結果を承認した。C2は`IN PROGRESS`のままGate 3へ進み、Gate 3成功前に
+C2を完了扱いしない。
