@@ -2,7 +2,7 @@
 
 **準備日:** 2026年8月26日<br>
 **対象branch:** `feature/phase1a-internal-snapshot`<br>
-**状態:** C1 IN PROGRESS / GATE 2 ACCEPTED / GATE 3 PREPARATION<br>
+**状態:** C1 IN PROGRESS / GATE 3 ACCEPTED / GATE 4 PREPARATION<br>
 **Ownership:** Tooling（Architecture Contract成果物のみFramework）<br>
 **対象:** C1 BOM / Parent / Architecture Contract / ArchUnit Rules内部snapshot公開<br>
 **開始baseline:** `main` / `9aa0b1a`（B5完了PR #13 merge）<br>
@@ -211,7 +211,7 @@ C1内の解決確認はartifact成立を検査するだけで、Customer / Refer
 | 1 | 調査結果、公開対象、POM配置、workflow、credential、dry run、C2境界、stop条件 | 4成果物以外を公開せず、通常CIをread-onlyに保ち、実公開前にlocal dry runと追加Reviewを置く | ACCEPTED（2026年8月26日、Shuichi Kataoka） |
 | 1A | Parent配布設定の継承影響とworkflow限定overrideへの変更 | Customer / TemplateへKOIKI repositoryを継承させず、4成果物のpublish invocationだけに配布先を与える | ACCEPTED（2026年8月26日、Shuichi Kataoka） |
 | 2 | POM / workflow実装とlocal file repository dry run | 4成果物だけが同一timestampでdeploy / resolveされ、tracked worktreeと既存quality gateが正常 | ACCEPTED（2026年8月26日、Shuichi Kataoka） |
-| 3 | PR / main CI、environment、package既存状態、公開commit | Windows / Ubuntu成功、Ownerが実公開対象commitと手動dispatchを承認 | PENDING |
+| 3 | PR / main CI、environment、package既存状態、公開commit | Windows / Ubuntu成功、Ownerが実公開対象commitと手動dispatchを承認 | ACCEPTED（2026年8月26日、Shuichi Kataoka） |
 | 4 | 実公開、remote resolve、checksum、credential非露出 | repository上の6ファイルと4座標を確認し、Evidenceが揃う | PENDING |
 
 Gate 1承認前はPOM、workflow、credentialおよびGitHub Packagesを変更しない。Gate 2 / 3承認前は
@@ -219,8 +219,9 @@ GitHub Packagesへ書き込まない。
 
 2026年8月26日のOwner ReviewでGate 1案を承認し、Parent継承問題の検出後、同日の追加ReviewでGate 1A案も
 承認した。Gate 1Aに従ってPOMを配布先中立へ戻し、workflow限定override、local file repository dry run、
-実効POMおよび既存quality gateを再検証した。Ownerは同日にGate 2も承認した。以降はGate 3のPR / main CI、
-environment、package既存状態および公開commitの確認へ進む。Gate 3承認前にGitHub Packages公開へ進まない。
+実効POMおよび既存quality gateを再検証した。Ownerは同日にGate 2も承認した。PR #14のenvironment設定、
+PR CIおよびGitHub Packages既存状態をread-only確認した後、Ownerは同日にGate 3も承認した。以降はGate 4の
+実公開、remote resolve、checksumおよびcredential非露出の確認へ進む。Gate 4承認前にGitHub Packages公開へ進まない。
 
 ### 6.1 Gate 1実装時のParent継承問題とGate 1A
 
@@ -291,7 +292,25 @@ workflowはActionをfull commit SHAで固定し、publish前authorize、権限�
 目視確認した。local環境には`actionlint`とPyYAMLがないため、GitHub Actionsによるworkflow構文検証は
 Gate 3のPR / main CIで確定する。
 
-### 6.4 GitHub Enterprise Cloud移管時の再認定
+### 6.4 Gate 3 environment・CI・package確認結果
+
+commit `aa5fe0b`を対象とするPR #14に対して、environment設定、PR CI（main CI相当）およびGitHub Packages
+既存状態をGitHub CLI経由のread-only呼び出しで確認した。workflow dispatchおよびPackagesへの書き込みは
+実施していない。
+
+| 確認項目 | 結果 |
+|---|---|
+| PR | #14（`feature/phase1a-internal-snapshot` -> `main`）、`OPEN` / draft、`mergeable` |
+| PR CI | `Verify (windows-2025)` SUCCESS、`Verify (ubuntu-24.04)` SUCCESS（run `32944075389`） |
+| environment `phase1a-internal-snapshot` required reviewer | `zaziedlm`登録済み |
+| prevent_self_review | `false`（承認者が申請者本人のみのため意図通り） |
+| deployment branch policy | `main`のみ許可（custom branch policy 1件） |
+| administrators bypass | `can_admins_bypass=false`（無効化済み） |
+| GitHub Packages既存package | `GET /users/zaziedlm/packages?package_type=maven`の結果`[]`。C1対象4座標は未作成 |
+
+2026年8月26日にOwnerがGate 3を承認した。
+
+### 6.5 GitHub Enterprise Cloud移管時の再認定
 
 将来の会社GitHub Enterprise Cloudへの移管後も、POM中立、明示4成果物、最小権限、Owner Gateおよび
 checksum証拠の原則を維持する。移管方式が通常Repository transferかGitHub Enterprise Importerかにより
