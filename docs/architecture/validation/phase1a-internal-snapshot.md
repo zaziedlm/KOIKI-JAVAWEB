@@ -2,7 +2,7 @@
 
 **準備日:** 2026年8月26日<br>
 **対象branch:** `feature/phase1a-internal-snapshot`<br>
-**状態:** C1 IN PROGRESS / GATE 3 ACCEPTED / GATE 4 PREPARATION<br>
+**状態:** C1 COMPLETE / GATE 4 ACCEPTED<br>
 **Ownership:** Tooling（Architecture Contract成果物のみFramework）<br>
 **対象:** C1 BOM / Parent / Architecture Contract / ArchUnit Rules内部snapshot公開<br>
 **開始baseline:** `main` / `9aa0b1a`（B5完了PR #13 merge）<br>
@@ -212,7 +212,7 @@ C1内の解決確認はartifact成立を検査するだけで、Customer / Refer
 | 1A | Parent配布設定の継承影響とworkflow限定overrideへの変更 | Customer / TemplateへKOIKI repositoryを継承させず、4成果物のpublish invocationだけに配布先を与える | ACCEPTED（2026年8月26日、Shuichi Kataoka） |
 | 2 | POM / workflow実装とlocal file repository dry run | 4成果物だけが同一timestampでdeploy / resolveされ、tracked worktreeと既存quality gateが正常 | ACCEPTED（2026年8月26日、Shuichi Kataoka） |
 | 3 | PR / main CI、environment、package既存状態、公開commit | Windows / Ubuntu成功、Ownerが実公開対象commitと手動dispatchを承認 | ACCEPTED（2026年8月26日、Shuichi Kataoka） |
-| 4 | 実公開、remote resolve、checksum、credential非露出 | repository上の6ファイルと4座標を確認し、Evidenceが揃う | PENDING |
+| 4 | 実公開、remote resolve、checksum、credential非露出 | repository上の6ファイルと4座標を確認し、Evidenceが揃う | ACCEPTED（2026年8月26日、Shuichi Kataoka） |
 
 Gate 1承認前はPOM、workflow、credentialおよびGitHub Packagesを変更しない。Gate 2 / 3承認前は
 GitHub Packagesへ書き込まない。
@@ -220,8 +220,10 @@ GitHub Packagesへ書き込まない。
 2026年8月26日のOwner ReviewでGate 1案を承認し、Parent継承問題の検出後、同日の追加ReviewでGate 1A案も
 承認した。Gate 1Aに従ってPOMを配布先中立へ戻し、workflow限定override、local file repository dry run、
 実効POMおよび既存quality gateを再検証した。Ownerは同日にGate 2も承認した。PR #14のenvironment設定、
-PR CIおよびGitHub Packages既存状態をread-only確認した後、Ownerは同日にGate 3も承認した。以降はGate 4の
-実公開、remote resolve、checksumおよびcredential非露出の確認へ進む。Gate 4承認前にGitHub Packages公開へ進まない。
+PR CIおよびGitHub Packages既存状態をread-only確認した後、Ownerは同日にGate 3も承認した。PR #14をmainへ
+mergeし、main CI成功を確認した後、Ownerは手動dispatchでGate 4の実公開を実施した。workflow run、
+timestamped snapshot、remote resolve、checksumおよびcredential非露出を確認し、同日にOwnerはGate 4も承認した。
+C1は完了した。
 
 ### 6.1 Gate 1実装時のParent継承問題とGate 1A
 
@@ -310,7 +312,52 @@ commit `aa5fe0b`を対象とするPR #14に対して、environment設定、PR CI
 
 2026年8月26日にOwnerがGate 3を承認した。
 
-### 6.5 GitHub Enterprise Cloud移管時の再認定
+### 6.5 PR #14 merge結果とGate 4対象commit
+
+Gate 3承認後、Gate 3記録commit（`8b88ed2`）をpushし、PR #14をready for reviewへ変更した。
+ready化後の再実行CIも成功し、OwnerがGitHub UI上でPR #14をmainへmergeした。
+
+| 項目 | 結果 |
+|---|---|
+| PR ready化後CI | `Verify (windows-2025)` SUCCESS、`Verify (ubuntu-24.04)` SUCCESS（run `32949037333`） |
+| PR状態 | `MERGED`（`mergedAt` 2026-08-26T08:51:43Z） |
+| merge commit | `9573b1cf38713d51707a14884230d5bd5e1d97fb` |
+| main CI（merge commit） | SUCCESS（run `32949946012`） |
+
+Gate 4の`expected_commit`入力値は、上記merge commit `9573b1cf38713d51707a14884230d5bd5e1d97fb`とする。
+
+### 6.6 Gate 4 実公開Evidence
+
+Owner手動dispatch（workflow run `32951187676`、`event: workflow_dispatch`、対象commit
+`9573b1cf38713d51707a14884230d5bd5e1d97fb`）により、`authorize` / `preflight`（Windows・Ubuntu）/
+`publish`の4 jobがすべて成功した。
+
+| 項目 | 結果 |
+|---|---|
+| timestamped snapshot | `0.1.0-20260826.091429-1`（4成果物で同一、buildNumber 1） |
+| GitHub Packages公開package | `koiki-dependencies-bom`、`koiki-parent`、`koiki-architecture-contract`、`koiki-archunit-rules`の4件だけ |
+| sources / javadoc / Root / fixture / Template / `ws-*` | なし |
+| 隔離local repositoryへのremote resolve | 認証済みcurlで6ファイルを取得し成功 |
+| credential露出 | publish job logで`AUTHORIZATION: basic ***`とマスク済み。`GITHUB_TOKEN`実値および認証付きURLの露出なし |
+
+remoteから取得した6ファイルのSHA-256は次のとおり。
+
+| ファイル | SHA-256 |
+|---|---|
+| Architecture Contract JAR | `947EE8CF0E109FE58D81E6008A56C06C8F4C035FF76BDF462F8F6BD9BB50DE45` |
+| Architecture Contract POM | `7BE7635FE5E776FB0F5B5E4935DB0054D08F6D3CCE01EE7016275C685E1D926F` |
+| ArchUnit Rules JAR | `A51E26E7386D19E53C18BD63BC4E4F95EC1EAE471F39D519D6AE0CBC7C2DF3F2` |
+| ArchUnit Rules POM | `7B24A824B9EBD55794B7A626AE0FBB52A0781FFD1ECEFC18A899B629F4FEDA45` |
+| Dependencies BOM POM | `63C7AB55E1BB2FE290E795A59212B6314F0347104DC9B536BD4EBDBE903183DF` |
+| Parent POM | `ADC149D5C693BDCCBA008FD5F6BE8D5DF3BE5F43DCEBACCB47A72892C4BDAE37` |
+
+4件のPOMのSHA-256はGate 2 local dry runの値と一致した（POM内容が決定的なため）。JARのSHA-256はビルドごとの
+タイムスタンプ差異により、local dry run時の値とは異なる。検証に使用した一時ディレクトリは確認後に削除し、
+tracked worktreeは変更なし（`git status`で本文書の編集差分のみ）。
+
+2026年8月26日にOwnerがGate 4を承認し、C1は完了した。
+
+### 6.7 GitHub Enterprise Cloud移管時の再認定
 
 将来の会社GitHub Enterprise Cloudへの移管後も、POM中立、明示4成果物、最小権限、Owner Gateおよび
 checksum証拠の原則を維持する。移管方式が通常Repository transferかGitHub Enterprise Importerかにより
