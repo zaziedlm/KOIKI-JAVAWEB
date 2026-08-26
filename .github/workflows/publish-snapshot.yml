@@ -52,7 +52,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - windows-2025
+          # windows-2025 temporarily disabled: production runtime is Linux-only, re-enable if that changes
           - ubuntu-24.04
 
     steps:
