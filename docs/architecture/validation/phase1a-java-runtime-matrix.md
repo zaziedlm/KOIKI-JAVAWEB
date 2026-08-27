@@ -1,0 +1,518 @@
+# Phase 1a Java Runtime Matrix — C4実装・検証計画
+
+**調査日:** 2026年8月27日<br>
+**対象branch:** `feature/phase1a-java-runtime-matrix`<br>
+**状態:** C4 COMPLETE / GATE 1〜4 ACCEPTED<br>
+**Ownership:** Tooling（runtime compatibility fixture、検証script、CI）<br>
+**対象:** Java 21 build artifact、Java 21 / 25 runtime、DoD 1a-6<br>
+**開始baseline:** `fc178adfa8e107d5c28d1c3be9e1b1653a5d0554`（PR #18 merge、C3 COMPLETE）<br>
+
+## 1. 目的と完了条件
+
+Phase 1a実行計画のG6、Milestone CおよびDoD 1a-6に基づき、Java 21で一度だけ生成した
+Tooling-owned CLI JARが、再compileや再packageなしにJava 21 / 25の両runtimeで起動することを証明する。
+
+C4は次をすべて満たしたときだけ`COMPLETE`とする。
+
+1. Maven WrapperとJDK 21だけで検証用JARを一度生成する。
+2. 検査対象classのmajor versionがJava 21の`65`である。
+3. build jobが記録したJARのSHA-256と、Java 21 / 25実行前後のSHA-256が一致する。
+4. 両runtimeで固定marker、実runtime vendor / versionおよび終了コード`0`を確認する。
+5. runtime jobがMaven、`javac`、compile、packageまたはruntime別artifact生成を行わない。
+6. fixtureがRoot Reactor、正式4成果物、Public API、snapshot公開およびConsumerへ含まれない。
+7. local WindowsとGitHub Actions fresh Ubuntu runnerで同じ検証契約が成功する。
+
+## 2. 作業位置と境界
+
+| 項目 | 内容 |
+|---|---|
+| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1〜C4 COMPLETE / C5 NEXT |
+| Ownership | Tooling |
+| target | `build-support/runtime-compatibility-fixture/`、独立workflow、Validation記録 |
+| 正式module | Root ReactorはBOM、Parent、Architecture Contract、ArchUnit Rulesの4moduleを維持 |
+| OpenSpec | Repositoryに採用済みchangeがないため必須前提にしない |
+| deferred | Runtime Foundation、Spring Boot実行基盤、DB、Container、Reference、Security、性能、Java 25固有最適化 |
+
+fixtureはJava標準機能だけを用いる最小CLIとする。Spring Boot、Spring Framework、業務語彙、DB、Web、
+Virtual Threads、Scoped Values、CDS / AOT、Containerまたはproduction設定を追加しない。
+
+## 3. read-only調査結果
+
+### 3.1 正本と現行build contract
+
+| 確認対象 | 実測・確定事項 |
+|---|---|
+| Grand Design §6.2 | target bytecodeはJava 21、Java 25は推奨runtimeかつ互換確認対象 |
+| Grand Design §21.5 | Java 25系統はJava 21成果物を再compileせず実行し、失敗をrelease blockerとする |
+| Phase 1a G6 | `build-support/runtime-compatibility-fixture/`の非配布CLI JAR、major `65`、同一hash、両runtime起動を承認済み |
+| Root Reactor | 正式4moduleだけで、実行可能JARは含まれない |
+| `koiki-parent` | `<release>21</release>`、build JDKを`[21,22)`へ制限し、Java 25 buildを明示的に拒否 |
+| current CI | `ubuntu-24.04` / Temurin 21。runtime matrixは未実装 |
+| current ruleset | ID `21140116`、strict。required checksは`Verify (ubuntu-24.04)`と`Public API Compatibility` |
+
+### 3.2 local JDK
+
+2026年8月27日のWindows環境で次を確認した。
+
+| 用途 | runtime |
+|---|---|
+| build / Java 21 runtime | Eclipse Temurin `21.0.12.1+1-LTS` |
+| Java 25 runtime | Eclipse Temurin `25.0.4.1+1-LTS` |
+| environment | `JAVA_HOME` / `JAVA21_HOME`は21、`JAVA25_HOME`は25を指す |
+
+Gate 2以降のlocal検証に必要なJDKは揃っている。JDKの配置pathは開発環境固有であり、tracked fileへ
+固定しない。
+
+### 3.3 Walking Skeleton資産の扱い
+
+既存`build-support/scripts/verify-class-version.ps1`と`run-with-java25.ps1`は、それぞれ
+`walking-skeleton/ws-smoke-lib`のclassと`ws-smoke-app`のSpring Boot JARへ直接依存する。
+Phase 0ではTemurin 21 / 25による成功証拠があるが、code、一時座標、Spring Boot runtime、設定および
+`Dockerfile.ws`はC4へ昇格させない。検証観点だけを新しいTooling fixtureへ再実装する。
+
+### 3.4 GitHub Actions一次情報
+
+- `actions/setup-java`はTemurinと`java-version: '25'`を正式にサポートする。
+- GitHub Actionsのworkflow artifactは、同一workflow内のjob間でbuild成果物を受け渡す用途である。
+- `upload-artifact` v4以降のartifact archiveはupload後にimmutableである。
+- required checkへpath filter付きworkflowを指定すると、skip時にcheckがPendingのままになる場合がある。
+- `workflow_dispatch`はworkflow fileがdefault branchに存在するときだけeventを受け取る。
+
+参照:
+
+- [actions/setup-java](https://github.com/actions/setup-java)
+- [Workflow artifacts](https://docs.github.com/en/actions/concepts/workflows-and-actions/workflow-artifacts)
+- [Store and share data with workflow artifacts](https://docs.github.com/actions/configuring-and-managing-workflows/persisting-workflow-data-using-artifacts)
+- [Workflow syntax for GitHub Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)
+
+## 4. 実装計画
+
+### 4.1 予定構成
+
+```text
+build-support/runtime-compatibility-fixture/
+├── README.md
+├── pom.xml
+├── fixture/
+│   ├── pom.xml
+│   └── src/main/java/org/koikifw/buildsupport/internal/runtime/
+│       └── RuntimeCompatibilityProbe.java
+├── build-runtime-fixture.ps1
+└── verify-runtime-fixture.ps1
+```
+
+Root Reactorの`<modules>`は変更しない。親POMのimport BOMをRepository内で解決するため、Tooling-owned
+aggregatorは既存verification fixtureと同様にBOMとCLI fixtureだけを検証reactorへ含める。
+CLI artifactの座標は`org.koikifw.validation`配下の検証専用座標とし、正式release unitへ含めない。
+
+### 4.2 fixture contract
+
+1. main classは`org.koikifw.buildsupport.internal.runtime.RuntimeCompatibilityProbe`とする。
+2. 引数で期待Java majorを受け取り、`Runtime.version().feature()`との一致を検証する。
+3. 成功時だけ固定marker `KOIKI_RUNTIME_COMPATIBILITY_SUCCESS`と、actual major、
+   `java.vendor`、`java.version`を出力する。
+4. 期待major不一致または引数不正では非0終了とし、成功markerを出力しない。
+5. JAR manifestへmain classを固定し、`java -jar`だけで実行できるようにする。
+
+### 4.3 build contract
+
+`build-runtime-fixture.ps1`は次だけを担当する。
+
+1. 実行JDKが21であることを確認する。
+2. Repository Maven WrapperでTooling aggregatorを`clean package`する。
+3. JAR内の対象class headerを直接読み、major version `65`を確認する。
+4. JAR名、SHA-256、class entry、major version、build Java、commitをmanifestへ記録する。
+5. JARとmanifest以外をruntime受け渡し対象にしない。
+
+Java 25で同scriptを実行した場合は、script guardまたはParent Enforcerによりbuild前段で失敗させる。
+
+### 4.4 runtime contract
+
+`verify-runtime-fixture.ps1`はJARとbuild manifestを入力とし、Mavenやcompilerを呼び出さない。
+
+1. 現在の`java`が期待major 21または25であることを確認する。
+2. 実行前にJARのSHA-256を計算し、build manifestと照合する。
+3. `java -jar <same-jar> <expected-major>`を一度実行する。
+4. 固定marker、actual major、vendor / version、終了コード`0`を確認する。
+5. 実行後もSHA-256を再計算し、build時および実行前と一致することを確認する。
+
+### 4.5 CI contract
+
+`.github/workflows/runtime-compatibility.yml`を`ci.yml`やsnapshot公開workflowと分離する。
+
+| job | JDK / 処理 | 禁止事項 |
+|---|---|---|
+| Build Runtime Fixture | Temurin 21、Wrapper build、major / SHA検査、JAR＋manifest upload | Java 25 build、package公開 |
+| Java Runtime Compatibility | build jobのimmutable artifactをdownloadし、Java 21、次にJava 25で同一JARを検証 | Maven、`javac`、compile、package、runtime別JAR |
+
+workflowは`contents: read`だけを使用し、secret、PAT、Packages権限、認証済みGit credential、artifact cacheを
+runtime jobへ与えない。外部Actionは実装時に公式releaseとcommitを照合し、full commit SHAで固定する。
+artifactは検証用の短期保持とし、配布物またはrelease evidenceそのものにはしない。
+
+PR fresh runner、`main` push、nightly scheduleおよび`workflow_dispatch`を対象とする。required check候補の
+`Java Runtime Compatibility`にはpath filterを設定しない。Gate 4でfresh runner成功とOwner承認を得た後、
+ruleset ID `21140116`へ追加し、既存2 checksとstrict policyを維持する。
+
+## 5. Gate構成
+
+| Gate | 確認対象 | 完了条件 | 状態 |
+|---|---|---|---|
+| 1 | read-only調査、Ownership、fixture、hash / bytecode / runtime、CI設計 | G6と実装が一対一対応し、後続Phase成果物を含まない | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
+| 2 | Tooling fixture、JDK 21 build、major 65、local Java 21 / 25 positive path | 一度生成したJARのhashが両runtime実行前後で一致し、markerとexit 0を確認 | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
+| 3 | negative guardsと非配布境界 | Java 25 build、hash改変、期待runtime不一致が各契約位置で失敗し、Root Reactorと正式成果物が不変 | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
+| 4 | independent CI、fresh runner、required check、Evidence、C4 closeout | job間artifact受け渡しで成功し、runtime jobにbuild処理がなく、Owner Review後にC4 COMPLETE | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
+
+## 6. Stop条件
+
+次に該当した場合は実装を停止し、Gate 1またはG6へ戻す。
+
+- Root Reactor、正式4artifact、Public API inventory、C1 snapshotまたはC2 Consumerへfixtureを含める必要がある。
+- Java 25でMaven、`javac`、compile、packageまたは別JAR生成が必要になる。
+- Spring Boot、Framework runtime、DB、Web、Container、Reference業務またはJava 25固有APIが必要になる。
+- Java 21 / 25で別source、別dependency、別JARまたは別hashを許容する必要がある。
+- CIに`contents: read`を超える権限、secret、PAT、Packages accessまたはartifact公開が必要になる。
+- Walking Skeletonのcode、POM、一時座標、設定またはDockerfileを再利用する必要がある。
+- required check追加時に既存checks、strict policy、PR保護またはbypassなしを維持できない。
+
+Stop条件を、Java 25再compile、release引上げ、rule無効化、hash検査省略またはscope拡大で迂回しない。
+
+## 7. Gate 1 Owner Review項目
+
+Architecture Ownerは次の5項目を確認する。
+
+1. C4をTooling所有・Root Reactor外・非配布fixtureとし、Walking Skeleton資産を直接昇格させない。
+2. Maven Wrapper / JDK 21で一度だけCLI JARを生成し、対象class major `65`とbuild SHA-256を固定する。
+3. Java 21 / 25で同一JARを実行し、実行前後hash、固定marker、runtime vendor / version、exit `0`を確認する。
+4. Java 25 build、hash改変、期待runtime不一致のnegative guardsを設け、runtime jobからbuild処理を排除する。
+5. 独立CIを最小権限・full SHA固定で構成し、Gate 4成功とOwner承認後にrequired checkへ追加する。
+
+本計画は承認済みG6を具体化するもので、新規Public API、配布方式またはArchitecture Decisionを追加しない。
+上記境界を維持できる限りADR追加・改訂は不要とする。
+
+## 8. Gate 1 Owner Review結果
+
+Architecture Ownerは2026年8月27日に§7の5項目と本実装計画を確認し、Gate 1を承認した。
+承認範囲はTooling-owned非配布fixture、JDK 21での一回build、major `65`、同一JARのJava 21 / 25実行、
+negative guards、独立CIおよびGate 4承認後のrequired check追加である。
+
+Gate 2ではこの承認範囲内でfixtureとlocal positive pathを実装する。Public API、正式module、配布artifact、
+runtime dependencyまたは後続Phase成果物が必要になった場合は実装を停止し、Gate 1へ戻す。
+
+## 9. Gate 2 実装・local Evidence
+
+### 9.1 実装資材
+
+Gate 1承認範囲内で次のTooling-owned資材を実装した。
+
+| 対象 | 役割 |
+|---|---|
+| `runtime-compatibility-fixture/pom.xml` | Parent build contractを継承し、BOMとfixtureだけを含む検証reactor |
+| `fixture/pom.xml` | Java 21 CLI JARと`Main-Class` manifestを生成する非配布POM |
+| `RuntimeCompatibilityProbe.java` | 期待runtime majorを照合し、固定markerと実runtime情報を出力するJava標準CLI |
+| `build-runtime-fixture.ps1` | JDK 21 build、class header、SHA-256、build manifestを生成 |
+| `verify-runtime-fixture.ps1` | Mavenを呼ばず、同一JARのruntime major、marker、exit、実行前後hashを照合 |
+| `README.md` | Windows local再現手順と非配布境界 |
+
+fixture packageは`org.koikifw.buildsupport.internal.runtime`、Maven groupIdは
+`org.koikifw.validation`である。Spring、KOIKI正式artifactまたは外部dependencyを追加していない。
+
+### 9.2 JDK 21 build Evidence
+
+2026年8月27日にWindows localで次を実行した。
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass `
+  -File build-support/runtime-compatibility-fixture/build-runtime-fixture.ps1
+```
+
+| 項目 | 実測値 |
+|---|---|
+| Build JDK | Eclipse Adoptium / Temurin `21.0.12.1` |
+| Maven | Repository Wrapper `3.9.16` |
+| Maven result | 3 project SUCCESS、fixtureは`release 21`で1 sourceをcompile |
+| JAR | `runtime-compatibility-fixture-0.1.0-SNAPSHOT.jar` |
+| class entry | `org/koikifw/buildsupport/internal/runtime/RuntimeCompatibilityProbe.class` |
+| class major | `65` |
+| SHA-256 | `6B0A8CAE12B6B8206F43A3EE95F6C29D5C0041D99C0BD56C52C2CC9DF6BC9275` |
+| source state | HEAD `f51b6ca28795aea33c943a69bb81d35c76fda533`＋Gate 2 working tree、manifest `workingTreeDirty: true` |
+
+JARにはCLI class、JAR manifestおよびMaven metadataだけが入り、Walking Skeleton、Spring Boot、
+正式KOIKI class、設定またはdependencyを含まない。JARとJSON manifestはignored
+`build-support/runtime-compatibility-fixture/target/runtime-artifact/`へ生成した。
+
+### 9.3 Java 21 / 25 runtime Evidence
+
+build完了後にMaven、`javac`、`jar`またはpackage処理を実行せず、次を順に実行した。
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass `
+  -File build-support/runtime-compatibility-fixture/verify-runtime-fixture.ps1 `
+  -ExpectedJavaFeature 21
+
+pwsh -NoProfile -ExecutionPolicy Bypass `
+  -File build-support/runtime-compatibility-fixture/verify-runtime-fixture.ps1 `
+  -ExpectedJavaFeature 25
+```
+
+| Runtime | vendor / version | marker | SHA-256 before / after | exit |
+|---|---|---|---|---|
+| Java 21 | Eclipse Adoptium `21.0.12.1` | `KOIKI_RUNTIME_COMPATIBILITY_SUCCESS expected=21 actual=21` | MATCH / MATCH | `0` |
+| Java 25 | Eclipse Adoptium `25.0.4.1` | `KOIKI_RUNTIME_COMPATIBILITY_SUCCESS expected=25 actual=25` | MATCH / MATCH | `0` |
+
+両runtimeの実行前後hashは§9.2のSHA-256と一致した。Java 25用のcompile、package、source、dependency、
+JARまたはmanifestは生成していない。
+
+### 9.4 Regression・非配布境界
+
+通常のRoot Reactorで`mvnw.cmd --batch-mode --no-transfer-progress clean verify`を再実行し、正式4moduleと
+Root aggregatorの全projectが成功した。Architecture Contract 4 tests、ArchUnit Rules 65 testsの
+計69 testsはfailure / error / skippedなしである。
+
+Root POMの`<modules>`は正式4moduleのまま一致し、Gate 2のtracked差分は`build-support/`と本Validation記録に
+限定される。fixtureの`target/`は既存`.gitignore`により追跡対象外で、C1 snapshot、Public API inventory、
+japicmp、Feature TemplateおよびRepository外Consumerを変更していない。
+
+### 9.5 Gate 2 Owner Review対象
+
+1. fixtureがTooling所有・Root Reactor外・非配布で、Java標準機能だけを使用している。
+2. JDK 21 / Wrapper buildが成功し、対象class major `65`とbuild SHA-256をmanifestへ固定している。
+3. Java 21 / 25で同一JARの実行前後hash、固定marker、actual major、vendor / version、exit `0`が一致する。
+4. runtime scriptがMaven、compilerまたはpackage処理を持たず、Java 25向け別artifactを生成していない。
+5. 通常Root buildと69 testsが成功し、正式4module、Public APIおよび配布境界が不変である。
+
+Gate 2 Owner承認前はGate 3 negative guardsを実装せず、Gate 2を`ACCEPTED`としない。
+
+## 10. Gate 2 Owner Review結果
+
+Architecture Ownerは2026年8月27日に§9.5の5項目とGate 2の内容・結果を確認し、Gate 2を承認した。
+承認対象はTooling-owned非配布fixture、JDK 21 build、class major `65`、build manifest、同一SHA-256の
+Java 21 / 25 local実行、固定marker、exit `0`、Root Reactor 69 testsおよび正式4module不変である。
+
+Gate 3では承認済みpositive pathを変更せず、Java 25 build、hash改変、期待runtime major不一致の
+3 negative guardsと非配布境界を検証する。CI、required checkおよびC4 closeoutはGate 4まで実装しない。
+
+## 11. Gate 3 Negative Guard Evidence
+
+### 11.1 実装と隔離境界
+
+`verify-runtime-negative-guards.ps1`をTooling fixtureへ追加した。scriptはGate 2のbuild済みJARとmanifestを
+入力とし、次の順に3 expected failureとpositive restoreを検証する。
+
+1. `JAVA_HOME`だけをJava 25へ切り替え、build scriptのJDK 21 guardを検証する。
+2. JARとmanifestをOS temp配下へcopyし、copy JARだけへ1 byteを追記してhash guardを検証する。
+3. 原本JARをJava 21で起動し、期待major `25`を渡してCLI runtime guardを検証する。
+4. 原本SHA-256を再確認し、Java 21 / 25 positive pathを再実行する。
+5. `finally`で絶対pathがsystem temp配下であることを再確認して隔離directoryを削除する。
+
+元JAR、manifest、tracked source、Root Reactorまたは正式artifactをnegative fixtureとして変更しない。
+
+### 11.2 local実行結果
+
+2026年8月27日にWindows localで次を実行した。
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass `
+  -File build-support/runtime-compatibility-fixture/verify-runtime-negative-guards.ps1
+```
+
+| Guard | 操作 | 期待・実測diagnostic | exit / 判定 |
+|---|---|---|---|
+| Java 25 build rejection | build scriptをTemurin 25で開始 | `Runtime fixture must be built with Java 21. Actual feature: 25` | non-zero / EXPECTED FAILURE PASS |
+| modified hash rejection | temp copy JARへ1 byte追記 | `Runtime fixture SHA-256 mismatch before Java 21 execution.` | non-zero / EXPECTED FAILURE PASS |
+| runtime major mismatch | Java 21で原本JARへ期待major 25を指定 | `Java runtime feature mismatch: expected=25 actual=21` | `3` / EXPECTED FAILURE PASS |
+
+3 guardはいずれも`KOIKI_RUNTIME_COMPATIBILITY_SUCCESS`を出力しなかった。Java 25 build guardは
+Maven開始前、hash guardはJava起動前、runtime guardはCLI内のactual major照合で失敗した。
+
+### 11.3 原本hash・positive restore
+
+negative guard完了後、原本JARのSHA-256は次のGate 2承認値を維持した。
+
+```text
+6B0A8CAE12B6B8206F43A3EE95F6C29D5C0041D99C0BD56C52C2CC9DF6BC9275
+```
+
+同じ原本JARでJava 21 / 25 positive pathを再実行し、両runtimeで実行前後hash MATCH、固定marker、
+actual major一致、exit `0`を再確認した。`koiki-c4-runtime-negative-*`のtemp directoryは実行後に
+残置していない。
+
+### 11.4 Regression・非配布境界
+
+Gate 3後に通常Root Reactorの`clean verify`を再実行し、正式4moduleとRoot aggregatorの全projectが
+`BUILD SUCCESS`となった。Architecture Contract 4 tests、ArchUnit Rules 65 testsの計69 testsは
+failure / error / skippedなしである。
+
+Gate 3のtracked実装差分はnegative guard scriptとTooling READMEだけであり、Root POM、正式POM / source、
+Public API inventory、snapshot公開、ConsumerおよびCI workflowを変更していない。
+
+### 11.5 Gate 3 Owner Review対象
+
+1. Java 25 buildがMaven開始前に明示diagnostic付きで拒否される。
+2. hash改変がOS temp内のcopyだけに限定され、Java起動前に拒否される。
+3. Java 21上で期待major 25を指定したCLIがexit `3`で失敗し、成功markerを出力しない。
+4. 3 guard後も原本hashが一致し、Java 21 / 25 positive pathとtemp cleanupが成功する。
+5. Root 69 tests、正式4moduleおよび非配布境界が不変である。
+
+Gate 3 Owner承認前はCI workflowを実装せず、Gate 3を`ACCEPTED`としない。
+
+## 12. Gate 3 Owner Review結果
+
+Architecture Ownerは2026年8月27日に§11.5の5項目とGate 3の内容・結果を確認し、Gate 3を承認した。
+承認対象はJava 25 build拒否、temp copyのhash改変拒否、runtime major不一致のexit `3`、成功marker非出力、
+原本SHA-256保持、Java 21 / 25 positive restore、temp cleanup、Root 69 testsおよび正式4module不変である。
+
+Gate 4では承認済みlocal positive / negative pathを変更せず、独立workflowでJDK 21 build artifactを
+runtime jobへ受け渡し、Java 21 / 25 fresh runner検証、最小権限、required checkおよびC4 closeoutを扱う。
+
+## 13. Gate 4 Independent CI実装・local Evidence
+
+### 13.1 workflow構成
+
+`.github/workflows/runtime-compatibility.yml`を`ci.yml`および`publish-snapshot.yml`から分離して実装した。
+
+| 項目 | 実装内容 |
+|---|---|
+| workflow | `Java Runtime Compatibility` |
+| triggers | pull request、`main` push、nightly `18:17 UTC`（03:17 JST）、`workflow_dispatch` |
+| path filter | なし。required check候補のskip / Pendingを作らない |
+| permissions | workflow全体で`contents: read`だけ |
+| concurrency | workflow / ref単位、同一refの旧runをcancel |
+| Build job | `Build Runtime Fixture (Java 21)`、`ubuntu-24.04`、timeout 15分 |
+| Runtime job | `Java Runtime Compatibility`、build job依存、`ubuntu-24.04`、timeout 10分 |
+
+### 13.2 build jobとartifact受け渡し
+
+build jobはTemurin 21でGate 2 build scriptを一度だけ実行し、Gate 3のnegative guardsとpositive restoreを
+再現する。その後、次をupload前に確認する。
+
+1. manifest commitが`GITHUB_SHA`と一致する。
+2. `workingTreeDirty`が`false`である。
+3. JAR SHA-256がmanifestと一致する。
+4. class major versionが`65`である。
+
+JARとJSON manifestだけを`koiki-runtime-compatibility-${{ github.sha }}`としてuploadする。retentionは1日、
+compression levelは`0`で、cache、packageまたはrelease artifactとして扱わない。
+
+runtime jobは同じ名前のworkflow artifactをdownloadし、commit、dirty状態、Build Java 21、major `65`、
+SHA-256を再確認する。その後、明示したJDK homeでJava 21、Java 25の順にGate 2 runtime scriptだけを
+実行する。runtime jobにはMaven Wrapper、build script、negative guard script、`javac`、compile、package、
+cacheまたはruntime別artifact生成を置いていない。
+
+build jobが失敗した場合もruntime jobのrequired check候補をskipさせず、先頭stepで依存job resultを
+failureとして報告する。
+
+### 13.3 Action supply-chain確認
+
+2026年8月27日にGitHub APIで公式releaseとcommit verificationを確認した。
+
+| Action | release | full commit SHA | GitHub verified |
+|---|---|---|---|
+| `actions/checkout` | `v6.1.0` | `d23441a48e516b6c34aea4fa41551a30e30af803` | 既存CI承認pinを継続 |
+| `actions/setup-java` | `v5.7.0` | `b6effb05e454b25005698d916606bdc6ffcbf961` | 既存CI承認pinを継続 |
+| `actions/upload-artifact` | `v7.0.1` | `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a` | `true` |
+| `actions/download-artifact` | `v8.0.1` | `3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c` | `true` |
+
+固定commitの`action.yml`も読み、使用するupload inputs、artifact ID / digest outputsおよびdownload inputsが
+存在することを確認した。tagだけのAction参照は使用しない。
+
+### 13.4 権限・secret境界
+
+- `contents: read`以外のworkflow / job権限を追加していない。
+- `secrets.*`、PAT、Packages、package write / delete、environmentまたは認証済みGit credentialを使用しない。
+- checkoutは両jobとも`persist-credentials: false`である。
+- workflow artifactは同一run内のjob間受け渡しだけに使用し、Repository外配布を行わない。
+- Maven dependency cacheは使用せず、runtime jobへbuild cacheを渡さない。
+
+### 13.5 local静的検査
+
+| 検査 | 結果 |
+|---|---|
+| embedded PowerShell | 12 run blockをParserで検査、syntax errorなし |
+| Action pin | 8 `uses`すべて40文字full SHA |
+| upload / download metadata | 固定commitのinput / output名とworkflow指定がMATCH |
+| trigger | PR、main push、schedule、manual。path filterなし |
+| permissions / secret | `contents: read`だけ、secret / Packagesなし |
+| runtime job | build command、build / negative script参照なし |
+| whitespace / diff | tabなし、`git diff --check` PASS |
+
+local環境にGitHub Actions YAML validatorはないため、workflow構文、artifact service、Temurin 25 download、
+job間受け渡しおよびUbuntu上の実行はPR fresh runnerを最終証拠とする。
+
+### 13.6 remote検証とOwner Reviewまでの残作業
+
+1. Gate 4 local差分をcommitし、feature branchをpushしてPRを作成する。
+2. 通常`Verify`、`Public API Compatibility`、`Build Runtime Fixture (Java 21)`および
+   `Java Runtime Compatibility`を同一commitのfresh runnerで成功させる。
+3. build logでcommit、dirty `false`、major `65`、JAR SHA-256、artifact ID / digestを確認する。
+4. runtime logでdownload後SHA-256、Java 21 / 25 marker、vendor / version、exit `0`を確認する。
+5. negative guards、credential非露出、runtime jobの再compileなしをlogとworkflowから確認する。
+6. Architecture Owner承認後にだけruleset ID `21140116`へ`Java Runtime Compatibility`を追加し、
+   既存checks、strict policy、PR保護およびbypassなしを維持する。
+7. required check反映後のPR状態とDoD 1a-6を確認し、C4を`COMPLETE`とする。
+
+remote EvidenceとOwner承認前はrulesetを変更せず、PRをmergeせず、C4を`COMPLETE`としない。
+
+## 14. Gate 4 Remote Evidence・Owner Review結果
+
+### 14.1 PRとfresh runner
+
+2026年8月27日にPR #19で、feature head `d3496841e8c4d6c9392542e023ef7ff4677766fc`に対する
+`pull_request` eventを実行した。GitHubが生成したtest merge commitは
+`7e055d7b7956fc4af437dfde7b9d8f377c4da867`である。
+
+| workflow / check | run / job | 結果 |
+|---|---|---|
+| `CI` / `Verify (ubuntu-24.04)` | run `33040177185` / job `98411744434` | SUCCESS |
+| `CI` / `Public API Compatibility` | run `33040177185` / job `98411744224` | SUCCESS |
+| `Java Runtime Compatibility` / `Build Runtime Fixture (Java 21)` | run `33040177222` / job `98411744163` | SUCCESS |
+| `Java Runtime Compatibility` / `Java Runtime Compatibility` | run `33040177222` / job `98411870149` | SUCCESS |
+
+### 14.2 build、artifactおよびruntime identity
+
+| 項目 | remote Evidence |
+|---|---|
+| Build Java | Eclipse Adoptium `21.0.12` |
+| source commit | `7e055d7b7956fc4af437dfde7b9d8f377c4da867`、`workingTreeDirty: false` |
+| class major | `65` |
+| JAR SHA-256 | `765FA44B0C1602F3F8CBED0B22B7E5512DB8E3618019DF015755762670267288` |
+| workflow artifact | ID `9633548729`、`koiki-runtime-compatibility-7e055d7b7956fc4af437dfde7b9d8f377c4da867` |
+| archive digest | `sha256:9b472d747ff4bfe5068d95ae74c4ba956779b8a736464c201f487be6812e6c76` |
+| Java 21 runtime | Eclipse Adoptium `21.0.12.1`、marker一致、exit `0` |
+| Java 25 runtime | Eclipse Adoptium `25.0.4.1`、marker一致、exit `0` |
+
+upload前、download後、Java 21 / 25の実行前後でJAR SHA-256はすべて一致した。runtime jobはbuild jobが
+uploadした1個のartifactをdownloadし、Maven、compiler、package、build scriptまたはnegative guard scriptを
+実行していない。
+
+### 14.3 negative guardsと権限境界
+
+fresh runner上で次の3 guardがすべて`EXPECTED FAILURE PASS`となり、その後のJava 21 / 25 positive restoreと
+原本SHA-256保持も成功した。
+
+1. Java 25 build rejection
+2. modified hash rejection
+3. runtime major mismatch
+
+workflow権限は`contents: read`だけで、checkoutは`persist-credentials: false`である。run logのPAT、GitHub token、
+Bearer credential形式の検査結果は0件であり、Packages、secret、cacheまたはRepository外artifact公開を使用していない。
+
+### 14.4 required check反映
+
+Architecture Owner承認後、ruleset ID `21140116`へ`Java Runtime Compatibility`を追加した。
+
+- required checks: `Verify (ubuntu-24.04)`、`Public API Compatibility`、`Java Runtime Compatibility`
+- `strict_required_status_checks_policy: true`
+- enforcement: `active`
+- bypass actor: 0
+- deletion / non-fast-forward禁止およびPR必須rule: 維持
+- PR #19: required checks反映後も`CLEAN` / `MERGEABLE`
+
+### 14.5 Gate 4 Owner Review結果
+
+Architecture Ownerは2026年8月27日にGate 4の5確認項目とremote Evidenceを確認し、内容と結果を承認した。
+承認対象は通常CIと独立runtime workflow、JDK 21 build、major `65`、同一JARのjob間受け渡し、Java 21 / 25
+fresh runner実行、3 negative guards、最小権限、credential非露出およびrequired check反映である。
+
+これによりGate 4を`ACCEPTED`、C4 Java runtime matrixとDoD 1a-6を`COMPLETE`とする。次回WPはC5 Phase 1a
+Closeoutとし、Runtime Foundation、製品runtime、Reference、Security、DB、ContainerおよびJava 25固有最適化は
+引き続き後続Phaseへ保留する。

@@ -3,7 +3,7 @@
 **版:** v0.1  
 **作成日:** 2026年8月21日  
 **文書状態:** ACCEPTED<br>
-**実行状態:** IN PROGRESS（Milestone A・B COMPLETE / Milestone CのC1〜C3 COMPLETE・C4 NEXT）<br>
+**実行状態:** IN PROGRESS（Milestone A・B COMPLETE / Milestone CのC1〜C4 COMPLETE・C5 NEXT）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **承認日:** 2026年8月21日  
 **最終状態更新日:** 2026年8月27日<br>
@@ -26,7 +26,7 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A・B COMPLETE、Milestone CのC1〜C3 COMPLETE／C4 NEXT |
+| Phase / status | Phase 1a / Milestone A・B COMPLETE、Milestone CのC1〜C4 COMPLETE／C5 NEXT |
 | Ownership | Framework: Architecture Contract、Tooling: Parent / BOM / Build Support / ArchUnit / CI |
 | 対象module | Root Reactor、`koiki-parent`、`koiki-dependencies-bom`、Architecture Contract、`koiki-archunit-rules`、検証用Consumer |
 | 適用指針 | グランドデザイン v0.2、Repository Architecture、ADR Register、Baseline Compatibility、Phase 1a引継ぎ台帳 |
@@ -130,7 +130,18 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
   PR保護およびbypassなしを維持した。
 - Architecture Owner ReviewによりC3 Gate 1〜4を`ACCEPTED`、C3とDoD 1a-5を`COMPLETE`とした。Evidence正本は
   `../architecture/validation/phase1a-public-api-compatibility.md`とする。
-- Phase 1aの次回WPはC4 Java runtime matrixとする。C4・C5および後続Phaseの成果物は未実装である。
+- C3完了時点の次回WPはC4 Java runtime matrixであった。
+
+### 3.11 C4完了後の状態
+
+- Tooling-owned非配布fixtureをJDK 21で一度だけbuildし、class major `65`の同一JARをJava 21 / 25で起動した。
+- 独立workflowのjob間artifact受け渡しでJAR SHA-256、source commit、dirty状態を検証し、runtime jobでは
+  compile、packageまたはruntime別artifact生成を行っていない。
+- Java 25 build、hash改変、期待runtime major不一致の3 negative guardsをlocalとUbuntu fresh runnerで確認した。
+- `Java Runtime Compatibility`をmain rulesetのrequired checkへ追加し、既存2 checks、strict policy、
+  PR保護およびbypassなしを維持した。
+- Architecture Owner ReviewによりC4 Gate 1〜4を`ACCEPTED`、C4とDoD 1a-6を`COMPLETE`とした。Evidence正本は
+  `../architecture/validation/phase1a-java-runtime-matrix.md`とする。Phase 1aの次回WPはC5 Closeoutである。
 
 ## 4. Scope
 
@@ -652,7 +663,7 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 | C2-0 | C2開始前ドキュメント同期 | Root README、実行計画、Repository Tree、Validation index | COMPLETE（2026年8月26日、Root POM・実ツリー・C1 Evidenceとの整合確認済み） |
 | C2 | Repository外Consumer | 独立Consumerと再現手順 | COMPLETE（2026年8月26日、Gate 1〜4 Owner Review・local PAT / remote `GITHUB_TOKEN`検証・Evidence記録済み）。snapshotだけから解決し、意図的違反とADR messageを確認 |
 | C3 | Public API / japicmp | API inventory、baseline artifact、除外・例外方針 | COMPLETE（2026年8月27日、Gate 1〜4 Owner Review・local / remote CI・required check・Evidence記録済み）。Public API破壊と未承認追加で失敗、`internal`変更は規約どおり許容 |
-| C4 | Java runtime matrix | G6の起動fixture、Java 21 build artifact | Java 21 / 25で同一artifact起動、Java 25で再compileなし |
+| C4 | Java runtime matrix | G6の起動fixture、Java 21 build artifact | COMPLETE（2026年8月27日、Gate 1〜4 Owner Review・local / remote Java 21 / 25・3 negative guards・required check・Evidence記録済み） |
 | C5 | Phase 1a Closeout | Validation、ADR / Skill / Baseline更新、Walking Skeleton残置物の処置 | 全DoD traceability、CI成功、Owner Review |
 
 **Exit criteria:**

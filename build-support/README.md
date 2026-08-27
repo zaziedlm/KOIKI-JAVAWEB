@@ -47,6 +47,21 @@ pwsh -NoProfile -File build-support/api-compatibility/verify-public-api-fixtures
 
 詳細、credential境界およびGateごとの検証範囲は`api-compatibility/README.md`を参照してください。
 
+## Java Runtime Compatibility
+
+`runtime-compatibility-fixture/`はPhase 1a C4のTooling所有・非配布CLI fixtureです。JDK 21で一度だけ
+生成したJARのclass major version `65`とSHA-256を固定し、同一JARをJava 21 / 25で実行します。
+Root Reactor、正式配布artifact、Public APIおよびRepository外Consumerには含めません。
+
+```powershell
+pwsh -NoProfile -File build-support/runtime-compatibility-fixture/build-runtime-fixture.ps1
+pwsh -NoProfile -File build-support/runtime-compatibility-fixture/verify-runtime-fixture.ps1 -ExpectedJavaFeature 21
+pwsh -NoProfile -File build-support/runtime-compatibility-fixture/verify-runtime-fixture.ps1 -ExpectedJavaFeature 25
+pwsh -NoProfile -File build-support/runtime-compatibility-fixture/verify-runtime-negative-guards.ps1
+```
+
+詳細とGate境界は`runtime-compatibility-fixture/README.md`を参照してください。
+
 Walking Skeleton由来のMaven Toolchains例、class version確認、Java 25 runtime確認等は、
 正式な代替検証が成立するまで履歴・比較用資材として残します。
 
