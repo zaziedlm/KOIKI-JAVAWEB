@@ -3,11 +3,11 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月19日<br>
 **最終更新日:** 2026年8月27日<br>
-**状態:** PHASE 0 ACCEPTED / PHASE 1A CLOSEOUT UPDATE IN REVIEW<br>
+**状態:** PHASE 0 ACCEPTED / PHASE 1A CLOSEOUT ACCEPTED<br>
 **Architecture Owner:** Shuichi Kataoka<br>
 **対象:** KOIKI / Spring Boot / Java baselineとsupport管理<br>
 **Phase 0基準Commit:** `8d90ea1`<br>
-**Phase 1a基準Commit:** `ca37e5c7ca7b80fe190e49f53c05193d38a451d6`
+**Phase 1a基準Commit:** `8894d97e2d1d93e3bcd29304763a31a2ffed5e3c`
 
 ## 1. 目的
 
@@ -81,13 +81,13 @@ versionの記載だけを根拠として、Level 1 / 2、runtime依存または�
 | Maven Wrapper | Maven 3.9.16でRoot / fixture build成功 | `validation/phase1a-build-foundation.md`、`validation/phase1a-java-runtime-matrix.md` |
 | Internal distribution | 正式4成果物の同一timestamp snapshotと外部Consumer成功 | `validation/phase1a-internal-snapshot.md`、`validation/phase1a-external-consumer.md` |
 | Public API | inventory一致、japicmp正常・破壊・追加・internal fixture成功 | `validation/phase1a-public-api-compatibility.md` |
-| CI | main `ca37e5c`のCIとJava Runtime Compatibility成功 | GitHub Actions run `33041131086`、`33041131074` |
+| CI | main `8894d97`のCIとJava Runtime Compatibility成功 | GitHub Actions run `33045138678`、`33045138675` |
 
 Java 25は推奨runtimeの互換確認対象であり、build JDKではない。
 Java 21で生成したbytecodeがJava 21とJava 25の双方で動作する契約を維持する。
 
 **Phase 0 Owner Review（§1〜§3）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）<br>
-**Phase 1a Closeout Review:** IN REVIEW
+**Phase 1a Closeout Review:** ACCEPTED（2026年8月27日、Shuichi Kataoka）
 
 ## 4. Support対応表
 
@@ -171,7 +171,7 @@ DEVELOPMENT -> PLANNED -> SUPPORTED -> EOL
 | Date | KOIKI line | Transition | Decision | Evidence | Rationale | Decided by | Revisit trigger |
 |---|---|---|---|---|---|---|---|
 | 2026年8月19日 | Phase 0 development | New → DEVELOPMENT | ACCEPTED | `validation/walking-skeleton-build-foundation.md`、`validation/walking-skeleton-phase0-completion.md` | POM・Wrapperの実効versionとJava 21 / 25検証結果を未公開baselineとして記録する | Shuichi Kataoka | Phase完了、Spring Boot / Java方針変更、support条件変更 |
-| 2026年8月27日 | Phase 1a Build Foundation | New → DEVELOPMENT | IN REVIEW | Phase 1a Validation一式、`BUILD-BASELINE.json`、実効POM、Wrapper、main CI | 正式座標、Boot 4.1.1、Java 21 build / 21・25 runtime、内部snapshotとCIをcloseout baselineへ同期する | — | C5 Owner Review、Phase 1b開始、正式release準備 |
+| 2026年8月27日 | Phase 1a Build Foundation | New → DEVELOPMENT | ACCEPTED | Phase 1a Validation一式、`BUILD-BASELINE.json`、実効POM、Wrapper、main runs `33045138678` / `33045138675` | 正式座標、Boot 4.1.1、Java 21 build / 21・25 runtime、内部snapshotとCIをcloseout baselineへ同期した。未releaseのため状態は`DEVELOPMENT`を維持する | Shuichi Kataoka | Phase 1b開始、baseline変更、正式release準備 |
 
 **Owner Review（§5〜§7）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）
 

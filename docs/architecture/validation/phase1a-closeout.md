@@ -3,7 +3,7 @@
 ## 1. Status
 
 - Work Package: C5 Phase 1a Closeout
-- Status: Gate 1〜3 ACCEPTED / Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDING
+- Status: COMPLETE / Gate 1〜4 ACCEPTED / PHASE 1A COMPLETE
 - Date: 2026-08-27
 - Architecture Owner: Shuichi Kataoka
 - Base commit: `ca37e5c`（C4 PR #19 merge）
@@ -11,8 +11,8 @@
 - Ownership: Architecture / Tooling
 
 本記録はC5の判断、Repository hygiene、DoD traceabilityおよび最終CIを集約する正本である。
-Gate 4 pre-merge Owner Review時点ではPhase 1aの完了を宣言せず、closeout記録のcommit / push、
-required checks再成功、merge、main最終CIおよび最終Evidence確定を残す。
+PR #20 merge commitに対するmain最終CI成功とArchitecture Ownerの確認をもって、C5、Milestone C、
+Phase 1aを完了とする。
 
 ## 2. Gate plan
 
@@ -21,7 +21,7 @@ required checks再成功、merge、main最終CIおよび最終Evidence確定を�
 | Gate 1 | read-only調査、5項目の境界確認、実装計画 | ACCEPTED（2026-08-27） |
 | Gate 2 | baseline同期、Walking Skeleton残置物処置、Repository hygiene | ACCEPTED（2026-08-27） |
 | Gate 3 | DoD 1a-1〜1a-6、共通DoD、ADR / Skill / Flyway判定 | ACCEPTED（2026-08-27） |
-| Gate 4 | local最終検証、PR CI、Owner Review、main最終CI | PRE-MERGE OWNER REVIEW ACCEPTED / FINAL CI PENDING |
+| Gate 4 | local最終検証、PR CI、Owner Review、main最終CI | ACCEPTED（2026-08-27） |
 
 ## 3. Gate 1で承認した境界
 
@@ -341,3 +341,62 @@ PR #20をmergeできる。main最終CIのrun identityと結果を確認するま
 
 main最終CI成功後は、そのrun identity、merge commit、rulesetおよび最終DoD判定を最小のcloseout
 Evidence更新として正本へ確定する。これは新しい実装WPではなく、C5 Gate 4の最終証拠記録である。
+
+## 15. Gate 4 main final Evidence and Phase 1a completion
+
+### 15.1 Merge identity
+
+| 項目 | 値 |
+|---|---|
+| Pull Request | [#20](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/20) |
+| Final PR head | `3dd6008b9224b64b36c9f3cefb4ae14ddad91f9c` |
+| Merge commit | `8894d97e2d1d93e3bcd29304763a31a2ffed5e3c` |
+| Merged at | 2026年8月27日 15:14 JST |
+
+### 15.2 main final required checks
+
+| Workflow / job | Evidence | 結果 |
+|---|---|---|
+| `CI` / `Verify (ubuntu-24.04)` | [run 33045138678 / job 98427280213](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33045138678/job/98427280213) | SUCCESS、5分05秒 |
+| `CI` / `Public API Compatibility` | [run 33045138678 / job 98427280345](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33045138678/job/98427280345) | SUCCESS、1分21秒 |
+| `Java Runtime Compatibility` / `Build Runtime Fixture (Java 21)` | [run 33045138675 / job 98427279906](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33045138675/job/98427279906) | SUCCESS、33秒 |
+| `Java Runtime Compatibility` / `Java Runtime Compatibility` | [run 33045138675 / job 98427388018](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33045138675/job/98427388018) | SUCCESS、26秒 |
+
+通常CIでは正式4 module、Feature Template、NullAway positive / negative / restoreを再確認した。
+Public API Compatibilityはbaseline timestamp `0.1.0-20260826.091429-1`、2 JARのSHA-256、
+5 public types、4 annotation elements、2 Rules methodsと一致し、japicmpの正式比較は変更なし、
+breaking / addition negative fixtureおよびpackage-private fixtureも期待どおり成功した。
+
+Runtime workflowではJava 21生成JARのclass major `65`、SHA-256
+`2F9F9DCFCA800B4A2D127196F8A214F1A62EA47EC1472099309B11868A7829BC`を固定し、Java 21 / 25で
+同一artifactを実行した。Java 25 build拒否、hash改変、runtime major不一致の3 negative guardsも成功した。
+artifact IDは`9635334715`、digestは
+`sha256:21eaeaed2fb46cef032c34e0a746cc50c7bf25cefc35b1c34a8ee2bc75b743c8`である。
+
+main ruleset `21140116`はactive、strict、required checks 3件、bypass actor 0件を維持し、最終logの
+credential literal scanは0件だった。
+
+### 15.3 Final DoD and Owner decision
+
+| 項目 | 判定 |
+|---|---|
+| Phase 1a DoD 1a-1〜1a-6 | 6 / 6 SATISFIED |
+| 共通DoD 1〜5 | SATISFIED（FlywayはPhase 1a table / migration追加なしのためNOT APPLICABLE） |
+| C5 Gate 1〜4 | ACCEPTED |
+| Milestone A / B / C | COMPLETE |
+| Phase 1a Build Foundation | COMPLETE / ACCEPTED |
+
+| Owner Review項目 | 結果 |
+|---|---|
+| Decision | COMPLETE / ACCEPTED |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月27日 |
+| Scope | C5 Gate 1〜4、PR #20 merge、main最終required checks、DoD / Governance closeout |
+| Evidence | merge commit `8894d97`、runs `33045138678` / `33045138675`、3 required checks成功 |
+| Rationale | Phase 1aの正式4成果物、Public API、外部Consumer、Java 21 / 25 runtime、CIおよび全DoDを再現可能な証拠で確認し、deferred scopeを維持した |
+| Revisit trigger | Phase 1b開始、baseline / Public API / required checks変更、正式releaseまたはsupport開始 |
+
+Architecture Ownerはmain最終CI成功を確認した。pre-merge Owner Reviewの唯一の残条件が満たされたため、
+C5 Gate 4を`ACCEPTED`、C5とMilestone Cを`COMPLETE`、Phase 1a Build Foundationを
+`COMPLETE / ACCEPTED`として確定する。内部snapshotのbaseline状態は`DEVELOPMENT`のままであり、
+正式release、顧客supportまたはPhase 1bの開始を意味しない。

@@ -4,15 +4,15 @@ KOIKI-JavaWeb-FWは、Spring Bootを基盤として、企業向けJava Web Appli
 Architecture、build contract、品質規約のもとで構築するためのFramework projectです。
 
 Phase 0 Walking SkeletonとArchitecture Baselineは2026年8月19日に完了しました。
-現在はPhase 1a Build Foundationとして、検証済みの知見を正式なMaven成果物、Public API、
-CIおよび外部Consumer検証へ再構成しています。
+Phase 1a Build Foundationでは、検証済みの知見を正式なMaven成果物、Public API、CIおよび
+外部Consumer検証へ再構成し、2026年8月27日に完了しました。
 
 ## 現在の状態
 
 - Phase 0 Architecture Baseline: COMPLETE / ACCEPTED
-- Phase 1a Build Foundation: IN PROGRESS
-- Milestone A / B: COMPLETE
-- Milestone C: C1〜C4 COMPLETE / C5 Gate 1〜3 ACCEPTED・Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED / FINAL CI PENDING
+- Phase 1a Build Foundation: COMPLETE / ACCEPTED
+- Milestone A / B / C: COMPLETE
+- Phase 1b Runtime Foundation: NOT STARTED
 - 正式groupId / Java base package: `org.koikifw`
 - Build JDK / target bytecode: Java 21
 - Runtime compatibility target: Java 21 / Java 25
@@ -22,7 +22,7 @@ Phase 0 Walking Skeletonのsourceと一時Maven座標は正式本線から除去
 Validation文書を検証証拠として保持します。C1では正式4成果物の内部snapshot公開を完了し、
 C2ではそのsnapshotだけを利用するRepository外Consumerのlocal / remote検証を完了しました。
 C3ではPublic API互換性、C4ではJava 21 / 25 runtime互換性を正式required checkとして実証し、
-C5ではBaseline、Repository hygiene、DoD traceabilityをcloseoutしています。
+C5ではBaseline、Repository hygiene、DoD traceabilityおよびmain最終CIをcloseoutしました。
 
 ## 正本
 
