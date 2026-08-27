@@ -14,8 +14,8 @@
 ## Validation index
 
 実装で得た証拠の正本は`validation/`に置きます。2026年8月27日時点で、Phase 1aはMilestone A・Bと
-Milestone CのC1〜C3まで完了し、次回WPはC4 Java runtime matrixです。
-C4以降の検証記録は、各WPの実装・Owner Review後に追加します。
+Milestone CのC1〜C3まで完了し、C4 Java runtime matrixはGate 1 ACCEPTED / Gate 2 NEXTです。
+C4以降の検証記録は、各WPの実装・Owner Reviewに合わせて更新します。
 
 ### Phase 1a Build Foundation
 
@@ -32,6 +32,7 @@ C4以降の検証記録は、各WPの実装・Owner Review後に追加します�
 | C1 | COMPLETE / Gate 1〜4 ACCEPTED | `validation/phase1a-internal-snapshot.md` |
 | C2 | COMPLETE / Gate 1〜4 ACCEPTED | `validation/phase1a-external-consumer.md` |
 | C3 | COMPLETE / Gate 1〜4 ACCEPTED | `validation/phase1a-public-api-compatibility.md` |
+| C4 | Gate 1 ACCEPTED / Gate 2 NEXT | `validation/phase1a-java-runtime-matrix.md` |
 
 ### Phase 0 Walking Skeleton
 
