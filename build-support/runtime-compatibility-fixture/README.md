@@ -43,4 +43,8 @@ hash改変はOS temp内のcopyだけに行い、finallyで検証済みtemp path�
 各guard後に確認し、最後にJava 21 / 25 positive pathを再実行します。tracked source、build output原本、
 Root Reactorまたは正式artifactは変更しません。
 
-CIおよびrequired checkはGate 4で扱います。
+## CI
+
+`.github/workflows/runtime-compatibility.yml`はJDK 21 build jobでJARとmanifestを生成・検証し、短期workflow
+artifactとしてruntime jobへ渡します。runtime jobはdownloadした同一JARをJava 21 / 25で実行し、Maven、
+compilerまたはpackage処理を行いません。remote Evidenceとrequired check反映はGate 4 Owner Reviewで扱います。

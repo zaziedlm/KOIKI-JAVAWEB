@@ -17,8 +17,23 @@ Phase 1aでは、CIとartifact公開を別の権限境界として扱います�
 - 外部Actionはfull commit SHAで固定します。tag更新時も差分reviewを必要とします。
 - 通常の`Verify` jobのMaven cacheは高速化だけに用い、配布artifactまたは検証証拠として扱いません。
 
-Java 21で一度だけbuildした同一artifactのJava 21 / 25 runtime検証はC4、内部snapshot公開はC1の
-独立workflowで扱います。`ci.yml`へpackage公開権限を追加しません。
+内部snapshot公開はC1の独立workflowで扱います。`ci.yml`へpackage公開権限を追加しません。
+
+## `runtime-compatibility.yml`
+
+- pull request、`main` push、nightly schedule（03:17 JST）および`workflow_dispatch`で実行します。
+- `Build Runtime Fixture (Java 21)` jobはTemurin 21とRepository WrapperでCLI JARを一度だけ生成し、
+  class major `65`、source commit、working tree、JAR SHA-256をmanifestへ固定します。
+- build jobはGate 3 negative guardsとJava 21 / 25 positive restoreを再現した後、JARとmanifestだけを
+  retention 1日のimmutable workflow artifactとしてuploadします。packageまたはrelease artifactではありません。
+- `Java Runtime Compatibility` jobはworkflow artifactをdownloadし、manifest commit、major、SHA-256を
+  再確認してから、同一JARをTemurin 21 / 25で実行します。
+- runtime jobはMaven、`javac`、compile、package、cacheまたはruntime別artifact生成を行いません。
+- workflow全体は`contents: read`だけを使用し、secret、PAT、Packages権限、artifact公開または
+  認証済みGit credentialを使用しません。
+- checkout、setup-java、upload-artifact、download-artifactは公式release commitのfull SHAで固定します。
+- required check候補は`Java Runtime Compatibility`である。PR fresh runner成功とOwner承認後にだけ、
+  既存rulesetへ追加します。
 
 ## `publish-snapshot.yml`
 

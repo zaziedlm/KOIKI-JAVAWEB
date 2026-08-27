@@ -1,0 +1,201 @@
+name: Java Runtime Compatibility
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "17 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-compatibility-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-runtime-fixture:
+    name: Build Runtime Fixture (Java 21)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Set up Temurin 21
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Capture Java 21 home
+        shell: pwsh
+        run: |
+          "KOIKI_JAVA21_HOME=$env:JAVA_HOME" |
+            Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build Java 21 runtime fixture once
+        shell: pwsh
+        run: >-
+          pwsh -NoProfile -File
+          build-support/runtime-compatibility-fixture/build-runtime-fixture.ps1
+
+      - name: Set up Temurin 25 for negative guards
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Capture Java 25 home
+        shell: pwsh
+        run: |
+          "KOIKI_JAVA25_HOME=$env:JAVA_HOME" |
+            Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Verify runtime compatibility negative guards
+        shell: pwsh
+        run: >-
+          pwsh -NoProfile -File
+          build-support/runtime-compatibility-fixture/verify-runtime-negative-guards.ps1
+          -Java21Home $env:KOIKI_JAVA21_HOME
+          -Java25Home $env:KOIKI_JAVA25_HOME
+
+      - name: Verify artifact identity before upload
+        shell: pwsh
+        run: |
+          $artifactRoot = 'build-support/runtime-compatibility-fixture/target/runtime-artifact'
+          $manifestPath = Join-Path $artifactRoot 'runtime-compatibility-manifest.json'
+          $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding utf8 |
+            ConvertFrom-Json
+          if ($manifest.commit -cne $env:GITHUB_SHA) {
+            throw "Manifest commit does not match GITHUB_SHA: $($manifest.commit)"
+          }
+          if ($manifest.workingTreeDirty) {
+            throw 'Runtime fixture was built from a dirty working tree.'
+          }
+          $jarPath = Join-Path $artifactRoot ([string]$manifest.jarName)
+          $actualHash = (Get-FileHash -LiteralPath $jarPath -Algorithm SHA256).Hash
+          if ($actualHash -cne [string]$manifest.sha256) {
+            throw 'Runtime fixture JAR does not match its build manifest.'
+          }
+          "Artifact commit: $($manifest.commit)"
+          "Artifact SHA-256: $actualHash"
+          "Class major version: $($manifest.classMajorVersion)"
+
+      - name: Upload immutable runtime fixture
+        id: upload-runtime-fixture
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: koiki-runtime-compatibility-${{ github.sha }}
+          path: |
+            build-support/runtime-compatibility-fixture/target/runtime-artifact/runtime-compatibility-fixture-0.1.0-SNAPSHOT.jar
+            build-support/runtime-compatibility-fixture/target/runtime-artifact/runtime-compatibility-manifest.json
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+      - name: Report workflow artifact identity
+        shell: pwsh
+        env:
+          ARTIFACT_ID: ${{ steps.upload-runtime-fixture.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.upload-runtime-fixture.outputs.artifact-digest }}
+        run: |
+          "Workflow artifact ID: $env:ARTIFACT_ID"
+          "Workflow artifact digest: $env:ARTIFACT_DIGEST"
+
+  runtime-compatibility:
+    name: Java Runtime Compatibility
+    needs: build-runtime-fixture
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Require successful Java 21 build job
+        shell: pwsh
+        env:
+          BUILD_JOB_RESULT: ${{ needs.build-runtime-fixture.result }}
+        run: |
+          if ($env:BUILD_JOB_RESULT -cne 'success') {
+            throw "Build Runtime Fixture job result: $env:BUILD_JOB_RESULT"
+          }
+
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Set up Temurin 21
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Capture Java 21 home
+        shell: pwsh
+        run: |
+          "KOIKI_JAVA21_HOME=$env:JAVA_HOME" |
+            Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Set up Temurin 25
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Capture Java 25 home
+        shell: pwsh
+        run: |
+          "KOIKI_JAVA25_HOME=$env:JAVA_HOME" |
+            Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Download Java 21 build artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: koiki-runtime-compatibility-${{ github.sha }}
+          path: build-support/runtime-compatibility-fixture/target/runtime-artifact
+
+      - name: Verify downloaded artifact identity
+        shell: pwsh
+        run: |
+          $artifactRoot = 'build-support/runtime-compatibility-fixture/target/runtime-artifact'
+          $manifestPath = Join-Path $artifactRoot 'runtime-compatibility-manifest.json'
+          $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding utf8 |
+            ConvertFrom-Json
+          if ($manifest.commit -cne $env:GITHUB_SHA) {
+            throw "Downloaded manifest commit does not match GITHUB_SHA: $($manifest.commit)"
+          }
+          if ($manifest.workingTreeDirty) {
+            throw 'Downloaded runtime fixture records a dirty working tree.'
+          }
+          if ($manifest.buildJavaFeature -ne 21 -or $manifest.classMajorVersion -ne 65) {
+            throw 'Downloaded runtime fixture is not a Java 21 / class major 65 artifact.'
+          }
+          $jarPath = Join-Path $artifactRoot ([string]$manifest.jarName)
+          $actualHash = (Get-FileHash -LiteralPath $jarPath -Algorithm SHA256).Hash
+          if ($actualHash -cne [string]$manifest.sha256) {
+            throw 'Downloaded runtime fixture JAR does not match its build manifest.'
+          }
+          "Downloaded artifact SHA-256: $actualHash"
+
+      - name: Run the same artifact on Java 21
+        shell: pwsh
+        run: >-
+          pwsh -NoProfile -File
+          build-support/runtime-compatibility-fixture/verify-runtime-fixture.ps1
+          -ExpectedJavaFeature 21
+          -JavaHome $env:KOIKI_JAVA21_HOME
+
+      - name: Run the same artifact on Java 25 without recompilation
+        shell: pwsh
+        run: >-
+          pwsh -NoProfile -File
+          build-support/runtime-compatibility-fixture/verify-runtime-fixture.ps1
+          -ExpectedJavaFeature 25
+          -JavaHome $env:KOIKI_JAVA25_HOME
