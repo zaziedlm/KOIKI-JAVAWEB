@@ -128,12 +128,27 @@ class BusinessModuleRuleSetTest {
     }
 
     @Test
-    void rule8AcceptsApprovedPersistenceDeclarations() {
+    void rule8AcceptsJpaWithSharedPersistenceModel() {
         JavaClasses classes = new ClassFileImporter().importPackages(
-                "org.koikifw.archunit.fixture.metadata.simple",
-                "org.koikifw.archunit.fixture.metadata.rich");
+                "org.koikifw.archunit.fixture.metadata.simple");
 
         assertNoViolation(BusinessModuleRuleSet.rule8(METADATA_BASE), classes);
+    }
+
+    @Test
+    void rule8RejectsMybatisWithoutSeparatedPersistenceModel() {
+        JavaClasses classes = new ClassFileImporter().importPackages(
+                "org.koikifw.archunit.fixture.metadata.rich");
+
+        String report = assertViolation(
+                BusinessModuleRuleSet.rule8(METADATA_BASE),
+                "KOIKI-ARCH-008",
+                classes);
+
+        assertTrue(report.contains("ADR-039"), report);
+        assertTrue(report.contains("MYBATIS"), report);
+        assertTrue(report.contains("PersistenceModel.SEPARATED"), report);
+        assertTrue(report.contains("not yet provided"), report);
     }
 
     @Test
