@@ -3,7 +3,7 @@
 ## 1. Status
 
 - Work Package: C5 Phase 1a Closeout
-- Status: Gate 1〜3 ACCEPTED / Gate 4 LOCAL COMPLETE・REMOTE PENDING
+- Status: Gate 1〜3 ACCEPTED / Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDING
 - Date: 2026-08-27
 - Architecture Owner: Shuichi Kataoka
 - Base commit: `ca37e5c`（C4 PR #19 merge）
@@ -11,8 +11,8 @@
 - Ownership: Architecture / Tooling
 
 本記録はC5の判断、Repository hygiene、DoD traceabilityおよび最終CIを集約する正本である。
-Gate 4 local検証時点ではPhase 1aの完了を宣言せず、commit / push後のPR required checks、
-Gate 4 Owner Review、mergeおよびmain最終CIを残す。
+Gate 4 pre-merge Owner Review時点ではPhase 1aの完了を宣言せず、closeout記録のcommit / push、
+required checks再成功、merge、main最終CIおよび最終Evidence確定を残す。
 
 ## 2. Gate plan
 
@@ -21,7 +21,7 @@ Gate 4 Owner Review、mergeおよびmain最終CIを残す。
 | Gate 1 | read-only調査、5項目の境界確認、実装計画 | ACCEPTED（2026-08-27） |
 | Gate 2 | baseline同期、Walking Skeleton残置物処置、Repository hygiene | ACCEPTED（2026-08-27） |
 | Gate 3 | DoD 1a-1〜1a-6、共通DoD、ADR / Skill / Flyway判定 | ACCEPTED（2026-08-27） |
-| Gate 4 | local最終検証、PR CI、Owner Review、main最終CI | LOCAL COMPLETE / REMOTE PENDING |
+| Gate 4 | local最終検証、PR CI、Owner Review、main最終CI | PRE-MERGE OWNER REVIEW ACCEPTED / FINAL CI PENDING |
 
 ## 3. Gate 1で承認した境界
 
@@ -245,5 +245,99 @@ C5最終差分に対する再確認をGate 4必須条件として残す判定も
    Architecture Ownerが確認し、Gate 4とC5を承認する。
 5. PRをmainへmergeし、main最終CIを確認する。最終CI実行中はPhase 1a COMPLETEを先取りしない。
 
-Gate 4は`LOCAL COMPLETE / REMOTE PENDING`であり、C5、Milestone C、Phase 1aはいずれもまだ
-`COMPLETE`ではない。
+Gate 4 local結果を記録したcommit `4539a93`をpushし、PR #20を作成した。remote acceptance条件の
+実測結果は§14へ記録する。
+
+## 14. Gate 4 remote Evidence
+
+### 14.1 PR identity
+
+| 項目 | 実測値 |
+|---|---|
+| Pull Request | [#20](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/20) `chore: close out Phase 1a build foundation` |
+| State | OPEN / non-draft |
+| Head | `4539a9308a98c3f57b3c2c51eeb0779f418da041` |
+| GitHub test merge | `a75da4c2ab4d9ea49ff6e524703afc8ea5000790` |
+| Merge state | `MERGEABLE` / `CLEAN` |
+
+### 14.2 workflow / job結果
+
+| Workflow / job | Run / job | 結果 |
+|---|---|---|
+| `CI` / `Verify (ubuntu-24.04)` | [run 33044044827 / job 98423830492](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33044044827/job/98423830492) | SUCCESS、4分37秒 |
+| `CI` / `Public API Compatibility` | [run 33044044827 / job 98423830641](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33044044827/job/98423830641) | SUCCESS、1分29秒 |
+| `Java Runtime Compatibility` / `Build Runtime Fixture (Java 21)` | [run 33044044805 / job 98423830787](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33044044805/job/98423830787) | SUCCESS、35秒 |
+| `Java Runtime Compatibility` / `Java Runtime Compatibility` | [run 33044044805 / job 98423935300](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33044044805/job/98423935300) | SUCCESS、26秒 |
+
+両workflowは`pull_request` eventとhead `4539a93`を記録し、GitHub test merge commit上で検証した。
+通常VerifyではRoot Reactor、Feature Templateの正常系・Tier別負例・復元、NullAway三段階が成功した。
+
+### 14.3 Public API compatibility
+
+| 検査 | remote結果 |
+|---|---|
+| Authentication | Repository `GITHUB_TOKEN`、workflow `packages: read` |
+| Architecture Contract baseline | `0.1.0-20260826.091429-1`、SHA-256 `947EE8CF0E109FE58D81E6008A56C06C8F4C035FF76BDF462F8F6BD9BB50DE45`、MATCH |
+| ArchUnit Rules baseline | `0.1.0-20260826.091429-1`、SHA-256 `A51E26E7386D19E53C18BD63BC4E4F95EC1EAE471F39D519D6AE0CBC7C2DF3F2`、MATCH |
+| Inventory | 5 public types、4 annotation elements、2 Rules methods、MATCH |
+| 正式japicmp | Architecture Contract / ArchUnit Rulesとも`access=public`、modifications `NONE`、exit `0` |
+| package-private fixture | inventory MATCH、modifications `NONE`、exit `0` |
+| breaking fixture | `METHOD_RETURN_TYPE_CHANGED`、expected failure PASS |
+| addition fixture | inventory MISMATCH、`METHOD_ADDED_TO_PUBLIC_CLASS`、expected failure PASS |
+
+### 14.4 Java runtime artifact
+
+| 項目 | remote Evidence |
+|---|---|
+| Build Java / class | Java 21 / class major `65` |
+| Source state | test merge `a75da4c`、working tree dirty `false` |
+| JAR SHA-256 | `BBEA14BBA5760898E1E776CB6C7EFDBC65EDF0D6E757406746083AA4E1B5652C` |
+| Workflow artifact | ID `9634936457`、`koiki-runtime-compatibility-a75da4c2ab4d9ea49ff6e524703afc8ea5000790` |
+| Archive digest | `sha256:f7fe6a271b8d0d88af500b5807de187c61aed305fc3484f2153055f33ce2ce81` |
+| Java 21 | Eclipse Adoptium `21.0.12.1`、marker一致、exit `0` |
+| Java 25 | Eclipse Adoptium `25.0.4.1`、marker一致、exit `0` |
+| 3 negative guards | Java 25 build、hash改変、runtime major不一致がすべてEXPECTED FAILURE PASS |
+
+build前、negative guards後、upload前、download後およびJava 21 / 25実行でJAR SHA-256が一致した。
+runtime jobはbuild jobから受け渡された同一artifactを使用し、Java 25向け再compile / packageを行っていない。
+
+### 14.5 ruleset / credential境界
+
+2026年8月27日にGitHub APIとrun logをread-only確認した。
+
+- ruleset `main-merge-protection`（ID `21140116`）は`active`。
+- `strict_required_status_checks_policy`は`true`。
+- required checksは`Verify (ubuntu-24.04)`、`Public API Compatibility`、
+  `Java Runtime Compatibility`の3件で一致する。
+- Pull Request ruleを維持し、bypass actorは0件である。
+- CI / runtime両run logでPAT、GitHub token、Bearer / Basic credential literalおよび
+  credential付きURLの検出は0件である。
+
+### 14.6 Gate 4 Owner Review対象
+
+1. §13のlocal統合検証と§14のremote Evidenceが同じC5成果を検証している。
+2. PR #20が`CLEAN` / `MERGEABLE`で、3 required checksがすべて成功している。
+3. DoD 1a-1〜1a-6、共通DoD、Baseline、ADR / Skill / Flyway判定、Walking Skeleton処置を維持する。
+4. credential非露出、最小権限、4 module / Public API / dependency / deferred scope非変更を維持する。
+5. Gate 4承認後にcloseout Evidenceをcommit / pushし、required checks再成功後にmergeする。
+6. main最終CI成功後にのみC5、Milestone C、Phase 1aを`COMPLETE`とする。
+
+### 14.7 Gate 4 pre-merge Owner Review結果
+
+| 項目 | 結果 |
+|---|---|
+| Decision | ACCEPTED — FINAL CI PENDING |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月27日 |
+| Scope | §13〜§14.6のlocal最終検証、PR #20 remote Evidence、ruleset、credential境界、DoD / Governance closeout |
+| Evidence | PR #20 head `4539a93`、test merge `a75da4c`、runs `33044044827` / `33044044805`、3 required checks成功 |
+| Rationale | Phase 1aの6 DoDと共通DoDをlocal / remoteで再確認し、正式4 module、Public API、dependency、deferred scopeを維持している |
+| Revisit trigger | Evidence追記後のrequired check失敗、PR差分・ruleset変更、merge不能、main最終CI失敗、記録したidentityとの不一致 |
+
+Architecture Ownerはmain最終CI前までの対応内容と結果を確認し、pre-merge Gate 4 Owner Reviewを
+承認した。この承認に基づきremote Evidenceをcommit / pushし、同じ3 required checksの再成功後に
+PR #20をmergeできる。main最終CIのrun identityと結果を確認するまでは、C5、Milestone C、Phase 1aを
+`COMPLETE`とは扱わない。
+
+main最終CI成功後は、そのrun identity、merge commit、rulesetおよび最終DoD判定を最小のcloseout
+Evidence更新として正本へ確定する。これは新しい実装WPではなく、C5 Gate 4の最終証拠記録である。

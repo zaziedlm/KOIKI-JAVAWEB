@@ -4,7 +4,7 @@
 **棚卸日:** 2026年8月21日  
 **状態:** ACCEPTED  
 **承認日:** 2026年8月21日  
-**Phase 1a C5処置状態:** Gate 1〜3 ACCEPTED / Gate 4 LOCAL COMPLETE・REMOTE PENDING（2026年8月27日）<br>
+**Phase 1a C5処置状態:** Gate 1〜3 ACCEPTED / Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDING（2026年8月27日）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **対象比較:** `main` (`73dcb82`) / `walking-skeleton` (`b3ba79f`)  
 **共通祖先:** `55a4359`
@@ -295,7 +295,7 @@ C区分の除去、D区分の後続Phase実装が完了したことを意味し�
 
 ## 12. Phase 1a C5処置台帳
 
-**状態:** Gate 1〜3 ACCEPTED / Gate 4 LOCAL COMPLETE・REMOTE PENDING<br>
+**状態:** Gate 1〜3 ACCEPTED / Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDING<br>
 **基準Commit:** `ca37e5c`（C4 PR #19 merge）<br>
 **作業branch:** `feature/phase1a-closeout`
 

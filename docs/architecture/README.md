@@ -14,7 +14,7 @@
 ## Validation index
 
 実装で得た証拠の正本は`validation/`に置きます。2026年8月27日時点で、Phase 1aはMilestone A・Bと
-Milestone CのC1〜C4まで完了し、C5 Phase 1a CloseoutはGate 1〜3 ACCEPTED / Gate 4 LOCAL COMPLETE・REMOTE PENDINGです。
+Milestone CのC1〜C4まで完了し、C5 Phase 1a CloseoutはGate 1〜3 ACCEPTED / Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDINGです。
 C5の状態は実装・検証・Owner Reviewに合わせて更新し、承認前にPhase 1a完了とは扱いません。
 
 ### Phase 1a Build Foundation
@@ -33,7 +33,7 @@ C5の状態は実装・検証・Owner Reviewに合わせて更新し、承認前
 | C2 | COMPLETE / Gate 1〜4 ACCEPTED | `validation/phase1a-external-consumer.md` |
 | C3 | COMPLETE / Gate 1〜4 ACCEPTED | `validation/phase1a-public-api-compatibility.md` |
 | C4 | COMPLETE / Gate 1〜4 ACCEPTED | `validation/phase1a-java-runtime-matrix.md` |
-| C5 | Gate 1〜3 ACCEPTED / Gate 4 LOCAL COMPLETE・REMOTE PENDING | `validation/phase1a-closeout.md` |
+| C5 | Gate 1〜3 ACCEPTED / Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDING | `validation/phase1a-closeout.md` |
 
 ### Phase 0 Walking Skeleton
 
