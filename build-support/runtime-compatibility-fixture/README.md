@@ -29,4 +29,18 @@ manifestにはsource commit、working tree状態、JAR SHA-256、対象class ent
 runtime scriptはMaven、`javac`、compileまたはpackageを実行せず、manifestと同じJARに対して
 `java -jar`だけを実行します。JAR hashは実行前後に照合します。
 
-CI、negative guardsおよびrequired checkは後続Gateで扱います。
+## Local negative guards
+
+positive path成功後、次のscriptでJava 25 build、copy JARのhash改変、runtime major不一致が
+期待どおり失敗することを検証します。
+
+```powershell
+pwsh -NoProfile -File `
+  build-support/runtime-compatibility-fixture/verify-runtime-negative-guards.ps1
+```
+
+hash改変はOS temp内のcopyだけに行い、finallyで検証済みtemp pathを削除します。元JARのSHA-256を
+各guard後に確認し、最後にJava 21 / 25 positive pathを再実行します。tracked source、build output原本、
+Root Reactorまたは正式artifactは変更しません。
+
+CIおよびrequired checkはGate 4で扱います。

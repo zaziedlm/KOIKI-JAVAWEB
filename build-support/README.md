@@ -57,6 +57,7 @@ Root Reactor、正式配布artifact、Public APIおよびRepository外Consumer�
 pwsh -NoProfile -File build-support/runtime-compatibility-fixture/build-runtime-fixture.ps1
 pwsh -NoProfile -File build-support/runtime-compatibility-fixture/verify-runtime-fixture.ps1 -ExpectedJavaFeature 21
 pwsh -NoProfile -File build-support/runtime-compatibility-fixture/verify-runtime-fixture.ps1 -ExpectedJavaFeature 25
+pwsh -NoProfile -File build-support/runtime-compatibility-fixture/verify-runtime-negative-guards.ps1
 ```
 
 詳細とGate境界は`runtime-compatibility-fixture/README.md`を参照してください。

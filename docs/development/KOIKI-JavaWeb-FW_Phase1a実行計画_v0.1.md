@@ -3,7 +3,7 @@
 **版:** v0.1  
 **作成日:** 2026年8月21日  
 **文書状態:** ACCEPTED<br>
-**実行状態:** IN PROGRESS（Milestone A・B COMPLETE / Milestone CのC1〜C3 COMPLETE・C4 Gate 1〜2 ACCEPTED・Gate 3 NEXT）<br>
+**実行状態:** IN PROGRESS（Milestone A・B COMPLETE / Milestone CのC1〜C3 COMPLETE・C4 Gate 1〜3 ACCEPTED・Gate 4 NEXT）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **承認日:** 2026年8月21日  
 **最終状態更新日:** 2026年8月27日<br>
@@ -26,7 +26,7 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A・B COMPLETE、Milestone CのC1〜C3 COMPLETE／C4 Gate 1〜2 ACCEPTED・Gate 3 NEXT |
+| Phase / status | Phase 1a / Milestone A・B COMPLETE、Milestone CのC1〜C3 COMPLETE／C4 Gate 1〜3 ACCEPTED・Gate 4 NEXT |
 | Ownership | Framework: Architecture Contract、Tooling: Parent / BOM / Build Support / ArchUnit / CI |
 | 対象module | Root Reactor、`koiki-parent`、`koiki-dependencies-bom`、Architecture Contract、`koiki-archunit-rules`、検証用Consumer |
 | 適用指針 | グランドデザイン v0.2、Repository Architecture、ADR Register、Baseline Compatibility、Phase 1a引継ぎ台帳 |
@@ -130,8 +130,8 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
   PR保護およびbypassなしを維持した。
 - Architecture Owner ReviewによりC3 Gate 1〜4を`ACCEPTED`、C3とDoD 1a-5を`COMPLETE`とした。Evidence正本は
   `../architecture/validation/phase1a-public-api-compatibility.md`とする。
-- Phase 1aの次回WPはC4 Java runtime matrixとし、Gate 1計画とGate 2 local positive pathを
-  承認済みである。Gate 3以降、C5および後続Phaseの成果物は未実装である。
+- Phase 1aの次回WPはC4 Java runtime matrixとし、Gate 1計画、Gate 2 local positive pathおよび
+  Gate 3 negative guardsを承認済みである。Gate 4、C5および後続Phaseの成果物は未実装である。
 
 ## 4. Scope
 
@@ -653,7 +653,7 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 | C2-0 | C2開始前ドキュメント同期 | Root README、実行計画、Repository Tree、Validation index | COMPLETE（2026年8月26日、Root POM・実ツリー・C1 Evidenceとの整合確認済み） |
 | C2 | Repository外Consumer | 独立Consumerと再現手順 | COMPLETE（2026年8月26日、Gate 1〜4 Owner Review・local PAT / remote `GITHUB_TOKEN`検証・Evidence記録済み）。snapshotだけから解決し、意図的違反とADR messageを確認 |
 | C3 | Public API / japicmp | API inventory、baseline artifact、除外・例外方針 | COMPLETE（2026年8月27日、Gate 1〜4 Owner Review・local / remote CI・required check・Evidence記録済み）。Public API破壊と未承認追加で失敗、`internal`変更は規約どおり許容 |
-| C4 | Java runtime matrix | G6の起動fixture、Java 21 build artifact | Gate 1〜2 ACCEPTED（2026年8月27日）／Gate 3 NEXT。Tooling-owned非配布fixture、local major 65、同一SHA-256、Java 21 / 25起動、Root regressionを承認済み |
+| C4 | Java runtime matrix | G6の起動fixture、Java 21 build artifact | Gate 1〜3 ACCEPTED（2026年8月27日）／Gate 4 NEXT。local positive / negative path、原本hash保持、positive restore、Root regressionを承認済み |
 | C5 | Phase 1a Closeout | Validation、ADR / Skill / Baseline更新、Walking Skeleton残置物の処置 | 全DoD traceability、CI成功、Owner Review |
 
 **Exit criteria:**

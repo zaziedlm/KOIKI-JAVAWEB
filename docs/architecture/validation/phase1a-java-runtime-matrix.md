@@ -2,7 +2,7 @@
 
 **調査日:** 2026年8月27日<br>
 **対象branch:** `feature/phase1a-java-runtime-matrix`<br>
-**状態:** C4 GATE 1〜2 ACCEPTED / GATE 3 NEXT<br>
+**状態:** C4 GATE 1〜3 ACCEPTED / GATE 4 NEXT<br>
 **Ownership:** Tooling（runtime compatibility fixture、検証script、CI）<br>
 **対象:** Java 21 build artifact、Java 21 / 25 runtime、DoD 1a-6<br>
 **開始baseline:** `fc178adfa8e107d5c28d1c3be9e1b1653a5d0554`（PR #18 merge、C3 COMPLETE）<br>
@@ -26,7 +26,7 @@ C4は次をすべて満たしたときだけ`COMPLETE`とする。
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1〜C3 COMPLETE / C4 Gate 1〜2 ACCEPTED / Gate 3 NEXT |
+| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1〜C3 COMPLETE / C4 Gate 1〜3 ACCEPTED / Gate 4 NEXT |
 | Ownership | Tooling |
 | target | `build-support/runtime-compatibility-fixture/`、独立workflow、Validation記録 |
 | 正式module | Root ReactorはBOM、Parent、Architecture Contract、ArchUnit Rulesの4moduleを維持 |
@@ -159,7 +159,7 @@ ruleset ID `21140116`へ追加し、既存2 checksとstrict policyを維持す�
 |---|---|---|---|
 | 1 | read-only調査、Ownership、fixture、hash / bytecode / runtime、CI設計 | G6と実装が一対一対応し、後続Phase成果物を含まない | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 | 2 | Tooling fixture、JDK 21 build、major 65、local Java 21 / 25 positive path | 一度生成したJARのhashが両runtime実行前後で一致し、markerとexit 0を確認 | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
-| 3 | negative guardsと非配布境界 | Java 25 build、hash改変、期待runtime不一致が各契約位置で失敗し、Root Reactorと正式成果物が不変 | PENDING |
+| 3 | negative guardsと非配布境界 | Java 25 build、hash改変、期待runtime不一致が各契約位置で失敗し、Root Reactorと正式成果物が不変 | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 | 4 | independent CI、fresh runner、required check、Evidence、C4 closeout | job間artifact受け渡しで成功し、runtime jobにbuild処理がなく、Owner Review後にC4 COMPLETE | PENDING |
 
 ## 6. Stop条件
@@ -290,3 +290,76 @@ Java 21 / 25 local実行、固定marker、exit `0`、Root Reactor 69 testsおよ
 
 Gate 3では承認済みpositive pathを変更せず、Java 25 build、hash改変、期待runtime major不一致の
 3 negative guardsと非配布境界を検証する。CI、required checkおよびC4 closeoutはGate 4まで実装しない。
+
+## 11. Gate 3 Negative Guard Evidence
+
+### 11.1 実装と隔離境界
+
+`verify-runtime-negative-guards.ps1`をTooling fixtureへ追加した。scriptはGate 2のbuild済みJARとmanifestを
+入力とし、次の順に3 expected failureとpositive restoreを検証する。
+
+1. `JAVA_HOME`だけをJava 25へ切り替え、build scriptのJDK 21 guardを検証する。
+2. JARとmanifestをOS temp配下へcopyし、copy JARだけへ1 byteを追記してhash guardを検証する。
+3. 原本JARをJava 21で起動し、期待major `25`を渡してCLI runtime guardを検証する。
+4. 原本SHA-256を再確認し、Java 21 / 25 positive pathを再実行する。
+5. `finally`で絶対pathがsystem temp配下であることを再確認して隔離directoryを削除する。
+
+元JAR、manifest、tracked source、Root Reactorまたは正式artifactをnegative fixtureとして変更しない。
+
+### 11.2 local実行結果
+
+2026年8月27日にWindows localで次を実行した。
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass `
+  -File build-support/runtime-compatibility-fixture/verify-runtime-negative-guards.ps1
+```
+
+| Guard | 操作 | 期待・実測diagnostic | exit / 判定 |
+|---|---|---|---|
+| Java 25 build rejection | build scriptをTemurin 25で開始 | `Runtime fixture must be built with Java 21. Actual feature: 25` | non-zero / EXPECTED FAILURE PASS |
+| modified hash rejection | temp copy JARへ1 byte追記 | `Runtime fixture SHA-256 mismatch before Java 21 execution.` | non-zero / EXPECTED FAILURE PASS |
+| runtime major mismatch | Java 21で原本JARへ期待major 25を指定 | `Java runtime feature mismatch: expected=25 actual=21` | `3` / EXPECTED FAILURE PASS |
+
+3 guardはいずれも`KOIKI_RUNTIME_COMPATIBILITY_SUCCESS`を出力しなかった。Java 25 build guardは
+Maven開始前、hash guardはJava起動前、runtime guardはCLI内のactual major照合で失敗した。
+
+### 11.3 原本hash・positive restore
+
+negative guard完了後、原本JARのSHA-256は次のGate 2承認値を維持した。
+
+```text
+6B0A8CAE12B6B8206F43A3EE95F6C29D5C0041D99C0BD56C52C2CC9DF6BC9275
+```
+
+同じ原本JARでJava 21 / 25 positive pathを再実行し、両runtimeで実行前後hash MATCH、固定marker、
+actual major一致、exit `0`を再確認した。`koiki-c4-runtime-negative-*`のtemp directoryは実行後に
+残置していない。
+
+### 11.4 Regression・非配布境界
+
+Gate 3後に通常Root Reactorの`clean verify`を再実行し、正式4moduleとRoot aggregatorの全projectが
+`BUILD SUCCESS`となった。Architecture Contract 4 tests、ArchUnit Rules 65 testsの計69 testsは
+failure / error / skippedなしである。
+
+Gate 3のtracked実装差分はnegative guard scriptとTooling READMEだけであり、Root POM、正式POM / source、
+Public API inventory、snapshot公開、ConsumerおよびCI workflowを変更していない。
+
+### 11.5 Gate 3 Owner Review対象
+
+1. Java 25 buildがMaven開始前に明示diagnostic付きで拒否される。
+2. hash改変がOS temp内のcopyだけに限定され、Java起動前に拒否される。
+3. Java 21上で期待major 25を指定したCLIがexit `3`で失敗し、成功markerを出力しない。
+4. 3 guard後も原本hashが一致し、Java 21 / 25 positive pathとtemp cleanupが成功する。
+5. Root 69 tests、正式4moduleおよび非配布境界が不変である。
+
+Gate 3 Owner承認前はCI workflowを実装せず、Gate 3を`ACCEPTED`としない。
+
+## 12. Gate 3 Owner Review結果
+
+Architecture Ownerは2026年8月27日に§11.5の5項目とGate 3の内容・結果を確認し、Gate 3を承認した。
+承認対象はJava 25 build拒否、temp copyのhash改変拒否、runtime major不一致のexit `3`、成功marker非出力、
+原本SHA-256保持、Java 21 / 25 positive restore、temp cleanup、Root 69 testsおよび正式4module不変である。
+
+Gate 4では承認済みlocal positive / negative pathを変更せず、独立workflowでJDK 21 build artifactを
+runtime jobへ受け渡し、Java 21 / 25 fresh runner検証、最小権限、required checkおよびC4 closeoutを扱う。
