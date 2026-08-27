@@ -7,6 +7,7 @@
 - `phase1a-b4-handoff-20260825.md`: B3完了後、新規AIセッションでPhase 1a B4を開始するための運用引継ぎ
 - `phase1a-c1-handoff-20260825.md`: Milestone B完了後、新規AIセッションでPhase 1a C1を開始するための運用引継ぎ
 - `phase1a-c1-closeout-handoff-20260826.md`: C1完了とCI Windows runner一時停止後、新規AIセッションで後続作業を開始するための運用引継ぎ
+- `phase1b-prep-mybatis-public-api-handoff-20260827.md`: Phase 1a完了後、Phase 1b着手前に発見した`PersistenceTechnology.MYBATIS`公開API不整合の問題内容・検証済み事実・対応案の引継ぎ
 
 Walking Skeletonの再実行方法と固定Commit上の証拠は、Repository rootの履歴と
 `../architecture/validation/`を参照してください。
