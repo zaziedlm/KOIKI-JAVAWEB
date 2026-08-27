@@ -4,7 +4,7 @@
   "purpose": "Phase 1a formal build foundation",
   "groupId": "org.koikifw",
   "developmentVersion": "0.1.0-SNAPSHOT",
-  "status": "G1_ACCEPTED_A3_COMPLETE_A4_COMPLETE",
+  "status": "PHASE1A_C5_GATE1_ACCEPTED_GATE2_READY_FOR_OWNER_REVIEW",
   "versions": {
     "springBoot": "4.1.1",
     "springModulith": "2.1.0",
@@ -15,19 +15,25 @@
     "mavenSurefirePlugin": "3.5.6",
     "actionsCheckout": "6.1.0",
     "actionsSetupJava": "5.7.0",
+    "actionsUploadArtifact": "7.0.1",
+    "actionsDownloadArtifact": "8.0.1",
     "errorProne": "2.50.0",
     "nullAway": "0.13.8",
-    "jSpecify": "1.0.0"
+    "jSpecify": "1.0.0",
+    "japicmp": "0.26.1"
   },
   "notes": [
     "The Root POM aggregates modules only; the BOM owns dependency versions and the Parent owns build policy.",
     "Build JDK and target bytecode are Java 21; Java 25 is a runtime compatibility target only.",
     "Spring Modulith 2.1.0 is limited to Level 0 test usage in Phase 1a.",
     "Maven Surefire Plugin 3.5.6 is Owner-approved and runs JUnit Platform tests through the Parent build policy.",
-    "GitHub Actions use Windows 2025 and Ubuntu 24.04 with Temurin 21; external actions are pinned to full commit SHAs.",
-    "Both Windows and Ubuntu verification jobs are required checks for changes targeting main.",
+    "GitHub Actions use Ubuntu 24.04 with Temurin 21; the Windows runner is temporarily disabled while the production runtime remains Linux-only.",
+    "Verify (ubuntu-24.04), Public API Compatibility, and Java Runtime Compatibility are strict required checks for changes targeting main.",
     "The read-only CI checkout does not persist GitHub credentials after fetching the repository.",
     "The official Maven Wrapper 3.3.4 bin distribution is used to avoid the known Windows PowerShell issue in the only-script distribution.",
+    "The Maven Wrapper bootstrap scripts regenerate the official 3.3.4 bin distribution.",
+    "Spring Modulith 2.1.0 is retained for the Phase 1a closeout; the available 2.1.1 patch is reviewed at the Phase 1b baseline gate.",
+    "Walking Skeleton source and temporary coordinates are removed from the formal main line after equivalent Phase 1a validation.",
     "Future product modules are not pre-created as empty Maven modules."
   ]
 }

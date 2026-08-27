@@ -65,8 +65,9 @@ JPMSは採用しない。
 別プロジェクトで使用している`org.koikifw.libkoiki.batch`は、
 バッチ実行基盤固有のnamespaceであり、本Repositoryのpackage階層には持ち込まない。
 
-Walking Skeletonの`dev.koiki.walkingskeleton`は検証用の一時namespaceとして維持し、
-Phase 1aの正式成果物へは引き継がない。
+Walking Skeletonの`dev.koiki.walkingskeleton`は検証用の一時namespaceであり、Phase 1aの
+正式成果物へ引き継がない。Phase 1a C5でそのsourceを正式本線から除去し、固定branch、Git履歴、
+Validation文書を証拠として保持する。
 
 ## 6. Dependency Principle
 

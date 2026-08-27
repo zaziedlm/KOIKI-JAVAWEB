@@ -62,8 +62,9 @@ pwsh -NoProfile -File build-support/runtime-compatibility-fixture/verify-runtime
 
 詳細とGate境界は`runtime-compatibility-fixture/README.md`を参照してください。
 
-Walking Skeleton由来のMaven Toolchains例、class version確認、Java 25 runtime確認等は、
-正式な代替検証が成立するまで履歴・比較用資材として残します。
+Maven Toolchains例は開発環境の再現用に保持します。Walking Skeleton専用のclass version確認と
+Java 25 runtime scriptは、C4のmanifest・hash・class major・Java 21 / 25検証へ置き換えたため除去しました。
+Maven Wrapper bootstrap scriptは公式`bin`型を再生成する保守手段として保持します。
 
 ## 社内SSLインスペクションProxy環境でのMavenビルドエラー対応
 

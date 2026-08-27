@@ -32,13 +32,15 @@ Phase 1aでは、CIとartifact公開を別の権限境界として扱います�
 - workflow全体は`contents: read`だけを使用し、secret、PAT、Packages権限、artifact公開または
   認証済みGit credentialを使用しません。
 - checkout、setup-java、upload-artifact、download-artifactは公式release commitのfull SHAで固定します。
-- required check候補は`Java Runtime Compatibility`である。PR fresh runner成功とOwner承認後にだけ、
-  既存rulesetへ追加します。
+- `Java Runtime Compatibility`はC4のPR fresh runner成功とOwner承認後、main rulesetのrequired checkへ
+  追加済みです。既存`Verify (ubuntu-24.04)`、`Public API Compatibility`、strict policy、PR保護および
+  bypassなしを維持します。
 
 ## `publish-snapshot.yml`
 
 - `workflow_dispatch`だけで起動し、preflight前にmain refとOwnerが承認した40文字のcommit SHAとの一致を検査します。
-- Windows / Ubuntuのpreflightは`contents: read`だけで既存CI相当の検証を完走します。
+- `ubuntu-24.04`のpreflightは`contents: read`だけで既存CI相当の検証を完走します。Windows runnerは
+  production runtimeをLinux-onlyとした判断により一時停止中です。
 - preflight成功後のpublish jobだけが`packages: write`を持ち、`phase1a-internal-snapshot` environmentを使います。
 - Maven server ID `github`へRepository固有の`GITHUB_TOKEN`を接続し、PATをRepository secretへ保存しません。
 - 配布先はworkflowの`altSnapshotDeploymentRepository`だけに指定し、BOM / ParentやCustomer POMへ継承させません。
