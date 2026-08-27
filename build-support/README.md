@@ -34,6 +34,19 @@ pwsh -NoProfile -File build-support/null-safety/verify-null-safety.ps1
 検証scriptはtracked sourceを書き換えず、Root Reactorや配布artifactへnegative fixtureを含めません。
 詳細と期待diagnosticは`null-safety/README.md`を参照してください。
 
+## Public API Compatibility
+
+`api-compatibility/`はPhase 1a C3のTooling所有・非配布検証資材です。C1のtimestamped
+snapshot JARをSHA-256付きbaselineとし、現行Architecture Contract / ArchUnit Rulesの
+Public API inventoryとjapicmp比較を実行します。Root Reactorには含めません。
+
+```powershell
+pwsh -NoProfile -File build-support/api-compatibility/verify-public-api-compatibility.ps1
+pwsh -NoProfile -File build-support/api-compatibility/verify-public-api-fixtures.ps1
+```
+
+詳細、credential境界およびGateごとの検証範囲は`api-compatibility/README.md`を参照してください。
+
 Walking Skeleton由来のMaven Toolchains例、class version確認、Java 25 runtime確認等は、
 正式な代替検証が成立するまで履歴・比較用資材として残します。
 

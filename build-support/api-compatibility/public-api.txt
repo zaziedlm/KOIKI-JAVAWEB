@@ -1,0 +1,22 @@
+# KOIKI Phase 1a C3 Public API inventory v1
+ARTIFACT koiki-architecture-contract
+TYPE annotation org.koikifw.architecture.KoikiModule
+META retention RUNTIME
+META target PACKAGE
+META documented true
+METHOD abstract java.lang.String org.koikifw.architecture.KoikiModule#name()
+METHOD abstract org.koikifw.architecture.ModuleTier org.koikifw.architecture.KoikiModule#tier()
+METHOD abstract org.koikifw.architecture.PersistenceModel org.koikifw.architecture.KoikiModule#persistenceModel()
+METHOD abstract org.koikifw.architecture.PersistenceTechnology org.koikifw.architecture.KoikiModule#persistence()
+TYPE enum org.koikifw.architecture.ModuleTier
+ENUM org.koikifw.architecture.ModuleTier SIMPLE
+ENUM org.koikifw.architecture.ModuleTier RICH
+TYPE enum org.koikifw.architecture.PersistenceModel
+ENUM org.koikifw.architecture.PersistenceModel SHARED
+TYPE enum org.koikifw.architecture.PersistenceTechnology
+ENUM org.koikifw.architecture.PersistenceTechnology JPA
+ENUM org.koikifw.architecture.PersistenceTechnology MYBATIS
+ARTIFACT koiki-archunit-rules
+TYPE class final org.koikifw.archunit.KoikiArchitectureRules
+METHOD static com.tngtech.archunit.lang.ArchRule org.koikifw.archunit.KoikiArchitectureRules#businessModuleRules(java.lang.String)
+METHOD static com.tngtech.archunit.lang.ArchRule org.koikifw.archunit.KoikiArchitectureRules#frameworkOwnershipRules(java.lang.String,java.lang.String...)

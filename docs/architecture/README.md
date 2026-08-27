@@ -13,9 +13,9 @@
 
 ## Validation index
 
-実装で得た証拠の正本は`validation/`に置きます。2026年8月26日時点で、Phase 1aはMilestone A・Bと
-Milestone CのC1・C2まで完了し、次回WPはC3 Public API Compatibilityです。C3以降の検証記録は、各WPの
-実装・Owner Review後に追加します。
+実装で得た証拠の正本は`validation/`に置きます。2026年8月27日時点で、Phase 1aはMilestone A・Bと
+Milestone CのC1〜C3まで完了し、次回WPはC4 Java runtime matrixです。
+C4以降の検証記録は、各WPの実装・Owner Review後に追加します。
 
 ### Phase 1a Build Foundation
 
@@ -31,6 +31,7 @@ Milestone CのC1・C2まで完了し、次回WPはC3 Public API Compatibilityで
 | B5 | COMPLETE / ACCEPTED | `validation/phase1a-template-integration.md` |
 | C1 | COMPLETE / Gate 1〜4 ACCEPTED | `validation/phase1a-internal-snapshot.md` |
 | C2 | COMPLETE / Gate 1〜4 ACCEPTED | `validation/phase1a-external-consumer.md` |
+| C3 | COMPLETE / Gate 1〜4 ACCEPTED | `validation/phase1a-public-api-compatibility.md` |
 
 ### Phase 0 Walking Skeleton
 
