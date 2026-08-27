@@ -2,7 +2,7 @@
 
 **調査日:** 2026年8月27日<br>
 **対象branch:** `feature/phase1a-java-runtime-matrix`<br>
-**状態:** C4 GATE 1 ACCEPTED / GATE 2 NEXT<br>
+**状態:** C4 GATE 1〜2 ACCEPTED / GATE 3 NEXT<br>
 **Ownership:** Tooling（runtime compatibility fixture、検証script、CI）<br>
 **対象:** Java 21 build artifact、Java 21 / 25 runtime、DoD 1a-6<br>
 **開始baseline:** `fc178adfa8e107d5c28d1c3be9e1b1653a5d0554`（PR #18 merge、C3 COMPLETE）<br>
@@ -26,7 +26,7 @@ C4は次をすべて満たしたときだけ`COMPLETE`とする。
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1〜C3 COMPLETE / C4 Gate 1 ACCEPTED / Gate 2 NEXT |
+| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1〜C3 COMPLETE / C4 Gate 1〜2 ACCEPTED / Gate 3 NEXT |
 | Ownership | Tooling |
 | target | `build-support/runtime-compatibility-fixture/`、独立workflow、Validation記録 |
 | 正式module | Root ReactorはBOM、Parent、Architecture Contract、ArchUnit Rulesの4moduleを維持 |
@@ -158,7 +158,7 @@ ruleset ID `21140116`へ追加し、既存2 checksとstrict policyを維持す�
 | Gate | 確認対象 | 完了条件 | 状態 |
 |---|---|---|---|
 | 1 | read-only調査、Ownership、fixture、hash / bytecode / runtime、CI設計 | G6と実装が一対一対応し、後続Phase成果物を含まない | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
-| 2 | Tooling fixture、JDK 21 build、major 65、local Java 21 / 25 positive path | 一度生成したJARのhashが両runtime実行前後で一致し、markerとexit 0を確認 | PENDING |
+| 2 | Tooling fixture、JDK 21 build、major 65、local Java 21 / 25 positive path | 一度生成したJARのhashが両runtime実行前後で一致し、markerとexit 0を確認 | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 | 3 | negative guardsと非配布境界 | Java 25 build、hash改変、期待runtime不一致が各契約位置で失敗し、Root Reactorと正式成果物が不変 | PENDING |
 | 4 | independent CI、fresh runner、required check、Evidence、C4 closeout | job間artifact受け渡しで成功し、runtime jobにbuild処理がなく、Owner Review後にC4 COMPLETE | PENDING |
 
@@ -197,3 +197,96 @@ negative guards、独立CIおよびGate 4承認後のrequired check追加であ�
 
 Gate 2ではこの承認範囲内でfixtureとlocal positive pathを実装する。Public API、正式module、配布artifact、
 runtime dependencyまたは後続Phase成果物が必要になった場合は実装を停止し、Gate 1へ戻す。
+
+## 9. Gate 2 実装・local Evidence
+
+### 9.1 実装資材
+
+Gate 1承認範囲内で次のTooling-owned資材を実装した。
+
+| 対象 | 役割 |
+|---|---|
+| `runtime-compatibility-fixture/pom.xml` | Parent build contractを継承し、BOMとfixtureだけを含む検証reactor |
+| `fixture/pom.xml` | Java 21 CLI JARと`Main-Class` manifestを生成する非配布POM |
+| `RuntimeCompatibilityProbe.java` | 期待runtime majorを照合し、固定markerと実runtime情報を出力するJava標準CLI |
+| `build-runtime-fixture.ps1` | JDK 21 build、class header、SHA-256、build manifestを生成 |
+| `verify-runtime-fixture.ps1` | Mavenを呼ばず、同一JARのruntime major、marker、exit、実行前後hashを照合 |
+| `README.md` | Windows local再現手順と非配布境界 |
+
+fixture packageは`org.koikifw.buildsupport.internal.runtime`、Maven groupIdは
+`org.koikifw.validation`である。Spring、KOIKI正式artifactまたは外部dependencyを追加していない。
+
+### 9.2 JDK 21 build Evidence
+
+2026年8月27日にWindows localで次を実行した。
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass `
+  -File build-support/runtime-compatibility-fixture/build-runtime-fixture.ps1
+```
+
+| 項目 | 実測値 |
+|---|---|
+| Build JDK | Eclipse Adoptium / Temurin `21.0.12.1` |
+| Maven | Repository Wrapper `3.9.16` |
+| Maven result | 3 project SUCCESS、fixtureは`release 21`で1 sourceをcompile |
+| JAR | `runtime-compatibility-fixture-0.1.0-SNAPSHOT.jar` |
+| class entry | `org/koikifw/buildsupport/internal/runtime/RuntimeCompatibilityProbe.class` |
+| class major | `65` |
+| SHA-256 | `6B0A8CAE12B6B8206F43A3EE95F6C29D5C0041D99C0BD56C52C2CC9DF6BC9275` |
+| source state | HEAD `f51b6ca28795aea33c943a69bb81d35c76fda533`＋Gate 2 working tree、manifest `workingTreeDirty: true` |
+
+JARにはCLI class、JAR manifestおよびMaven metadataだけが入り、Walking Skeleton、Spring Boot、
+正式KOIKI class、設定またはdependencyを含まない。JARとJSON manifestはignored
+`build-support/runtime-compatibility-fixture/target/runtime-artifact/`へ生成した。
+
+### 9.3 Java 21 / 25 runtime Evidence
+
+build完了後にMaven、`javac`、`jar`またはpackage処理を実行せず、次を順に実行した。
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass `
+  -File build-support/runtime-compatibility-fixture/verify-runtime-fixture.ps1 `
+  -ExpectedJavaFeature 21
+
+pwsh -NoProfile -ExecutionPolicy Bypass `
+  -File build-support/runtime-compatibility-fixture/verify-runtime-fixture.ps1 `
+  -ExpectedJavaFeature 25
+```
+
+| Runtime | vendor / version | marker | SHA-256 before / after | exit |
+|---|---|---|---|---|
+| Java 21 | Eclipse Adoptium `21.0.12.1` | `KOIKI_RUNTIME_COMPATIBILITY_SUCCESS expected=21 actual=21` | MATCH / MATCH | `0` |
+| Java 25 | Eclipse Adoptium `25.0.4.1` | `KOIKI_RUNTIME_COMPATIBILITY_SUCCESS expected=25 actual=25` | MATCH / MATCH | `0` |
+
+両runtimeの実行前後hashは§9.2のSHA-256と一致した。Java 25用のcompile、package、source、dependency、
+JARまたはmanifestは生成していない。
+
+### 9.4 Regression・非配布境界
+
+通常のRoot Reactorで`mvnw.cmd --batch-mode --no-transfer-progress clean verify`を再実行し、正式4moduleと
+Root aggregatorの全projectが成功した。Architecture Contract 4 tests、ArchUnit Rules 65 testsの
+計69 testsはfailure / error / skippedなしである。
+
+Root POMの`<modules>`は正式4moduleのまま一致し、Gate 2のtracked差分は`build-support/`と本Validation記録に
+限定される。fixtureの`target/`は既存`.gitignore`により追跡対象外で、C1 snapshot、Public API inventory、
+japicmp、Feature TemplateおよびRepository外Consumerを変更していない。
+
+### 9.5 Gate 2 Owner Review対象
+
+1. fixtureがTooling所有・Root Reactor外・非配布で、Java標準機能だけを使用している。
+2. JDK 21 / Wrapper buildが成功し、対象class major `65`とbuild SHA-256をmanifestへ固定している。
+3. Java 21 / 25で同一JARの実行前後hash、固定marker、actual major、vendor / version、exit `0`が一致する。
+4. runtime scriptがMaven、compilerまたはpackage処理を持たず、Java 25向け別artifactを生成していない。
+5. 通常Root buildと69 testsが成功し、正式4module、Public APIおよび配布境界が不変である。
+
+Gate 2 Owner承認前はGate 3 negative guardsを実装せず、Gate 2を`ACCEPTED`としない。
+
+## 10. Gate 2 Owner Review結果
+
+Architecture Ownerは2026年8月27日に§9.5の5項目とGate 2の内容・結果を確認し、Gate 2を承認した。
+承認対象はTooling-owned非配布fixture、JDK 21 build、class major `65`、build manifest、同一SHA-256の
+Java 21 / 25 local実行、固定marker、exit `0`、Root Reactor 69 testsおよび正式4module不変である。
+
+Gate 3では承認済みpositive pathを変更せず、Java 25 build、hash改変、期待runtime major不一致の
+3 negative guardsと非配布境界を検証する。CI、required checkおよびC4 closeoutはGate 4まで実装しない。
