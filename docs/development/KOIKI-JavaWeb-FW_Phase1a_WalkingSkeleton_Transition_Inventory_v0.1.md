@@ -4,7 +4,7 @@
 **棚卸日:** 2026年8月21日  
 **状態:** ACCEPTED  
 **承認日:** 2026年8月21日  
-**Phase 1a C5処置状態:** Gate 1 ACCEPTED / Gate 2 READY FOR OWNER REVIEW（2026年8月27日）<br>
+**Phase 1a C5処置状態:** Gate 1〜2 ACCEPTED / Gate 3 READY FOR OWNER REVIEW（2026年8月27日）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **対象比較:** `main` (`73dcb82`) / `walking-skeleton` (`b3ba79f`)  
 **共通祖先:** `55a4359`
@@ -295,7 +295,7 @@ C区分の除去、D区分の後続Phase実装が完了したことを意味し�
 
 ## 12. Phase 1a C5処置台帳
 
-**状態:** Gate 1 ACCEPTED / Gate 2 READY FOR OWNER REVIEW<br>
+**状態:** Gate 1〜2 ACCEPTED / Gate 3 READY FOR OWNER REVIEW<br>
 **基準Commit:** `ca37e5c`（C4 PR #19 merge）<br>
 **作業branch:** `feature/phase1a-closeout`
 
@@ -306,13 +306,13 @@ build、配布物、Public API、Templateへ直接昇格させない。
 | 移行対象 | C5 Gate 2での処置 | 正式代替・保持先 | 状態 |
 |---|---|---|---|
 | Root POMの一時座標・名称 | A2で正式座標`org.koikifw`と4 module Reactorへ置換済み | Root / Parent / BOM、`phase1a-build-foundation.md` | VERIFIED |
-| `walking-skeleton/ws-smoke-lib`、`ws-smoke-app` | 正式本線から削除 | Architecture Contract、ArchUnit Rules、Feature Template、C1〜C4 Evidence。旧sourceは固定snapshotとGit履歴 | IN REVIEW |
-| `walking-skeleton/negative-tests/nullaway` | 正式本線から削除 | `build-support/null-safety/`の再現可能なpositive / negative検証、`phase1a-null-safety.md` | IN REVIEW |
-| Walking Skeleton作業計画 | 正式本線から削除 | 承認済みPhase 0 Validation、固定snapshot、Git履歴 | IN REVIEW |
-| Phase 0向けRoot説明 | Phase 1aのmodule、配布、互換性、残置物処置へ同期 | Root `README.md`、`REPOSITORY-TREE.txt`、Validation index | IN REVIEW |
-| Maven Wrapper bootstrap | 継続保守用に保持し、既存Wrapperと同じ`bin`方式へ修正 | `.mvn/README.md`、`bootstrap-maven-wrapper.ps1` / `.sh` | IN REVIEW |
-| `run-with-java25.ps1`、`verify-class-version.ps1` | C4の同一artifact runtime検証成立後に削除 | `runtime-compatibility-fixture/`、`runtime-compatibility.yml`、`phase1a-java-runtime-matrix.md` | IN REVIEW |
+| `walking-skeleton/ws-smoke-lib`、`ws-smoke-app` | 正式本線から削除 | Architecture Contract、ArchUnit Rules、Feature Template、C1〜C4 Evidence。旧sourceは固定snapshotとGit履歴 | ACCEPTED（Gate 2） |
+| `walking-skeleton/negative-tests/nullaway` | 正式本線から削除 | `build-support/null-safety/`の再現可能なpositive / negative検証、`phase1a-null-safety.md` | ACCEPTED（Gate 2） |
+| Walking Skeleton作業計画 | 正式本線から削除 | 承認済みPhase 0 Validation、固定snapshot、Git履歴 | ACCEPTED（Gate 2） |
+| Phase 0向けRoot説明 | Phase 1aのmodule、配布、互換性、残置物処置へ同期 | Root `README.md`、`REPOSITORY-TREE.txt`、Validation index | ACCEPTED（Gate 2） |
+| Maven Wrapper bootstrap | 継続保守用に保持し、既存Wrapperと同じ`bin`方式へ修正 | `.mvn/README.md`、`bootstrap-maven-wrapper.ps1` / `.sh` | ACCEPTED（Gate 2） |
+| `run-with-java25.ps1`、`verify-class-version.ps1` | C4の同一artifact runtime検証成立後に削除 | `runtime-compatibility-fixture/`、`runtime-compatibility.yml`、`phase1a-java-runtime-matrix.md` | ACCEPTED（Gate 2） |
 | D区分のRuntime / Security / Reference / Production成果物 | Phase 1aへ追加しない | 後続PhaseのGovernance判断 | VERIFIED |
 
-Gate 2では処置内容と回帰検証をOwner Reviewへ提示する。`IN REVIEW`は削除・同期を実装済みで
-あることを示し、Gate 2 ACCEPTEDまたはPhase 1a COMPLETEを意味しない。
+Gate 2の処置内容と回帰検証は2026年8月27日にOwner Reviewで承認され、commit `39f09eb`へ確定した。
+この承認はPhase 1a COMPLETEを意味せず、DoD / Governance reviewと最終CIはC5 Gate 3 / 4で扱う。
