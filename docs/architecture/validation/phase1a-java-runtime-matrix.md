@@ -2,7 +2,7 @@
 
 **調査日:** 2026年8月27日<br>
 **対象branch:** `feature/phase1a-java-runtime-matrix`<br>
-**状態:** C4 GATE 1〜3 ACCEPTED / GATE 4 IN PROGRESS<br>
+**状態:** C4 COMPLETE / GATE 1〜4 ACCEPTED<br>
 **Ownership:** Tooling（runtime compatibility fixture、検証script、CI）<br>
 **対象:** Java 21 build artifact、Java 21 / 25 runtime、DoD 1a-6<br>
 **開始baseline:** `fc178adfa8e107d5c28d1c3be9e1b1653a5d0554`（PR #18 merge、C3 COMPLETE）<br>
@@ -26,7 +26,7 @@ C4は次をすべて満たしたときだけ`COMPLETE`とする。
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1〜C3 COMPLETE / C4 Gate 1〜3 ACCEPTED / Gate 4 IN PROGRESS |
+| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1〜C4 COMPLETE / C5 NEXT |
 | Ownership | Tooling |
 | target | `build-support/runtime-compatibility-fixture/`、独立workflow、Validation記録 |
 | 正式module | Root ReactorはBOM、Parent、Architecture Contract、ArchUnit Rulesの4moduleを維持 |
@@ -160,7 +160,7 @@ ruleset ID `21140116`へ追加し、既存2 checksとstrict policyを維持す�
 | 1 | read-only調査、Ownership、fixture、hash / bytecode / runtime、CI設計 | G6と実装が一対一対応し、後続Phase成果物を含まない | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 | 2 | Tooling fixture、JDK 21 build、major 65、local Java 21 / 25 positive path | 一度生成したJARのhashが両runtime実行前後で一致し、markerとexit 0を確認 | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 | 3 | negative guardsと非配布境界 | Java 25 build、hash改変、期待runtime不一致が各契約位置で失敗し、Root Reactorと正式成果物が不変 | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
-| 4 | independent CI、fresh runner、required check、Evidence、C4 closeout | job間artifact受け渡しで成功し、runtime jobにbuild処理がなく、Owner Review後にC4 COMPLETE | IN PROGRESS — LOCAL PASS / REMOTE PENDING |
+| 4 | independent CI、fresh runner、required check、Evidence、C4 closeout | job間artifact受け渡しで成功し、runtime jobにbuild処理がなく、Owner Review後にC4 COMPLETE | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 
 ## 6. Stop条件
 
@@ -451,3 +451,68 @@ job間受け渡しおよびUbuntu上の実行はPR fresh runnerを最終証拠�
 7. required check反映後のPR状態とDoD 1a-6を確認し、C4を`COMPLETE`とする。
 
 remote EvidenceとOwner承認前はrulesetを変更せず、PRをmergeせず、C4を`COMPLETE`としない。
+
+## 14. Gate 4 Remote Evidence・Owner Review結果
+
+### 14.1 PRとfresh runner
+
+2026年8月27日にPR #19で、feature head `d3496841e8c4d6c9392542e023ef7ff4677766fc`に対する
+`pull_request` eventを実行した。GitHubが生成したtest merge commitは
+`7e055d7b7956fc4af437dfde7b9d8f377c4da867`である。
+
+| workflow / check | run / job | 結果 |
+|---|---|---|
+| `CI` / `Verify (ubuntu-24.04)` | run `33040177185` / job `98411744434` | SUCCESS |
+| `CI` / `Public API Compatibility` | run `33040177185` / job `98411744224` | SUCCESS |
+| `Java Runtime Compatibility` / `Build Runtime Fixture (Java 21)` | run `33040177222` / job `98411744163` | SUCCESS |
+| `Java Runtime Compatibility` / `Java Runtime Compatibility` | run `33040177222` / job `98411870149` | SUCCESS |
+
+### 14.2 build、artifactおよびruntime identity
+
+| 項目 | remote Evidence |
+|---|---|
+| Build Java | Eclipse Adoptium `21.0.12` |
+| source commit | `7e055d7b7956fc4af437dfde7b9d8f377c4da867`、`workingTreeDirty: false` |
+| class major | `65` |
+| JAR SHA-256 | `765FA44B0C1602F3F8CBED0B22B7E5512DB8E3618019DF015755762670267288` |
+| workflow artifact | ID `9633548729`、`koiki-runtime-compatibility-7e055d7b7956fc4af437dfde7b9d8f377c4da867` |
+| archive digest | `sha256:9b472d747ff4bfe5068d95ae74c4ba956779b8a736464c201f487be6812e6c76` |
+| Java 21 runtime | Eclipse Adoptium `21.0.12.1`、marker一致、exit `0` |
+| Java 25 runtime | Eclipse Adoptium `25.0.4.1`、marker一致、exit `0` |
+
+upload前、download後、Java 21 / 25の実行前後でJAR SHA-256はすべて一致した。runtime jobはbuild jobが
+uploadした1個のartifactをdownloadし、Maven、compiler、package、build scriptまたはnegative guard scriptを
+実行していない。
+
+### 14.3 negative guardsと権限境界
+
+fresh runner上で次の3 guardがすべて`EXPECTED FAILURE PASS`となり、その後のJava 21 / 25 positive restoreと
+原本SHA-256保持も成功した。
+
+1. Java 25 build rejection
+2. modified hash rejection
+3. runtime major mismatch
+
+workflow権限は`contents: read`だけで、checkoutは`persist-credentials: false`である。run logのPAT、GitHub token、
+Bearer credential形式の検査結果は0件であり、Packages、secret、cacheまたはRepository外artifact公開を使用していない。
+
+### 14.4 required check反映
+
+Architecture Owner承認後、ruleset ID `21140116`へ`Java Runtime Compatibility`を追加した。
+
+- required checks: `Verify (ubuntu-24.04)`、`Public API Compatibility`、`Java Runtime Compatibility`
+- `strict_required_status_checks_policy: true`
+- enforcement: `active`
+- bypass actor: 0
+- deletion / non-fast-forward禁止およびPR必須rule: 維持
+- PR #19: required checks反映後も`CLEAN` / `MERGEABLE`
+
+### 14.5 Gate 4 Owner Review結果
+
+Architecture Ownerは2026年8月27日にGate 4の5確認項目とremote Evidenceを確認し、内容と結果を承認した。
+承認対象は通常CIと独立runtime workflow、JDK 21 build、major `65`、同一JARのjob間受け渡し、Java 21 / 25
+fresh runner実行、3 negative guards、最小権限、credential非露出およびrequired check反映である。
+
+これによりGate 4を`ACCEPTED`、C4 Java runtime matrixとDoD 1a-6を`COMPLETE`とする。次回WPはC5 Phase 1a
+Closeoutとし、Runtime Foundation、製品runtime、Reference、Security、DB、ContainerおよびJava 25固有最適化は
+引き続き後続Phaseへ保留する。
