@@ -2,7 +2,7 @@
 
 **調査日:** 2026年8月26日<br>
 **対象branch:** `feature/phase1a-public-api-compatibility`<br>
-**状態:** C3 GATE 1〜3 ACCEPTED / GATE 4 IN PROGRESS<br>
+**状態:** C3 COMPLETE / GATE 1〜4 ACCEPTED<br>
 **Ownership:** Framework（Public API契約）/ Tooling（inventory、japicmp、fixture、CI）<br>
 **対象:** `koiki-architecture-contract`、`koiki-archunit-rules`、C1 baseline artifact<br>
 **開始baseline:** `9642ba1`（PR #17、C2 COMPLETE）<br>
@@ -29,7 +29,7 @@ C3は次をすべて満たしたときだけ`COMPLETE`とする。
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1・C2 COMPLETE / C3 Gate 1〜3 ACCEPTED / Gate 4 IN PROGRESS |
+| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1〜C3 COMPLETE / C4 NEXT |
 | Framework ownership | 承認済みPublic APIの型、member、annotation、enum contract |
 | Tooling ownership | baseline取得、inventory、japicmp、positive / negative fixture、CI |
 | 対象artifact | `org.koikifw:koiki-architecture-contract`、`org.koikifw:koiki-archunit-rules` |
@@ -194,7 +194,7 @@ baseline更新または例外は、変更対象、Consumer影響、binary / sour
 | 1 | read-only調査、inventory、baseline、policy、fixture、認証・CI設計 | Public APIを拡大せず、C1 artifactをimmutable baselineとして再現可能に比較できる | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 | 2 | baseline取得、inventory、正式artifact positive comparison | timestamp / SHA一致、5 public型 / 2 method、japicmp終了コード`0` | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 | 3 | breaking / internal / addition fixture | public破壊と未承認追加だけが失敗し、package-private変更は成功する | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
-| 4 | CI、report、secret safety、DoD traceability、C3 closeout | fresh runnerで成功し、required check・再現手順・Owner Reviewが揃う | IN PROGRESS — LOCAL PASS / REMOTE PENDING |
+| 4 | CI、report、secret safety、DoD traceability、C3 closeout | fresh runnerで成功し、required check・再現手順・Owner Reviewが揃う | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 
 次に該当した場合は実装を停止し、Gate 1またはG3 / G5へ戻す。
 
@@ -400,7 +400,7 @@ localでplaceholder tokenと`GITHUB_ACTIONS=false`を用いたguard検査は、�
 local環境にYAML validatorはないため、workflow構文とActions tokenによるpackage readはPRのGitHub Actions
 parse / fresh runnerを最終証拠とする。
 
-### 9.4 required check read-only調査
+### 9.4 required check承認前調査
 
 GitHub APIで2026年8月27日に確認したmain保護は、classic branch protectionではなくRepository rulesetである。
 
@@ -415,3 +415,61 @@ GitHub APIで2026年8月27日に確認したmain保護は、classic branch prote
 `Public API Compatibility`はまだrequired checkへ追加していない。Gate 4では、workflowをcommit / pushして
 PR fresh runnerを成功させ、Ownerが結果を承認した後に限り、既存rulesetのrequired checkへ同じ
 GitHub Actions integration IDで追加する。
+
+### 9.5 PR fresh runner Evidence
+
+| 項目 | 実測値 |
+|---|---|
+| PR | [#18](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/18) |
+| source commit | `dffe96c7e1a0b961a50619e47e9234c22870938e` |
+| workflow run | [33029288981](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33029288981)、SUCCESS |
+| `Verify (ubuntu-24.04)` | job `98377808697`、SUCCESS、3分48秒 |
+| `Public API Compatibility` | job `98377808884`、SUCCESS、1分42秒 |
+
+Public API jobのfresh Ubuntu runnerは次をすべて確認した。
+
+| 検査 | remote結果 |
+|---|---|
+| authentication | `GITHUB_TOKEN with workflow packages: read` |
+| Architecture Contract baseline | timestamp `0.1.0-20260826.091429-1`、SHA-256 MATCH |
+| ArchUnit Rules baseline | timestamp `0.1.0-20260826.091429-1`、SHA-256 MATCH |
+| inventory | 5 public型 / 4 annotation element / 2 Rules method、MATCH |
+| 正式japicmp | 両artifactともpublic modifications `NONE`、exit `0` |
+| package-private fixture | inventory MATCH、modifications `NONE`、exit `0` |
+| breaking fixture | `METHOD_RETURN_TYPE_CHANGED`、expected failure PASS |
+| addition fixture | inventory MISMATCH、`METHOD_ADDED_TO_PUBLIC_CLASS`、expected failure PASS |
+
+job log全体をtoken形式で走査し、PAT / `GITHUB_TOKEN`実値に該当するliteralを検出しなかった。
+全stepはcheckout credentialを保持せず完了し、artifact upload、Maven cache、追加secretまたはpackage writeを
+使用していない。
+
+### 9.6 Gate 4 Owner Review結果
+
+1. PR #18の通常VerifyとPublic API Compatibilityが同一commitで成功している。
+2. fresh runnerがC1 baseline identity、正式inventory / japicmpおよびGate 3 fixtureを再現している。
+3. CI認証がRepository `GITHUB_TOKEN`と`packages: read`だけで、credential実値を露出していない。
+4. `Public API Compatibility`をruleset ID `21140116`のrequired checkへ追加し、既存
+   `Verify (ubuntu-24.04)`とstrict policyを維持する。
+5. required check設定後のPR状態とC3 DoD 1a-5を確認し、C3を`COMPLETE`とする。
+
+Architecture Ownerは2026年8月27日に上記内容と結果を確認し、Gate 4を承認した。承認に基づき、
+required check設定とC3 closeoutを実施した。PRのmergeはcloseout文書のcommit / push後に行う。
+
+### 9.7 required check反映・C3 closeout Evidence
+
+Gate 4承認後、ruleset ID `21140116`へ`Public API Compatibility`を追加し、GitHub APIで設定を
+読み戻した。
+
+| 項目 | 反映・確認結果 |
+|---|---|
+| enforcement | `active`を維持 |
+| required checks | `Verify (ubuntu-24.04)`、`Public API Compatibility` |
+| GitHub Actions integration ID | 両checkとも`15368` |
+| strict policy | 有効を維持 |
+| PR保護 | deletion禁止、non-fast-forward禁止、PR必須を維持 |
+| bypass | なしを維持 |
+| PR #18 | head `dffe96c7e1a0b961a50619e47e9234c22870938e`、両required check `SUCCESS`、`CLEAN` |
+
+Public API inventory固定、正式artifactの互換比較、public破壊と未承認追加の期待failure、internal変更の
+許容、fresh runner、secret safetyおよびrequired checkを一連の証拠として確認したため、DoD 1a-5を満たす。
+C3は`COMPLETE`、次回WPはC4 Java runtime matrixとする。
