@@ -4,7 +4,7 @@
 **棚卸日:** 2026年8月21日  
 **状態:** ACCEPTED  
 **承認日:** 2026年8月21日  
-**Phase 1a C5処置状態:** Gate 1〜3 ACCEPTED / Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDING（2026年8月27日）<br>
+**Phase 1a C5処置状態:** COMPLETE / Gate 1〜4 ACCEPTED（2026年8月27日）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **対象比較:** `main` (`73dcb82`) / `walking-skeleton` (`b3ba79f`)  
 **共通祖先:** `55a4359`
@@ -295,8 +295,8 @@ C区分の除去、D区分の後続Phase実装が完了したことを意味し�
 
 ## 12. Phase 1a C5処置台帳
 
-**状態:** Gate 1〜3 ACCEPTED / Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDING<br>
-**基準Commit:** `ca37e5c`（C4 PR #19 merge）<br>
+**状態:** COMPLETE / Gate 1〜4 ACCEPTED<br>
+**基準Commit:** `8894d97`（C5 PR #20 merge）<br>
 **作業branch:** `feature/phase1a-closeout`
 
 Phase 1aで正式代替が成立した対象について、C5 Gate 2で正式本線からの除去と正本同期を行う。
@@ -315,4 +315,5 @@ build、配布物、Public API、Templateへ直接昇格させない。
 | D区分のRuntime / Security / Reference / Production成果物 | Phase 1aへ追加しない | 後続PhaseのGovernance判断 | VERIFIED |
 
 Gate 2の処置内容と回帰検証は2026年8月27日にOwner Reviewで承認され、commit `39f09eb`へ確定した。
-この承認はPhase 1a COMPLETEを意味せず、DoD / Governance reviewと最終CIはC5 Gate 3 / 4で扱う。
+Gate 3のDoD / Governance reviewとGate 4のlocal・remote・main最終CIも完了し、PR #20 merge commit
+`8894d97`をPhase 1a C5の最終基準とする。

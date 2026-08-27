@@ -3,7 +3,7 @@
 **版:** v0.1  
 **作成日:** 2026年8月21日  
 **文書状態:** ACCEPTED<br>
-**実行状態:** IN PROGRESS（Milestone A・B COMPLETE / Milestone CのC1〜C4 COMPLETE・C5 Gate 1〜3 ACCEPTED / Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDING）<br>
+**実行状態:** COMPLETE（Milestone A・B・C COMPLETE / C1〜C5 COMPLETE / Gate 1〜4 ACCEPTED）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **承認日:** 2026年8月21日  
 **最終状態更新日:** 2026年8月27日<br>
@@ -11,7 +11,8 @@
 **実行方式:** `main`基準のWP別feature branch / Pull Request<br>
 **開始基準Commit:** `b5194b1`<br>
 **C1実装merge commit:** `9573b1c`（PR #14）、**C1完了Evidence merge commit:** `b92493b`（PR #15）<br>
-**CI Linux化merge commit:** `10c6ca2`（PR #16）
+**CI Linux化merge commit:** `10c6ca2`（PR #16）<br>
+**Phase 1a closeout merge commit:** `8894d97`（PR #20）
 
 ## 1. 目的
 
@@ -26,7 +27,7 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A・B COMPLETE、Milestone CのC1〜C4 COMPLETE／C5 Gate 1〜3 ACCEPTED・Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDING |
+| Phase / status | Phase 1a / Milestone A・B・C COMPLETE、C1〜C5 COMPLETE、Gate 1〜4 ACCEPTED |
 | Ownership | Framework: Architecture Contract、Tooling: Parent / BOM / Build Support / ArchUnit / CI |
 | 対象module | Root Reactor、`koiki-parent`、`koiki-dependencies-bom`、Architecture Contract、`koiki-archunit-rules`、検証用Consumer |
 | 適用指針 | グランドデザイン v0.2、Repository Architecture、ADR Register、Baseline Compatibility、Phase 1a引継ぎ台帳 |
@@ -143,7 +144,7 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 - Architecture Owner ReviewによりC4 Gate 1〜4を`ACCEPTED`、C4とDoD 1a-6を`COMPLETE`とした。Evidence正本は
   `../architecture/validation/phase1a-java-runtime-matrix.md`とする。Phase 1aの次回WPはC5 Closeoutである。
 
-### 3.12 C5着手後の状態
+### 3.12 C5完了状態
 
 - C5 Gate 1でread-only調査、5項目の実装境界およびGate 1〜4計画をArchitecture Ownerが承認した。
 - C5はArchitecture / Tooling closeoutに限定し、新規機能、Public APIまたは後続Phase成果物を追加しない。
@@ -151,9 +152,10 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 - Gate 3でDoD 1a-1〜1a-6、共通DoD、ADR / Skill / Flyway要否を既存Evidenceへ照合し、Architecture Ownerが内容と結果を承認した。
 - Gate 4 localでRoot、Feature Template、NullAway、Public API fixture、Java 21 / 25 runtimeおよび3 negative guardsを一括再検証した。
 - PR #20で通常CI、Public API Compatibility、Java Runtime Compatibilityが成功し、remote Evidenceをcloseout正本へ記録した。
-- Architecture Ownerがmain最終CI前までのGate 4内容と結果を承認し、Evidence追記commit、required checks再成功、merge、main最終CI待ちである。
-- Evidence正本は`../architecture/validation/phase1a-closeout.md`とし、Gate 3のDoD / Governance reviewと
-  Gate 4の最終検証・Owner Review前にPhase 1a COMPLETEとは扱わない。
+- Architecture OwnerがGate 4内容と結果を承認し、Evidence追記commit `3dd6008`を含むPR #20をmergeした。
+- merge commit `8894d97`に対する通常CI、Public API Compatibility、Java Runtime Compatibilityの成功を確認し、
+  C5、Milestone CおよびPhase 1aを`COMPLETE / ACCEPTED`とした。Evidence正本は
+  `../architecture/validation/phase1a-closeout.md`とする。Phase 1bは未着手である。
 
 ## 4. Scope
 
@@ -676,7 +678,7 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 | C2 | Repository外Consumer | 独立Consumerと再現手順 | COMPLETE（2026年8月26日、Gate 1〜4 Owner Review・local PAT / remote `GITHUB_TOKEN`検証・Evidence記録済み）。snapshotだけから解決し、意図的違反とADR messageを確認 |
 | C3 | Public API / japicmp | API inventory、baseline artifact、除外・例外方針 | COMPLETE（2026年8月27日、Gate 1〜4 Owner Review・local / remote CI・required check・Evidence記録済み）。Public API破壊と未承認追加で失敗、`internal`変更は規約どおり許容 |
 | C4 | Java runtime matrix | G6の起動fixture、Java 21 build artifact | COMPLETE（2026年8月27日、Gate 1〜4 Owner Review・local / remote Java 21 / 25・3 negative guards・required check・Evidence記録済み） |
-| C5 | Phase 1a Closeout | Validation、ADR / Skill / Baseline更新、Walking Skeleton残置物の処置 | Gate 1〜3 ACCEPTED / Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDING（2026年8月27日）。Evidence追記、再CI、merge、main最終CIで完了判定 |
+| C5 | Phase 1a Closeout | Validation、ADR / Skill / Baseline更新、Walking Skeleton残置物の処置 | COMPLETE（2026年8月27日、Gate 1〜4 Owner Review・PR #20 merge・main最終CI・Evidence記録済み） |
 
 **Exit criteria:**
 
