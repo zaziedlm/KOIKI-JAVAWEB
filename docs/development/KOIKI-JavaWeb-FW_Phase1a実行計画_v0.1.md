@@ -3,7 +3,7 @@
 **版:** v0.1  
 **作成日:** 2026年8月21日  
 **文書状態:** ACCEPTED<br>
-**実行状態:** IN PROGRESS（Milestone A・B COMPLETE / Milestone CのC1・C2 COMPLETE・C3 NEXT）<br>
+**実行状態:** IN PROGRESS（Milestone A・B COMPLETE / Milestone CのC1・C2 COMPLETE・C3 Gate 1・2 ACCEPTED・Gate 3 NEXT）<br>
 **Architecture Owner:** Shuichi Kataoka  
 **承認日:** 2026年8月21日  
 **最終状態更新日:** 2026年8月26日<br>
@@ -26,7 +26,7 @@ test観点を参照し、正式なOwnership、Maven座標、Public APIおよび�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A・B COMPLETE、Milestone CのC1・C2 COMPLETE／C3 NEXT |
+| Phase / status | Phase 1a / Milestone A・B COMPLETE、Milestone CのC1・C2 COMPLETE／C3 Gate 1・2 ACCEPTED・Gate 3 NEXT |
 | Ownership | Framework: Architecture Contract、Tooling: Parent / BOM / Build Support / ArchUnit / CI |
 | 対象module | Root Reactor、`koiki-parent`、`koiki-dependencies-bom`、Architecture Contract、`koiki-archunit-rules`、検証用Consumer |
 | 適用指針 | グランドデザイン v0.2、Repository Architecture、ADR Register、Baseline Compatibility、Phase 1a引継ぎ台帳 |
@@ -638,7 +638,7 @@ Spring Boot runtime、Web、DB、Container、性能、Java 25固有最適化お�
 | C1 | 内部snapshot公開 | BOM、Parent、Contract、ArchUnit rulesの同一version artifact | COMPLETE（2026年8月26日、Gate 1〜4 Owner Review・GitHub Packages公開・Evidence記録済み） |
 | C2-0 | C2開始前ドキュメント同期 | Root README、実行計画、Repository Tree、Validation index | COMPLETE（2026年8月26日、Root POM・実ツリー・C1 Evidenceとの整合確認済み） |
 | C2 | Repository外Consumer | 独立Consumerと再現手順 | COMPLETE（2026年8月26日、Gate 1〜4 Owner Review・local PAT / remote `GITHUB_TOKEN`検証・Evidence記録済み）。snapshotだけから解決し、意図的違反とADR messageを確認 |
-| C3 | Public API / japicmp | API inventory、baseline artifact、除外・例外方針 | Public API破壊で失敗、`internal`変更は規約どおり判定 |
+| C3 | Public API / japicmp | API inventory、baseline artifact、除外・例外方針 | Gate 1・2 ACCEPTED（2026年8月27日）／Gate 3 NEXT。local positive comparison PASS。Public API破壊で失敗、`internal`変更は規約どおり判定 |
 | C4 | Java runtime matrix | G6の起動fixture、Java 21 build artifact | Java 21 / 25で同一artifact起動、Java 25で再compileなし |
 | C5 | Phase 1a Closeout | Validation、ADR / Skill / Baseline更新、Walking Skeleton残置物の処置 | 全DoD traceability、CI成功、Owner Review |
 
