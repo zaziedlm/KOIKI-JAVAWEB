@@ -2,7 +2,7 @@
 
 **調査日:** 2026年8月26日<br>
 **対象branch:** `feature/phase1a-public-api-compatibility`<br>
-**状態:** C3 GATE 1〜3 ACCEPTED / GATE 4 NEXT<br>
+**状態:** C3 GATE 1〜3 ACCEPTED / GATE 4 IN PROGRESS<br>
 **Ownership:** Framework（Public API契約）/ Tooling（inventory、japicmp、fixture、CI）<br>
 **対象:** `koiki-architecture-contract`、`koiki-archunit-rules`、C1 baseline artifact<br>
 **開始baseline:** `9642ba1`（PR #17、C2 COMPLETE）<br>
@@ -29,7 +29,7 @@ C3は次をすべて満たしたときだけ`COMPLETE`とする。
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1・C2 COMPLETE / C3 Gate 1〜3 ACCEPTED / Gate 4 NEXT |
+| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1・C2 COMPLETE / C3 Gate 1〜3 ACCEPTED / Gate 4 IN PROGRESS |
 | Framework ownership | 承認済みPublic APIの型、member、annotation、enum contract |
 | Tooling ownership | baseline取得、inventory、japicmp、positive / negative fixture、CI |
 | 対象artifact | `org.koikifw:koiki-architecture-contract`、`org.koikifw:koiki-archunit-rules` |
@@ -194,7 +194,7 @@ baseline更新または例外は、変更対象、Consumer影響、binary / sour
 | 1 | read-only調査、inventory、baseline、policy、fixture、認証・CI設計 | Public APIを拡大せず、C1 artifactをimmutable baselineとして再現可能に比較できる | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 | 2 | baseline取得、inventory、正式artifact positive comparison | timestamp / SHA一致、5 public型 / 2 method、japicmp終了コード`0` | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 | 3 | breaking / internal / addition fixture | public破壊と未承認追加だけが失敗し、package-private変更は成功する | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
-| 4 | CI、report、secret safety、DoD traceability、C3 closeout | fresh runnerで成功し、required check・再現手順・Owner Reviewが揃う | PENDING |
+| 4 | CI、report、secret safety、DoD traceability、C3 closeout | fresh runnerで成功し、required check・再現手順・Owner Reviewが揃う | IN PROGRESS — LOCAL PASS / REMOTE PENDING |
 
 次に該当した場合は実装を停止し、Gate 1またはG3 / G5へ戻す。
 
@@ -351,3 +351,67 @@ pwsh -NoProfile -ExecutionPolicy Bypass `
 
 Gate 4では承認済みfixtureを変更せず、CI workflow、`GITHUB_TOKEN`の`packages: read`経路、
 secret safety、required checkおよびC3 closeoutを検証する。
+
+## 9. Gate 4 CI実装・local Evidence
+
+### 9.1 専用job
+
+`.github/workflows/ci.yml`へ独立job `Public API Compatibility`を追加した。
+
+| 境界 | 設定 |
+|---|---|
+| runner | `ubuntu-24.04` / Temurin 21 |
+| permissions | `contents: read`、`packages: read`だけ |
+| checkout | `persist-credentials: false` |
+| authentication | `${{ secrets.GITHUB_TOKEN }}`をstep環境変数へ渡す |
+| cache | 使用しない |
+| Actions | checkout / setup-javaを既存のfull commit SHAへ固定 |
+| checks | C1 baseline / SHA / inventory / 正式japicmp、Gate 3 fixture |
+
+通常の`Verify (ubuntu-24.04)` jobはworkflow既定の`contents: read`だけを維持し、package credentialを
+必要としない。追加PAT secret、package write / delete、publisherまたはConsumer checkoutは追加していない。
+
+### 9.2 script認証境界
+
+`verify-public-api-compatibility.ps1`へ`-GitHubActions`を追加した。
+
+- local modeは従来どおりPAT classicのOAuth scopeが`read:packages`だけであることをGitHub APIで検査する。
+- Actions modeは`GITHUB_ACTIONS=true`のrunnerだけで利用でき、token未設定またはlocal偽装を拒否する。
+- Actions tokenにはPAT用`X-OAuth-Scopes`検査を誤適用せず、workflow jobの明示permissionsを権限境界とする。
+- token、Basic credential、Authorization header、認証付きURLはcommand lineまたはsummaryへ出力しない。
+
+localでplaceholder tokenと`GITHUB_ACTIONS=false`を用いたguard検査は、期待diagnostic
+`The GitHubActions switch may only be used on a GitHub Actions runner.`で非`0`となり、PASSした。
+
+### 9.3 local回帰結果
+
+2026年8月27日に次を再実行した。
+
+| 検査 | 結果 |
+|---|---|
+| PowerShell parse / `git diff --check` | PASS |
+| job permissions | `contents: read`、`packages: read`だけ |
+| secret reference | Repository `GITHUB_TOKEN` 1件だけ |
+| Action pin | checkout / setup-javaとも40文字commit SHA |
+| Public API job cache | なし |
+| normal `mvnw.cmd clean verify` | 69 tests、failure / error / skipped各`0` |
+| Gate 3 fixture script | SUCCESS、正常系1 / 期待failure 2 |
+
+local環境にYAML validatorはないため、workflow構文とActions tokenによるpackage readはPRのGitHub Actions
+parse / fresh runnerを最終証拠とする。
+
+### 9.4 required check read-only調査
+
+GitHub APIで2026年8月27日に確認したmain保護は、classic branch protectionではなくRepository rulesetである。
+
+| 項目 | 現況 |
+|---|---|
+| Ruleset | `main-merge-protection`、ID `21140116`、active |
+| 対象 | default branch |
+| strict policy | 有効 |
+| required check | `Verify (ubuntu-24.04)`、GitHub Actions integration ID `15368` |
+| bypass | なし。current userもbypass不可 |
+
+`Public API Compatibility`はまだrequired checkへ追加していない。Gate 4では、workflowをcommit / pushして
+PR fresh runnerを成功させ、Ownerが結果を承認した後に限り、既存rulesetのrequired checkへ同じ
+GitHub Actions integration IDで追加する。

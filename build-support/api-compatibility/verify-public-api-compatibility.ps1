@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$GitHubUser = 'zaziedlm'
+    [string]$GitHubUser = 'zaziedlm',
+    [switch]$GitHubActions
 )
 
 $ErrorActionPreference = 'Stop'
@@ -85,26 +86,40 @@ function Install-BaselineJar {
 $token = $env:KOIKI_PACKAGES_TOKEN
 $basicCredential = $null
 if ([string]::IsNullOrWhiteSpace($token)) {
+    if ($GitHubActions) {
+        throw 'The GitHub Actions GITHUB_TOKEN was not supplied through KOIKI_PACKAGES_TOKEN.'
+    }
     $secureToken = Read-Host 'PAT classic with read:packages only' -AsSecureString
     $token = [System.Net.NetworkCredential]::new('', $secureToken).Password
 }
 if ([string]::IsNullOrWhiteSpace($token)) {
     throw 'A PAT classic with read:packages only is required.'
 }
+if ([string]::IsNullOrWhiteSpace($GitHubUser)) {
+    throw 'The GitHub user name is required for package authentication.'
+}
 
 try {
-    $userResponse = Invoke-WebRequest `
-        -UseBasicParsing `
-        -Uri 'https://api.github.com/user' `
-        -Headers @{
-            Accept = 'application/vnd.github+json'
-            Authorization = "Bearer $token"
-            'X-GitHub-Api-Version' = '2022-11-28'
+    if ($GitHubActions) {
+        if ($env:GITHUB_ACTIONS -ne 'true') {
+            throw 'The GitHubActions switch may only be used on a GitHub Actions runner.'
         }
-    $scopeHeader = [string]$userResponse.Headers['X-OAuth-Scopes']
-    $scopes = @($scopeHeader -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
-    if ($scopes.Count -ne 1 -or $scopes[0] -ne 'read:packages') {
-        throw "PAT classic must have read:packages only; reported scopes: $($scopes -join ', ')"
+        $authentication = 'GITHUB_TOKEN with workflow packages: read'
+    } else {
+        $userResponse = Invoke-WebRequest `
+            -UseBasicParsing `
+            -Uri 'https://api.github.com/user' `
+            -Headers @{
+                Accept = 'application/vnd.github+json'
+                Authorization = "Bearer $token"
+                'X-GitHub-Api-Version' = '2022-11-28'
+            }
+        $scopeHeader = [string]$userResponse.Headers['X-OAuth-Scopes']
+        $scopes = @($scopeHeader -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+        if ($scopes.Count -ne 1 -or $scopes[0] -ne 'read:packages') {
+            throw "PAT classic must have read:packages only; reported scopes: $($scopes -join ', ')"
+        }
+        $authentication = "PAT classic scopes: $($scopes -join ', ')"
     }
 
     New-Item -ItemType Directory -Path $localRepository | Out-Null
@@ -210,7 +225,7 @@ try {
     }
 
     Write-Output 'C3 Gate 2 Public API compatibility: SUCCESS'
-    Write-Output "Authentication: PAT classic scopes: $($scopes -join ', ')"
+    Write-Output "Authentication: $authentication"
     Write-Output 'Baseline identity:'
     $hashResults | ForEach-Object {
         Write-Output "$($_.Artifact) | $($_.Timestamp) | $($_.Sha256) | $($_.Result)"
