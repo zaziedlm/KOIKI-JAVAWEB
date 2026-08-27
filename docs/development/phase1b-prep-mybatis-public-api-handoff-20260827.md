@@ -8,8 +8,8 @@ Phase 1b着手前の棚卸点検により、`PersistenceTechnology.MYBATIS`が�
 グランドデザインの設計制約が矛盾している問題を発見した。本文書はこの問題を、これまで検討を主導した
 Codexセッションへ引き継ぐための、問題内容・検証済み事実・対応方針の記録である。
 
-**本文書はコード変更を含まない。** 調査と記録のみを行った。実装（前半PRの作成、後半の判断・実装、
-baseline republish等）は本文書を踏まえてCodexセッションが担当する。
+初回引継ぎ時点では調査と記録のみでコード変更を含まなかった。その後、本文書を踏まえて前半を実装した。
+後半の判断・実装、baseline republish等は引き続き保留する。
 
 **改訂の経緯:** 初版では対応を単一の「MYBATIS定数を削除する（案A）」として整理したが、Owner検討により
 実害の所在が絞り込まれた。実害は「`MYBATIS`定数が存在すること」自体ではなく「ArchUnitルールが
@@ -17,6 +17,13 @@ baseline republish等）は本文書を踏まえてCodexセッションが担当
 このルール修正はPublic APIを一切変更しないため、japicmp baselineに触れずに通常の1 PRで即座に対応
 できる。そのため対応を**前半（Phase 1b前に今すぐ実施）**と**後半（MYBATIS定数の削除可否、判断を保留）**
 に分割した。本改訂はその分割を反映する。
+
+**対応状況:** 前半は2026年8月27日に実装した。`metadata.rich`の`MYBATIS + SHARED`宣言は、
+`ModuleMetadata`の全enum値読取fixture兼rule8の負例として維持した。rule8の正常系は`JPA + SHARED`だけを
+検証し、同fixtureを使う独立した負例で`KOIKI-ARCH-008`、ADR-039、`SEPARATED`未提供理由を検証する。
+Public APIおよびjapicmp baselineは変更していない。検証結果は
+[`phase1b-prep-mybatis-metadata-guard.md`](../architecture/validation/phase1b-prep-mybatis-metadata-guard.md)
+に記録する。
 
 判断が競合する場合は、次の順に正本を確認する。
 
@@ -181,22 +188,22 @@ Public APIとArchUnit ruleの変更を扱うため、開始時の適用Skillは`
 **グランドデザインDoD項番30が指定している状態そのもの**であり、KOIKI自身の「規約は機械検査する」
 という原則にも合致する。文書とコードのズレはこの時点で解消する。
 
-### 6.1 前半の対象ファイル（3箇所、Public API/japicmpに触れない）
+### 6.1 前半の実装対象（Public API/japicmpに触れない）
 
 | # | ファイル | 変更内容 |
 |---|---|---|
 | 1 | `koiki-archunit-rules/src/main/java/org/koikifw/archunit/BusinessModuleRuleSet.java:927` | `persistence == MYBATIS`かつ`persistenceModel != SEPARATED`（現状は`SHARED`しか存在しないため、実質「`persistence == MYBATIS`は無条件で拒否」）を違反として明示するロジックへ変更。DoD項番30相当。メッセージにADR-039参照と「`SEPARATED`未提供のため宣言不可」の理由を含める |
-| 2 | `koiki-archunit-rules/src/test/java/org/koikifw/archunit/fixture/metadata/rich/package-info.java:5` | `persistence = PersistenceTechnology.MYBATIS` → `PersistenceTechnology.JPA`（「承認済み」fixtureからグランドデザインが禁じる組合せを除去する） |
-| 3 | `koiki-archunit-rules/src/test/java/org/koikifw/archunit/ModuleMetadataTest.java:37` | 期待値を`PersistenceTechnology.MYBATIS`→`PersistenceTechnology.JPA`に修正（fixtureの変更に追随） |
+| 2 | `koiki-archunit-rules/src/test/java/org/koikifw/archunit/BusinessModuleRuleSetTest.java` | `JPA + SHARED`の正常系と、`MYBATIS + SHARED`の負例を分離。負例ではrule ID、ADR-039、`SEPARATED`未提供理由を確認する |
+| 3 | `docs/architecture/adr/README.md` | ADR-039のRegisterへ、`MYBATIS`は`SEPARATED`必須であり、未提供期間はKOIKI-ARCH-008で拒否することを補記する |
+| 4 | `docs/architecture/validation/phase1b-prep-mybatis-metadata-guard.md` | 変更内容、Public API非変更、検証結果、後続判断を記録する |
 
 **触らないもの**: `koiki-architecture-contract/src/test/java/org/koikifw/architecture/KoikiModuleContractTest.java`
 （enum定数一覧の期待値はPublic APIそのものなので変更不要）、
 `build-support/api-compatibility/public-api.txt`（同様に変更不要）。
 
-`BusinessModuleRuleSetTest.rule8AcceptsApprovedPersistenceDeclarations`は「`JPA + SHARED`のみ承認」に
-文言・意図を更新し、`MYBATIS`拒否を確認する新規テストケース（`rule8RejectsMybatisWithoutSeparatedModel`
-相当）を追加することが望ましい。`RequiredNegativeArchitectureRulesTest`のrule "008" registrationは
-変更不要（rule8自体は残る）。
+`metadata.rich` fixtureと`ModuleMetadataTest`は変更しない。前者を負例として再利用することで、
+`ModuleMetadata`が`MYBATIS`を読み取れることと、rule8がその宣言を拒否することをそれぞれ保持する。
+`RequiredNegativeArchitectureRulesTest`のrule "008" registrationも変更しない（rule8自体は残る）。
 
 あわせて、ADR Register（`docs/architecture/adr/README.md`）のReview Logまたはグランドデザイン該当箇所
 （§16.2「MyBatisの提供範囲」相当）に、「`MYBATIS`は`SEPARATED`と対で扱い、単独では宣言不可（ArchUnit
@@ -284,12 +291,11 @@ baselineがmainのマージ済みコードから生成されるため、1 PRで�
 
 ## 10. 未決定事項（Owner判断が必要）
 
-- 前半（rule30相当の実装）自体は実施する方向で整理済み。実装の詳細（エラーメッセージ文言、ADR補記の
-  置き場所）はCodexセッションでの実装時に確定する。
+- 前半（rule30相当）は実装済み。PRのrequired checksとOwner Reviewを経てmainへ反映する必要がある。
 - 後半（`MYBATIS`定数の維持／削除）は、Phase 1bのrelease unit構成・baseline方針が見えるまで判断を
   保留する。Phase 1b開始時または途中でrelease unit構成の変更予定が判明した時点で再判定すること。
 
-## 11. 次回セッションの開始手順
+## 11. 初回引継ぎセッションの開始手順（実施済み）
 
 ```powershell
 git switch main
@@ -305,7 +311,7 @@ git log -3 --oneline --decorate
   commitを持つ
 - worktreeがclean
 
-## 12. 新規セッションへの開始依頼文（例）
+## 12. 初回引継ぎ時の開始依頼文（実施済み）
 
 > KOIKI-JavaWeb-FWはPhase 1a（C5 Closeoutまで）完了済みで、`main`は`8a19cf1`です。Phase 1b着手前の
 > 棚卸点検で、`PersistenceTechnology.MYBATIS`が公開APIとして固定されているが、グランドデザインの
@@ -325,7 +331,7 @@ git log -3 --oneline --decorate
   確認済み。
 - japicmpのbaseline構造・`publish-snapshot.yml`のゲート構成、および`koiki-archunit-rules`の
   Public API面が`KoikiArchitectureRules`の2メソッドのみであることも実ファイルを確認済み。
-- 本文書作成時点で、Repository構成・workflow・Public API・ArchUnit ruleに対する実装変更は行っていない
-  （本文書の追加・改訂のみ）。
-- Maven Central／外部ネットワークへの到達性は本セッションでは検証していない（前半PRの実装後、ローカルで
-  `./mvnw verify`等の実行可否を確認することを推奨）。
+- 初回引継ぎ時点では本文書の追加・改訂だけだった。前半実装後の変更と検証結果は
+  `docs/architecture/validation/phase1b-prep-mybatis-metadata-guard.md`へ記録した。
+- 正式なC1 baselineとのjapicmp比較は認証を必要とするためlocalでは再実行せず、PRの
+  `Public API Compatibility` required checkへ委ねる。network不要のPublic API fixture検証は成功した。

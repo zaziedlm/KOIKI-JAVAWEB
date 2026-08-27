@@ -65,7 +65,7 @@ Level 2以降、Flyway三階層、非同期event等は、registerで示すPhase 
 | ADR-036 | レート制御 | 確定 | — | ACCEPTED |
 | ADR-037 | キャッシュ | 確定 | —（Caffeineの一時的不整合を許容できる対象とTTLに限定。認可関係は即時失効要件に応じて除外し、分散cacheへの変更時は再検証） | ACCEPTED |
 | ADR-038 | read model | 確定 | —（Query契約と`record`は`application.query`が所有し、Outbound Adapterがmaterialize。JPAはclass-based射影に限定） | ACCEPTED |
-| ADR-039 | MyBatis | 確定 | —（Boot 4対応StarterをBOM管理するLevel B方針の承認。詳細規約と実装検証はPhase 3末尾～Phase 4） | ACCEPTED |
+| ADR-039 | MyBatis | 確定 | —（Boot 4対応StarterをBOM管理するLevel B方針の承認。詳細規約と実装検証はPhase 3末尾～Phase 4。`MYBATIS`宣言は`SEPARATED`必須であり、同モデル未提供の間はKOIKI-ARCH-008で拒否する） | ACCEPTED |
 | ADR-040 | 昇格ポリシーの運用化 | 確定 | —（Reference／Customer／Walking Skeletonの候補をFrameworkへ昇格する場合に適用。Phase 1の定義済み基盤構築は「2案件の実績」の対象外） | ACCEPTED |
 | ADR-041 | Public API境界 | Phase 0で検証 | `../validation/walking-skeleton-archunit-distribution.md`（外部consumerを含む） | ACCEPTED |
 | ADR-042 | テーブル所有権とFlyway | Phase 0で検証 | `../validation/walking-skeleton-flyway-two-tier.md`（所有者別location／history） | ACCEPTED |

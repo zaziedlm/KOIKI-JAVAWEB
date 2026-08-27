@@ -164,9 +164,9 @@ final class BusinessModuleRuleSet {
     static ArchRule rule8(PackageName basePackage) {
         RuleMessage message = RuleMessage.of(
                 8,
-                List.of("ADR-022", "ADR-023"),
-                "永続化方式に対応する規則を選択できない",
-                "persistenceとpersistenceModelを明示する");
+                List.of("ADR-022", "ADR-023", "ADR-039"),
+                "永続化方式に対応する規則を選択できない、またはMyBatisで兼用モデルを誤採用する",
+                "persistenceとpersistenceModelを明示し、SEPARATED提供前はJPAとSHAREDを使用する");
         return moduleDeclarationRule(basePackage, message, false);
     }
 
@@ -924,8 +924,16 @@ final class BusinessModuleRuleSet {
                                 message,
                                 modulePackage.getDescription() + " has an unsupported tier");
                     }
-                } else if (!Set.of(PersistenceTechnology.JPA, PersistenceTechnology.MYBATIS)
-                                .contains(metadata.persistence())
+                } else if (metadata.persistence() == PersistenceTechnology.MYBATIS) {
+                    addViolation(
+                            events,
+                            modulePackage,
+                            message,
+                            modulePackage.getDescription()
+                                    + " declares MYBATIS with "
+                                    + metadata.persistenceModel()
+                                    + ", but MYBATIS requires PersistenceModel.SEPARATED, which is not yet provided");
+                } else if (metadata.persistence() != PersistenceTechnology.JPA
                         || metadata.persistenceModel() != PersistenceModel.SHARED) {
                     addViolation(
                             events,
