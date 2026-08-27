@@ -162,7 +162,9 @@ try {
 
     $classPath = @($currentContract, $currentRules, $archUnitJar, $jSpecifyJar) -join (
         [System.IO.Path]::PathSeparator)
-    $inventoryOutput = @(& java --class-path $classPath $inventoryTool $currentContract $currentRules 2>&1)
+    $inventoryOutput = @(& java --class-path $classPath $inventoryTool `
+            'koiki-architecture-contract' $currentContract `
+            'koiki-archunit-rules' $currentRules 2>&1)
     if ($LASTEXITCODE -ne 0) {
         $inventoryOutput | ForEach-Object { Write-Host $_ }
         throw "Public API inventory generation failed with exit code $LASTEXITCODE."

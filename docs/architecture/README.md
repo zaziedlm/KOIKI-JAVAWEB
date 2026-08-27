@@ -31,7 +31,7 @@ Milestone CのC1・C2まで完了し、C3 Public API CompatibilityはGate 1 REVI
 | B5 | COMPLETE / ACCEPTED | `validation/phase1a-template-integration.md` |
 | C1 | COMPLETE / Gate 1〜4 ACCEPTED | `validation/phase1a-internal-snapshot.md` |
 | C2 | COMPLETE / Gate 1〜4 ACCEPTED | `validation/phase1a-external-consumer.md` |
-| C3 | Gate 1・2 ACCEPTED / Gate 3 NEXT | `validation/phase1a-public-api-compatibility.md` |
+| C3 | Gate 1〜3 ACCEPTED / Gate 4 NEXT | `validation/phase1a-public-api-compatibility.md` |
 
 ### Phase 0 Walking Skeleton
 

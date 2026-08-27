@@ -1,0 +1,4 @@
+# KOIKI Phase 1a C3 Public API inventory v1
+ARTIFACT fixture
+TYPE class final org.koikifw.validation.apifixture.PublicContract
+METHOD static java.lang.String org.koikifw.validation.apifixture.PublicContract#value()

@@ -22,14 +22,15 @@ final class PublicApiInventory {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
+        if (args.length == 0 || args.length % 2 != 0) {
             throw new IllegalArgumentException(
-                    "Usage: PublicApiInventory.java <architecture-contract.jar> <archunit-rules.jar>");
+                    "Usage: PublicApiInventory.java <artifact-label> <jar> [<artifact-label> <jar> ...]");
         }
 
         System.out.println("# KOIKI Phase 1a C3 Public API inventory v1");
-        emitArtifact("koiki-architecture-contract", Path.of(args[0]));
-        emitArtifact("koiki-archunit-rules", Path.of(args[1]));
+        for (int index = 0; index < args.length; index += 2) {
+            emitArtifact(args[index], Path.of(args[index + 1]));
+        }
     }
 
     private static void emitArtifact(String artifactId, Path jarPath) throws Exception {

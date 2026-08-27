@@ -2,7 +2,7 @@
 
 **調査日:** 2026年8月26日<br>
 **対象branch:** `feature/phase1a-public-api-compatibility`<br>
-**状態:** C3 GATE 1・2 ACCEPTED / GATE 3 NEXT<br>
+**状態:** C3 GATE 1〜3 ACCEPTED / GATE 4 NEXT<br>
 **Ownership:** Framework（Public API契約）/ Tooling（inventory、japicmp、fixture、CI）<br>
 **対象:** `koiki-architecture-contract`、`koiki-archunit-rules`、C1 baseline artifact<br>
 **開始baseline:** `9642ba1`（PR #17、C2 COMPLETE）<br>
@@ -29,7 +29,7 @@ C3は次をすべて満たしたときだけ`COMPLETE`とする。
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1・C2 COMPLETE / C3 Gate 1・2 ACCEPTED / Gate 3 NEXT |
+| Phase / status | Phase 1a / Milestone A・B COMPLETE / C1・C2 COMPLETE / C3 Gate 1〜3 ACCEPTED / Gate 4 NEXT |
 | Framework ownership | 承認済みPublic APIの型、member、annotation、enum contract |
 | Tooling ownership | baseline取得、inventory、japicmp、positive / negative fixture、CI |
 | 対象artifact | `org.koikifw:koiki-architecture-contract`、`org.koikifw:koiki-archunit-rules` |
@@ -193,7 +193,7 @@ baseline更新または例外は、変更対象、Consumer影響、binary / sour
 |---:|---|---|---|
 | 1 | read-only調査、inventory、baseline、policy、fixture、認証・CI設計 | Public APIを拡大せず、C1 artifactをimmutable baselineとして再現可能に比較できる | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 | 2 | baseline取得、inventory、正式artifact positive comparison | timestamp / SHA一致、5 public型 / 2 method、japicmp終了コード`0` | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
-| 3 | breaking / internal / addition fixture | public破壊と未承認追加だけが失敗し、package-private変更は成功する | PENDING |
+| 3 | breaking / internal / addition fixture | public破壊と未承認追加だけが失敗し、package-private変更は成功する | ACCEPTED（2026年8月27日、Shuichi Kataoka） |
 | 4 | CI、report、secret safety、DoD traceability、C3 closeout | fresh runnerで成功し、required check・再現手順・Owner Reviewが揃う | PENDING |
 
 次に該当した場合は実装を停止し、Gate 1またはG3 / G5へ戻す。
@@ -295,3 +295,59 @@ compatibility policyを変更せず、package-private許容、public破壊およ
 2. inventoryが承認済み5 public型、4 annotation element、2 Rules methodに一致する。
 3. 正式2 artifactのjapicmp比較がpublic modificationなし、終了コード`0`である。
 4. 通常buildを認証不要のまま維持し、credentialおよびbaseline binaryをRepositoryへ残していない。
+
+## 8. Gate 3 fixture実装・検証Evidence
+
+### 8.1 実装境界
+
+`build-support/api-compatibility/fixture/`へ、Root Reactor外・非配布のJava source fixtureを追加した。
+`verify-public-api-fixtures.ps1`は認証を使用せず、各sourceをJava 21でtemporary JARへcompileし、
+inventoryとjapicmp 0.26.1を実行する。
+
+| Fixture | Public contract | Internal差分 | 期待 |
+|---|---|---|---|
+| `baseline` | `public static String value()` | package-private `int value()` | 比較元 |
+| `compatible` | baselineと同一 | package-private `long changedValue()`へ変更 | inventory一致、japicmp成功 |
+| `breaking` | `value()`の戻り値を`String`から`int`へ変更 | baselineと同一 | japicmp期待failure |
+| `addition` | `public static String added()`を追加 | baselineと同一 | inventory / japicmp期待failure |
+
+正式production source、C1 baseline、正式Public API inventory、Root POMまたは通常build lifecycleは変更していない。
+
+### 8.2 commandと結果
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass `
+  -File .\build-support\api-compatibility\verify-public-api-fixtures.ps1
+```
+
+2026年8月27日のWindows / JDK 21 local実行結果は次のとおりである。
+
+| 経路 | inventory | japicmp | script判定 |
+|---|---|---|---|
+| package-private implementation change | MATCH | modifications `NONE`、exit `0` | PASS |
+| public return type change | 差分あり | `METHOD_RETURN_TYPE_CHANGED`、非`0` | expected failure PASS |
+| unapproved public addition | MISMATCH、`PublicContract#added()`検出 | `METHOD_ADDED_TO_PUBLIC_CLASS`、非`0` | expected failure PASS |
+
+負例のMaven invocationは個別には`BUILD FAILURE`となる。scriptは生成されたdiff / XML reportでも
+詳細diagnosticを照合し、期待した理由による非`0`だけを捕捉して、全体を
+`C3 Gate 3 Public API fixture verification: SUCCESS`で終了した。
+
+### 8.3 回帰・cleanup
+
+- Gate 2の正式5 public型 / 4 annotation element / 2 Rules method inventoryを再生成し、MATCHを確認した。
+- 通常の認証不要`mvnw.cmd clean verify`は69 tests、failure / error / skipped各`0`で成功した。
+- fixture JAR、class、隔離Maven repository、diff / XML reportはGUID付きtemporary directoryだけへ生成した。
+- 成功runのtemporary directoryが`finally`後に存在しないことを確認した。
+- tracked fixtureはJava sourceと期待inventoryだけであり、binary、credentialまたはreportを含まない。
+
+### 8.4 Gate 3 Owner Review結果
+
+2026年8月27日にOwnerは次の4項目とGate 3の内容・結果を承認した。
+
+1. package-private実装変更はPublic API inventoryとjapicmpを変化させず、終了コード`0`となる。
+2. public methodのreturn type変更は`METHOD_RETURN_TYPE_CHANGED`で拒否される。
+3. 未承認public method追加はinventory差分と`METHOD_ADDED_TO_PUBLIC_CLASS`の両方で拒否される。
+4. 負例は正式sourceを一時編集せず、非配布fixtureとtemporary outputだけで再現される。
+
+Gate 4では承認済みfixtureを変更せず、CI workflow、`GITHUB_TOKEN`の`packages: read`経路、
+secret safety、required checkおよびC3 closeoutを検証する。

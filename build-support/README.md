@@ -42,6 +42,7 @@ Public API inventoryとjapicmp比較を実行します。Root Reactorには含�
 
 ```powershell
 pwsh -NoProfile -File build-support/api-compatibility/verify-public-api-compatibility.ps1
+pwsh -NoProfile -File build-support/api-compatibility/verify-public-api-fixtures.ps1
 ```
 
 詳細、credential境界およびGateごとの検証範囲は`api-compatibility/README.md`を参照してください。

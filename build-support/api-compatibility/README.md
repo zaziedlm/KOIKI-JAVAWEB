@@ -27,3 +27,15 @@ japicmp 0.26.1による全Public API modificationなしを確認後、認証情�
 
 `pom.xml`と`PublicApiInventory.java`はこのscriptからだけ利用するTooling実装であり、
 FrameworkまたはConsumer向けartifactではない。
+
+## Gate 3 fixture verification
+
+認証を使用せず、temporary directoryへ4種類の非配布JARを生成する。package-private変更は許容し、
+public return type破壊と未承認public追加は期待failureとして検出する。
+
+```powershell
+pwsh -NoProfile -File build-support/api-compatibility/verify-public-api-fixtures.ps1
+```
+
+正式production sourceを一時変更せず、fixture JAR、隔離Maven repositoryおよびreportは
+`finally`で削除する。
