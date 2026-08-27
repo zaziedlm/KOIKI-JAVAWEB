@@ -18,7 +18,8 @@ Codexセッションへ引き継ぐための、問題内容・検証済み事実
 できる。そのため対応を**前半（Phase 1b前に今すぐ実施）**と**後半（MYBATIS定数の削除可否、判断を保留）**
 に分割した。本改訂はその分割を反映する。
 
-**対応状況:** 前半は2026年8月27日に実装した。`metadata.rich`の`MYBATIS + SHARED`宣言は、
+**対応状況:** 前半は2026年8月27日に実装し、PR #22でmainへmergeした。main最終required checksと
+Owner Reviewを完了し、`COMPLETE / ACCEPTED`としてcloseした。`metadata.rich`の`MYBATIS + SHARED`宣言は、
 `ModuleMetadata`の全enum値読取fixture兼rule8の負例として維持した。rule8の正常系は`JPA + SHARED`だけを
 検証し、同fixtureを使う独立した負例で`KOIKI-ARCH-008`、ADR-039、`SEPARATED`未提供理由を検証する。
 Public APIおよびjapicmp baselineは変更していない。検証結果は
@@ -291,7 +292,7 @@ baselineがmainのマージ済みコードから生成されるため、1 PRで�
 
 ## 10. 未決定事項（Owner判断が必要）
 
-- 前半（rule30相当）は実装済み。PRのrequired checksとOwner Reviewを経てmainへ反映する必要がある。
+- 前半（rule30相当）は実装、main反映、remote Evidence記録まで完了した。
 - 後半（`MYBATIS`定数の維持／削除）は、Phase 1bのrelease unit構成・baseline方針が見えるまで判断を
   保留する。Phase 1b開始時または途中でrelease unit構成の変更予定が判明した時点で再判定すること。
 
