@@ -3,7 +3,7 @@
 ## 1. Status
 
 - Work Package: C5 Phase 1a Closeout
-- Status: Gate 1〜2 ACCEPTED / Gate 3 READY FOR OWNER REVIEW
+- Status: Gate 1〜3 ACCEPTED / Gate 4 LOCAL COMPLETE・REMOTE PENDING
 - Date: 2026-08-27
 - Architecture Owner: Shuichi Kataoka
 - Base commit: `ca37e5c`（C4 PR #19 merge）
@@ -11,8 +11,8 @@
 - Ownership: Architecture / Tooling
 
 本記録はC5の判断、Repository hygiene、DoD traceabilityおよび最終CIを集約する正本である。
-Gate 3時点ではPhase 1aの完了を宣言せず、Gate 3のOwner ReviewとGate 4の最終検証・
-remote CI・Owner Reviewを残す。
+Gate 4 local検証時点ではPhase 1aの完了を宣言せず、commit / push後のPR required checks、
+Gate 4 Owner Review、mergeおよびmain最終CIを残す。
 
 ## 2. Gate plan
 
@@ -20,8 +20,8 @@ remote CI・Owner Reviewを残す。
 |---|---|---|
 | Gate 1 | read-only調査、5項目の境界確認、実装計画 | ACCEPTED（2026-08-27） |
 | Gate 2 | baseline同期、Walking Skeleton残置物処置、Repository hygiene | ACCEPTED（2026-08-27） |
-| Gate 3 | DoD 1a-1〜1a-6、共通DoD、ADR / Skill / Flyway判定 | READY FOR OWNER REVIEW |
-| Gate 4 | local最終検証、PR CI、Owner Review、main最終CI | PENDING |
+| Gate 3 | DoD 1a-1〜1a-6、共通DoD、ADR / Skill / Flyway判定 | ACCEPTED（2026-08-27） |
+| Gate 4 | local最終検証、PR CI、Owner Review、main最終CI | LOCAL COMPLETE / REMOTE PENDING |
 
 ## 3. Gate 1で承認した境界
 
@@ -190,5 +190,60 @@ Phase 1aはBuild Foundationでtableを追加せず、Flyway二階層の正式実
 | Flyway | SQL / migration / build参照0件、Phase 1bへ保留 |
 | Scope | 正式4 module、Public API、dependency、後続Phase成果物に変更なし |
 
-Gate 3の判定対象は§9〜§12である。Architecture Owner承認後にGate 3を`ACCEPTED`とし、Gate 4では
-local統合検証、PR、3 required checks、Owner Reviewおよびmain最終CIを実施する。
+Gate 3の判定対象は§9〜§12であり、承認結果は§12.1に記録する。Gate 4ではlocal統合検証、PR、
+3 required checks、Owner Reviewおよびmain最終CIを実施する。
+
+### 12.1 Gate 3 Owner Review結果
+
+| 項目 | 結果 |
+|---|---|
+| Decision | ACCEPTED |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月27日 |
+| Scope | §9〜§12のDoD 1a-1〜1a-6、共通DoD、ADR / Skill / Flyway判定、Gate 4残条件 |
+| Commit | `25476db`（`docs: establish C5 DoD traceability`） |
+
+Architecture OwnerがGate 3の内容と結果を承認し、上記commitへ確定した。CI共通DoDはC4基準で成立し、
+C5最終差分に対する再確認をGate 4必須条件として残す判定も承認scopeに含む。
+
+## 13. Gate 4 local final verification
+
+### 13.1 実行基準
+
+| 項目 | 値 |
+|---|---|
+| Branch | `feature/phase1a-closeout` |
+| Source commit | `25476db` |
+| Working tree at runtime build | clean |
+| Maven | Repository Wrapper 3.9.16 |
+| Build Java | Eclipse Adoptium 21.0.12.1 |
+| Java 25 runtime | Eclipse Adoptium 25.0.4.1 |
+
+### 13.2 local結果
+
+| 検証 | 結果 |
+|---|---|
+| Root `clean verify` | SUCCESS。正式4 module、Architecture Contract 4 tests、ArchUnit Rules 65 tests、合計69 tests。failure / error / skip 0 |
+| Feature Template | SUCCESS。Tier 1 / Tier 2生成、正常系、Level 0、Tier別ArchUnit 2負例、Tier別NullAway 2負例、復元、runtime依存境界を確認 |
+| Null Safety fixture | SUCCESS。positive → expected negative → restore |
+| Public API fixture | SUCCESS。package-private変更はinventory MATCH / japicmp `NONE`、return type破壊と未承認追加は期待failure |
+| Runtime build | SUCCESS。class major `65`、JAR SHA-256 `D25D1DCC244ECFA73DF3820D1BA4B31D371268A29671327F6C5059B55C1BDDFC` |
+| Java 21 / 25 runtime | SUCCESS。同一JAR、実行前後SHA-256 MATCH、固定marker、exit `0` |
+| Runtime negative guards | SUCCESS。Java 25 build拒否、hash改変拒否、runtime major不一致の3 expected failures。復元後も原本hash一致 |
+
+認証が必要なC1 timestamped artifactとの正式japicmp比較は、Repository `GITHUB_TOKEN`と
+`packages: read`だけを使用する`Public API Compatibility` required checkで再確認する。localでPATを
+再入力して同じnetwork検査を重複させず、C3で成立済みの認証境界を維持する。
+
+### 13.3 remote acceptance conditions
+
+1. Gate 4 local結果とcloseout差分をcommitし、`feature/phase1a-closeout`をpushする。
+2. PR上の`Verify (ubuntu-24.04)`、`Public API Compatibility`、`Java Runtime Compatibility`が
+   同一headまたはGitHub test merge commitで成功する。
+3. main rulesetがactive / strict / bypass 0で、上記3 checksをrequiredのまま維持する。
+4. remote Evidence、PR identity、credential非露出、DoD 11項目および残るdeferred scopeを
+   Architecture Ownerが確認し、Gate 4とC5を承認する。
+5. PRをmainへmergeし、main最終CIを確認する。最終CI実行中はPhase 1a COMPLETEを先取りしない。
+
+Gate 4は`LOCAL COMPLETE / REMOTE PENDING`であり、C5、Milestone C、Phase 1aはいずれもまだ
+`COMPLETE`ではない。
