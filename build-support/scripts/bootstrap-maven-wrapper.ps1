@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host "Generating official Apache Maven Wrapper..."
-mvn wrapper:wrapper -Dmaven=3.9.16 -Dtype=only-script
+mvn wrapper:wrapper -Dmaven=3.9.16 -Dtype=bin
 
 Write-Host ""
 Write-Host "Wrapper generated."

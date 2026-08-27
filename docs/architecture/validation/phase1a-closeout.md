@@ -1,0 +1,343 @@
+# Phase 1a C5 Closeout Validation
+
+## 1. Status
+
+- Work Package: C5 Phase 1a Closeout
+- Status: Gate 1〜3 ACCEPTED / Gate 4 PRE-MERGE OWNER REVIEW ACCEPTED・FINAL CI PENDING
+- Date: 2026-08-27
+- Architecture Owner: Shuichi Kataoka
+- Base commit: `ca37e5c`（C4 PR #19 merge）
+- Working branch: `feature/phase1a-closeout`
+- Ownership: Architecture / Tooling
+
+本記録はC5の判断、Repository hygiene、DoD traceabilityおよび最終CIを集約する正本である。
+Gate 4 pre-merge Owner Review時点ではPhase 1aの完了を宣言せず、closeout記録のcommit / push、
+required checks再成功、merge、main最終CIおよび最終Evidence確定を残す。
+
+## 2. Gate plan
+
+| Gate | 内容 | 状態 |
+|---|---|---|
+| Gate 1 | read-only調査、5項目の境界確認、実装計画 | ACCEPTED（2026-08-27） |
+| Gate 2 | baseline同期、Walking Skeleton残置物処置、Repository hygiene | ACCEPTED（2026-08-27） |
+| Gate 3 | DoD 1a-1〜1a-6、共通DoD、ADR / Skill / Flyway判定 | ACCEPTED（2026-08-27） |
+| Gate 4 | local最終検証、PR CI、Owner Review、main最終CI | PRE-MERGE OWNER REVIEW ACCEPTED / FINAL CI PENDING |
+
+## 3. Gate 1で承認した境界
+
+1. C5はArchitecture / Tooling closeoutに限定し、新規機能、Public API、後続Phase成果物を追加しない。
+2. Spring Boot 4.1.1、Maven 3.9.16、Java 21 build / Java 21・25 runtimeをPhase 1a baselineとする。
+   Spring Modulithは2.1.0を維持し、2.1.1への更新はPhase 1b開始時に再reviewする。
+3. `walking-skeleton/`とC4で代替済みの旧Java 25補助scriptを正式本線から除去し、証拠は
+   `walking-skeleton` branch、固定snapshot `b3ba79f`、Git履歴、Validation文書に保持する。
+4. ADR / Skillに新規判断がないこと、Phase 1aではtable・migration追加がなくFlywayが該当しないことを
+   理由付きで記録し、Phase 1aの6件と共通5件のDoDを追跡する。
+5. CI待ち時間を抑えるためlocal commitをまとめ、PR CIは原則2回以内とし、main merge後の最終CIは
+   closeout記録を残した上で非同期確認する。C5ではworkflowの検証論理自体を最適化対象にしない。
+
+## 4. Gate 1 read-only evidence
+
+- `main`、`origin/main`、作業開始点は`ca37e5c`で一致し、C4までのmergeと最終CI完了を確認した。
+- Root ReactorはBOM、Parent、Architecture Contract、ArchUnit Rulesの正式4 moduleだけである。
+- GitHub Packagesの4成果物、Repository外Consumer、Public API compatibility、Java runtime matrixの
+  証拠が成立している。
+- main rulesetはstrict、bypassなしで、`Verify (ubuntu-24.04)`、`Public API Compatibility`、
+  `Java Runtime Compatibility`をrequired checkとしている。
+- 通常CIは直近で約4.5分、うちFeature Template検証が約221秒を占めた。C5では安全性を下げず、
+  commit / push / CI確認の回数をまとめる運用で待ち時間を抑える。
+- Phase 1aにはFlyway、table、migration SQLの追加がない。
+
+Baselineの外部確認先は[Spring Boot](https://spring.io/projects/spring-boot)、
+[Apache Maven release history](https://maven.apache.org/docs/history.html)、
+[Oracle Java SE Support Roadmap](https://www.oracle.com/java/technologies/java-se-support-roadmap.html)、
+[Spring Modulith reference documentation](https://docs.spring.io/spring-modulith/reference/)とした。
+
+## 5. Gate 2 implementation
+
+### 5.1 正式本線から除去する対象
+
+| 対象 | 除去理由 | 証拠・正式代替 |
+|---|---|---|
+| `walking-skeleton/ws-smoke-lib`、`ws-smoke-app` | Phase 0一時座標・sourceを正式成果物へ昇格させない | 固定snapshot `b3ba79f`、Architecture Contract、ArchUnit Rules、Feature Template、C1〜C4 Validation |
+| `walking-skeleton/negative-tests/nullaway` | 正式なNullAway positive / negative fixtureが成立済み | `build-support/null-safety/`、`phase1a-null-safety.md` |
+| `walking-skeleton/Walking-Skeleton-plan-20260812.md` | 作業メモをPhase 1a正本にしない | Git履歴、承認済みPhase 0 Validation |
+| `run-with-java25.ps1`、`verify-class-version.ps1` | C4の同一artifact方式と3 negative guardsで代替済み | `runtime-compatibility-fixture/`、`runtime-compatibility.yml`、`phase1a-java-runtime-matrix.md` |
+
+### 5.2 維持・同期する対象
+
+- Maven Wrapper bootstrapは保守用に維持し、既存Wrapperと一致する`bin`方式へ修正する。
+- Root README、Build Support、workflow、reserved ownership、Repository Architecture、Repository Treeを
+  現在の4 module構成とC3 / C4検証経路へ同期する。
+- Baseline Compatibilityと`BUILD-BASELINE.json`をPhase 1a実効値へ同期する。
+- Walking Skeleton引継ぎ台帳へC5処置状況を追記し、削除と証拠保持の対応を明示する。
+
+## 6. Preliminary DoD evidence map
+
+Gate 3で内容、判定、ADR / Skill / Flyway reviewを確定する。Gate 2では証拠の所在だけを確認する。
+
+| DoD | 主な既存Evidence | Gate 2状態 |
+|---|---|---|
+| 1a-1 Feature Template | `phase1a-feature-template.md`、`phase1a-template-integration.md` | LOCATED |
+| 1a-2 Architecture Contract / Level 0 | `phase1a-architecture-contract.md`、`phase1a-template-integration.md` | LOCATED |
+| 1a-3 同一version release unit / 外部Consumer | `phase1a-internal-snapshot.md`、`phase1a-external-consumer.md` | LOCATED |
+| 1a-4 ArchUnit / Null Safety | `phase1a-archunit-rules.md`、`phase1a-null-safety.md` | LOCATED |
+| 1a-5 Public API compatibility | `phase1a-public-api-compatibility.md` | LOCATED |
+| 1a-6 Java runtime matrix | `phase1a-java-runtime-matrix.md` | LOCATED |
+| 共通DoD 5件 | Baseline、ADR、CI、Skills、Flyway | GATE 3 REVIEW PENDING |
+
+## 7. Gate 2 acceptance criteria
+
+- trackedな`walking-skeleton/` sourceと旧2 scriptsが正式本線候補から除去されている。
+- Root Reactorが正式4 moduleのままで、Public API、dependency、後続Phase成果物を追加していない。
+- `BUILD-BASELINE.json`、Markdown link、Repository Tree、Validation indexが整合する。
+- Maven root verificationが成功し、削除対象の正式代替と証拠保持先を追跡できる。
+- Architecture OwnerがGate 2の内容と結果を確認する。
+
+## 8. Gate 2 verification result
+
+2026年8月27日に次を確認し、Gate 2をOwner Reviewへ提示した。
+
+| 確認 | 結果 |
+|---|---|
+| 正式本線からの残置物処置 | Walking Skeleton 10 filesと旧Java 25補助script 2 filesを正式本線から除去 |
+| Root Reactor | BOM、Parent、Architecture Contract、ArchUnit Rulesの正式4 moduleだけで一致 |
+| Baseline JSON | PowerShell `ConvertFrom-Json`成功 |
+| Repository文書 | local Markdown link検査成功、`git diff --check`成功 |
+| Maven回帰 | `.\mvnw.cmd --batch-mode --no-transfer-progress clean verify`成功 |
+| Tests | Architecture Contract 4件、ArchUnit Rules 65件、合計69件。failure / error / skipは0 |
+
+Gate 2ではFeature Template統合の再実行、remote pushおよびCIを行っていない。正式4 moduleと文書・
+残置物処置に対するlocal回帰へ限定し、重い統合検証とremote required checksはGate 4でまとめて行う。
+
+### 8.1 Gate 2 Owner Review結果
+
+| 項目 | 結果 |
+|---|---|
+| Decision | ACCEPTED |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月27日 |
+| Scope | §5〜§8のBaseline同期、残置物処置、正式代替、Repository hygiene、local検証 |
+| Commit | `39f09eb`（`chore: complete C5 repository hygiene`） |
+
+Architecture OwnerがGate 2の内容と結果を承認し、上記commitへ確定した。remote required checksを
+実行していないことは承認scopeどおりであり、Gate 4の最終条件として維持する。
+
+## 9. Gate 3 Phase 1a DoD traceability
+
+グランドデザインv0.2 §27.4の完了条件を、Owner承認済みの再現可能なEvidenceへ照合した。
+判定はDoD本文を変更せず、既存実演結果に基づく。
+
+| DoD | 判定 | 実演・Evidence |
+|---|---|---|
+| 1a-1 | SATISFIED | [`phase1a-feature-template.md`](phase1a-feature-template.md)でTier 1 `catalog`とTier 2 `approval`を生成し、6-project Reactor、Level 0、両Tier testを成功。B5の[`phase1a-template-integration.md`](phase1a-template-integration.md)でArchUnit / NullAway統合後も再生成・`verify`・復元を実証 |
+| 1a-2 | SATISFIED | [`phase1a-archunit-rules.md`](phase1a-archunit-rules.md)で必須5違反を独立fixtureとして検出し、25 failure reportにrule ID、ADR、違反内容、影響、修正を確認。Public compositeとCI経路を含めGate 1〜5 ACCEPTED |
+| 1a-3 | SATISFIED | [`phase1a-internal-snapshot.md`](phase1a-internal-snapshot.md)の4成果物公開と[`phase1a-external-consumer.md`](phase1a-external-consumer.md)の別Repositoryを連続証拠とし、空local repository / fresh runnerから`koiki-archunit-rules`を取得して違反を検出。DoD 1a-3 COMPLETE |
+| 1a-4 | SATISFIED | [`phase1a-null-safety.md`](phase1a-null-safety.md)でNullAway positive → expected negative → restoreをlocal / CIで実証し、B5でも両Tierの負例と復元を確認 |
+| 1a-5 | SATISFIED | [`phase1a-public-api-compatibility.md`](phase1a-public-api-compatibility.md)でC1 immutable baselineに対するjapicmp正常比較、Public API破壊と未承認追加の期待failure、package-private変更の許容をlocal / fresh runnerで実証。DoD 1a-5 COMPLETE |
+| 1a-6 | SATISFIED | [`phase1a-java-runtime-matrix.md`](phase1a-java-runtime-matrix.md)でJava 21 build、class major `65`、同一SHA-256 JARのJava 21 / 25起動、3 negative guards、job間artifact受け渡しを実証。DoD 1a-6 COMPLETE |
+
+最重要の1a-2 / 1a-3は、Repository内fixtureだけでなく、公開artifactを取得する独立Consumerでも
+`KOIKI-ARCH-001`、ADR-022、影響、修正および違反箇所を確認している。
+
+## 10. Gate 3 全Phase共通DoD review
+
+| §27.2 | 判定 | 根拠・残条件 |
+|---|---|---|
+| 1. Spring Boot baseline | SATISFIED | 2026年8月27日の公式情報と実効POMを照合し、OSSサポート中の最新minor 4.1.1へ同期。Baseline Compatibilityと`BUILD-BASELINE.json`へ記録 |
+| 2. ADR / Owner approval | SATISFIED | Phase 1aの各Gateは既存ADRとグランドデザインの具体化であり、新しいarchitecture decisionを導入していない。G1〜G6と各WPのADR要否・Owner承認を実行計画とValidationに記録 |
+| 3. CI quality gates | BASELINE SATISFIED / GATE 4 RECONFIRMATION | C4 merge commit `ca37e5c`で通常CI、Public API Compatibility、Java Runtime Compatibilityが成功。C5最終差分に対する3 required checksはGate 4で再確認し、それまではPhase 1a COMPLETEにしない |
+| 4. Agent Skills | SATISFIED | Phase 1aで追加した機械検査規則はArchUnit / NullAway / japicmpへ保持し、Skillへ複製しない。既存2 SkillがOwnership・Tier・責務判断を網羅し、C5でも`koiki-project-overview`を適用してArchitecture / Tooling境界と後続Phase保留を維持 |
+| 5. Table / Flyway ownership | NOT APPLICABLE | Phase 1aではtable、migration SQL、Flyway dependency / workflowを追加していない。Flyway Runtime FoundationはPhase 1bのため、配置すべき新規migrationが存在しない |
+
+共通DoD 3だけは、既存成果物の証拠不足ではなくC5差分に対する最終remote再確認を残す。このため
+Gate 3でDoD本文を緩和したり例外承認したりせず、Gate 4をPhase完了の必須条件とする。
+
+## 11. ADR / Skill / Flyway判定
+
+### 11.1 ADR
+
+Phase 1aはADR-001〜003、005、022、023、025、041、045等の承認済み判断を、正式Maven成果物、
+Public API、機械検査、内部snapshot、ConsumerおよびCIへ具体化した。Maven座標、内部snapshot経路、
+japicmp fixture、runtime fixture、C5残置物処置はいずれもPhase 1a内部の実装・検証方法であり、
+Framework昇格、採用Level、Support、外部releaseまたは後続Phase scopeを変更しない。
+
+したがって新規ADRまたは既存ADR改訂は`NOT REQUIRED`と判定する。再判断triggerは、Public API / Maven
+release unitの変更、Spring Modulith採用Level変更、正式release / support開始、Runtime Foundation成果物の
+前倒し、または既存ADRの前提を否定する検証結果が生じた場合とする。
+
+### 11.2 Agent Skills
+
+正本の`koiki-project-overview`と`koiki-business-feature-work`を全件reviewした。Phase 1aで追加した
+ArchUnit rule、NullAway、japicmp、Java runtime guardは機械検査が所有し、Skill更新規律にいう新しい
+判断基準ではない。Ownership、Tier、責務、Spring Modulith Level、後続Phase保留の既存判断フローに
+不足はないため、Skill変更は`NOT REQUIRED`と判定する。
+
+### 11.3 Flyway
+
+tracked treeに`.sql`または`db/migration`は0件であり、POM / workflowにもFlyway参照は0件である。
+Phase 1aはBuild Foundationでtableを追加せず、Flyway二階層の正式実装はPhase 1b Runtime Foundationで
+扱う。共通DoD §27.2-5は`NOT APPLICABLE`であり、空migration、仮Starterまたはdependencyを生成しない。
+
+## 12. Gate 3 verification and review target
+
+| 確認 | 結果 |
+|---|---|
+| Phase 1a DoD 1a-1〜1a-6 | 6 / 6 SATISFIED |
+| 共通DoD | Baseline、ADR、SkillsはSATISFIED、Flywayは理由付きNOT APPLICABLE |
+| CI | C4基準でSATISFIED、C5最終差分の再確認をGate 4へ明示 |
+| ADR | 追加・改訂NOT REQUIRED。理由とrevisit triggerを記録 |
+| Skills | 2正本をreviewし、変更NOT REQUIRED。`koiki-project-overview`適用結果を記録 |
+| Flyway | SQL / migration / build参照0件、Phase 1bへ保留 |
+| Scope | 正式4 module、Public API、dependency、後続Phase成果物に変更なし |
+
+Gate 3の判定対象は§9〜§12であり、承認結果は§12.1に記録する。Gate 4ではlocal統合検証、PR、
+3 required checks、Owner Reviewおよびmain最終CIを実施する。
+
+### 12.1 Gate 3 Owner Review結果
+
+| 項目 | 結果 |
+|---|---|
+| Decision | ACCEPTED |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月27日 |
+| Scope | §9〜§12のDoD 1a-1〜1a-6、共通DoD、ADR / Skill / Flyway判定、Gate 4残条件 |
+| Commit | `25476db`（`docs: establish C5 DoD traceability`） |
+
+Architecture OwnerがGate 3の内容と結果を承認し、上記commitへ確定した。CI共通DoDはC4基準で成立し、
+C5最終差分に対する再確認をGate 4必須条件として残す判定も承認scopeに含む。
+
+## 13. Gate 4 local final verification
+
+### 13.1 実行基準
+
+| 項目 | 値 |
+|---|---|
+| Branch | `feature/phase1a-closeout` |
+| Source commit | `25476db` |
+| Working tree at runtime build | clean |
+| Maven | Repository Wrapper 3.9.16 |
+| Build Java | Eclipse Adoptium 21.0.12.1 |
+| Java 25 runtime | Eclipse Adoptium 25.0.4.1 |
+
+### 13.2 local結果
+
+| 検証 | 結果 |
+|---|---|
+| Root `clean verify` | SUCCESS。正式4 module、Architecture Contract 4 tests、ArchUnit Rules 65 tests、合計69 tests。failure / error / skip 0 |
+| Feature Template | SUCCESS。Tier 1 / Tier 2生成、正常系、Level 0、Tier別ArchUnit 2負例、Tier別NullAway 2負例、復元、runtime依存境界を確認 |
+| Null Safety fixture | SUCCESS。positive → expected negative → restore |
+| Public API fixture | SUCCESS。package-private変更はinventory MATCH / japicmp `NONE`、return type破壊と未承認追加は期待failure |
+| Runtime build | SUCCESS。class major `65`、JAR SHA-256 `D25D1DCC244ECFA73DF3820D1BA4B31D371268A29671327F6C5059B55C1BDDFC` |
+| Java 21 / 25 runtime | SUCCESS。同一JAR、実行前後SHA-256 MATCH、固定marker、exit `0` |
+| Runtime negative guards | SUCCESS。Java 25 build拒否、hash改変拒否、runtime major不一致の3 expected failures。復元後も原本hash一致 |
+
+認証が必要なC1 timestamped artifactとの正式japicmp比較は、Repository `GITHUB_TOKEN`と
+`packages: read`だけを使用する`Public API Compatibility` required checkで再確認する。localでPATを
+再入力して同じnetwork検査を重複させず、C3で成立済みの認証境界を維持する。
+
+### 13.3 remote acceptance conditions
+
+1. Gate 4 local結果とcloseout差分をcommitし、`feature/phase1a-closeout`をpushする。
+2. PR上の`Verify (ubuntu-24.04)`、`Public API Compatibility`、`Java Runtime Compatibility`が
+   同一headまたはGitHub test merge commitで成功する。
+3. main rulesetがactive / strict / bypass 0で、上記3 checksをrequiredのまま維持する。
+4. remote Evidence、PR identity、credential非露出、DoD 11項目および残るdeferred scopeを
+   Architecture Ownerが確認し、Gate 4とC5を承認する。
+5. PRをmainへmergeし、main最終CIを確認する。最終CI実行中はPhase 1a COMPLETEを先取りしない。
+
+Gate 4 local結果を記録したcommit `4539a93`をpushし、PR #20を作成した。remote acceptance条件の
+実測結果は§14へ記録する。
+
+## 14. Gate 4 remote Evidence
+
+### 14.1 PR identity
+
+| 項目 | 実測値 |
+|---|---|
+| Pull Request | [#20](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/20) `chore: close out Phase 1a build foundation` |
+| State | OPEN / non-draft |
+| Head | `4539a9308a98c3f57b3c2c51eeb0779f418da041` |
+| GitHub test merge | `a75da4c2ab4d9ea49ff6e524703afc8ea5000790` |
+| Merge state | `MERGEABLE` / `CLEAN` |
+
+### 14.2 workflow / job結果
+
+| Workflow / job | Run / job | 結果 |
+|---|---|---|
+| `CI` / `Verify (ubuntu-24.04)` | [run 33044044827 / job 98423830492](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33044044827/job/98423830492) | SUCCESS、4分37秒 |
+| `CI` / `Public API Compatibility` | [run 33044044827 / job 98423830641](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33044044827/job/98423830641) | SUCCESS、1分29秒 |
+| `Java Runtime Compatibility` / `Build Runtime Fixture (Java 21)` | [run 33044044805 / job 98423830787](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33044044805/job/98423830787) | SUCCESS、35秒 |
+| `Java Runtime Compatibility` / `Java Runtime Compatibility` | [run 33044044805 / job 98423935300](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33044044805/job/98423935300) | SUCCESS、26秒 |
+
+両workflowは`pull_request` eventとhead `4539a93`を記録し、GitHub test merge commit上で検証した。
+通常VerifyではRoot Reactor、Feature Templateの正常系・Tier別負例・復元、NullAway三段階が成功した。
+
+### 14.3 Public API compatibility
+
+| 検査 | remote結果 |
+|---|---|
+| Authentication | Repository `GITHUB_TOKEN`、workflow `packages: read` |
+| Architecture Contract baseline | `0.1.0-20260826.091429-1`、SHA-256 `947EE8CF0E109FE58D81E6008A56C06C8F4C035FF76BDF462F8F6BD9BB50DE45`、MATCH |
+| ArchUnit Rules baseline | `0.1.0-20260826.091429-1`、SHA-256 `A51E26E7386D19E53C18BD63BC4E4F95EC1EAE471F39D519D6AE0CBC7C2DF3F2`、MATCH |
+| Inventory | 5 public types、4 annotation elements、2 Rules methods、MATCH |
+| 正式japicmp | Architecture Contract / ArchUnit Rulesとも`access=public`、modifications `NONE`、exit `0` |
+| package-private fixture | inventory MATCH、modifications `NONE`、exit `0` |
+| breaking fixture | `METHOD_RETURN_TYPE_CHANGED`、expected failure PASS |
+| addition fixture | inventory MISMATCH、`METHOD_ADDED_TO_PUBLIC_CLASS`、expected failure PASS |
+
+### 14.4 Java runtime artifact
+
+| 項目 | remote Evidence |
+|---|---|
+| Build Java / class | Java 21 / class major `65` |
+| Source state | test merge `a75da4c`、working tree dirty `false` |
+| JAR SHA-256 | `BBEA14BBA5760898E1E776CB6C7EFDBC65EDF0D6E757406746083AA4E1B5652C` |
+| Workflow artifact | ID `9634936457`、`koiki-runtime-compatibility-a75da4c2ab4d9ea49ff6e524703afc8ea5000790` |
+| Archive digest | `sha256:f7fe6a271b8d0d88af500b5807de187c61aed305fc3484f2153055f33ce2ce81` |
+| Java 21 | Eclipse Adoptium `21.0.12.1`、marker一致、exit `0` |
+| Java 25 | Eclipse Adoptium `25.0.4.1`、marker一致、exit `0` |
+| 3 negative guards | Java 25 build、hash改変、runtime major不一致がすべてEXPECTED FAILURE PASS |
+
+build前、negative guards後、upload前、download後およびJava 21 / 25実行でJAR SHA-256が一致した。
+runtime jobはbuild jobから受け渡された同一artifactを使用し、Java 25向け再compile / packageを行っていない。
+
+### 14.5 ruleset / credential境界
+
+2026年8月27日にGitHub APIとrun logをread-only確認した。
+
+- ruleset `main-merge-protection`（ID `21140116`）は`active`。
+- `strict_required_status_checks_policy`は`true`。
+- required checksは`Verify (ubuntu-24.04)`、`Public API Compatibility`、
+  `Java Runtime Compatibility`の3件で一致する。
+- Pull Request ruleを維持し、bypass actorは0件である。
+- CI / runtime両run logでPAT、GitHub token、Bearer / Basic credential literalおよび
+  credential付きURLの検出は0件である。
+
+### 14.6 Gate 4 Owner Review対象
+
+1. §13のlocal統合検証と§14のremote Evidenceが同じC5成果を検証している。
+2. PR #20が`CLEAN` / `MERGEABLE`で、3 required checksがすべて成功している。
+3. DoD 1a-1〜1a-6、共通DoD、Baseline、ADR / Skill / Flyway判定、Walking Skeleton処置を維持する。
+4. credential非露出、最小権限、4 module / Public API / dependency / deferred scope非変更を維持する。
+5. Gate 4承認後にcloseout Evidenceをcommit / pushし、required checks再成功後にmergeする。
+6. main最終CI成功後にのみC5、Milestone C、Phase 1aを`COMPLETE`とする。
+
+### 14.7 Gate 4 pre-merge Owner Review結果
+
+| 項目 | 結果 |
+|---|---|
+| Decision | ACCEPTED — FINAL CI PENDING |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年8月27日 |
+| Scope | §13〜§14.6のlocal最終検証、PR #20 remote Evidence、ruleset、credential境界、DoD / Governance closeout |
+| Evidence | PR #20 head `4539a93`、test merge `a75da4c`、runs `33044044827` / `33044044805`、3 required checks成功 |
+| Rationale | Phase 1aの6 DoDと共通DoDをlocal / remoteで再確認し、正式4 module、Public API、dependency、deferred scopeを維持している |
+| Revisit trigger | Evidence追記後のrequired check失敗、PR差分・ruleset変更、merge不能、main最終CI失敗、記録したidentityとの不一致 |
+
+Architecture Ownerはmain最終CI前までの対応内容と結果を確認し、pre-merge Gate 4 Owner Reviewを
+承認した。この承認に基づきremote Evidenceをcommit / pushし、同じ3 required checksの再成功後に
+PR #20をmergeできる。main最終CIのrun identityと結果を確認するまでは、C5、Milestone C、Phase 1aを
+`COMPLETE`とは扱わない。
+
+main最終CI成功後は、そのrun identity、merge commit、rulesetおよび最終DoD判定を最小のcloseout
+Evidence更新として正本へ確定する。これは新しい実装WPではなく、C5 Gate 4の最終証拠記録である。

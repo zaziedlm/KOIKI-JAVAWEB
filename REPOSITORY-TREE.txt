@@ -9,6 +9,7 @@ KOIKI-JAVAWEB/
 │   ├── workflows/
 │   │   ├── ci.yml                      # Java 21 quality gate (Ubuntu; Windows temporarily disabled)
 │   │   ├── publish-snapshot.yml        # Four-artifact GitHub Packages publication
+│   │   ├── runtime-compatibility.yml    # One Java 21 artifact executed on Java 21 / 25
 │   │   └── README.md
 │   └── pull_request_template.md
 ├── .mvn/
@@ -17,6 +18,13 @@ KOIKI-JAVAWEB/
 │   │   └── maven-wrapper.properties
 │   └── README.md
 ├── build-support/
+│   ├── api-compatibility/               # Public API inventory, japicmp, and negative fixtures
+│   │   ├── fixture/
+│   │   ├── pom.xml
+│   │   ├── public-api.txt
+│   │   ├── PublicApiInventory.java
+│   │   ├── verify-public-api-compatibility.ps1
+│   │   └── README.md
 │   ├── feature-templates/
 │   │   ├── templates/
 │   │   │   ├── tier1-simple/
@@ -36,13 +44,17 @@ KOIKI-JAVAWEB/
 │   │   │   └── pom.xml
 │   │   ├── verify-null-safety.ps1
 │   │   └── README.md
+│   ├── runtime-compatibility-fixture/   # Tooling-owned, non-published Java runtime probe
+│   │   ├── fixture/
+│   │   ├── build-runtime-fixture.ps1
+│   │   ├── verify-runtime-fixture.ps1
+│   │   ├── verify-runtime-negative-guards.ps1
+│   │   └── README.md
 │   ├── scripts/
 │   │   ├── bootstrap-maven-wrapper.ps1
 │   │   ├── bootstrap-maven-wrapper.sh
 │   │   ├── check-build-environment.ps1
-│   │   ├── import-corporate-root-ca.ps1
-│   │   ├── run-with-java25.ps1
-│   │   └── verify-class-version.ps1
+│   │   └── import-corporate-root-ca.ps1
 │   └── README.md
 ├── docs/
 │   ├── agent/
@@ -64,7 +76,10 @@ KOIKI-JAVAWEB/
 │   │   │   ├── phase1a-feature-template.md
 │   │   │   ├── phase1a-internal-snapshot.md
 │   │   │   ├── phase1a-null-safety.md
+│   │   │   ├── phase1a-public-api-compatibility.md
 │   │   │   ├── phase1a-template-integration.md
+│   │   │   ├── phase1a-java-runtime-matrix.md
+│   │   │   ├── phase1a-closeout.md
 │   │   │   └── walking-skeleton-*.md
 │   │   ├── KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md
 │   │   ├── KOIKI-JavaWeb-FW_Phase0_DoD_Closeout_v0.1.md
@@ -98,11 +113,6 @@ KOIKI-JAVAWEB/
 ├── koiki-starters/                     # Reserved ownership directory; README only
 ├── koiki-testing/                      # Reserved ownership directory; README only
 ├── ops/                                # Reserved operations directory; README only
-├── walking-skeleton/                   # Phase 0 history; excluded from Root Reactor/publication
-│   ├── negative-tests/
-│   ├── ws-smoke-app/
-│   ├── ws-smoke-lib/
-│   └── Walking-Skeleton-plan-20260812.md
 ├── AGENTS.md
 ├── BUILD-BASELINE.json
 ├── CLAUDE.md
@@ -117,3 +127,5 @@ KOIKI-JAVAWEB/
 
 This is a maintained structural overview, not an exhaustive source/fixture listing.
 Generated verification output and Maven target directories are intentionally omitted.
+Phase 0 Walking Skeleton source is retained in the fixed `b3ba79f` snapshot and Git history,
+not in the Phase 1a formal main tree.

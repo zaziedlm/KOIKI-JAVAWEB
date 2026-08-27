@@ -2,10 +2,12 @@
 
 **版:** v0.1<br>
 **作成日:** 2026年8月19日<br>
-**状態:** ACCEPTED<br>
+**最終更新日:** 2026年8月27日<br>
+**状態:** PHASE 0 ACCEPTED / PHASE 1A CLOSEOUT UPDATE IN REVIEW<br>
 **Architecture Owner:** Shuichi Kataoka<br>
 **対象:** KOIKI / Spring Boot / Java baselineとsupport管理<br>
-**基準Commit:** `8d90ea1`
+**Phase 0基準Commit:** `8d90ea1`<br>
+**Phase 1a基準Commit:** `ca37e5c7ca7b80fe190e49f53c05193d38a451d6`
 
 ## 1. 目的
 
@@ -30,61 +32,71 @@ Repositoryから一意に確認できるようにする。本書をグランド�
 本書とPOM・Wrapperが不一致の場合、どちらかへ黙って追従しない。不一致をrelease blockerとして扱い、
 実効dependency、Java runtime matrix、build結果を確認してから同じ変更で整合させる。
 
-## 3. 初期Baseline
+## 3. Baseline
 
 ### 3.1 KOIKI / Spring Boot / Java対応表
 
 | Baseline | KOIKI line | Spring Boot | Java target bytecode | Build JDK | 対応runtime | 推奨runtime | 状態 |
 |---|---|---|---:|---|---|---|---|
 | Phase 0 development | 未公開（`0.0.1-SNAPSHOT`） | 4.1.0 | 21 | 21 | Java 21 | Java 25（互換確認対象） | DEVELOPMENT |
+| Phase 1a Build Foundation | 内部snapshot（`0.1.0-SNAPSHOT`） | 4.1.1 | 21 | 21 | Java 21 / 25 | Java 25（互換確認済み） | DEVELOPMENT |
 
 `0.0.1-SNAPSHOT`はWalking Skeletonの候補Parent / BOMを識別する開発versionであり、
-正式なKOIKI release、公開Maven座標、またはsupport対象lineではない。
-正式な`org.koikifw`成果物とrelease versionはPhase 1以降で確定する。
+固定branchとGit履歴に保持する。Phase 1aは正式な`org.koikifw`座標で4成果物の内部snapshotを
+公開したが、正式releaseまたは顧客向けsupport対象lineではない。正式release versionとsupport条件は
+Phase 5で確定する。
 
 ### 3.2 再現用Component Snapshot
 
 | Component | Version / 条件 | 根拠 |
 |---|---|---|
-| Spring Boot | 4.1.0 | `koiki-dependencies-bom/pom.xml` |
+| Spring Boot | 4.1.1 | `koiki-dependencies-bom/pom.xml` |
 | Spring Modulith | 2.1.0 | `koiki-dependencies-bom/pom.xml` |
 | Maven | 3.9.16 | Maven Wrapper |
 | Maven Compiler Plugin | 3.15.0 | `koiki-parent/pom.xml` |
 | Maven Enforcer Plugin | 3.6.3 | `koiki-parent/pom.xml` |
 | Maven Toolchains Plugin | 3.3.0 | `koiki-parent/pom.xml` |
+| Maven Surefire Plugin | 3.5.6 | `koiki-parent/pom.xml` |
 | Error Prone | 2.50.0 | `koiki-parent/pom.xml` |
 | NullAway | 0.13.8 | `koiki-parent/pom.xml` |
 | JSpecify | 1.0.0 | `koiki-dependencies-bom/pom.xml` |
+| japicmp Maven Plugin | 0.26.1 | `build-support/api-compatibility/pom.xml` |
 
 Component Snapshotはbaselineを再現するための補助情報であり、すべてのcomponent更新が
 KOIKI major更新を要求するものではない。Spring Boot minorの変更はKOIKI major更新として扱い、
 build pluginや検査toolは互換性と検証結果を確認したうえで同一KOIKI line内でも更新できる。
 
-Spring Modulith 2.1.0はPhase 0実装の実効dependencyを示す。versionの記載だけを根拠として、
-Level 2以降の機能、runtime依存、または運用方式を正式採用したとは扱わない。
+Spring Modulith 2.1.0はPhase 1aでLevel 0 test scopeを実証した実効dependencyである。2026年8月27日時点で
+2.1.1が公開済みだが、closeout中の更新はC1 snapshot、C2 ConsumerおよびB5 integration Evidenceを
+再判定させるため、Phase 1aでは2.1.0を維持し、Phase 1b開始時のbaseline gateで更新を判断する。
+versionの記載だけを根拠として、Level 1 / 2、runtime依存または運用方式を正式採用したとは扱わない。
 
 ### 3.3 検証証拠
 
 | 検証 | 結果 | 証拠 |
 |---|---|---|
-| JDK 21 build | Temurin 21.0.12で成功 | `validation/walking-skeleton-build-foundation.md` |
-| Java 21 bytecode | class major version 65 | `validation/walking-skeleton-build-foundation.md` |
-| Java 21 runtime | Root Reactorおよびcontainerで成功 | `validation/walking-skeleton-phase0-completion.md` |
-| Java 25 runtime compatibility | Temurin 25.0.4でBoot JAR起動、終了コード0 | `validation/walking-skeleton-build-foundation.md` |
-| Maven Wrapper | Maven 3.9.16で`clean verify`成功 | `validation/walking-skeleton-build-foundation.md` |
+| JDK 21 build | Temurin 21、正式4module、69 tests成功 | `validation/phase1a-java-runtime-matrix.md` |
+| Java 21 bytecode | Tooling fixture class major version 65 | `validation/phase1a-java-runtime-matrix.md` |
+| Java 21 / 25 runtime | 同一JAR・同一SHA-256・固定marker・exit 0 | `validation/phase1a-java-runtime-matrix.md` |
+| Maven Wrapper | Maven 3.9.16でRoot / fixture build成功 | `validation/phase1a-build-foundation.md`、`validation/phase1a-java-runtime-matrix.md` |
+| Internal distribution | 正式4成果物の同一timestamp snapshotと外部Consumer成功 | `validation/phase1a-internal-snapshot.md`、`validation/phase1a-external-consumer.md` |
+| Public API | inventory一致、japicmp正常・破壊・追加・internal fixture成功 | `validation/phase1a-public-api-compatibility.md` |
+| CI | main `ca37e5c`のCIとJava Runtime Compatibility成功 | GitHub Actions run `33041131086`、`33041131074` |
 
-Java 25はPhase 0時点で推奨runtimeの互換確認対象であり、build JDKではない。
+Java 25は推奨runtimeの互換確認対象であり、build JDKではない。
 Java 21で生成したbytecodeがJava 21とJava 25の双方で動作する契約を維持する。
 
-**Owner Review（§1〜§3）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）
+**Phase 0 Owner Review（§1〜§3）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）<br>
+**Phase 1a Closeout Review:** IN REVIEW
 
 ## 4. Support対応表
 
 | KOIKI line | Release日 | 対応Spring Boot line | Spring Boot OSS support終了日 | KOIKI OSS support終了日 | 商用延長 | 状態 | 確認日・根拠 |
 |---|---|---|---|---|---|---|---|
 | Phase 0 development | 未release | 4.1.x development baseline | 対象外 | 対象外 | 対象外 | DEVELOPMENT | Phase 0実装証拠（2026年8月14日） |
+| Phase 1a Build Foundation | 未release | 4.1.x development baseline | 対象外 | 対象外 | 対象外 | DEVELOPMENT | Spring Boot公式project page、実効BOM、C5 read-only調査（2026年8月27日） |
 
-Phase 0 development baselineには顧客向けsupport期間を設定しない。Phase 5 DoD 5-3で、
+Phase 0 / Phase 1a development baselineには顧客向けsupport期間を設定しない。Phase 5 DoD 5-3で、
 正式releaseごとにSpring公式情報を確認し、具体的な終了日、確認日、参照元を記録する。
 「LTS」という包括的表現は使用せず、OSS supportと商用延長supportを分ける。
 
@@ -159,6 +171,7 @@ DEVELOPMENT -> PLANNED -> SUPPORTED -> EOL
 | Date | KOIKI line | Transition | Decision | Evidence | Rationale | Decided by | Revisit trigger |
 |---|---|---|---|---|---|---|---|
 | 2026年8月19日 | Phase 0 development | New → DEVELOPMENT | ACCEPTED | `validation/walking-skeleton-build-foundation.md`、`validation/walking-skeleton-phase0-completion.md` | POM・Wrapperの実効versionとJava 21 / 25検証結果を未公開baselineとして記録する | Shuichi Kataoka | Phase完了、Spring Boot / Java方針変更、support条件変更 |
+| 2026年8月27日 | Phase 1a Build Foundation | New → DEVELOPMENT | IN REVIEW | Phase 1a Validation一式、`BUILD-BASELINE.json`、実効POM、Wrapper、main CI | 正式座標、Boot 4.1.1、Java 21 build / 21・25 runtime、内部snapshotとCIをcloseout baselineへ同期する | — | C5 Owner Review、Phase 1b開始、正式release準備 |
 
 **Owner Review（§5〜§7）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）
 
@@ -185,12 +198,24 @@ DEVELOPMENT -> PLANNED -> SUPPORTED -> EOL
 - `KOIKI-JavaWeb-FW_Phase0_DoD_Closeout_v0.1.md`
 - `validation/walking-skeleton-build-foundation.md`
 - `validation/walking-skeleton-phase0-completion.md`
+- `validation/phase1a-build-foundation.md`
+- `validation/phase1a-internal-snapshot.md`
+- `validation/phase1a-external-consumer.md`
+- `validation/phase1a-public-api-compatibility.md`
+- `validation/phase1a-java-runtime-matrix.md`
 - `../../koiki-dependencies-bom/pom.xml`
 - `../../koiki-parent/pom.xml`
 - `../../.mvn/wrapper/maven-wrapper.properties`
 
 Spring BootおよびJavaのsupport条件は、本節の記載を固定値として流用しない。各baseline更新時に
 一次情報を改めて確認し、参照元と確認日をSupport対応表または変更履歴へ記録する。
+
+Phase 1a C5で確認した一次情報:
+
+- https://spring.io/projects/spring-boot/
+- https://docs.spring.io/spring-modulith/reference/index.html
+- https://maven.apache.org/docs/history.html
+- https://www.oracle.com/java/technologies/java-se-support-roadmap.html
 
 **Owner Review（§8〜§9）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）
 
