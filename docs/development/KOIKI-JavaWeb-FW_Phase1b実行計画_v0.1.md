@@ -3,9 +3,9 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
 **文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP3 COMPLETE / Milestone A PR CI COMPLETE<br>
+**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP4 LOCAL COMPLETE / Milestone A COMPLETE / Milestone B IN PROGRESS<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月28日（CP3およびMilestone A PR CI完了）<br>
+**最終更新日:** 2026年8月28日（CP4 local検証完了、Milestone B CIはCP7後）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,7 +28,7 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP3 COMPLETE、Milestone A PR CI COMPLETE |
+| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP4 LOCAL COMPLETE、Milestone A COMPLETE、Milestone B IN PROGRESS |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
 | 適用指針 | Root `AGENTS.md`、Project Overview Skill、Grand Design、Repository Architecture、ADR Register、Phase 1a closeout |
@@ -117,6 +117,24 @@ Milestone A隔離scriptをCIへ接続し、Draft PR #24のcommit
 `cdfdebe783d2bb6808c10916235e2ff6b8ddf436`に対する全4 checkの成功を確認した。
 
 証拠の詳細は`../architecture/validation/phase1b-cp3-problem-details.md`を正本とする。
+
+### 3.7 CP4 local検証完了
+
+`koiki-starter-data`をpersistence-neutralなFramework leafとして追加し、KOIKI→CustomerのFlyway実行順、
+owner別location／history、Customer baseline 0を提供した。Starterへproduction migration SQLやPublic Java
+APIは追加していない。`koiki-testing`はSpring Boot `@ServiceConnection`とTestcontainersの標準利用に必要な
+test dependency bundleとし、独自Java abstractionを設けていない。
+
+Customer-like Consumerをin-memory repositoryからSpring Data JPA／PostgreSQL 17へ移行し、実HTTPから
+Use Case→Repository→DBまでの永続化を確認した。Application Use Caseを`@Transactional`境界とし、Boot既定の
+class-based proxy contractに合わせてUse Case class／methodをnon-finalとした。実DB save後のtest-only例外で
+rollbackを確認し、Feature Templateも同じ起動failureを再発させない形へ更新した。
+
+隔離scriptでlocation混在、Customer先行、後発KOIKI versionをpositive／negative／restoreとして再現し、
+Starter細粒度19試験、Consumer 15試験、artifact／Public API／dependency／ownership境界を全て確認した。
+remote CIはMilestone BのCP5〜CP7を完了したPRで接続する。
+
+証拠の詳細は`../architecture/validation/phase1b-cp4-data-runtime.md`を正本とする。
 
 ## 4. Scope
 

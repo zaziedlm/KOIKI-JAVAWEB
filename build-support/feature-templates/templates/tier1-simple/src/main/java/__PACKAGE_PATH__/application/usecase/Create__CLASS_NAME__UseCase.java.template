@@ -6,7 +6,7 @@ import __FEATURE_PACKAGE__.adapter.outbound.persistence.__CLASS_NAME__;
 import __FEATURE_PACKAGE__.adapter.outbound.persistence.__CLASS_NAME__Repository;
 
 /** Coordinates creation and owns the simple Tier 1 business decision. */
-public final class Create__CLASS_NAME__UseCase {
+public class Create__CLASS_NAME__UseCase {
 
     private final __CLASS_NAME__Repository repository;
 

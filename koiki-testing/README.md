@@ -1,6 +1,5 @@
-# koiki-testing
+# KOIKI Testing Support
 
-Customer Applicationからも利用可能なTesting SupportのCanonical ownership locationです。
-
-Phase 1aの検証fixtureは`build-support/`が所有し、正式配布しません。Testing Supportの
-Maven Module化は後続Phaseの利用実績とPublic API reviewで決定します。
+Customer testからSpring Boot TestcontainersとPostgreSQL TestcontainersをBOM管理された同一依存で
+利用するためのTooling artifactである。CP4では独自Java abstractionを追加せず、Spring Boot標準の
+`@ServiceConnection`とTestcontainers APIを直接利用する。

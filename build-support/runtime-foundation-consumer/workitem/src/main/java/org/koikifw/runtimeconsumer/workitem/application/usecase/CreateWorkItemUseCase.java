@@ -4,9 +4,10 @@ import java.util.Objects;
 import java.util.UUID;
 import org.koikifw.runtimeconsumer.workitem.adapter.outbound.persistence.WorkItem;
 import org.koikifw.runtimeconsumer.workitem.adapter.outbound.persistence.WorkItemRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 /** Coordinates creation and owns the simple Tier 1 business decision. */
-public final class CreateWorkItemUseCase {
+public class CreateWorkItemUseCase {
 
     private final WorkItemRepository repository;
 
@@ -14,6 +15,7 @@ public final class CreateWorkItemUseCase {
         this.repository = Objects.requireNonNull(repository, "repository");
     }
 
+    @Transactional
     public UUID create(String label) {
         if (label == null || label.isBlank()) {
             throw new IllegalArgumentException("label must not be blank");

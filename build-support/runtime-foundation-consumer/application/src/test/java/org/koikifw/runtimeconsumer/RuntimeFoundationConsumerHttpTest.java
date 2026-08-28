@@ -12,19 +12,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Import(RuntimeFoundationConsumerHttpTest.RuntimeFailureController.class)
+@Import({RuntimeFoundationConsumerHttpTest.RuntimeFailureController.class,
+        RuntimePostgreSqlTestConfiguration.class})
 class RuntimeFoundationConsumerHttpTest {
 
     @LocalServerPort
     private int port;
 
     private RestTestClient client;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private JdbcClient jdbcClient;
 
     @BeforeEach
     void createClient() {
@@ -44,6 +49,12 @@ class RuntimeFoundationConsumerHttpTest {
                 .expectHeader().valueMatches("Location", "/api/1/work-items/[0-9a-f-]+")
                 .expectBody()
                 .jsonPath("$.id").exists();
+
+        Long stored = jdbcClient.sql("select count(*) from kkbiz_work_item where label = :label")
+                .param("label", "customer-like")
+                .query(Long.class)
+                .single();
+        assertThat(stored).isEqualTo(1L);
     }
 
     @Test

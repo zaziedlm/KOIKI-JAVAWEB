@@ -1,0 +1,2 @@
+org.springframework.boot.EnvironmentPostProcessor=\
+org.koikifw.starter.data.internal.KoikiDataDefaultsEnvironmentPostProcessor

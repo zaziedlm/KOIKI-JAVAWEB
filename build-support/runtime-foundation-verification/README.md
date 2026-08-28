@@ -13,3 +13,7 @@ CP2ではJackson 3とAPI Versioningの既定値、Spring Framework Resilienceの
 CP3では`MockMvc`を使い、Validation、異常JSON、直接発生した`JacksonException`、未処理例外と
 Application-ownedなSpring `ErrorResponse`を検証する。KOIKI handlerの無効化、内部情報非露出および
 RFC 9457 `application/problem+json` contractを含む。
+
+CP4では`koiki-starter-data`の有効／無効、Application-owned strategyへのback-off、Customer migrationの
+低優先度既定とoverrideを細粒度に検証する。実PostgreSQL上のmigration順序、異常系と復旧、業務経路は
+Customer-like Runtime Consumerが担当する。

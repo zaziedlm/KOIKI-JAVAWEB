@@ -15,5 +15,9 @@ CP3では実serverへ`RestTestClient`で接続し、同じworkitem endpointのVa
 存在しないpath、およびtest fixtureへ隔離した未処理例外が、内部情報を露出しないRFC 9457 Problem Detailsに
 統一されることを確認する。失敗専用endpointはproduction sourceへ追加しない。
 
-DB、migration、正式Reference業務、SecurityおよびFramework内部型は後続CPの成果物であり、
+CP4では`koiki-starter-data`と`koiki-testing`を通常のMaven artifactとして利用し、Tier 1 `workitem`を
+Spring Data JPA経由でPostgreSQL 17へ永続化する。Customer migrationは
+`classpath:db/migration/customer`に置き、KOIKI migrationとの実行順と履歴分離はtest-only probeで検証する。
+
+正式Reference業務、SecurityおよびFramework内部型は後続Phaseまたは後続CPの成果物であり、
 このConsumerへ先行追加しない。
