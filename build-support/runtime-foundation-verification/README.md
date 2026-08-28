@@ -9,3 +9,7 @@ Spring Boot application contextがrandom portで起動することを検証し�
 CP2ではJackson 3とAPI Versioningの既定値、Spring Framework Resilienceの有効化、retry回数と
 対象外例外、Starter全体の無効化、Customer propertyによるoverrideを検証する。業務機能、
 正式Reference、Customer設定またはFramework内部実装をfixtureへ混在させない。
+
+CP3では`MockMvc`を使い、Validation、異常JSON、直接発生した`JacksonException`、未処理例外と
+Application-ownedなSpring `ErrorResponse`を検証する。KOIKI handlerの無効化、内部情報非露出および
+RFC 9457 `application/problem+json` contractを含む。

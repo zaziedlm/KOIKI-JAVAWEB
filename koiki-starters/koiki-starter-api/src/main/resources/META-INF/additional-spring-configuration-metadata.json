@@ -13,6 +13,12 @@
       "description": "Whether Spring Framework resilient method processing is enabled."
     },
     {
+      "name": "koiki.api.problem-details.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether KOIKI RFC 9457 Problem Details handling is enabled."
+    },
+    {
       "name": "koiki.api.resilience.retry.max-retries",
       "type": "java.lang.Integer",
       "defaultValue": 2,

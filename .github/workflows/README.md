@@ -8,6 +8,8 @@ Phase 1aでは、CIとartifact公開を別の権限境界として扱います�
 - `ubuntu-24.04` / Temurin 21で、Maven Wrapperから`clean verify`を実行します。production runtimeを
   Linux-onlyとしたため、Windows matrixは再採用判断まで無効です。
 - NullAwayのpositive、意図的違反のexpected failure、restoreを隔離fixtureから検証します。
+- Phase 1b Milestone Aでは、隔離Maven repositoryへrelease unitをstageし、Starter細粒度fixtureと
+  独立Customer-like ConsumerのProblem Details／Validation／Jackson例外経路を累積検証します。
 - 通常の`Verify` jobは`contents: read`だけで、secretやpackage権限を使用しません。
 - 独立した`Public API Compatibility` jobだけが`contents: read`と`packages: read`を持ち、C1 baseline、
   inventory、japicmp正常系とGate 3 fixtureを同じTooling scriptで検証します。

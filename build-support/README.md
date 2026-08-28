@@ -83,6 +83,13 @@ CP2ではCore Configuration、Jackson 3、Resilience、API Versioningおよびve
 pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp2-runtime-core.ps1
 ```
 
+CP3ではRFC 9457 Problem Details、Validation、`JacksonException`、未処理例外、情報非露出および
+Application-owned handlerへのback offを累積検証する。Milestone Aの最終検証としてCIからも実行する。
+
+```powershell
+pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp3-runtime-core.ps1
+```
+
 Maven Toolchains例は開発環境の再現用に保持します。Walking Skeleton専用のclass version確認と
 Java 25 runtime scriptは、C4のmanifest・hash・class major・Java 21 / 25検証へ置き換えたため除去しました。
 Maven Wrapper bootstrap scriptは公式`bin`型を再生成する保守手段として保持します。
