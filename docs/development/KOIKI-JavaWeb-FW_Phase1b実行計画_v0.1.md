@@ -3,9 +3,9 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
 **文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1 COMPLETE / CP2 NOT STARTED<br>
+**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1 COMPLETE / CP2 COMPLETE / CP3 NOT STARTED<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月28日（Gate 1承認、CP1完了）<br>
+**最終更新日:** 2026年8月28日（Gate 1承認、CP2完了）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,7 +28,7 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1 COMPLETE、CP2 NOT STARTED |
+| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1 COMPLETE、CP2 COMPLETE、CP3 NOT STARTED |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
 | 適用指針 | Root `AGENTS.md`、Project Overview Skill、Grand Design、Repository Architecture、ADR Register、Phase 1a closeout |
@@ -92,6 +92,16 @@ HTTP起動を確認した。CP1ではKOIKI独自Public Java APIを追加して�
 
 証拠の詳細は`../architecture/validation/phase1b-cp1-modulith-2.1.1-regression.md`および
 `../architecture/validation/phase1b-cp1-runtime-artifact-consumer.md`を正本とする。
+
+### 3.5 CP2完了
+
+`koiki-starter-api`へSpring Boot標準のJackson 3／path API Versioning既定値と、Spring Framework標準の
+Resilience annotation有効化を追加した。KOIKI独自Public Java APIは追加せず、実装型を`internal`へ閉じた。
+細粒度fixtureでpositive、全体／Resilience単独back-off、Customer override、strict Jackson、retry回数と
+対象外例外を確認した。独立Consumerでは`POST /api/1/work-items`からController→Use Caseへ到達し、
+非対応version 400とversion欠落404を実serverの`RestTestClient`で確認した。
+
+証拠の詳細は`../architecture/validation/phase1b-cp2-runtime-core.md`を正本とする。
 
 ## 4. Scope
 
@@ -521,3 +531,4 @@ Phase 1aで得た定性的実績は、localのpositive / negative / restoreを�
 - `../architecture/validation/phase1b-cp0-start-baseline.md`
 - `../architecture/validation/phase1b-cp1-modulith-2.1.1-regression.md`
 - `../architecture/validation/phase1b-cp1-runtime-artifact-consumer.md`
+- `../architecture/validation/phase1b-cp2-runtime-core.md`

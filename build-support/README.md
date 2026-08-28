@@ -72,9 +72,16 @@ pwsh -NoProfile -File build-support/runtime-compatibility-fixture/verify-runtime
 pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp1-runtime-foundation.ps1
 ```
 
-CP1 scriptは空の隔離Maven repositoryへ正式release unitをstageし、Starter fixture、Tier 1 moduleの
+CP1 scriptはCP1完了commit `78c11a5`の再現用である。同commitで空の隔離Maven repositoryへ正式release unitをstageし、Starter fixture、Tier 1 moduleの
 unit / architecture / startup test、runtime依存境界、KOIKI internal参照negative guardおよび
 executable JARのHTTP起動を検証する。
+
+CP2ではCore Configuration、Jackson 3、Resilience、API Versioningおよびversion付きHTTP経路を、
+同じ独立Consumerから累積検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp2-runtime-core.ps1
+```
 
 Maven Toolchains例は開発環境の再現用に保持します。Walking Skeleton専用のclass version確認と
 Java 25 runtime scriptは、C4のmanifest・hash・class major・Java 21 / 25検証へ置き換えたため除去しました。
