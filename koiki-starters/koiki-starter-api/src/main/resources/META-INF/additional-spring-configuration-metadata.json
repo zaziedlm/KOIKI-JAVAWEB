@@ -1,0 +1,40 @@
+{
+  "properties": [
+    {
+      "name": "koiki.api.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether the KOIKI API runtime defaults and auto-configuration are enabled."
+    },
+    {
+      "name": "koiki.api.resilience.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether Spring Framework resilient method processing is enabled."
+    },
+    {
+      "name": "koiki.api.problem-details.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether KOIKI RFC 9457 Problem Details handling is enabled."
+    },
+    {
+      "name": "koiki.api.resilience.retry.max-retries",
+      "type": "java.lang.Integer",
+      "defaultValue": 2,
+      "description": "Default placeholder value for Spring Framework @Retryable maxRetriesString."
+    },
+    {
+      "name": "koiki.api.resilience.retry.delay",
+      "type": "java.time.Duration",
+      "defaultValue": "10ms",
+      "description": "Default placeholder value for Spring Framework @Retryable delayString."
+    },
+    {
+      "name": "koiki.api.resilience.retry.timeout",
+      "type": "java.time.Duration",
+      "defaultValue": "1s",
+      "description": "Default placeholder value for Spring Framework @Retryable timeoutString."
+    }
+  ]
+}

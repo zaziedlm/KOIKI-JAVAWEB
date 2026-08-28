@@ -1,0 +1,11 @@
+# KOIKI Phase 1b CP3 Public API inventory v3
+ARTIFACT koiki-starter-api
+PUBLIC_JAVA_TYPES 0
+PUBLIC_CONFIGURATION_PROPERTIES 6
+PROPERTY koiki.api.enabled
+PROPERTY koiki.api.problem-details.enabled
+PROPERTY koiki.api.resilience.enabled
+PROPERTY koiki.api.resilience.retry.max-retries
+PROPERTY koiki.api.resilience.retry.delay
+PROPERTY koiki.api.resilience.retry.timeout
+INTERNAL_PACKAGE org.koikifw.starter.api.internal

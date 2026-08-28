@@ -13,9 +13,20 @@
 
 ## Validation index
 
-実装で得た証拠の正本は`validation/`に置きます。2026年8月27日時点で、Phase 1aはMilestone A〜C、
+実装で得た証拠の正本は`validation/`に置きます。2026年8月28日時点で、Phase 1aはMilestone A〜C、
 C1〜C5およびGate 1〜4を完了し、Architecture Ownerが最終CIを含むcloseoutを承認しています。
-Phase 1b Runtime Foundationは未着手です。
+Phase 1b Runtime FoundationはCP0開始baselineとGate 1 Owner Review、CP1〜CP3を完了し、
+Milestone Aのlocal検証およびPR CIを完了しています。
+
+### Phase 1b Runtime Foundation
+
+| Commit Point | 状態 | 検証記録 |
+|---|---|---|
+| CP0 Start Baseline | COMPLETE / Gate 1 ACCEPTED | `validation/phase1b-cp0-start-baseline.md` |
+| CP1 Modulith 2.1.1 Regression | COMPLETE / 2.1.1 ADOPTED | `validation/phase1b-cp1-modulith-2.1.1-regression.md` |
+| CP1 Runtime Artifact / Consumer | COMPLETE | `validation/phase1b-cp1-runtime-artifact-consumer.md` |
+| CP2 Runtime Core | COMPLETE | `validation/phase1b-cp2-runtime-core.md` |
+| CP3 Problem Details | COMPLETE / PR CI COMPLETE | `validation/phase1b-cp3-problem-details.md` |
 
 ### Phase 1a Build Foundation
 

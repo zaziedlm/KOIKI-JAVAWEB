@@ -1,0 +1,2 @@
+org.koikifw.starter.api.internal.KoikiApiAutoConfiguration
+org.koikifw.starter.api.internal.KoikiApiResilienceAutoConfiguration
