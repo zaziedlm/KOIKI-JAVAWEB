@@ -9,11 +9,11 @@ Customer-like Consumerの実HTTP経路で一貫したerror responseへ変換で�
 | 項目 | 結果 |
 |---|---|
 | Phase / status | Phase 1b CP3 COMPLETE |
-| Milestone | A Runtime Core local COMPLETE / PR CI PENDING |
+| Milestone | A Runtime Core COMPLETE / PR CI COMPLETE |
 | Framework ownership | `koiki-starter-api`のinternal Problem Details handler |
 | Tooling ownership | `MockMvc` fixture、Customer-like Consumer、隔離検証script、CI step |
 | Start commit | `4d39c8e`（Phase 1b CP2完了） |
-| 判定 | **CP3 COMPLETE。remote PR CIはcommit／push後に確認する** |
+| 判定 | **CP3 COMPLETE。remote PR CIを含むMilestone Aの検証完了** |
 
 検証日時は2026年8月28日 13:40〜13:41 JSTである。
 
@@ -120,8 +120,16 @@ test failureではない。全testはfailure、error、skip 0で終了した。
 Pull Request上では既存Root、Feature Template、NullAwayに続き、Starter細粒度fixtureと独立Consumerを
 空のMaven repository経由で検証する。
 
-本記録作成時点ではCI変更を含むcommitをまだpushしていないため、remote PR checkは未実行である。
-local成功をremote成功として扱わず、Draft PRへpush後にrequired checksを確認する。
+Draft PR #24へpushしたcommit `cdfdebe783d2bb6808c10916235e2ff6b8ddf436`を対象として、
+2026年8月28日 13:57 JSTまでに次の4 checkがすべて成功した。PR head、remote branchおよびlocal HEADが
+同一commitであることも確認した。
+
+- `Verify (ubuntu-24.04)`: SUCCESS。`Verify Phase 1b Runtime Core` stepを含む
+- `Public API Compatibility`: SUCCESS
+- `Build Runtime Fixture (Java 21)`: SUCCESS
+- `Java Runtime Compatibility`: SUCCESS
+
+未完了または失敗したPR checkはなく、Milestone Aのremote CI条件を満たした。
 
 ## 6. 結論と次の境界
 
@@ -129,5 +137,6 @@ CP3の完了条件であるProblem Details、Validation、`JacksonException`、�
 positive／negative／restoreおよびCustomer-like実HTTP経路を満たした。既存ADRの前提変更はなく、
 ADR追加・改訂は不要である。
 
-remote PR CI成功後、Milestone Aをreview可能としてReady for reviewへ変更する。次の実装CPは、最新mainから
+remote PR CI成功によりMilestone Aはreview可能である。文書更新commitのCI成功後にDraft PRを
+Ready for reviewへ変更する。次の実装CPは、Milestone Aのreview／merge後、最新mainから
 `feature/phase1b-data-runtime-integration`を分岐して開始するCP4 PostgreSQL／Flyway二階層である。

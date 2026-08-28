@@ -16,7 +16,7 @@
 実装で得た証拠の正本は`validation/`に置きます。2026年8月28日時点で、Phase 1aはMilestone A〜C、
 C1〜C5およびGate 1〜4を完了し、Architecture Ownerが最終CIを含むcloseoutを承認しています。
 Phase 1b Runtime FoundationはCP0開始baselineとGate 1 Owner Review、CP1〜CP3を完了し、
-Milestone Aのlocal検証完了／PR CI確認前です。
+Milestone Aのlocal検証およびPR CIを完了しています。
 
 ### Phase 1b Runtime Foundation
 
@@ -26,7 +26,7 @@ Milestone Aのlocal検証完了／PR CI確認前です。
 | CP1 Modulith 2.1.1 Regression | COMPLETE / 2.1.1 ADOPTED | `validation/phase1b-cp1-modulith-2.1.1-regression.md` |
 | CP1 Runtime Artifact / Consumer | COMPLETE | `validation/phase1b-cp1-runtime-artifact-consumer.md` |
 | CP2 Runtime Core | COMPLETE | `validation/phase1b-cp2-runtime-core.md` |
-| CP3 Problem Details | COMPLETE / PR CI PENDING | `validation/phase1b-cp3-problem-details.md` |
+| CP3 Problem Details | COMPLETE / PR CI COMPLETE | `validation/phase1b-cp3-problem-details.md` |
 
 ### Phase 1a Build Foundation
 

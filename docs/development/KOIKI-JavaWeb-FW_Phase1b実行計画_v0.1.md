@@ -3,9 +3,9 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
 **文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP3 COMPLETE / Milestone A PR CI PENDING<br>
+**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP3 COMPLETE / Milestone A PR CI COMPLETE<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月28日（CP3 local完了、Milestone A PR CI待ち）<br>
+**最終更新日:** 2026年8月28日（CP3およびMilestone A PR CI完了）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,7 +28,7 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP3 COMPLETE、Milestone A PR CI PENDING |
+| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP3 COMPLETE、Milestone A PR CI COMPLETE |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
 | 適用指針 | Root `AGENTS.md`、Project Overview Skill、Grand Design、Repository Architecture、ADR Register、Phase 1a closeout |
@@ -113,7 +113,8 @@ Validation、異常JSON、直接発生した`JacksonException`、未処理例外
 細粒度`MockMvc` fixtureでpositive、KOIKI／Problem Details単独無効、Application-owned handlerへの
 back-off、Jackson／未処理例外の情報非露出を確認した。独立Consumerでは実serverのworkitem endpointへ
 Validation、異常JSON、version／path errorを送り、test-only処理例外を含む統一error contractを確認した。
-Milestone A隔離scriptをCIへ接続済みであり、remote PR checkだけを未完了証拠として残す。
+Milestone A隔離scriptをCIへ接続し、Draft PR #24のcommit
+`cdfdebe783d2bb6808c10916235e2ff6b8ddf436`に対する全4 checkの成功を確認した。
 
 証拠の詳細は`../architecture/validation/phase1b-cp3-problem-details.md`を正本とする。
 
