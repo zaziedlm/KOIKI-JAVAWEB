@@ -62,6 +62,20 @@ pwsh -NoProfile -File build-support/runtime-compatibility-fixture/verify-runtime
 
 詳細とGate境界は`runtime-compatibility-fixture/README.md`を参照してください。
 
+## Runtime Foundation
+
+`runtime-foundation-verification/`はPhase 1b runtime規約の細粒度fixture、
+`runtime-foundation-consumer/`は実顧客アプリと同じ依存方向を持つ独立Customer-like Consumerである。
+どちらもTooling-ownedでRoot Reactorおよび配布release unitには含めない。
+
+```powershell
+pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp1-runtime-foundation.ps1
+```
+
+CP1 scriptは空の隔離Maven repositoryへ正式release unitをstageし、Starter fixture、Tier 1 moduleの
+unit / architecture / startup test、runtime依存境界、KOIKI internal参照negative guardおよび
+executable JARのHTTP起動を検証する。
+
 Maven Toolchains例は開発環境の再現用に保持します。Walking Skeleton専用のclass version確認と
 Java 25 runtime scriptは、C4のmanifest・hash・class major・Java 21 / 25検証へ置き換えたため除去しました。
 Maven Wrapper bootstrap scriptは公式`bin`型を再生成する保守手段として保持します。

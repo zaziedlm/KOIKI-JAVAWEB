@@ -1,0 +1,3 @@
+# KOIKI Phase 1b CP1 Public API inventory v1
+ARTIFACT koiki-starter-api
+PUBLIC_TYPES 0

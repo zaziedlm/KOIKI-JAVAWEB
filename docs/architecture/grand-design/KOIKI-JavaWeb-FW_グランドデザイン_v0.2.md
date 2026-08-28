@@ -1,7 +1,7 @@
 # KOIKI-JavaWeb-FW グランドデザイン v0.2
 
 **文書版:** v0.2（構想確定・基本設計準備版）
-**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）
+**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）
 **文書状態:** ACCEPTED（Phase 0 Architecture Baseline）
 **承認日:** 2026年8月19日
 **Architecture Owner:** Shuichi Kataoka
@@ -2170,7 +2170,7 @@ SIGTERM 受信時に新規受付を停止し、処理中 Request を完了させ
 |---|---|
 | テストフレームワーク | **JUnit 5**（Spring Boot 4 は JUnit 6 もサポート）。**JUnit 4 は使用しない** |
 | REST API テスト | **`RestTestClient`**（Spring Framework 7 で新設された非リアクティブクライアント） |
-| 使用しない | `WebTestClient`（リアクティブ前提のため） |
+| KOIKI標準では使用しない | `WebTestClient`（Spring MVCおよびlive serverのテストにも利用できるが、`WebClient` / Reactorベースのnon-blocking test APIである。KOIKIはServlet / Spring MVCのblocking stackを標準とするため、標準HTTP test clientには`RestTestClient`を使用する。WebFluxまたはstreaming経路を採用する個別案件での選択は禁止しない） |
 
 `MockMvc` と `RestTestClient` の使い分けは Phase 1b で規約化する。
 

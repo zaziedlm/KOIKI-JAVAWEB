@@ -9,6 +9,7 @@
 - `phase1a-c1-closeout-handoff-20260826.md`: C1完了とCI Windows runner一時停止後、新規AIセッションで後続作業を開始するための運用引継ぎ
 - `phase1b-prep-mybatis-public-api-handoff-20260827.md`: Phase 1a完了後、Phase 1b着手前に発見した`PersistenceTechnology.MYBATIS`公開API不整合の問題内容・検証済み事実・対応結果（前半＝rule30相当を実装済み／後半＝定数削除可否の判断保留）の引継ぎ
 - `phase1b-runtime-foundation-start-handoff-20260827.md`: Phase 1aとMyBatis補正closeout後、別PCでPhase 1b Runtime FoundationのCP0実行計画とGate 1を開始するための正本、精査済みGate／commit point／CI／stop condition／環境再調査手順の引継ぎ
+- `KOIKI-JavaWeb-FW_Phase1b実行計画_v0.1.md`: Phase 1bのCP0開始baseline、Gate 1承認結果、artifact Ownership、Customer-like Runtime Consumer、Milestone / commit point、DoD traceability、停止条件
 
 Walking Skeletonの再実行方法と固定Commit上の証拠は、Repository rootの履歴と
 `../architecture/validation/`を参照してください。

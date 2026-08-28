@@ -1,0 +1,9 @@
+# Runtime Foundation Consumer
+
+Phase 1bのKOIKI artifactを実顧客アプリと同じ依存方向で利用する、Tooling-ownedの独立Maven buildである。
+Root Reactorへ含めず、KOIKI Parent、BOM経由の依存管理、StarterおよびArchitecture Rulesを通常の
+Maven coordinatesで解決する。
+
+CP1ではTier 1 `workitem` module、application assembly、Spring Boot executable JARおよび
+architecture / startup smoke testだけを持つ。HTTP Controller、DB、migration、正式Reference業務、
+SecurityおよびFramework内部型は後続CPの成果物であり、このConsumerへ先行追加しない。
