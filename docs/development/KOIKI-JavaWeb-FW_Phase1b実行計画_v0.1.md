@@ -3,9 +3,9 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
 **文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP4 LOCAL COMPLETE / Milestone A COMPLETE / Milestone B IN PROGRESS<br>
+**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP5 LOCAL COMPLETE / Milestone A COMPLETE / Milestone B IN PROGRESS<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月28日（CP4 local検証完了、Milestone B CIはCP7後）<br>
+**最終更新日:** 2026年8月28日（CP5 local検証完了、Milestone B CIはCP7後）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,7 +28,7 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP4 LOCAL COMPLETE、Milestone A COMPLETE、Milestone B IN PROGRESS |
+| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP5 LOCAL COMPLETE、Milestone A COMPLETE、Milestone B IN PROGRESS |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
 | 適用指針 | Root `AGENTS.md`、Project Overview Skill、Grand Design、Repository Architecture、ADR Register、Phase 1a closeout |
@@ -136,6 +136,21 @@ remote CIはMilestone BのCP5〜CP7を完了したPRで接続する。
 
 証拠の詳細は`../architecture/validation/phase1b-cp4-data-runtime.md`を正本とする。
 
+### 3.8 CP5 local検証完了
+
+`koiki-starter-observability`をFramework leafとして追加し、Spring Boot組込みLogstash JSONの低優先度既定、
+検証済み`X-Request-ID`のMDC設定、Micrometer Context Propagationを使うSpring標準`TaskDecorator`を
+提供した。伝播対象は`requestId`だけとし、Customer側MDCやTaskDecoratorを上書きしない。
+
+Customer-like Consumerが`@EnableAsync`と業務Use Caseを所有し、実HTTP→Controller→`@Async` Use Caseの
+構造化logで`timestamp`、service／environment、相関ID、業務key-valueおよびCustomer decoratorの共存を
+確認した。pool size 1で同じthreadを再利用し、headerなしの次requestへ前の相関IDが漏洩しない負例も確認した。
+
+隔離scriptでrelease unit 9 projects、Starter細粒度27試験、Consumer 17試験、artifact／Public API／
+dependency境界およびCP4のPostgreSQL回帰を全て確認した。remote CIはMilestone BのCP7完了後に接続する。
+
+証拠の詳細は`../architecture/validation/phase1b-cp5-observability.md`を正本とする。
+
 ## 4. Scope
 
 ### 4.1 In scope
@@ -219,7 +234,7 @@ Modulith patchとMyBatis BOMは別commit pointで検証し、runtime成果物の
 | 候補 | Ownership | 最初に必要となるCP | 含める責務 | 含めない責務 |
 |---|---|---:|---|---|
 | `koiki-starters/koiki-starter-api` | Framework | CP1 / CP2 | core configuration、Jackson、Resilience、API Versioning、Problem Details、Validation | Security、業務Controller、data、observability |
-| `koiki-starters/koiki-starter-observability` | Framework | CP5 | logging context、TaskDecorator、Actuator基本設定 | SecurityContext、cloud backend、OpenTelemetry exporter固定 |
+| `koiki-starters/koiki-starter-observability` | Framework | CP5 | structured logging既定、request correlation、TaskDecorator | Actuator health、SecurityContext、cloud backend、OpenTelemetry exporter固定 |
 | `koiki-starters/koiki-starter-data-jpa` | Framework | CP6 | OSIV無効化、JPA profileの既定 | MyBatis、業務Entity、Customer migration |
 | persistence-neutral Flyway leaf | Framework | CP4 | KOIKI migration実行順とCustomer Flyway共存の自動構成 | Reference migration、業務SQL、vendor分岐 |
 | `koiki-testing` | Toolingとして配布 | CP4 | PostgreSQL Testcontainers支援、runtime integration test support | 本番auto configuration、業務fixture |

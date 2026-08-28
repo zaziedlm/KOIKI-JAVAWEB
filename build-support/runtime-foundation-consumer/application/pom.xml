@@ -33,6 +33,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-observability</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>

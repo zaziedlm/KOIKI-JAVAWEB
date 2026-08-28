@@ -20,6 +20,7 @@
     <module>koiki-archunit-rules</module>
     <module>koiki-starters/koiki-starter-api</module>
     <module>koiki-starters/koiki-starter-data</module>
+    <module>koiki-starters/koiki-starter-observability</module>
     <module>koiki-testing</module>
   </modules>
 

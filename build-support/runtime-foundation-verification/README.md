@@ -17,3 +17,7 @@ RFC 9457 `application/problem+json` contractを含む。
 CP4では`koiki-starter-data`の有効／無効、Application-owned strategyへのback-off、Customer migrationの
 低優先度既定とoverrideを細粒度に検証する。実PostgreSQL上のmigration順序、異常系と復旧、業務経路は
 Customer-like Runtime Consumerが担当する。
+
+CP5では`koiki-starter-observability`のstructured logging既定、相関IDの受入／生成／cleanup、Micrometer
+Context Propagationによる同一executor threadの伝播／漏えい防止、Customer `TaskDecorator`との共存、
+全体／機能別無効化を検証する。

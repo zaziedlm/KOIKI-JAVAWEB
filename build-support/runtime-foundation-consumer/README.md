@@ -19,5 +19,9 @@ CP4では`koiki-starter-data`と`koiki-testing`を通常のMaven artifactとし�
 Spring Data JPA経由でPostgreSQL 17へ永続化する。Customer migrationは
 `classpath:db/migration/customer`に置き、KOIKI migrationとの実行順と履歴分離はtest-only probeで検証する。
 
+CP5では`koiki-starter-observability`を利用し、HTTPの`X-Request-ID`からMDCへ設定した相関IDを
+`@Async` Application Use Caseへ伝播する。Spring Boot組込みstructured loggingのJSON項目、Customer
+`TaskDecorator`との共存および同一async thread再利用時の相関ID漏えい防止を実証する。
+
 正式Reference業務、SecurityおよびFramework内部型は後続Phaseまたは後続CPの成果物であり、
 このConsumerへ先行追加しない。
