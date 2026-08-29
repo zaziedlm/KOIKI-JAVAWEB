@@ -3,9 +3,9 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
 **文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP7 COMPLETE / Milestone A・B COMPLETE / CP8 START READY・NOT STARTED<br>
+**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP8 LOCAL COMPLETE / Milestone A・B COMPLETE / CP9 START READY<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月29日（PR #25 merge・main CI成功、Milestone B COMPLETE / ACCEPTED）<br>
+**最終更新日:** 2026年8月29日（CP8 Gate 8-3 COMPLETE、CP9 START READY）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,7 +28,7 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP7 COMPLETE、Milestone A・B COMPLETE、CP8 START READY・NOT STARTED |
+| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP8 LOCAL COMPLETE、Milestone A・B COMPLETE、CP9 START READY |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
 | Current branch / baseline | `feature/phase1b-operations-closeout` / main merge commit `b3973e66134898765b95796c3622aaa68759b4fd` |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
@@ -207,7 +207,21 @@ main pushのCI run `33241356803`では`Verify (ubuntu-24.04)`、`Milestone B Int
 
 PR merge、main CI、rulesetおよびlocal mainのidentityを確認したため、Milestone Bを`COMPLETE / ACCEPTED`としてcloseする。
 Milestone Cの`feature/phase1b-operations-closeout`はmerge commit `b3973e6`から分岐済みであり、
-CP8は`START READY / NOT STARTED`とする。
+この時点ではCP8を`START READY / NOT STARTED`として開始し、その後Gate 8-1／8-2を経てGate 8-3を完了した。
+
+### 3.12 CP8 local検証完了
+
+同一Consumer executable JARを明示的なmaintenance modeだけnon-web processとして起動し、Spring Boot標準の
+`ApplicationRunner`／exit code経路と、PostgreSQL session advisory lockを専用JDBC connectionで保持する
+Customer-like単一実行contractを実装した。Framework artifact、Public Java API、production migration、
+新規business moduleは追加していない。
+
+細粒度testと実OS process acceptanceにより、同一task keyのwinner exit `0`／contender exit `10`と
+DB副作用1回、異なるtask keyの独立性、process kill後のsession lock解放／retry、invalid input exit `64`、
+non-web起動および`executionId`によるstructured log相関をPostgreSQL 17.11で確認した。CP1〜CP7回帰、
+release unit 10 projects、Architecture Contract 4件、ArchUnit Rules 66件も成功した。
+
+証拠の詳細は`../architecture/validation/phase1b-cp8-single-execution.md`を正本とする。
 
 ## 4. Scope
 
@@ -639,3 +653,4 @@ Phase 1aで得た定性的実績は、localのpositive / negative / restoreを�
 - `../architecture/validation/phase1b-cp1-modulith-2.1.1-regression.md`
 - `../architecture/validation/phase1b-cp1-runtime-artifact-consumer.md`
 - `../architecture/validation/phase1b-cp2-runtime-core.md`
+- `../architecture/validation/phase1b-cp8-single-execution.md`

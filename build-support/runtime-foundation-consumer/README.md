@@ -35,5 +35,11 @@ Entityは識別子同一性とnullable wrapper `@Version`を持ち、実Hibernat
 Spring ModulithのNamed Interface検証はtest scopeだけに置き、production artifactとruntime dependencyへ
 Modulithを追加しない。
 
+CP8では同じexecutable JARを明示的なmaintenance modeで`WebApplicationType.NONE`として起動し、
+`ApplicationRunner`の結果をsuccess `0`、contended `10`、invalid argument `64`、failure `1`へ変換する。
+Customer-likeな`workitem` taskは専用JDBC connection上のPostgreSQL session advisory lockを処理中だけ保持し、
+同一task keyの複数processを排他する。task副作用とmigrationはConsumer所有であり、Framework artifact、
+Public Java API、production migrationは追加しない。
+
 正式Reference業務、SecurityおよびFramework内部型は後続Phaseまたは後続CPの成果物であり、
 このConsumerへ先行追加しない。

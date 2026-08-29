@@ -25,3 +25,12 @@ Context Propagationによる同一executor threadの伝播／漏えい防止、C
 CP6ではActuator healthの公開範囲とprobe既定、`koiki-starter-data-jpa`のOSIV false／Application overrideを
 細粒度に検証する。実PostgreSQLのUP／DOWN／restoreとresponse生成時のEntity露出負例はCustomer-like
 Runtime Consumerが担当し、`verify-cp6-health-osiv.ps1`がartifact／依存境界を含めて一括検証する。
+
+CP8では`verify-cp8-single-execution.ps1`がCP1〜CP7回帰、隔離Maven repositoryへの正式release unit stage、
+Consumer独立build、artifact／依存／migration境界を検証する。package済みの同一JARを複数の実OS processで
+起動し、同一task keyの競合、異なるkeyの独立性、process kill後のPostgreSQL session lock解放とretry、
+DB副作用件数、non-web processおよびstructured lifecycle logを一括確認する。
+
+```powershell
+pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp8-single-execution.ps1
+```

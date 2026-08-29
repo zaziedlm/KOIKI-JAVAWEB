@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.koikifw.runtimeconsumer.workitem.application.usecase.CreateWorkItemUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
@@ -19,6 +20,9 @@ class RuntimeFoundationConsumerSmokeTest {
     @Autowired
     private JdbcClient jdbcClient;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Test
     void startsAndInvokesCustomerOwnedBusinessModule() {
         assertNotNull(createWorkItem.create("CP4 customer-like work item"));
@@ -27,5 +31,9 @@ class RuntimeFoundationConsumerSmokeTest {
                 .query(Long.class)
                 .single();
         org.junit.jupiter.api.Assertions.assertEquals(1L, stored);
+        org.junit.jupiter.api.Assertions.assertTrue(applicationContext
+                .getBeansOfType(org.koikifw.runtimeconsumer.workitem.adapter.inbound.command
+                        .WorkItemMaintenanceRunner.class)
+                .isEmpty());
     }
 }

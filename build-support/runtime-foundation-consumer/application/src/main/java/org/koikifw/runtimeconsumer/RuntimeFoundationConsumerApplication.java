@@ -1,6 +1,8 @@
 package org.koikifw.runtimeconsumer;
 
+import java.util.Arrays;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
@@ -10,6 +12,14 @@ import org.springframework.scheduling.annotation.EnableAsync;
 public class RuntimeFoundationConsumerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RuntimeFoundationConsumerApplication.class, args);
+        boolean maintenanceMode = Arrays.asList(args).contains("--koiki.consumer.mode=maintenance");
+        SpringApplication application = new SpringApplication(RuntimeFoundationConsumerApplication.class);
+        if (maintenanceMode) {
+            application.setWebApplicationType(WebApplicationType.NONE);
+        }
+        var context = application.run(args);
+        if (maintenanceMode) {
+            System.exit(SpringApplication.exit(context));
+        }
     }
 }
