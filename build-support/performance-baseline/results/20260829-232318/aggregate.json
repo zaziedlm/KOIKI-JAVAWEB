@@ -1,0 +1,102 @@
+{
+  "schemaVersion" : 1,
+  "runId" : "4b236a7e99b74ca0bc1a542aa668d30a",
+  "workloads" : [ {
+    "variant" : "bare",
+    "workload" : "db-write",
+    "sampleCount" : 3000,
+    "failureCount" : 0,
+    "p50Nanos" : 3221000,
+    "p95Nanos" : 5283300,
+    "totalDurationNanos" : 10802772600,
+    "requestsPerSecond" : 277.7064843519894
+  }, {
+    "variant" : "koiki",
+    "workload" : "db-write",
+    "sampleCount" : 3000,
+    "failureCount" : 0,
+    "p50Nanos" : 3207200,
+    "p95Nanos" : 5001000,
+    "totalDurationNanos" : 10631140100,
+    "requestsPerSecond" : 282.18986597683914
+  }, {
+    "variant" : "bare",
+    "workload" : "http-success",
+    "sampleCount" : 3000,
+    "failureCount" : 0,
+    "p50Nanos" : 732500,
+    "p95Nanos" : 1556300,
+    "totalDurationNanos" : 2630930500,
+    "requestsPerSecond" : 1140.2809766354528
+  }, {
+    "variant" : "koiki",
+    "workload" : "http-success",
+    "sampleCount" : 3000,
+    "failureCount" : 0,
+    "p50Nanos" : 912100,
+    "p95Nanos" : 1911100,
+    "totalDurationNanos" : 3269990700,
+    "requestsPerSecond" : 917.4338018759503
+  }, {
+    "variant" : "bare",
+    "workload" : "startup",
+    "sampleCount" : 3,
+    "failureCount" : 0,
+    "p50Nanos" : 4681693700,
+    "p95Nanos" : 5132732600,
+    "totalDurationNanos" : 14445044900,
+    "requestsPerSecond" : 0.2076836742819678
+  }, {
+    "variant" : "koiki",
+    "workload" : "startup",
+    "sampleCount" : 3,
+    "failureCount" : 0,
+    "p50Nanos" : 5651195400,
+    "p95Nanos" : 6126800200,
+    "totalDurationNanos" : 17408740500,
+    "requestsPerSecond" : 0.17232722838277703
+  }, {
+    "variant" : "bare",
+    "workload" : "validation-rejection",
+    "sampleCount" : 3000,
+    "failureCount" : 0,
+    "p50Nanos" : 1065500,
+    "p95Nanos" : 1602000,
+    "totalDurationNanos" : 3414946800,
+    "requestsPerSecond" : 878.4909914262793
+  }, {
+    "variant" : "koiki",
+    "workload" : "validation-rejection",
+    "sampleCount" : 3000,
+    "failureCount" : 0,
+    "p50Nanos" : 1103000,
+    "p95Nanos" : 2232000,
+    "totalDurationNanos" : 3727979800,
+    "requestsPerSecond" : 804.7253904111819
+  } ],
+  "comparisons" : [ {
+    "workload" : "db-write",
+    "p50DeltaNanos" : -13800,
+    "p50DeltaPercent" : -0.4284383731760323,
+    "p95DeltaNanos" : -282300,
+    "p95DeltaPercent" : -5.343251376980296
+  }, {
+    "workload" : "http-success",
+    "p50DeltaNanos" : 179600,
+    "p50DeltaPercent" : 24.51877133105802,
+    "p95DeltaNanos" : 354800,
+    "p95DeltaPercent" : 22.797661119321468
+  }, {
+    "workload" : "startup",
+    "p50DeltaNanos" : 969501700,
+    "p50DeltaPercent" : 20.70835390192229,
+    "p95DeltaNanos" : 994067600,
+    "p95DeltaPercent" : 19.36721971450451
+  }, {
+    "workload" : "validation-rejection",
+    "p50DeltaNanos" : 37500,
+    "p50DeltaPercent" : 3.5194744251525107,
+    "p95DeltaNanos" : 630000,
+    "p95DeltaPercent" : 39.325842696629216
+  } ]
+}

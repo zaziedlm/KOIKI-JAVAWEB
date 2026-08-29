@@ -3,9 +3,9 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
 **文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP8 LOCAL COMPLETE / Milestone A・B COMPLETE / CP9 HARNESS IMPLEMENTED・PROCESS SMOKE COMPLETE・OFFICIAL BASELINE PENDING<br>
+**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP9 LOCAL COMPLETE / Milestone A・B COMPLETE / Milestone C IN PROGRESS<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月29日（CP1〜CP8回帰およびCP9 process Smoke成功、公式baseline待ち）<br>
+**最終更新日:** 2026年8月29日（CP9公式baseline採取完了、CP10開始待ち）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,7 +28,7 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP8 LOCAL COMPLETE、Milestone A・B COMPLETE、CP9 HARNESS IMPLEMENTED・PROCESS SMOKE COMPLETE・OFFICIAL BASELINE PENDING |
+| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP9 LOCAL COMPLETE、Milestone A・B COMPLETE、Milestone C IN PROGRESS |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
 | Current branch / baseline | `feature/phase1b-operations-closeout` / main merge commit `b3973e66134898765b95796c3622aaa68759b4fd` |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
@@ -245,8 +245,19 @@ migrationおよび既存Consumer production codeは変更していない。実�
 隔離repositoryでharness 5 module、runner unit test 5件、bare／KOIKI実process、startupと3 workload、DB／log件数、再集計、
 3 positive／2 negative schemaを含むCP9 Smokeが成功した。全般レビューでclean preflight、response／sample acceptanceおよび
 version付き`Location`を補強し、再実行にも成功した（run ID `8f4f4b45b7174516827d81ff7d463abc`、計測sampleのfailure 0件）。
-Gate 9-2のlocal実process acceptanceは満たした。CP9の完了判定は、harness commit後のclean worktreeから公式baselineを
-採取するまで保留する。
+Gate 9-2のlocal実process acceptanceを満たし、harness commit後のclean worktreeから公式baselineを採取できる状態とした。
+
+### 3.15 CP9公式baseline採取完了
+
+harness commit `dff9d8c0a1eb1b5e399e5dbf435534d4dec912b5`のclean worktreeから正式protocolを実行し、run ID
+`4b236a7e99b74ca0bc1a542aa668d30a`を`build-support/performance-baseline/results/20260829-232318`へ記録した。
+fingerprintは`gitDirty=false`、3 fork、startup 3 fork、warm-up 200、measurement 1,000、concurrency 1を示す。
+raw resultは18,006 sample、failure 0件で、8 variant／workload系列と4 paired comparisonを生成した。
+
+公式実行はCP1〜CP8 aggregate回帰、隔離release unit／harness build、dependency境界、status／response／DB／log、
+sample件数、決定的再集計、3 positive／2 negative schemaおよびcleanupをすべて通過した。性能数値は同一PC内の参考値であり、
+required閾値や案件SLAにはしない。以上によりDoD 1b-8とCP9を`LOCAL COMPLETE / OFFICIAL BASELINE RECORDED`とし、
+Milestone CはCP10 Developer Journey／DoD／Gate 2 closeoutへ進む。
 
 ## 4. Scope
 

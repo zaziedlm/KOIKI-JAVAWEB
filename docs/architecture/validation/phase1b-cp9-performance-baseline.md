@@ -4,7 +4,7 @@
 
 | 項目 | 結果 |
 |---|---|
-| Phase / status | Phase 1b CP9 HARNESS IMPLEMENTED / PROCESS SMOKE COMPLETE / OFFICIAL BASELINE PENDING |
+| Phase / status | Phase 1b CP9 LOCAL COMPLETE / OFFICIAL BASELINE RECORDED |
 | Milestone | C Operations & Closeout |
 | Start commit | `679b6f6a769e8f1208baaf7cc0b45d1f22668390`（CP8 LOCAL COMPLETE） |
 | Implementation branch | `feature/phase1b-operations-closeout` |
@@ -274,7 +274,7 @@ ArchUnit 66件、CP6 Consumer 25件、CP8 workitem 7件／workreview 5件／appl
 異なるkey、crash／retryの実process検証がすべて成功した。
 
 続いて、API versioningを両variantで同じSpring MVC標準設定と`/performance/1/*`経路へ揃え、CP9 Smokeを再実行した。
-隔離repositoryへのrelease unit stage、harness 5 module build、runner unit test 3件、dependency境界、専用PostgreSQL 17、
+隔離repositoryへのrelease unit stage、harness 5 module build、runner unit test 5件、dependency境界、専用PostgreSQL 17、
 bare／KOIKIの交互起動、startupと3 workload、status／response／log／DB件数、決定的再集計、3 positive schemaおよび
 2 negative schemaが成功した。全般レビュー後、clean判定を結果生成前のpreflightへ移し、status／response contract、
 variant／workload／fork別sample件数、failure 0件およびversion付き`Location`を機械検査へ追加して再実行した。最終結果は
@@ -282,10 +282,46 @@ run ID `8f4f4b45b7174516827d81ff7d463abc`として、各request workloadで
 variantごとにwarm-up 3件を除外した10 sample、startup 1 sample、failure 0件を確認した。専用child process、container、
 補助sessionおよび隔離repositoryは終了時にcleanupした。
 
-Smoke値はprotocol動作確認用であり、性能baselineまたは性能判定には使用しない。Gate 9-2のlocal実process acceptanceは
-満たしたが、CP9の完了判定はharness commit後のclean worktreeから公式baselineを採取するまで保留する。
+Smoke値はprotocol動作確認用であり、性能baselineまたは性能判定には使用しない。Gate 9-2のlocal実process acceptanceを
+満たした後、harness commitから公式baselineを採取した。
 
 ```powershell
 pwsh -NoProfile -File build-support/performance-baseline/verify-performance-baseline.ps1 -Smoke -SkipRegression
 pwsh -NoProfile -File build-support/performance-baseline/verify-performance-baseline.ps1
 ```
+
+## 13. 公式baseline結果
+
+### 13.1 Result identity
+
+| 項目 | 結果 |
+|---|---|
+| Result directory | `build-support/performance-baseline/results/20260829-232318` |
+| Run ID | `4b236a7e99b74ca0bc1a542aa668d30a` |
+| Source commit | `dff9d8c0a1eb1b5e399e5dbf435534d4dec912b5` |
+| Worktree | `gitDirty=false` |
+| Protocol | 3 fork、startup 3 fork、warm-up 200、measurement 1,000、concurrency 1 |
+| Raw result | 18,006 sample、failure 0件 |
+| Aggregate | 8 variant／workload系列、4 paired comparison |
+| Result contract | fingerprint／raw／aggregateの3 schema適合、2 negative schema拒否、再集計一致 |
+| Regression / cleanup | CP1〜CP8 aggregate回帰成功、child JVM／PostgreSQL container／一時repository cleanup成功 |
+
+結果の正本は同directoryの`fingerprint.json`、`raw-results.json`、`aggregate.json`とする。fingerprintにはhost、JDK、Docker、
+PostgreSQL image digest、artifact SHA-256および完全なprotocolを保存している。
+
+### 13.2 Paired reference
+
+| Workload | bare p50 / p95 | KOIKI p50 / p95 | KOIKI delta p50 / p95 |
+|---|---:|---:|---:|
+| `http-success` | 0.7325 ms / 1.5563 ms | 0.9121 ms / 1.9111 ms | +24.52% / +22.80% |
+| `validation-rejection` | 1.0655 ms / 1.6020 ms | 1.1030 ms / 2.2320 ms | +3.52% / +39.33% |
+| `db-write` | 3.2210 ms / 5.2833 ms | 3.2072 ms / 5.0010 ms | -0.43% / -5.34% |
+| `startup` | 4,681.6937 ms / 5,132.7326 ms | 5,651.1954 ms / 6,126.8002 ms | +20.71% / +19.37% |
+
+このpaired referenceは同一PC／同一run内の参考値であり、案件SLA、性能保証値、required閾値または異なるPC間の優劣判定には
+使用しない。数値の大小ではなく、clean commitから承認済みprotocolを再実行し、完全なfingerprint、raw sample、集計、
+schema負例およびcleanupを再現できたことをCP9完了根拠とする。
+
+**CP9 Decision:** LOCAL COMPLETE / OFFICIAL BASELINE RECORDED<br>
+**Completion date:** 2026年8月29日<br>
+**Next:** CP10 Developer Journey／DoD／Gate 2 closeout
