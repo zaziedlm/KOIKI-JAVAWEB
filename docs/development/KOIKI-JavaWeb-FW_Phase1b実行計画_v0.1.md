@@ -3,9 +3,9 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
 **文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP3 COMPLETE / Milestone A PR CI COMPLETE<br>
+**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP7 COMPLETE / Milestone A COMPLETE / Milestone B PR CI SUCCESS・OWNER REVIEW／MERGE PENDING<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月28日（CP3およびMilestone A PR CI完了）<br>
+**最終更新日:** 2026年8月29日（PR #25 remote CI成功、Milestone B Owner Review／merge待ち）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,7 +28,7 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP3 COMPLETE、Milestone A PR CI COMPLETE |
+| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP7 COMPLETE、Milestone A COMPLETE、Milestone B PR CI SUCCESS・OWNER REVIEW／MERGE PENDING |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
 | 適用指針 | Root `AGENTS.md`、Project Overview Skill、Grand Design、Repository Architecture、ADR Register、Phase 1a closeout |
@@ -118,6 +118,85 @@ Milestone A隔離scriptをCIへ接続し、Draft PR #24のcommit
 
 証拠の詳細は`../architecture/validation/phase1b-cp3-problem-details.md`を正本とする。
 
+### 3.7 CP4 local検証完了
+
+`koiki-starter-data`をpersistence-neutralなFramework leafとして追加し、KOIKI→CustomerのFlyway実行順、
+owner別location／history、Customer baseline 0を提供した。Starterへproduction migration SQLやPublic Java
+APIは追加していない。`koiki-testing`はSpring Boot `@ServiceConnection`とTestcontainersの標準利用に必要な
+test dependency bundleとし、独自Java abstractionを設けていない。
+
+Customer-like Consumerをin-memory repositoryからSpring Data JPA／PostgreSQL 17へ移行し、実HTTPから
+Use Case→Repository→DBまでの永続化を確認した。Application Use Caseを`@Transactional`境界とし、Boot既定の
+class-based proxy contractに合わせてUse Case class／methodをnon-finalとした。実DB save後のtest-only例外で
+rollbackを確認し、Feature Templateも同じ起動failureを再発させない形へ更新した。
+
+隔離scriptでlocation混在、Customer先行、後発KOIKI versionをpositive／negative／restoreとして再現し、
+Starter細粒度19試験、Consumer 15試験、artifact／Public API／dependency／ownership境界を全て確認した。
+remote CIはMilestone BのCP5〜CP7を完了したPRで接続する。
+
+証拠の詳細は`../architecture/validation/phase1b-cp4-data-runtime.md`を正本とする。
+
+### 3.8 CP5 local検証完了
+
+`koiki-starter-observability`をFramework leafとして追加し、Spring Boot組込みLogstash JSONの低優先度既定、
+検証済み`X-Request-ID`のMDC設定、Micrometer Context Propagationを使うSpring標準`TaskDecorator`を
+提供した。伝播対象は`requestId`だけとし、Customer側MDCやTaskDecoratorを上書きしない。
+
+Customer-like Consumerが`@EnableAsync`と業務Use Caseを所有し、実HTTP→Controller→`@Async` Use Caseの
+構造化logで`timestamp`、service／environment、相関ID、業務key-valueおよびCustomer decoratorの共存を
+確認した。pool size 1で同じthreadを再利用し、headerなしの次requestへ前の相関IDが漏洩しない負例も確認した。
+
+隔離scriptでrelease unit 9 projects、Starter細粒度27試験、Consumer 17試験、artifact／Public API／
+dependency境界およびCP4のPostgreSQL回帰を全て確認した。remote CIはMilestone BのCP7完了後に接続する。
+
+証拠の詳細は`../architecture/validation/phase1b-cp5-observability.md`を正本とする。
+
+### 3.9 CP6 local検証完了
+
+Spring Boot標準ActuatorによるDB healthとprobe分類、`koiki-starter-data-jpa`による上書き可能な
+OSIV false既定を追加した。Customer-like ConsumerでDB UP／DOWN／restore、readinessへのDB明示追加、
+情報非露出、test-only Entity露出負例とApplication override riskを実証した。
+
+証拠の詳細は`../architecture/validation/phase1b-cp6-health-osiv.md`を正本とする。
+
+### 3.10 CP7 local検証完了
+
+MyBatis Spring Boot Starter 4.1.0をBOMのdependency managementだけへ追加した。Starter、Mapper、
+MyBatis業務module、`PersistenceModel.SEPARATED`は追加せず、Consumer runtime treeにも混入していない。
+
+Customer-like ConsumerへTier 2 `workreview`を追加し、Tier 1 `workitem`が保存後に値だけのimmutable
+`WorkItemCreated` recordをSpring標準`ApplicationEventPublisher`で同期発行する。受信listenerは
+`adapter.inbound.event`からApplication Use Caseへ委譲し、送信moduleのUse Case、Domain Model、Repositoryを
+直接参照しない。正常時は両moduleを同一transactionで保存し、受信側invariant違反では安全な422
+Problem Detailsを返して両方をrollbackする。Tier 2 Entityは識別子同一性と`@Version`を持ち、proxy相当
+subtypeに加えて実Hibernate未初期化proxyとの同一性、nullable versionによる新規`persist`、競合状態遷移での
+楽観的lockを実DBで確認した。
+
+Spring Modulithはtest scopeのLevel 0を維持した。runtime retentionを持つ`@NamedInterface`をproductionへ
+付与せず、公式`ApplicationModuleDetectionStrategy`と`NamedInterfaces.builder`をtest scopeだけで使って
+`domain.event`をNamed Interfaceとして検証した。隔離scriptは全回帰、成果物境界、runtime非依存、
+versionless MyBatis probeの4.1.0解決、Testcontainers cleanupを確認した。
+
+証拠の詳細は`../architecture/validation/phase1b-cp7-domain-event-mybatis.md`を正本とする。
+
+### 3.11 Milestone B PR CI成功
+
+Draft PR #25の初回CIでは、独立`Milestone B Integration`とPublic API Compatibilityは成功したが、
+通常`Verify`に残っていた歴史的なCP3 aggregateが、CP4で承認済みの`spring-data-jpa`を拒否した。
+CP3の当時の禁止contractを弱めず、通常CIの重複呼出を外してCP2／CP3回帰をCP7 aggregateへ引き継いだ。
+
+是正commit `2d3705581866009008297b7f6a5b2abe80178e58`に対するCI run `33239813239`で、
+`Verify (ubuntu-24.04)`、`Milestone B Integration`、`Public API Compatibility`が全て成功した。
+Java Runtime Compatibility run `33239813233`もJava 21 fixture buildとJava runtime検証が成功した。
+Evidence commit `6f99f63b18fc40c43d1709f60abc4ebce3c0456e`に対するCI run `33240299498`と
+Java Runtime Compatibility run `33240299494`も全checkが成功した。`Milestone B Integration`は
+初回3分04秒、是正後2分55秒、Evidence反映後2分56秒の3回連続SUCCESSで、PostgreSQL Testcontainers、
+DB DOWN／restore、全Consumer test、cleanupをremote runnerで確認した。Architecture Ownerはrequired check化を
+`ACCEPTED`とし、main rulesetの4番目のrequired contextへ追加した。PR #25はDraftかつmerge state `CLEAN`であり、
+Milestone Bはmerge pendingとする。
+
+remote Evidenceの詳細とrun URLは`../architecture/validation/phase1b-cp7-domain-event-mybatis.md`を正本とする。
+
 ## 4. Scope
 
 ### 4.1 In scope
@@ -201,7 +280,7 @@ Modulith patchとMyBatis BOMは別commit pointで検証し、runtime成果物の
 | 候補 | Ownership | 最初に必要となるCP | 含める責務 | 含めない責務 |
 |---|---|---:|---|---|
 | `koiki-starters/koiki-starter-api` | Framework | CP1 / CP2 | core configuration、Jackson、Resilience、API Versioning、Problem Details、Validation | Security、業務Controller、data、observability |
-| `koiki-starters/koiki-starter-observability` | Framework | CP5 | logging context、TaskDecorator、Actuator基本設定 | SecurityContext、cloud backend、OpenTelemetry exporter固定 |
+| `koiki-starters/koiki-starter-observability` | Framework | CP5 / CP6 | structured logging既定、request correlation、TaskDecorator、Actuator基本health contract | SecurityContext、cloud backend、OpenTelemetry exporter固定、Customer固有HealthIndicator |
 | `koiki-starters/koiki-starter-data-jpa` | Framework | CP6 | OSIV無効化、JPA profileの既定 | MyBatis、業務Entity、Customer migration |
 | persistence-neutral Flyway leaf | Framework | CP4 | KOIKI migration実行順とCustomer Flyway共存の自動構成 | Reference migration、業務SQL、vendor分岐 |
 | `koiki-testing` | Toolingとして配布 | CP4 | PostgreSQL Testcontainers支援、runtime integration test support | 本番auto configuration、業務fixture |
@@ -369,7 +448,8 @@ Java Public APIが必要と判明した場合はCP8の実装前に型シグネ�
 ### 6.9 CI候補
 
 - A / B / Cの各PRでRoot `clean verify`、Feature Template、NullAway、Public API compatibilityを維持する。
-- PostgreSQL TestcontainersはMilestone Bで通常CIへ追加し、安定性と時間を確認してからrequired check化を判断する。
+- PostgreSQL TestcontainersはMilestone Bで通常CIへ追加し、3回連続成功による安定性と時間の確認後、
+  `Milestone B Integration`をmain rulesetのrequired checkとして`ACCEPTED`にした。
 - Java 21 build / Java 25 runtimeの既存matrixを維持し、runtime artifact追加時は同一JAR対象を拡張する。
 - performance数値はrequiredにせず、harness build、result schema、fingerprint欠落のnegative testを通常CIへ入れる。
 - remote CIはmilestone単位とし、各CPの通常経路は対象moduleの`-pl ... -am verify`で検証する。

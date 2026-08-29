@@ -6,7 +6,7 @@ import __FEATURE_PACKAGE__.domain.model.__CLASS_NAME__;
 import __FEATURE_PACKAGE__.domain.repository.__CLASS_NAME__Repository;
 
 /** Coordinates a state transition owned by the Tier 2 Domain Model. */
-public final class Submit__CLASS_NAME__UseCase {
+public class Submit__CLASS_NAME__UseCase {
 
     private final __CLASS_NAME__Repository repository;
 

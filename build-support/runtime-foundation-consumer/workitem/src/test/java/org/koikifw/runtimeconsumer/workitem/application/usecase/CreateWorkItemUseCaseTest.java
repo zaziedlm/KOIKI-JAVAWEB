@@ -8,23 +8,27 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.koikifw.runtimeconsumer.workitem.adapter.outbound.persistence.WorkItem;
 import org.koikifw.runtimeconsumer.workitem.adapter.outbound.persistence.WorkItemRepository;
+import org.koikifw.runtimeconsumer.workitem.domain.event.WorkItemCreated;
 
 class CreateWorkItemUseCaseTest {
 
     @Test
     void createsAValidPersistenceModel() {
         InMemoryRepository repository = new InMemoryRepository();
-        CreateWorkItemUseCase useCase = new CreateWorkItemUseCase(repository);
+        CapturingPublisher publisher = new CapturingPublisher();
+        CreateWorkItemUseCase useCase = new CreateWorkItemUseCase(repository, publisher);
 
         UUID id = useCase.create("example");
 
         assertEquals(id, repository.saved.getId());
         assertEquals("example", repository.saved.getLabel());
+        assertEquals(new WorkItemCreated(id, "example"), publisher.published);
     }
 
     @Test
     void rejectsBlankLabelInTheApplicationLayer() {
-        CreateWorkItemUseCase useCase = new CreateWorkItemUseCase(new InMemoryRepository());
+        CreateWorkItemUseCase useCase =
+                new CreateWorkItemUseCase(new InMemoryRepository(), event -> { });
 
         assertThrows(IllegalArgumentException.class, () -> useCase.create(" "));
     }
@@ -42,6 +46,17 @@ class CreateWorkItemUseCaseTest {
         public WorkItem save(WorkItem workItem) {
             saved = workItem;
             return workItem;
+        }
+    }
+
+    private static final class CapturingPublisher
+            implements org.springframework.context.ApplicationEventPublisher {
+
+        private Object published = new Object();
+
+        @Override
+        public void publishEvent(Object event) {
+            published = event;
         }
     }
 }

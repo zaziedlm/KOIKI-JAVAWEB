@@ -1,0 +1,16 @@
+{
+  "properties": [
+    {
+      "name": "koiki.data.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether KOIKI persistence-neutral data runtime configuration is enabled."
+    },
+    {
+      "name": "koiki.data.flyway.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether KOIKI-owned Flyway migrations run before the Customer-owned Flyway."
+    }
+  ]
+}

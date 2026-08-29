@@ -1,8 +1,9 @@
 package org.koikifw.runtimeconsumer.workitem.configuration;
 
-import org.koikifw.runtimeconsumer.workitem.adapter.outbound.persistence.InMemoryWorkItemRepository;
 import org.koikifw.runtimeconsumer.workitem.adapter.outbound.persistence.WorkItemRepository;
 import org.koikifw.runtimeconsumer.workitem.application.usecase.CreateWorkItemUseCase;
+import org.koikifw.runtimeconsumer.workitem.application.usecase.ProcessWorkItemAsyncUseCase;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,12 +12,13 @@ import org.springframework.context.annotation.Configuration;
 public class WorkItemConfiguration {
 
     @Bean
-    WorkItemRepository workItemRepository() {
-        return new InMemoryWorkItemRepository();
+    CreateWorkItemUseCase createWorkItemUseCase(
+            WorkItemRepository repository, ApplicationEventPublisher eventPublisher) {
+        return new CreateWorkItemUseCase(repository, eventPublisher);
     }
 
     @Bean
-    CreateWorkItemUseCase createWorkItemUseCase(WorkItemRepository repository) {
-        return new CreateWorkItemUseCase(repository);
+    ProcessWorkItemAsyncUseCase processWorkItemAsyncUseCase() {
+        return new ProcessWorkItemAsyncUseCase();
     }
 }

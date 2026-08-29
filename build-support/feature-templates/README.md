@@ -35,6 +35,11 @@ B1は構造、コンパイルおよび後続quality gateの接続点を示すTem
 生成しません。Application Use CaseのSpring Bean登録、transaction境界、runtime Configurationは
 生成せず、実Applicationへ組み込むPhaseで承認されたruntime構成に従って追加します。
 
+Phase 1b CP4のruntime統合で、Spring Boot既定のclass-based proxyを使う`@Transactional` Use Caseは
+classと対象methodがnon-finalである必要性を実証した。このためTemplateのUse Case classはnon-finalとし、
+生成先Applicationが標準的なtransaction境界を追加してもCGLIB proxyを構築できる形を維持する。
+proxy対策だけを理由にUse Case interfaceやprogrammatic transactionを追加しない。
+
 ## 生成方法
 
 Repository rootからJDK 21のsource-file modeで実行します。出力先が既に存在する場合は、既存資材を

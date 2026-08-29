@@ -1,0 +1,7 @@
+# KOIKI Phase 1b CP4 Public API inventory v1
+ARTIFACT koiki-starter-data
+PUBLIC_JAVA_TYPES 0
+PUBLIC_CONFIGURATION_PROPERTIES 2
+PROPERTY koiki.data.enabled
+PROPERTY koiki.data.flyway.enabled
+INTERNAL_PACKAGE org.koikifw.starter.data.internal

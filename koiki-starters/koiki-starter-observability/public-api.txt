@@ -1,0 +1,8 @@
+# KOIKI Phase 1b CP5 Public API inventory v1
+ARTIFACT koiki-starter-observability
+PUBLIC_JAVA_TYPES 0
+PUBLIC_CONFIGURATION_PROPERTIES 3
+PROPERTY koiki.observability.enabled
+PROPERTY koiki.observability.correlation.enabled
+PROPERTY koiki.observability.context-propagation.enabled
+INTERNAL_PACKAGE org.koikifw.starter.observability.internal

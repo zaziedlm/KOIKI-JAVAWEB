@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "koiki.data.jpa.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether KOIKI JPA profile defaults are enabled."
+    }
+  ]
+}

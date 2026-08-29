@@ -1,0 +1,22 @@
+{
+  "properties": [
+    {
+      "name": "koiki.observability.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether KOIKI observability defaults and auto-configuration are enabled."
+    },
+    {
+      "name": "koiki.observability.correlation.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether servlet request correlation identifiers are established."
+    },
+    {
+      "name": "koiki.observability.context-propagation.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether the Micrometer context-propagating TaskDecorator is contributed."
+    }
+  ]
+}
