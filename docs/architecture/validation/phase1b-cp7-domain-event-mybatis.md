@@ -104,5 +104,6 @@ CP7のlocal条件であるTier 1／2同期Domain Event、値eventだけの公開
 同一transaction rollback、Level 0、test-scope Named Interface、MyBatis 4.1.0 BOM管理のみ、runtime非混入を満たした。
 Framework runtime artifactとPublic Java APIを増やしておらず、既存ADRの変更は不要である。
 
-Milestone BのCP4〜CP7 local実装は完了した。pushは未実施であり、次は最終差分review後に
-ユーザー承認のもとcommitし、Milestone B PR CIへ接続する。
+Milestone BのCP4〜CP7 local実装はcommit `6811960`までで完了した。通常PRでCP7 aggregate scriptを
+自動実行する独立`Milestone B Integration` jobをCIへ接続し、同じscriptのlocal再実行も成功した。
+pushとremote CIは未実施であり、PRで実行時間とTestcontainersの安定性を確認してからrequired check化を判断する。

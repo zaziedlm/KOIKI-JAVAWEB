@@ -231,4 +231,3 @@ Docker／PostgreSQLはCP6の設計確認後、実装開始時にpreflightする�
 - CP5隔離一括検証は成功済みで、remote CIはCP7後のMilestone B PRまでPENDING。
 - CP6はSTART READYだが、Actuator配置、health公開contract、JPA Starterおよび負例方式は未決定。
 - この文書はCP6の実装許可、設計承認または完了判定ではない。
-
