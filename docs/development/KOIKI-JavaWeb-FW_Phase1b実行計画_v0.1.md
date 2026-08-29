@@ -3,9 +3,9 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
 **文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP8 LOCAL COMPLETE / Milestone A・B COMPLETE / CP9 START READY<br>
+**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP8 LOCAL COMPLETE / Milestone A・B COMPLETE / CP9 HARNESS IMPLEMENTED・PROCESS SMOKE COMPLETE・OFFICIAL BASELINE PENDING<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月29日（CP8 Gate 8-3 COMPLETE、CP9 START READY）<br>
+**最終更新日:** 2026年8月29日（CP1〜CP8回帰およびCP9 process Smoke成功、公式baseline待ち）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,7 +28,7 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP8 LOCAL COMPLETE、Milestone A・B COMPLETE、CP9 START READY |
+| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP8 LOCAL COMPLETE、Milestone A・B COMPLETE、CP9 HARNESS IMPLEMENTED・PROCESS SMOKE COMPLETE・OFFICIAL BASELINE PENDING |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
 | Current branch / baseline | `feature/phase1b-operations-closeout` / main merge commit `b3973e66134898765b95796c3622aaa68759b4fd` |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
@@ -222,6 +222,31 @@ non-web起動および`executionId`によるstructured log相関をPostgreSQL 17
 release unit 10 projects、Architecture Contract 4件、ArchUnit Rules 66件も成功した。
 
 証拠の詳細は`../architecture/validation/phase1b-cp8-single-execution.md`を正本とする。
+
+### 3.13 CP9開始preflight／計測設計
+
+CP8完了commit `679b6f6a769e8f1208baaf7cc0b45d1f22668390`を開始基準とし、Tooling-ownedかつ非配布の
+`build-support/performance-baseline`について計測contractを設計した。同一fixture binaryをbare Spring Boot／
+KOIKI適用の2 assemblyから実行し、Phase 1bに存在するHTTP success／structured log、Validation／Problem Details、
+JPA／PostgreSQL writeおよびstartupだけを同一環境でpaired measurementする案をOwnerが承認した。
+
+fingerprint、raw、aggregateの3結果をversion付きschemaで分離し、cleanなharness commitから公式baselineを採取する。
+性能数値、PC間比較または案件SLAはquality gateにせず、harness、3 result schema、最小negative、再集計とcleanupだけを
+機械検証する。参考値をシンプルに比較できるようp50／p95へ限定し、Framework artifact、Public API、production設定、
+migrationは変更しない。
+
+設計の詳細は`../architecture/validation/phase1b-cp9-performance-baseline.md`を正本とする。
+
+### 3.14 CP9 harness実装
+
+Tooling-ownedの`build-support/performance-baseline`へshared fixture、bare／KOIKI assembly、外部process runner、
+fingerprint／raw／aggregate schemaと一括verification scriptを実装した。Framework release unit、Public API、production設定、
+migrationおよび既存Consumer production codeは変更していない。実行全般をやり直し、CP1〜CP8 aggregate回帰に続いて、
+隔離repositoryでharness 5 module、runner unit test 5件、bare／KOIKI実process、startupと3 workload、DB／log件数、再集計、
+3 positive／2 negative schemaを含むCP9 Smokeが成功した。全般レビューでclean preflight、response／sample acceptanceおよび
+version付き`Location`を補強し、再実行にも成功した（run ID `8f4f4b45b7174516827d81ff7d463abc`、計測sampleのfailure 0件）。
+Gate 9-2のlocal実process acceptanceは満たした。CP9の完了判定は、harness commit後のclean worktreeから公式baselineを
+採取するまで保留する。
 
 ## 4. Scope
 
@@ -654,3 +679,4 @@ Phase 1aで得た定性的実績は、localのpositive / negative / restoreを�
 - `../architecture/validation/phase1b-cp1-runtime-artifact-consumer.md`
 - `../architecture/validation/phase1b-cp2-runtime-core.md`
 - `../architecture/validation/phase1b-cp8-single-execution.md`
+- `../architecture/validation/phase1b-cp9-performance-baseline.md`

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "KOIKI CP9 performance fingerprint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "runId", "startedAt", "gitCommit", "gitDirty",
+    "host", "java", "jvmArguments", "maven", "docker", "postgres", "timezone",
+    "harnessVersion", "artifacts", "protocol"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "runId": { "type": "string", "minLength": 1 },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "gitCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "gitDirty": { "type": "boolean" },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os", "osVersion", "architecture", "cpu", "logicalProcessors", "memoryBytes"],
+      "properties": {
+        "os": { "type": "string", "minLength": 1 },
+        "osVersion": { "type": "string", "minLength": 1 },
+        "architecture": { "type": "string", "minLength": 1 },
+        "cpu": { "type": "string", "minLength": 1 },
+        "logicalProcessors": { "type": "integer", "minimum": 1 },
+        "memoryBytes": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "java": { "type": "string", "minLength": 1 },
+    "jvmArguments": { "type": "array", "items": { "type": "string" } },
+    "maven": { "type": "string", "minLength": 1 },
+    "docker": { "type": "string", "minLength": 1 },
+    "postgres": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["image", "digest", "serverVersion"],
+      "properties": {
+        "image": { "type": "string", "minLength": 1 },
+        "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "serverVersion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "timezone": { "type": "string", "minLength": 1 },
+    "harnessVersion": { "const": 1 },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bareSha256", "koikiSha256"],
+      "properties": {
+        "bareSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "koikiSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["forks", "startupForks", "warmup", "measurement", "concurrency", "timeoutMillis"],
+      "properties": {
+        "forks": { "type": "integer", "minimum": 1 },
+        "startupForks": { "type": "integer", "minimum": 1 },
+        "warmup": { "type": "integer", "minimum": 0 },
+        "measurement": { "type": "integer", "minimum": 1 },
+        "concurrency": { "const": 1 },
+        "timeoutMillis": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

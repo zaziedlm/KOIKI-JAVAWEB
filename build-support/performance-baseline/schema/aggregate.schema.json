@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "KOIKI CP9 aggregate performance results",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "runId", "workloads", "comparisons"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "runId": { "type": "string", "minLength": 1 },
+    "workloads": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["variant", "workload", "sampleCount", "failureCount", "p50Nanos", "p95Nanos", "totalDurationNanos", "requestsPerSecond"],
+        "properties": {
+          "variant": { "enum": ["bare", "koiki"] },
+          "workload": { "enum": ["http-success", "validation-rejection", "db-write", "startup"] },
+          "sampleCount": { "type": "integer", "minimum": 1 },
+          "failureCount": { "type": "integer", "minimum": 0 },
+          "p50Nanos": { "type": "integer", "minimum": 0 },
+          "p95Nanos": { "type": "integer", "minimum": 0 },
+          "totalDurationNanos": { "type": "integer", "minimum": 0 },
+          "requestsPerSecond": { "type": "number", "minimum": 0 }
+        }
+      }
+    },
+    "comparisons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["workload", "p50DeltaNanos", "p50DeltaPercent", "p95DeltaNanos", "p95DeltaPercent"],
+        "properties": {
+          "workload": { "enum": ["http-success", "validation-rejection", "db-write", "startup"] },
+          "p50DeltaNanos": { "type": "integer" },
+          "p50DeltaPercent": { "type": ["number", "null"] },
+          "p95DeltaNanos": { "type": "integer" },
+          "p95DeltaPercent": { "type": ["number", "null"] }
+        }
+      }
+    }
+  }
+}
