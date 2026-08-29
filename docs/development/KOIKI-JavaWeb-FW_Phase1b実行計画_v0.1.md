@@ -3,9 +3,9 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
 **文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP5 LOCAL COMPLETE / Milestone A COMPLETE / Milestone B IN PROGRESS<br>
+**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP7 LOCAL COMPLETE / Milestone A COMPLETE / Milestone B LOCAL COMPLETE・CI PENDING<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月28日（CP5 local検証完了、Milestone B CIはCP7後）<br>
+**最終更新日:** 2026年8月29日（CP7 local検証完了、Milestone B CI接続待ち）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,7 +28,7 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP5 LOCAL COMPLETE、Milestone A COMPLETE、Milestone B IN PROGRESS |
+| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP7 LOCAL COMPLETE、Milestone A COMPLETE、Milestone B LOCAL COMPLETE・CI PENDING |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
 | 適用指針 | Root `AGENTS.md`、Project Overview Skill、Grand Design、Repository Architecture、ADR Register、Phase 1a closeout |
@@ -150,6 +150,34 @@ Customer-like Consumerが`@EnableAsync`と業務Use Caseを所有し、実HTTP�
 dependency境界およびCP4のPostgreSQL回帰を全て確認した。remote CIはMilestone BのCP7完了後に接続する。
 
 証拠の詳細は`../architecture/validation/phase1b-cp5-observability.md`を正本とする。
+
+### 3.9 CP6 local検証完了
+
+Spring Boot標準ActuatorによるDB healthとprobe分類、`koiki-starter-data-jpa`による上書き可能な
+OSIV false既定を追加した。Customer-like ConsumerでDB UP／DOWN／restore、readinessへのDB明示追加、
+情報非露出、test-only Entity露出負例とApplication override riskを実証した。
+
+証拠の詳細は`../architecture/validation/phase1b-cp6-health-osiv.md`を正本とする。
+
+### 3.10 CP7 local検証完了
+
+MyBatis Spring Boot Starter 4.1.0をBOMのdependency managementだけへ追加した。Starter、Mapper、
+MyBatis業務module、`PersistenceModel.SEPARATED`は追加せず、Consumer runtime treeにも混入していない。
+
+Customer-like ConsumerへTier 2 `workreview`を追加し、Tier 1 `workitem`が保存後に値だけのimmutable
+`WorkItemCreated` recordをSpring標準`ApplicationEventPublisher`で同期発行する。受信listenerは
+`adapter.inbound.event`からApplication Use Caseへ委譲し、送信moduleのUse Case、Domain Model、Repositoryを
+直接参照しない。正常時は両moduleを同一transactionで保存し、受信側invariant違反では安全な422
+Problem Detailsを返して両方をrollbackする。Tier 2 Entityは識別子同一性と`@Version`を持ち、proxy相当
+subtypeに加えて実Hibernate未初期化proxyとの同一性、nullable versionによる新規`persist`、競合状態遷移での
+楽観的lockを実DBで確認した。
+
+Spring Modulithはtest scopeのLevel 0を維持した。runtime retentionを持つ`@NamedInterface`をproductionへ
+付与せず、公式`ApplicationModuleDetectionStrategy`と`NamedInterfaces.builder`をtest scopeだけで使って
+`domain.event`をNamed Interfaceとして検証した。隔離scriptは全回帰、成果物境界、runtime非依存、
+versionless MyBatis probeの4.1.0解決、Testcontainers cleanupを確認した。
+
+証拠の詳細は`../architecture/validation/phase1b-cp7-domain-event-mybatis.md`を正本とする。
 
 ## 4. Scope
 

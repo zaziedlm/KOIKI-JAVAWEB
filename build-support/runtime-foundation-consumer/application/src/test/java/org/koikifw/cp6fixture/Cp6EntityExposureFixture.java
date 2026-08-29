@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.koikifw.runtimeconsumer.workitem.adapter.outbound.persistence.WorkItem;
+import org.koikifw.runtimeconsumer.workreview.domain.model.WorkReview;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +28,7 @@ public final class Cp6EntityExposureFixture {
     }
 
     @TestConfiguration(proxyBeanMethods = false)
-    @EntityScan(basePackageClasses = {WorkItem.class, ExposedParent.class})
+    @EntityScan(basePackageClasses = {WorkItem.class, WorkReview.class, ExposedParent.class})
     public static class Configuration {
 
         @Bean

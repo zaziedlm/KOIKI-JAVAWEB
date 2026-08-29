@@ -61,6 +61,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.koikifw.runtimeconsumer</groupId>
+      <artifactId>workreview-feature</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.koikifw</groupId>
       <artifactId>koiki-archunit-rules</artifactId>
       <scope>test</scope>

@@ -55,6 +55,54 @@ class RuntimeFoundationConsumerHttpTest {
                 .query(Long.class)
                 .single();
         assertThat(stored).isEqualTo(1L);
+
+        Long review = jdbcClient.sql("""
+                        select count(*) from kkbiz_work_review
+                        where label = :label and status = 'PENDING' and version = 0
+                        """)
+                .param("label", "customer-like")
+                .query(Long.class)
+                .single();
+        assertThat(review).isEqualTo(1L);
+    }
+
+    @Test
+    void rollsBackSenderAndReceiverWhenReviewInvariantFails() {
+        String rejectedLabel = "x".repeat(101);
+
+        client.post()
+                .uri("/api/1/work-items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("label", rejectedLabel))
+                .exchange()
+                .expectStatus().isEqualTo(422)
+                .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON)
+                .expectBody()
+                .jsonPath("$.type").isEqualTo("about:blank")
+                .jsonPath("$.title").isEqualTo("Unprocessable Content")
+                .jsonPath("$.status").isEqualTo(422)
+                .jsonPath("$.detail").isEqualTo("Work item could not be submitted for review.")
+                .jsonPath("$.instance").isEqualTo("/api/1/work-items")
+                .jsonPath("$.code").isEqualTo("WORKREVIEW-001")
+                .consumeWith(result -> assertThat(body(result.getResponseBody()))
+                        .doesNotContain(
+                                "WorkReviewRejectedException",
+                                "IllegalArgumentException",
+                                "label exceeds review limit"));
+
+        Long workItems = jdbcClient.sql(
+                        "select count(*) from kkbiz_work_item where label = :label")
+                .param("label", rejectedLabel)
+                .query(Long.class)
+                .single();
+        Long reviews = jdbcClient.sql(
+                        "select count(*) from kkbiz_work_review where label = :label")
+                .param("label", rejectedLabel)
+                .query(Long.class)
+                .single();
+
+        assertThat(workItems).isZero();
+        assertThat(reviews).isZero();
     }
 
     @Test

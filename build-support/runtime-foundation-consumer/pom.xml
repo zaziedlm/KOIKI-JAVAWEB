@@ -21,6 +21,7 @@
 
   <modules>
     <module>workitem</module>
+    <module>workreview</module>
     <module>application</module>
   </modules>
 

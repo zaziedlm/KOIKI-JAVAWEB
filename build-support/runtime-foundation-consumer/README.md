@@ -27,5 +27,13 @@ CP6では`koiki-starter-data-jpa`とActuatorを利用し、総合health、livene
 readinessを実serverで確認する。専用PostgreSQLをpause／unpauseしてUP／DOWN／restoreを隔離し、
 OSIV falseでtest-only Entity露出がresponse生成時に失敗することと、明示override時の検出低下を対比する。
 
+CP7ではTier 1 `workitem`が値だけの`WorkItemCreated`を同期発行し、Tier 2 `workreview`がinbound event
+adapterからApplication Use Caseへ委譲して同じtransaction内にreviewを作成する。成功時の両module保存と、
+受信側invariant違反時の安全な422 Problem Detailsと両module rollbackをPostgreSQLで実証する。Tier 2共有
+Entityは識別子同一性とnullable wrapper `@Version`を持ち、実Hibernate未初期化proxy、新規`persist`、
+競合状態遷移の拒否を確認する。
+Spring ModulithのNamed Interface検証はtest scopeだけに置き、production artifactとruntime dependencyへ
+Modulithを追加しない。
+
 正式Reference業務、SecurityおよびFramework内部型は後続Phaseまたは後続CPの成果物であり、
 このConsumerへ先行追加しない。
