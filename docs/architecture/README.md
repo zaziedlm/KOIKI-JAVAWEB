@@ -13,10 +13,10 @@
 
 ## Validation index
 
-実装で得た証拠の正本は`validation/`に置きます。2026年8月28日時点で、Phase 1aはMilestone A〜C、
+実装で得た証拠の正本は`validation/`に置きます。2026年8月29日時点で、Phase 1aはMilestone A〜C、
 C1〜C5およびGate 1〜4を完了し、Architecture Ownerが最終CIを含むcloseoutを承認しています。
-Phase 1b Runtime FoundationはCP0開始baselineとGate 1 Owner Review、CP1〜CP5のlocal検証を完了し、
-Milestone AのPR CIを完了しています。Milestone BはCP6開始待ちです。
+Phase 1b Runtime FoundationはCP0開始baselineとGate 1 Owner Review、CP1〜CP6のlocal検証を完了し、
+Milestone AのPR CIを完了しています。Milestone BはCP7実装とPR CI接続待ちです。
 
 ### Phase 1b Runtime Foundation
 
@@ -29,6 +29,7 @@ Milestone AのPR CIを完了しています。Milestone BはCP6開始待ちで�
 | CP3 Problem Details | COMPLETE / PR CI COMPLETE | `validation/phase1b-cp3-problem-details.md` |
 | CP4 Data Runtime Integration | LOCAL COMPLETE / MILESTONE B CI PENDING | `validation/phase1b-cp4-data-runtime.md` |
 | CP5 Observability | LOCAL COMPLETE / MILESTONE B CI PENDING | `validation/phase1b-cp5-observability.md` |
+| CP6 Health / OSIV | LOCAL COMPLETE / MILESTONE B CI PENDING | `validation/phase1b-cp6-health-osiv.md` |
 
 ### Phase 1a Build Foundation
 

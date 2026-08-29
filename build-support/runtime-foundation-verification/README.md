@@ -21,3 +21,7 @@ Customer-like Runtime Consumerが担当する。
 CP5では`koiki-starter-observability`のstructured logging既定、相関IDの受入／生成／cleanup、Micrometer
 Context Propagationによる同一executor threadの伝播／漏えい防止、Customer `TaskDecorator`との共存、
 全体／機能別無効化を検証する。
+
+CP6ではActuator healthの公開範囲とprobe既定、`koiki-starter-data-jpa`のOSIV false／Application overrideを
+細粒度に検証する。実PostgreSQLのUP／DOWN／restoreとresponse生成時のEntity露出負例はCustomer-like
+Runtime Consumerが担当し、`verify-cp6-health-osiv.ps1`がartifact／依存境界を含めて一括検証する。

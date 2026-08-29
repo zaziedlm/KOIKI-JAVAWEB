@@ -23,5 +23,9 @@ CP5では`koiki-starter-observability`を利用し、HTTPの`X-Request-ID`から
 `@Async` Application Use Caseへ伝播する。Spring Boot組込みstructured loggingのJSON項目、Customer
 `TaskDecorator`との共存および同一async thread再利用時の相関ID漏えい防止を実証する。
 
+CP6では`koiki-starter-data-jpa`とActuatorを利用し、総合health、liveness、DB必須Applicationとしての
+readinessを実serverで確認する。専用PostgreSQLをpause／unpauseしてUP／DOWN／restoreを隔離し、
+OSIV falseでtest-only Entity露出がresponse生成時に失敗することと、明示override時の検出低下を対比する。
+
 正式Reference業務、SecurityおよびFramework内部型は後続Phaseまたは後続CPの成果物であり、
 このConsumerへ先行追加しない。

@@ -234,7 +234,7 @@ Modulith patchとMyBatis BOMは別commit pointで検証し、runtime成果物の
 | 候補 | Ownership | 最初に必要となるCP | 含める責務 | 含めない責務 |
 |---|---|---:|---|---|
 | `koiki-starters/koiki-starter-api` | Framework | CP1 / CP2 | core configuration、Jackson、Resilience、API Versioning、Problem Details、Validation | Security、業務Controller、data、observability |
-| `koiki-starters/koiki-starter-observability` | Framework | CP5 | structured logging既定、request correlation、TaskDecorator | Actuator health、SecurityContext、cloud backend、OpenTelemetry exporter固定 |
+| `koiki-starters/koiki-starter-observability` | Framework | CP5 / CP6 | structured logging既定、request correlation、TaskDecorator、Actuator基本health contract | SecurityContext、cloud backend、OpenTelemetry exporter固定、Customer固有HealthIndicator |
 | `koiki-starters/koiki-starter-data-jpa` | Framework | CP6 | OSIV無効化、JPA profileの既定 | MyBatis、業務Entity、Customer migration |
 | persistence-neutral Flyway leaf | Framework | CP4 | KOIKI migration実行順とCustomer Flyway共存の自動構成 | Reference migration、業務SQL、vendor分岐 |
 | `koiki-testing` | Toolingとして配布 | CP4 | PostgreSQL Testcontainers支援、runtime integration test support | 本番auto configuration、業務fixture |

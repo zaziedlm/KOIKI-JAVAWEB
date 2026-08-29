@@ -33,6 +33,12 @@
 
     <dependency>
       <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-data-jpa</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.koikifw</groupId>
       <artifactId>koiki-starter-observability</artifactId>
       <scope>test</scope>
     </dependency>

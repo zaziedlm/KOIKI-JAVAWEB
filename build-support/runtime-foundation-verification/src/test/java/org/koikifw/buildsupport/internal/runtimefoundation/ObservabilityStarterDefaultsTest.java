@@ -24,6 +24,10 @@ class ObservabilityStarterDefaultsTest {
         assertThat(environment.getProperty("logging.structured.json.rename.[@timestamp]")).isEqualTo("timestamp");
         assertThat(environment.getProperty("logging.structured.json.add.service")).isEqualTo("application");
         assertThat(environment.getProperty("logging.structured.json.add.environment")).isEqualTo("default");
+        assertThat(environment.getProperty("management.endpoints.web.exposure.include")).isEqualTo("health");
+        assertThat(environment.getProperty("management.endpoint.health.show-components")).isEqualTo("always");
+        assertThat(environment.getProperty("management.endpoint.health.show-details")).isEqualTo("never");
+        assertThat(environment.getProperty("management.endpoint.health.probes.enabled", Boolean.class)).isTrue();
     }
 
     @Test
@@ -33,12 +37,14 @@ class ObservabilityStarterDefaultsTest {
                 "applicationOverride",
                 Map.of(
                         "logging.structured.format.console", "ecs",
+                        "management.endpoint.health.show-components", "never",
                         "spring.application.name", "customer-service",
                         "koiki.environment", "acceptance")));
 
         postProcessor.postProcessEnvironment(environment, new SpringApplication());
 
         assertThat(environment.getProperty("logging.structured.format.console")).isEqualTo("ecs");
+        assertThat(environment.getProperty("management.endpoint.health.show-components")).isEqualTo("never");
         assertThat(environment.getProperty("logging.structured.json.add.service"))
                 .isEqualTo("customer-service");
         assertThat(environment.getProperty("logging.structured.json.add.environment"))
@@ -56,5 +62,6 @@ class ObservabilityStarterDefaultsTest {
 
         assertThat(environment.getProperty("logging.structured.format.console")).isNull();
         assertThat(environment.getProperty("logging.structured.json.add.service")).isNull();
+        assertThat(environment.getProperty("management.endpoint.health.probes.enabled")).isNull();
     }
 }

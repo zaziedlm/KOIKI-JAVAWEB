@@ -17,7 +17,11 @@ public final class KoikiObservabilityDefaultsEnvironmentPostProcessor
             "logging.structured.format.console", "logstash",
             "logging.structured.json.rename.[@timestamp]", "timestamp",
             "logging.structured.json.add.service", "${spring.application.name:application}",
-            "logging.structured.json.add.environment", "${koiki.environment:default}");
+            "logging.structured.json.add.environment", "${koiki.environment:default}",
+            "management.endpoints.web.exposure.include", "health",
+            "management.endpoint.health.show-components", "always",
+            "management.endpoint.health.show-details", "never",
+            "management.endpoint.health.probes.enabled", true);
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {

@@ -1,0 +1,6 @@
+# KOIKI Phase 1b CP6 Public API inventory v1
+ARTIFACT koiki-starter-data-jpa
+PUBLIC_JAVA_TYPES 0
+PUBLIC_CONFIGURATION_PROPERTIES 1
+PROPERTY koiki.data.jpa.enabled
+INTERNAL_PACKAGE org.koikifw.starter.data.jpa.internal
