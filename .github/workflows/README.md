@@ -15,8 +15,9 @@ Phase 1aでは、CIとartifact公開を別の権限境界として扱います�
 - 独立した`Milestone B Integration` jobは、CP7のaggregate scriptから隔離Maven repositoryへrelease unitを
   stageし、PostgreSQL 17 Testcontainersを使うCustomer-like Consumer、Flyway、transaction、structured log、
   DB healthのDOWN／restore、OSIV、同期Domain EventおよびMyBatis BOM境界を累積検証します。
-- `Milestone B Integration`のrequired check化は、PRで実行時間とTestcontainersの安定性を確認してから
-  判断します。このjobは`contents: read`だけを使用し、secretまたはPackages権限を追加しません。
+- `Milestone B Integration`はPR #25で3回連続成功し、実行時間とTestcontainers cleanupの安定性を
+  Owner Reviewしたうえで、main rulesetのrequired checkへ追加済みです。このjobは`contents: read`だけを使用し、
+  secretまたはPackages権限を追加しません。
 - 通常の`Verify` jobは`contents: read`だけで、secretやpackage権限を使用しません。
 - 独立した`Public API Compatibility` jobだけが`contents: read`と`packages: read`を持ち、C1 baseline、
   inventory、japicmp正常系とGate 3 fixtureを同じTooling scriptで検証します。

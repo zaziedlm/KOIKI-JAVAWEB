@@ -8,7 +8,8 @@
 | Milestone | B Data & Runtime Integration（PR #25 CI SUCCESS、Owner Review／merge pending） |
 | Start commit | `9d6ac2c`（CP6 local complete） |
 | CP7 commit | `6811960` |
-| PR CI head | `2d3705581866009008297b7f6a5b2abe80178e58` |
+| PR CI head | `6f99f63b18fc40c43d1709f60abc4ebce3c0456e` |
+| Milestone B required check | `ACCEPTED`（main rulesetへ追加済み） |
 | Branch | `feature/phase1b-data-runtime-integration` |
 | Framework ownership | MyBatis Spring Boot Starter 4.1.0のBOM管理だけ |
 | Tooling ownership | Tier 1／2 Consumer、test-scope Named Interface strategy、隔離検証script |
@@ -125,9 +126,15 @@ CP2／CP3回帰は、承認済みData依存を含む現在のConsumerを対象�
 | Build Runtime Fixture (Java 21) | SUCCESS | 33秒 |
 | Java Runtime Compatibility | SUCCESS | 30秒 |
 
-`Milestone B Integration`は2回連続で成功し、各回でPostgreSQL Testcontainersの起動、DB DOWN／restore、
-全Consumer testおよびcontainer cleanupを完了した。required check化はOwner Review pendingとし、
-PR #25はDraft、merge state `CLEAN`、Milestone Bはmerge pendingである。
+Evidence commit `6f99f63b18fc40c43d1709f60abc4ebce3c0456e`に対する
+[CI run 33240299498](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33240299498)でも、
+`Verify (ubuntu-24.04)`、`Milestone B Integration`、`Public API Compatibility`が成功した。
+[Java Runtime Compatibility run 33240299494](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33240299494)も成功し、
+`Milestone B Integration`は2分56秒で完了した。
+
+`Milestone B Integration`は3回連続で成功し、各回でPostgreSQL Testcontainersの起動、DB DOWN／restore、
+全Consumer testおよびcontainer cleanupを完了した。Architecture Ownerはrequired check化を`ACCEPTED`とし、
+main rulesetの4番目のrequired contextへ追加した。PR #25はDraft、merge state `CLEAN`、Milestone Bはmerge pendingである。
 
 ## 6. 結論と次境界
 
@@ -135,7 +142,8 @@ CP7のlocal条件であるTier 1／2同期Domain Event、値eventだけの公開
 同一transaction rollback、Level 0、test-scope Named Interface、MyBatis 4.1.0 BOM管理のみ、runtime非混入を満たした。
 Framework runtime artifactとPublic Java APIを増やしておらず、既存ADRの変更は不要である。
 
-Milestone BのCP4〜CP7実装はcommit `6811960`までで完了した。PR #25のhead `2d37055`で、
+Milestone BのCP4〜CP7実装はcommit `6811960`までで完了した。PR #25のhead `6f99f63`で、
 CP7 aggregateを実行する`Milestone B Integration`を含む全checkが成功し、Testcontainersのremote実行と
-cleanupを確認した。CP7を`COMPLETE`、Milestone Bを`PR CI SUCCESS・OWNER REVIEW／MERGE PENDING`と判定する。
-次は本Evidence commitのCI成功後にOwner ReviewとDraft解除へ進み、main merge前にCP8へ着手しない。
+cleanupを確認した。required check化も`ACCEPTED`としてmain rulesetへ反映済みである。
+CP7を`COMPLETE`、Milestone Bを`PR CI SUCCESS・DRAFT解除／MERGE PENDING`と判定する。
+次はDraft解除とmergeへ進み、main merge前にCP8へ着手しない。

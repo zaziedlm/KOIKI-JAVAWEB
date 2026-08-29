@@ -188,9 +188,12 @@ CP3の当時の禁止contractを弱めず、通常CIの重複呼出を外してC
 是正commit `2d3705581866009008297b7f6a5b2abe80178e58`に対するCI run `33239813239`で、
 `Verify (ubuntu-24.04)`、`Milestone B Integration`、`Public API Compatibility`が全て成功した。
 Java Runtime Compatibility run `33239813233`もJava 21 fixture buildとJava runtime検証が成功した。
-`Milestone B Integration`は初回3分04秒、是正後2分55秒の2回連続SUCCESSで、PostgreSQL Testcontainers、
-DB DOWN／restore、全Consumer test、cleanupをremote runnerで確認した。required check化はOwner Review pending、
-PR #25はDraftかつmerge state `CLEAN`であり、Milestone Bはmerge pendingとする。
+Evidence commit `6f99f63b18fc40c43d1709f60abc4ebce3c0456e`に対するCI run `33240299498`と
+Java Runtime Compatibility run `33240299494`も全checkが成功した。`Milestone B Integration`は
+初回3分04秒、是正後2分55秒、Evidence反映後2分56秒の3回連続SUCCESSで、PostgreSQL Testcontainers、
+DB DOWN／restore、全Consumer test、cleanupをremote runnerで確認した。Architecture Ownerはrequired check化を
+`ACCEPTED`とし、main rulesetの4番目のrequired contextへ追加した。PR #25はDraftかつmerge state `CLEAN`であり、
+Milestone Bはmerge pendingとする。
 
 remote Evidenceの詳細とrun URLは`../architecture/validation/phase1b-cp7-domain-event-mybatis.md`を正本とする。
 
@@ -445,7 +448,8 @@ Java Public APIが必要と判明した場合はCP8の実装前に型シグネ�
 ### 6.9 CI候補
 
 - A / B / Cの各PRでRoot `clean verify`、Feature Template、NullAway、Public API compatibilityを維持する。
-- PostgreSQL TestcontainersはMilestone Bで通常CIへ追加し、安定性と時間を確認してからrequired check化を判断する。
+- PostgreSQL TestcontainersはMilestone Bで通常CIへ追加し、3回連続成功による安定性と時間の確認後、
+  `Milestone B Integration`をmain rulesetのrequired checkとして`ACCEPTED`にした。
 - Java 21 build / Java 25 runtimeの既存matrixを維持し、runtime artifact追加時は同一JAR対象を拡張する。
 - performance数値はrequiredにせず、harness build、result schema、fingerprint欠落のnegative testを通常CIへ入れる。
 - remote CIはmilestone単位とし、各CPの通常経路は対象moduleの`-pl ... -am verify`で検証する。
