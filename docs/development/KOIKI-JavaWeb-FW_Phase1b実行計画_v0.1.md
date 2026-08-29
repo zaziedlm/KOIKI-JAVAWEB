@@ -3,9 +3,9 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
 **文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP7 LOCAL COMPLETE / Milestone A COMPLETE / Milestone B LOCAL COMPLETE・CI PENDING<br>
+**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP7 COMPLETE / Milestone A COMPLETE / Milestone B PR CI SUCCESS・OWNER REVIEW／MERGE PENDING<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月29日（CP7 local検証完了、Milestone B CI接続待ち）<br>
+**最終更新日:** 2026年8月29日（PR #25 remote CI成功、Milestone B Owner Review／merge待ち）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,7 +28,7 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP7 LOCAL COMPLETE、Milestone A COMPLETE、Milestone B LOCAL COMPLETE・CI PENDING |
+| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP7 COMPLETE、Milestone A COMPLETE、Milestone B PR CI SUCCESS・OWNER REVIEW／MERGE PENDING |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
 | 適用指針 | Root `AGENTS.md`、Project Overview Skill、Grand Design、Repository Architecture、ADR Register、Phase 1a closeout |
@@ -178,6 +178,21 @@ Spring Modulithはtest scopeのLevel 0を維持した。runtime retentionを持�
 versionless MyBatis probeの4.1.0解決、Testcontainers cleanupを確認した。
 
 証拠の詳細は`../architecture/validation/phase1b-cp7-domain-event-mybatis.md`を正本とする。
+
+### 3.11 Milestone B PR CI成功
+
+Draft PR #25の初回CIでは、独立`Milestone B Integration`とPublic API Compatibilityは成功したが、
+通常`Verify`に残っていた歴史的なCP3 aggregateが、CP4で承認済みの`spring-data-jpa`を拒否した。
+CP3の当時の禁止contractを弱めず、通常CIの重複呼出を外してCP2／CP3回帰をCP7 aggregateへ引き継いだ。
+
+是正commit `2d3705581866009008297b7f6a5b2abe80178e58`に対するCI run `33239813239`で、
+`Verify (ubuntu-24.04)`、`Milestone B Integration`、`Public API Compatibility`が全て成功した。
+Java Runtime Compatibility run `33239813233`もJava 21 fixture buildとJava runtime検証が成功した。
+`Milestone B Integration`は初回3分04秒、是正後2分55秒の2回連続SUCCESSで、PostgreSQL Testcontainers、
+DB DOWN／restore、全Consumer test、cleanupをremote runnerで確認した。required check化はOwner Review pending、
+PR #25はDraftかつmerge state `CLEAN`であり、Milestone Bはmerge pendingとする。
+
+remote Evidenceの詳細とrun URLは`../architecture/validation/phase1b-cp7-domain-event-mybatis.md`を正本とする。
 
 ## 4. Scope
 

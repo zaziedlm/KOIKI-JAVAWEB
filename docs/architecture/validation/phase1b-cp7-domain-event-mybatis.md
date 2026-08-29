@@ -4,9 +4,11 @@
 
 | 項目 | 結果 |
 |---|---|
-| Phase / status | Phase 1b CP7 LOCAL COMPLETE |
-| Milestone | B Data & Runtime Integration（local complete、PR CI pending） |
+| Phase / status | Phase 1b CP7 COMPLETE（PR CI SUCCESS、merge pending） |
+| Milestone | B Data & Runtime Integration（PR #25 CI SUCCESS、Owner Review／merge pending） |
 | Start commit | `9d6ac2c`（CP6 local complete） |
+| CP7 commit | `6811960` |
+| PR CI head | `2d3705581866009008297b7f6a5b2abe80178e58` |
 | Branch | `feature/phase1b-data-runtime-integration` |
 | Framework ownership | MyBatis Spring Boot Starter 4.1.0のBOM管理だけ |
 | Tooling ownership | Tier 1／2 Consumer、test-scope Named Interface strategy、隔離検証script |
@@ -98,12 +100,42 @@ CP7 domain event, named-interface, MyBatis BOM, regression, and boundary checks 
 検査式を是正して全工程を先頭から再実行し、最終成功を確認した。機能test、MyBatis dependency解決、
 Maven buildは初回も成功しており、是正対象は隔離scriptの境界検査だけであった。
 
+### 5.1 Milestone B PR CI
+
+[Draft PR #25](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/25)で、通常CIとJava runtime compatibilityを
+実行した。初回head `50f50b0cab5b8d86f5124c8016faa04f2b5a9aaf`の
+[CI run 33239250846](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33239250846)では、
+`Milestone B Integration`が3分04秒、`Public API Compatibility`が1分17秒で成功した。
+`Verify (ubuntu-24.04)`もRoot、Feature Template、NullAway、CP3内のbuildとConsumer 22 testsまでは成功したが、
+歴史的なCP3 aggregateがCP4で承認済みの`spring-data-jpa`を後続依存として拒否し、最後の境界検査だけ失敗した。
+
+CP3 scriptの当時の禁止contractは変更せず、現在の通常CIから歴史的aggregateの重複呼出を外した。
+CP2／CP3回帰は、承認済みData依存を含む現在のConsumerを対象にするCP7 aggregateへ引き継いだ。
+是正commitは`2d3705581866009008297b7f6a5b2abe80178e58`である。
+
+是正後の[CI run 33239813239](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33239813239)と
+[Java Runtime Compatibility run 33239813233](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33239813233)で、
+次を確認した。
+
+| Check | 結果 | 所要時間 |
+|---|---|---:|
+| Verify (ubuntu-24.04) | SUCCESS | 4分55秒 |
+| Milestone B Integration | SUCCESS | 2分55秒 |
+| Public API Compatibility | SUCCESS | 1分24秒 |
+| Build Runtime Fixture (Java 21) | SUCCESS | 33秒 |
+| Java Runtime Compatibility | SUCCESS | 30秒 |
+
+`Milestone B Integration`は2回連続で成功し、各回でPostgreSQL Testcontainersの起動、DB DOWN／restore、
+全Consumer testおよびcontainer cleanupを完了した。required check化はOwner Review pendingとし、
+PR #25はDraft、merge state `CLEAN`、Milestone Bはmerge pendingである。
+
 ## 6. 結論と次境界
 
 CP7のlocal条件であるTier 1／2同期Domain Event、値eventだけの公開、直接Bean／Domain参照なし、
 同一transaction rollback、Level 0、test-scope Named Interface、MyBatis 4.1.0 BOM管理のみ、runtime非混入を満たした。
 Framework runtime artifactとPublic Java APIを増やしておらず、既存ADRの変更は不要である。
 
-Milestone BのCP4〜CP7 local実装はcommit `6811960`までで完了した。通常PRでCP7 aggregate scriptを
-自動実行する独立`Milestone B Integration` jobをCIへ接続し、同じscriptのlocal再実行も成功した。
-pushとremote CIは未実施であり、PRで実行時間とTestcontainersの安定性を確認してからrequired check化を判断する。
+Milestone BのCP4〜CP7実装はcommit `6811960`までで完了した。PR #25のhead `2d37055`で、
+CP7 aggregateを実行する`Milestone B Integration`を含む全checkが成功し、Testcontainersのremote実行と
+cleanupを確認した。CP7を`COMPLETE`、Milestone Bを`PR CI SUCCESS・OWNER REVIEW／MERGE PENDING`と判定する。
+次は本Evidence commitのCI成功後にOwner ReviewとDraft解除へ進み、main merge前にCP8へ着手しない。
