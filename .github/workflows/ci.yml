@@ -56,10 +56,6 @@ jobs:
         shell: pwsh
         run: pwsh -NoProfile -File build-support/null-safety/verify-null-safety.ps1
 
-      - name: Verify Phase 1b Runtime Core
-        shell: pwsh
-        run: pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp3-runtime-core.ps1
-
   milestone-b-integration:
     name: Milestone B Integration
     runs-on: ubuntu-24.04

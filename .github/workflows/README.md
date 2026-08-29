@@ -10,6 +10,8 @@ Phase 1aでは、CIとartifact公開を別の権限境界として扱います�
 - NullAwayのpositive、意図的違反のexpected failure、restoreを隔離fixtureから検証します。
 - Phase 1b Milestone Aでは、隔離Maven repositoryへrelease unitをstageし、Starter細粒度fixtureと
   独立Customer-like ConsumerのProblem Details／Validation／Jackson例外経路を累積検証します。
+- Milestone AのCP3 aggregate scriptは当時の後続依存禁止contractを保存し、Milestone B以降の通常CIからは
+  呼び出しません。CP2／CP3回帰は、承認済みData依存を含む現在のConsumerを検証するCP7 aggregateへ引き継ぎます。
 - 独立した`Milestone B Integration` jobは、CP7のaggregate scriptから隔離Maven repositoryへrelease unitを
   stageし、PostgreSQL 17 Testcontainersを使うCustomer-like Consumer、Flyway、transaction、structured log、
   DB healthのDOWN／restore、OSIV、同期Domain EventおよびMyBatis BOM境界を累積検証します。
