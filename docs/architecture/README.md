@@ -15,8 +15,8 @@
 
 実装で得た証拠の正本は`validation/`に置きます。2026年8月30日時点で、Phase 1aはMilestone A〜C、
 C1〜C5およびGate 1〜4を完了し、Architecture Ownerが最終CIを含むcloseoutを承認しています。
-Phase 1b Runtime FoundationはMilestone A／Bを完了・承認済み、CP1〜CP9を完了しています。
-CP10はlocal検証とOwner差分reviewを完了し、Gate 2 local readyです。
+Phase 1b Runtime FoundationはMilestone A〜C、CP1〜CP10、Gate 1〜2、main最終CIおよび
+9成果物のsnapshot remote Consumer検証を完了し、Architecture Ownerがcloseoutを承認しています。
 
 ### Phase 1b Runtime Foundation
 
@@ -33,7 +33,7 @@ CP10はlocal検証とOwner差分reviewを完了し、Gate 2 local readyです。
 | CP7 Domain Event / MyBatis BOM | COMPLETE / MILESTONE B ACCEPTED | `validation/phase1b-cp7-domain-event-mybatis.md` |
 | CP8 Single Execution | COMPLETE | `validation/phase1b-cp8-single-execution.md` |
 | CP9 Performance Baseline | COMPLETE / OFFICIAL BASELINE RECORDED | `validation/phase1b-cp9-performance-baseline.md` |
-| CP10 Developer Journey / Gate 2 | LOCAL COMPLETE / GATE 2 LOCAL READY | `validation/phase1b-closeout.md` |
+| CP10 Developer Journey / Gate 2 | COMPLETE / GATE 2 ACCEPTED / PHASE 1B COMPLETE | `validation/phase1b-closeout.md` |
 
 ### Phase 1a Build Foundation
 

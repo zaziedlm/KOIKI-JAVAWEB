@@ -2,10 +2,10 @@
 
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
-**文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP10 LOCAL COMPLETE / GATE 2 LOCAL READY / Milestone A・B COMPLETE / Milestone C PR PENDING<br>
+**文書状態:** COMPLETE — ACCEPTED<br>
+**実行状態:** CP0〜CP10 COMPLETE / Gate 1〜2 ACCEPTED / Milestone A〜C COMPLETE / PHASE 1B COMPLETE<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月30日（CP10 local closeout承認、Gate 2 local ready、Milestone C remote待ち）<br>
+**最終更新日:** 2026年8月30日（Gate 2、Milestone C、Phase 1b最終完了承認）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,9 +28,9 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP10 LOCAL COMPLETE、GATE 2 LOCAL READY、Milestone A・B COMPLETE、Milestone C PR PENDING |
+| Phase / status | Phase 1b Runtime Foundation / CP0〜CP10 COMPLETE、Gate 1〜2 ACCEPTED、Milestone A〜C COMPLETE、PHASE 1B COMPLETE |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
-| Current branch / baseline | `feature/phase1b-operations-closeout` / main merge commit `b3973e66134898765b95796c3622aaa68759b4fd` |
+| Final main / closeout | `40d16f9dbf26a7ba88ac13b2e3728075e0eff2a7` / `docs/phase1b-final-closeout` |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
 | 適用指針 | Root `AGENTS.md`、Project Overview Skill、Grand Design、Repository Architecture、ADR Register、Phase 1a closeout |
 | 検証 | Java 21、Maven Wrapper、Docker / Testcontainers PostgreSQL、ArchUnit、Spring Modulith Level 0、NullAway、japicmp、required checks |
@@ -273,11 +273,25 @@ child process／container／一時repository cleanupも含む差分review後の�
 
 さらにroot aggregatorを除く9成果物をfile repositoryへdeployし、別の空repositoryから全9座標をtransitive resolveするdry-runが
 1分36秒で成功した。通常CIへ`Milestone C Closeout`を接続し、承認済みmain完全SHAだけを対象に9成果物をpublishして
-remote artifactから独立Consumerをbuildする手動workflowを用意した。remote publish自体は未実施である。
+remote artifactから独立Consumerをbuildする手動workflowを用意した。このlocal closeout時点ではremote publishは未実施である。
 
-Ownerは5点の差分review反映と最終aggregate結果を確認し、状態を`CP10 LOCAL COMPLETE / GATE 2 LOCAL READY`と承認した。
+この時点でOwnerは5点の差分review反映と最終aggregate結果を確認し、状態を`CP10 LOCAL COMPLETE / GATE 2 LOCAL READY`と承認した。
 Milestone C PR、required checks、snapshot publication、mergeおよびmain CIを得るまでGate 2またはPhase 1bを完了扱いにしない。詳細は
 `../architecture/validation/phase1b-closeout.md`を正本とする。
+
+### 3.17 Gate 2／Phase 1b final closeout完了
+
+Milestone C PR #26は最終HEAD `d43d8e4`に対するrequired checks 5件の成功後、mainへmergeされた。merge commit
+`40d16f9dbf26a7ba88ac13b2e3728075e0eff2a7`に対する通常CIとJava 21／25 runtime workflowも成功した。
+
+同main完全SHAをOwner承認付き`phase1b-internal-snapshot` environmentからpublishし、root aggregatorを除く9成果物を
+GitHub Packagesへ配置した。別のfresh Maven repositoryから全9座標をresolveし、Root Reactor外の独立Consumerで
+`clean verify`が成功した。snapshot workflow run `33311794583`はauthorize、CP10 preflight、publish、remote Consumerの
+全jobを完了している。
+
+Architecture OwnerはDoD 1b-1〜1b-8、全Phase共通DoD、Ownership、deferred scope、Developer Journey、release unit、
+Public API baseline、PR／main CIおよびsnapshot remote Evidenceを確認し、`GATE 2 ACCEPTED`、
+`MILESTONE C COMPLETE`、`PHASE 1B COMPLETE`と最終判定した。
 
 ## 4. Scope
 

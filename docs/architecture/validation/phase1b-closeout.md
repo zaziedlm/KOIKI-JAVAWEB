@@ -1,16 +1,18 @@
-# Phase 1b CP10 Developer Journey／DoD／Gate 2 local closeout
+# Phase 1b CP10 Developer Journey／DoD／Gate 2 final closeout
 
 ## 1. Status
 
-- **Current state:** `ACCEPTED — MAIN CI PENDING`
-- **Review date:** 2026年8月30日
+- **Current state:** `GATE 2 ACCEPTED / MILESTONE C COMPLETE / PHASE 1B COMPLETE`
+- **Completion date:** 2026年8月30日
 - **Architecture Owner:** Shuichi Kataoka
-- **Remote state:** PR #26の初回required checksとruleset確認は完了。snapshot publication、main merge／main CIは未実施
-- **Phase state:** Phase 1bは未完了。remote evidenceを得るまでGate 2およびPhase完了へ昇格しない
+- **Remote state:** PR #26、merge後main CI、9成果物snapshot publication、fresh remote Consumer検証を完了
+- **Phase state:** Phase 1b Runtime Foundationは完了。後続scopeはPhase 2以降で個別に開始判定する
 
 OwnerはGate 10-1 inventoryを確認後、2026年8月30日にGate 10-2案と予定する最小実装を承認した。
 CP10ではFramework production code、Public Java API、production migration、業務moduleを追加していない。
 Ownerは同日、5点の差分review反映と最終aggregate結果を確認し、CP10 local closeoutを承認した。
+さらにPR／main CI、ruleset、snapshot publicationおよびremote Consumer Evidenceを確認し、Gate 2、Milestone C、
+Phase 1bの最終完了を承認した。
 
 ## 2. Source／environment identity
 
@@ -18,8 +20,9 @@ Ownerは同日、5点の差分review反映と最終aggregate結果を確認し�
 |---|---|
 | Branch / implementation closeout commit | `feature/phase1b-operations-closeout` / `792172576a964592a9c55c0f829433387d30bf84` |
 | main merge base | `b3973e66134898765b95796c3622aaa68759b4fd` |
-| mainとの差分 | behind 0 / ahead 6 |
-| origin同名branchとの差分 | behind 0 / ahead 0 |
+| Final PR head | `d43d8e4c9b2c1d5dc6cfe4af8cdfb6003ed4c74e` |
+| Merge commit / main | `40d16f9dbf26a7ba88ac13b2e3728075e0eff2a7` / local・origin一致 |
+| Final Evidence branch base | `docs/phase1b-final-closeout` / `40d16f9dbf26a7ba88ac13b2e3728075e0eff2a7` |
 | Git identity | `Shuichi Kataoka <shu01k9@gmail.com>` |
 | Build runtime | Eclipse Temurin 21.0.12.1、Apache Maven 3.9.16 |
 | Container runtime | Docker Engine 29.5.3、Linux daemon |
@@ -146,39 +149,52 @@ baseline markerを除く3 migrationsが成功している。
 
 | 項目 | Evidence |
 |---|---|
-| Pull Request | [#26](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/26)、Ready for review、OPEN |
+| Pull Request | [#26](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/26)、MERGED |
 | Base / verified implementation head | `main` (`b3973e6`) / `792172576a964592a9c55c0f829433387d30bf84` |
 | CI run | `33298207252`。Verify、Public API Compatibility、Milestone B Integration、Milestone C CloseoutがSUCCESS |
 | Runtime run | `33298207273`。Build Runtime FixtureとJava Runtime CompatibilityがSUCCESS |
+| Final PR recheck | CI `33310095529`、Runtime `33310095523`。更新後HEAD `d43d8e4`で全job SUCCESS |
 | Required checks | Verify、Public API Compatibility、Java Runtime Compatibility、Milestone B Integration、Milestone C Closeoutの5件がSUCCESS |
 | Ruleset | `main-merge-protection` (`21140116`)、active、strict、bypass 0。2026年8月30日20:49 JSTにMilestone Cをrequiredへ追加 |
-| Merge state | `MERGEABLE / CLEAN` |
+| Merge | 2026年8月30日21:03 JST、merge commit `40d16f9dbf26a7ba88ac13b2e3728075e0eff2a7` |
 
-本節はimplementation head `7921725`に対する初回PR evidenceである。このdocs-only追記をcommit／pushした後は、
-更新後HEADに対するrequired checksを再確認してからmergeする。
+初回runとdocs-only Evidence追記後の最終runを分離して記録し、最終PR headに対するrequired checks成功後にmergeした。
+
+### 6.4 Main／snapshot remote evidence
+
+| 項目 | Evidence |
+|---|---|
+| Main CI | [run 33310474870](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33310474870)、merge commit `40d16f9`、4 jobs SUCCESS |
+| Main runtime | [run 33310474844](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33310474844)、Java 21 build／Java 21・25 runtime SUCCESS |
+| Environment | `phase1b-internal-snapshot` (`20873699719`)。required reviewer `zaziedlm`、main限定、admin bypass禁止 |
+| Snapshot workflow | [run 33311794583](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/33311794583)、approved main SHA `40d16f9dbf26a7ba88ac13b2e3728075e0eff2a7`、SUCCESS |
+| Publication | root aggregatorを除く9 artifactsを同一session／`deployAtEnd=true`でpublishし、GitHub Packages上の9 packagesを確認 |
+| Remote Consumer | 空のfresh Maven repositoryから全9座標をresolveし、Root Reactor外Consumerの`clean verify`がSUCCESS |
+
+snapshot workflowではauthorize、CP10 preflight（8分9秒）、environment承認、9-artifact publish、remote Consumerの
+全jobが成功した。credential実値、通常local cacheまたはFramework source pathへ依存していない。
 
 ## 7. DoD closeout
 
 | DoD | Local判定 | Evidence |
 |---|---|---|
 | 全Phase共通1 最新Boot minor | PASS | Boot 4.1.1公式stable、BOM／dependency inventory |
-| 全Phase共通2 ADR／Owner approval | LOCAL PASS | Gate 1 accepted、Gate 10-2実装承認、CP10差分review承認。Gate 2最終承認はremote後 |
-| 全Phase共通3 CI quality gates | PR PASS | local aggregateとPR #26初回required checks 5件が成功。docs-only追記後の再checkとmain CIは未実施 |
+| 全Phase共通2 ADR／Owner approval | PASS | Gate 1、Gate 10-2、CP10差分review、Gate 2最終判定をOwner承認 |
+| 全Phase共通3 CI quality gates | PASS | local aggregate、PR required checks 5件、merge後main CI、snapshot preflightがSUCCESS |
 | 全Phase共通4 Agent Skills | PASS | Project Overview／Business Feature workflowを適用。規約差分なし、Skill更新不要 |
 | 全Phase共通5 table／Flyway ownership | PASS | Framework SQL 0、Customer migration／table 3、history分離 |
 | 1b-1 Flyway二階層 | PASS | [CP4](phase1b-cp4-data-runtime.md)とpackaged runtime再確認 |
 | 1b-2 統一error | PASS | [CP3](phase1b-cp3-problem-details.md)と400／422外部観測 |
 | 1b-3 log／correlation | PASS | [CP5](phase1b-cp5-observability.md)とasync構造化log |
-| 1b-4 PostgreSQL CI | PR PASS | [CP4](phase1b-cp4-data-runtime.md)、CP10 local PostgreSQL 17、Milestone C Closeout成功 |
+| 1b-4 PostgreSQL CI | PASS | [CP4](phase1b-cp4-data-runtime.md)、PR／main／snapshot preflightのMilestone C Closeout成功 |
 | 1b-5 health | PASS | [CP6](phase1b-cp6-health-osiv.md)と3 health endpoint |
 | 1b-6 OSIV | PASS | [CP6](phase1b-cp6-health-osiv.md)回帰 |
 | 1b-7 単一実行 | PASS | [CP8](phase1b-cp8-single-execution.md)回帰と同一JAR maintenance journey |
 | 1b-8 性能baseline | PASS | [CP9](phase1b-cp9-performance-baseline.md)公式baselineとCP10 smoke |
-| Customer-like利用可能性 | PR PASS / REMOTE ARTIFACT PENDING | package済み横断journeyとPR CI成功。snapshotからのfresh resolveは未実施 |
+| Customer-like利用可能性 | PASS | package済み横断journey、9-artifact snapshot、fresh remote resolve、独立Consumer build／test成功 |
 
-## 8. Deferred／next gate
+## 8. Deferred／Phase boundary
 
 Security、Reference業務、SPA／非同期API、Oracle、Spring Modulith Level 2、cloud固有scheduler、Project Template、
-正式releaseはPhase 1bへ混在させない。次はdocs-only追記後のrequired checksを確認し、Owner承認後にPR #26をmergeする。
-merge後main CI、承認済みmain SHAの手動snapshot publication、fresh remote resolve／Consumer buildを記録してから、
-Architecture OwnerがGate 2および`PHASE 1B COMPLETE`を判定する。
+正式releaseはPhase 1bへ混在させず、所定の後続Phaseへ残す。Customer-like ConsumerはTooling Evidenceとして維持し、
+正式ReferenceまたはProject Templateへ昇格しない。Phase 2以降は別の開始計画とOwner Gateを経て着手する。
