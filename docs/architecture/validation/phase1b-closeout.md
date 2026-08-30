@@ -2,10 +2,10 @@
 
 ## 1. Status
 
-- **Current state:** `CP10 LOCAL COMPLETE / GATE 2 LOCAL READY`
+- **Current state:** `ACCEPTED — MAIN CI PENDING`
 - **Review date:** 2026年8月30日
 - **Architecture Owner:** Shuichi Kataoka
-- **Remote state:** Milestone C PR、required checks、snapshot publication、main merge／main CIは未実施
+- **Remote state:** PR #26の初回required checksとruleset確認は完了。snapshot publication、main merge／main CIは未実施
 - **Phase state:** Phase 1bは未完了。remote evidenceを得るまでGate 2およびPhase完了へ昇格しない
 
 OwnerはGate 10-1 inventoryを確認後、2026年8月30日にGate 10-2案と予定する最小実装を承認した。
@@ -16,17 +16,18 @@ Ownerは同日、5点の差分review反映と最終aggregate結果を確認し�
 
 | 項目 | 結果 |
 |---|---|
-| Branch / HEAD | `feature/phase1b-operations-closeout` / `f14f587bed4aec7aba5402e598251fd9f0c02a60` |
+| Branch / implementation closeout commit | `feature/phase1b-operations-closeout` / `792172576a964592a9c55c0f829433387d30bf84` |
 | main merge base | `b3973e66134898765b95796c3622aaa68759b4fd` |
-| Upstream差分 | behind 0 / ahead 5 |
+| mainとの差分 | behind 0 / ahead 6 |
+| origin同名branchとの差分 | behind 0 / ahead 0 |
 | Git identity | `Shuichi Kataoka <shu01k9@gmail.com>` |
 | Build runtime | Eclipse Temurin 21.0.12.1、Apache Maven 3.9.16 |
 | Container runtime | Docker Engine 29.5.3、Linux daemon |
 | Database | `postgres:17-alpine`、acceptanceでPostgreSQL 17.11 |
 | Spring Boot baseline | 4.1.1。2026年8月30日の公式stable確認とBOM／dependency inventoryが一致 |
 
-本記録は未commitのcloseout差分上で採取したlocal evidenceである。commit SHA、PRおよびremote run identityは
-Gate 10-4で追記する。
+local evidenceは未commit差分上で採取し、implementation closeout commit `7921725`として固定・pushした。
+PRおよびremote run identityは§6.3へ記録する。
 
 ## 3. Gate 10-1 inventory
 
@@ -141,28 +142,43 @@ baseline markerを除く3 migrationsが成功している。
 指摘1は検証削減ではなく、preflightとpost-publishの責務分離である。将来Application側の配布条件が変化した時点を
 見直し契機として明記し、現段階では同一journeyの二重実行をGate条件にしない。
 
+### 6.3 Milestone C PR evidence
+
+| 項目 | Evidence |
+|---|---|
+| Pull Request | [#26](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/26)、Ready for review、OPEN |
+| Base / verified implementation head | `main` (`b3973e6`) / `792172576a964592a9c55c0f829433387d30bf84` |
+| CI run | `33298207252`。Verify、Public API Compatibility、Milestone B Integration、Milestone C CloseoutがSUCCESS |
+| Runtime run | `33298207273`。Build Runtime FixtureとJava Runtime CompatibilityがSUCCESS |
+| Required checks | Verify、Public API Compatibility、Java Runtime Compatibility、Milestone B Integration、Milestone C Closeoutの5件がSUCCESS |
+| Ruleset | `main-merge-protection` (`21140116`)、active、strict、bypass 0。2026年8月30日20:49 JSTにMilestone Cをrequiredへ追加 |
+| Merge state | `MERGEABLE / CLEAN` |
+
+本節はimplementation head `7921725`に対する初回PR evidenceである。このdocs-only追記をcommit／pushした後は、
+更新後HEADに対するrequired checksを再確認してからmergeする。
+
 ## 7. DoD closeout
 
 | DoD | Local判定 | Evidence |
 |---|---|---|
 | 全Phase共通1 最新Boot minor | PASS | Boot 4.1.1公式stable、BOM／dependency inventory |
 | 全Phase共通2 ADR／Owner approval | LOCAL PASS | Gate 1 accepted、Gate 10-2実装承認、CP10差分review承認。Gate 2最終承認はremote後 |
-| 全Phase共通3 CI quality gates | LOCAL VERIFIED | local aggregate成功、Milestone C job追加。PR／main CI未実施 |
+| 全Phase共通3 CI quality gates | PR PASS | local aggregateとPR #26初回required checks 5件が成功。docs-only追記後の再checkとmain CIは未実施 |
 | 全Phase共通4 Agent Skills | PASS | Project Overview／Business Feature workflowを適用。規約差分なし、Skill更新不要 |
 | 全Phase共通5 table／Flyway ownership | PASS | Framework SQL 0、Customer migration／table 3、history分離 |
 | 1b-1 Flyway二階層 | PASS | [CP4](phase1b-cp4-data-runtime.md)とpackaged runtime再確認 |
 | 1b-2 統一error | PASS | [CP3](phase1b-cp3-problem-details.md)と400／422外部観測 |
 | 1b-3 log／correlation | PASS | [CP5](phase1b-cp5-observability.md)とasync構造化log |
-| 1b-4 PostgreSQL CI | LOCAL READY | [CP4](phase1b-cp4-data-runtime.md)、CP10 local PostgreSQL 17。Milestone C remote待ち |
+| 1b-4 PostgreSQL CI | PR PASS | [CP4](phase1b-cp4-data-runtime.md)、CP10 local PostgreSQL 17、Milestone C Closeout成功 |
 | 1b-5 health | PASS | [CP6](phase1b-cp6-health-osiv.md)と3 health endpoint |
 | 1b-6 OSIV | PASS | [CP6](phase1b-cp6-health-osiv.md)回帰 |
 | 1b-7 単一実行 | PASS | [CP8](phase1b-cp8-single-execution.md)回帰と同一JAR maintenance journey |
 | 1b-8 性能baseline | PASS | [CP9](phase1b-cp9-performance-baseline.md)公式baselineとCP10 smoke |
-| Customer-like利用可能性 | LOCAL PASS | 空repository、package、HTTP／DB／log／health／maintenanceの横断journey |
+| Customer-like利用可能性 | PR PASS / REMOTE ARTIFACT PENDING | package済み横断journeyとPR CI成功。snapshotからのfresh resolveは未実施 |
 
 ## 8. Deferred／next gate
 
 Security、Reference業務、SPA／非同期API、Oracle、Spring Modulith Level 2、cloud固有scheduler、Project Template、
-正式releaseはPhase 1bへ混在させない。次はGate 10-4として、差分review後にMilestone C commit／push／PRを明示承認の下で行い、
-required checks、手動snapshot publication、remote-artifact Consumer、merge後main CIを記録する。その証拠を得てから
+正式releaseはPhase 1bへ混在させない。次はdocs-only追記後のrequired checksを確認し、Owner承認後にPR #26をmergeする。
+merge後main CI、承認済みmain SHAの手動snapshot publication、fresh remote resolve／Consumer buildを記録してから、
 Architecture OwnerがGate 2および`PHASE 1B COMPLETE`を判定する。
