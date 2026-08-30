@@ -41,5 +41,31 @@ Customer-likeな`workitem` taskは専用JDBC connection上のPostgreSQL session 
 同一task keyの複数processを排他する。task副作用とmigrationはConsumer所有であり、Framework artifact、
 Public Java API、production migrationは追加しない。
 
-正式Reference業務、SecurityおよびFramework内部型は後続Phaseまたは後続CPの成果物であり、
+## CP10 Developer Journey
+
+CP10では、空の隔離Maven repositoryへ正式10-project release unitをstageし、このConsumerをRoot Reactor外の
+別Maven invocationでpackageする。package済みの同一JARを外部processとしてWeb mode／maintenance modeの
+両方で起動し、次の利用者経路を一括観測する。
+
+```text
+KOIKI Parent / BOM / Starterを解決
+  -> workitem / workreview moduleをbuild
+    -> Customer migrationを適用
+      -> version付きHTTPでwork itemを作成
+        -> Use Case / 同期Domain Event / Domain / Repository / PostgreSQLを通過
+          -> Problem Details / structured log / healthを観測
+            -> 同じJARをnon-web maintenance processとして起動
+```
+
+Repository rootから次を実行する。scriptは専用PostgreSQL 17 container、database password、port、隔離Maven
+repositoryを一時生成し、成功・失敗のどちらでもprocess、container、一時directoryをcleanupする。通常の
+Maven local cache、Framework source path、固定credentialは使用しない。
+
+```powershell
+pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp10-closeout.ps1
+```
+
+このcommandはCP1〜CP8 aggregate回帰とCP9短縮Smokeも含む。CP9公式baseline resultは再採取・上書きしない。
+
+正式Reference業務、Security、Level 2、非同期Domain EventおよびFramework内部型は後続Phaseの成果物であり、
 このConsumerへ先行追加しない。

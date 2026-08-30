@@ -34,3 +34,16 @@ DB副作用件数、non-web processおよびstructured lifecycle logを一括確
 ```powershell
 pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp8-single-execution.ps1
 ```
+
+CP10では`verify-cp10-closeout.ps1`がCP8回帰を再利用したうえで、別の空Maven repositoryへ正式10-project
+release unitをstageし、Customer-like Consumerを独立packageする。package済みJARをWeb processとして起動し、
+version付きHTTP、Problem Details、同期Eventを含むDB副作用、structured correlation log、health、Flyway履歴、
+table ownershipを外部観測する。同じJARのnon-web maintenance成功後、CP9を`-Smoke -SkipRegression`で実行し、
+性能数値ではなくharness／schema／cleanup contractだけを確認する。
+
+```powershell
+pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp10-closeout.ps1
+```
+
+scriptは正式artifact、Public API inventory、production migration、runtime dependencyおよび実行前後のGit statusも
+機械検査する。production source、通常local Maven cache、固定credentialまたはCP9公式baseline resultを変更しない。
