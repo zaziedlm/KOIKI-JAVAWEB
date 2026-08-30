@@ -13,10 +13,10 @@
 
 ## Validation index
 
-実装で得た証拠の正本は`validation/`に置きます。2026年8月29日時点で、Phase 1aはMilestone A〜C、
+実装で得た証拠の正本は`validation/`に置きます。2026年8月30日時点で、Phase 1aはMilestone A〜C、
 C1〜C5およびGate 1〜4を完了し、Architecture Ownerが最終CIを含むcloseoutを承認しています。
-Phase 1b Runtime FoundationはCP0開始baselineとGate 1 Owner Review、CP1〜CP7のlocal検証を完了し、
-Milestone AのPR CIを完了しています。Milestone BはPR CI接続待ちです。
+Phase 1b Runtime FoundationはMilestone A／Bを完了・承認済み、CP1〜CP9を完了しています。
+CP10はlocal検証とOwner差分reviewを完了し、Gate 2 local readyです。
 
 ### Phase 1b Runtime Foundation
 
@@ -27,10 +27,13 @@ Milestone AのPR CIを完了しています。Milestone BはPR CI接続待ちで
 | CP1 Runtime Artifact / Consumer | COMPLETE | `validation/phase1b-cp1-runtime-artifact-consumer.md` |
 | CP2 Runtime Core | COMPLETE | `validation/phase1b-cp2-runtime-core.md` |
 | CP3 Problem Details | COMPLETE / PR CI COMPLETE | `validation/phase1b-cp3-problem-details.md` |
-| CP4 Data Runtime Integration | LOCAL COMPLETE / MILESTONE B CI PENDING | `validation/phase1b-cp4-data-runtime.md` |
-| CP5 Observability | LOCAL COMPLETE / MILESTONE B CI PENDING | `validation/phase1b-cp5-observability.md` |
-| CP6 Health / OSIV | LOCAL COMPLETE / MILESTONE B CI PENDING | `validation/phase1b-cp6-health-osiv.md` |
-| CP7 Domain Event / MyBatis BOM | LOCAL COMPLETE / MILESTONE B CI PENDING | `validation/phase1b-cp7-domain-event-mybatis.md` |
+| CP4 Data Runtime Integration | COMPLETE / MILESTONE B ACCEPTED | `validation/phase1b-cp4-data-runtime.md` |
+| CP5 Observability | COMPLETE / MILESTONE B ACCEPTED | `validation/phase1b-cp5-observability.md` |
+| CP6 Health / OSIV | COMPLETE / MILESTONE B ACCEPTED | `validation/phase1b-cp6-health-osiv.md` |
+| CP7 Domain Event / MyBatis BOM | COMPLETE / MILESTONE B ACCEPTED | `validation/phase1b-cp7-domain-event-mybatis.md` |
+| CP8 Single Execution | COMPLETE | `validation/phase1b-cp8-single-execution.md` |
+| CP9 Performance Baseline | COMPLETE / OFFICIAL BASELINE RECORDED | `validation/phase1b-cp9-performance-baseline.md` |
+| CP10 Developer Journey / Gate 2 | LOCAL COMPLETE / GATE 2 LOCAL READY | `validation/phase1b-closeout.md` |
 
 ### Phase 1a Build Foundation
 

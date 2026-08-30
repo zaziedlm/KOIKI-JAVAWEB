@@ -25,3 +25,25 @@ Context Propagationによる同一executor threadの伝播／漏えい防止、C
 CP6ではActuator healthの公開範囲とprobe既定、`koiki-starter-data-jpa`のOSIV false／Application overrideを
 細粒度に検証する。実PostgreSQLのUP／DOWN／restoreとresponse生成時のEntity露出負例はCustomer-like
 Runtime Consumerが担当し、`verify-cp6-health-osiv.ps1`がartifact／依存境界を含めて一括検証する。
+
+CP8では`verify-cp8-single-execution.ps1`がCP1〜CP7回帰、隔離Maven repositoryへの正式release unit stage、
+Consumer独立build、artifact／依存／migration境界を検証する。package済みの同一JARを複数の実OS processで
+起動し、同一task keyの競合、異なるkeyの独立性、process kill後のPostgreSQL session lock解放とretry、
+DB副作用件数、non-web processおよびstructured lifecycle logを一括確認する。
+
+```powershell
+pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp8-single-execution.ps1
+```
+
+CP10では`verify-cp10-closeout.ps1`がCP8回帰を再利用したうえで、別の空Maven repositoryへ正式10-project
+release unitをstageし、Customer-like Consumerを独立packageする。package済みJARをWeb processとして起動し、
+version付きHTTP、Problem Details、同期Eventを含むDB副作用、structured correlation log、health、Flyway履歴、
+table ownershipを外部観測する。同じJARのnon-web maintenance成功後、CP9を`-Smoke -SkipRegression`で実行し、
+性能数値ではなくharness／schema／cleanup contractだけを確認する。
+
+```powershell
+pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp10-closeout.ps1
+```
+
+scriptは正式artifact、Public API inventory、production migration、runtime dependencyおよび実行前後のGit statusも
+機械検査する。production source、通常local Maven cache、固定credentialまたはCP9公式baseline resultを変更しない。

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "runId": "4b236a7e99b74ca0bc1a542aa668d30a",
+  "startedAt": "2026-08-29T23:14:35.8508569+09:00",
+  "gitCommit": "dff9d8c0a1eb1b5e399e5dbf435534d4dec912b5",
+  "gitDirty": false,
+  "host": {
+    "os": "Microsoft Windows 11 Pro",
+    "osVersion": "10.0.26200",
+    "architecture": "64 ビット",
+    "cpu": "Intel(R) Core(TM) i5-14400F",
+    "logicalProcessors": 16,
+    "memoryBytes": 34191138816
+  },
+  "java": "openjdk version 21.0.12.1 2026-08-18 LTS",
+  "jvmArguments": [
+    "-Xms256m",
+    "-Xmx256m"
+  ],
+  "maven": "3.9.16",
+  "docker": "client=29.5.3-rd server=29.5.3",
+  "postgres": {
+    "image": "postgres:17-alpine",
+    "digest": "sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73",
+    "serverVersion": "17.11"
+  },
+  "timezone": "Tokyo Standard Time",
+  "harnessVersion": 1,
+  "artifacts": {
+    "bareSha256": "857d060f80772552ba62e7accd384c585ba245a8362a2cba75424f1e8a8ab272",
+    "koikiSha256": "135c86a0cbbd08fa57bdb55a17ebf6dc999a6e8240511fe85b117afc0bc3be8c"
+  },
+  "protocol": {
+    "forks": 3,
+    "startupForks": 3,
+    "warmup": 200,
+    "measurement": 1000,
+    "concurrency": 1,
+    "timeoutMillis": 5000
+  }
+}

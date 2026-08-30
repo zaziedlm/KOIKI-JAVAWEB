@@ -44,7 +44,7 @@ class RuntimeFoundationConsumerFlywayTest {
                 .single();
 
         assertThat(koikiVersions).containsExactly("1");
-        assertThat(customerVersions).containsExactly("0", "1", "2", "3");
+        assertThat(customerVersions).containsExactly("0", "1", "2", "3", "4");
         assertThat(orderMarker).isEqualTo("koiki-before-customer");
     }
 }

@@ -3,9 +3,9 @@
 **版:** v0.1<br>
 **作成日:** 2026年8月28日<br>
 **文書状態:** ACCEPTED — EXECUTION IN PROGRESS<br>
-**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP7 COMPLETE / Milestone A COMPLETE / Milestone B PR CI SUCCESS・OWNER REVIEW／MERGE PENDING<br>
+**実行状態:** CP0 COMPLETE / Gate 1 ACCEPTED / CP1〜CP10 LOCAL COMPLETE / GATE 2 LOCAL READY / Milestone A・B COMPLETE / Milestone C PR PENDING<br>
 **Architecture Owner:** Shuichi Kataoka<br>
-**最終更新日:** 2026年8月29日（PR #25 remote CI成功、Milestone B Owner Review／merge待ち）<br>
+**最終更新日:** 2026年8月30日（CP10 local closeout承認、Gate 2 local ready、Milestone C remote待ち）<br>
 **対象Phase:** Phase 1b Runtime Foundation<br>
 **実行方式:** local検証を主経路とする最大3 milestone branch / Pull Request<br>
 **開始基準main:** `c87e7a5561dff24afea7452f63cce165c666df82`<br>
@@ -28,8 +28,9 @@ Phase 1b成果物はFramework内部のauto-configuration testだけで完了と�
 
 | 項目 | 内容 |
 |---|---|
-| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP7 COMPLETE、Milestone A COMPLETE、Milestone B PR CI SUCCESS・OWNER REVIEW／MERGE PENDING |
+| Phase / status | Phase 1b Runtime Foundation / CP0 COMPLETE、Gate 1 ACCEPTED、CP1〜CP10 LOCAL COMPLETE、GATE 2 LOCAL READY、Milestone A・B COMPLETE、Milestone C PR PENDING |
 | Ownership | Framework主体。BOM、CI、非配布fixture、性能harnessはTooling |
+| Current branch / baseline | `feature/phase1b-operations-closeout` / main merge commit `b3973e66134898765b95796c3622aaa68759b4fd` |
 | 対象module | Gate 1で候補を承認し、各CPの細粒度fixtureまたはCustomer-like Consumerが必要としたleaf moduleだけを追加する |
 | 適用指針 | Root `AGENTS.md`、Project Overview Skill、Grand Design、Repository Architecture、ADR Register、Phase 1a closeout |
 | 検証 | Java 21、Maven Wrapper、Docker / Testcontainers PostgreSQL、ArchUnit、Spring Modulith Level 0、NullAway、japicmp、required checks |
@@ -179,7 +180,7 @@ versionless MyBatis probeの4.1.0解決、Testcontainers cleanupを確認した�
 
 証拠の詳細は`../architecture/validation/phase1b-cp7-domain-event-mybatis.md`を正本とする。
 
-### 3.11 Milestone B PR CI成功
+### 3.11 Milestone B remote CI・merge完了
 
 Draft PR #25の初回CIでは、独立`Milestone B Integration`とPublic API Compatibilityは成功したが、
 通常`Verify`に残っていた歴史的なCP3 aggregateが、CP4で承認済みの`spring-data-jpa`を拒否した。
@@ -192,10 +193,91 @@ Evidence commit `6f99f63b18fc40c43d1709f60abc4ebce3c0456e`に対するCI run `33
 Java Runtime Compatibility run `33240299494`も全checkが成功した。`Milestone B Integration`は
 初回3分04秒、是正後2分55秒、Evidence反映後2分56秒の3回連続SUCCESSで、PostgreSQL Testcontainers、
 DB DOWN／restore、全Consumer test、cleanupをremote runnerで確認した。Architecture Ownerはrequired check化を
-`ACCEPTED`とし、main rulesetの4番目のrequired contextへ追加した。PR #25はDraftかつmerge state `CLEAN`であり、
-Milestone Bはmerge pendingとする。
+`ACCEPTED`とし、main rulesetの4番目のrequired contextへ追加した。この時点のpre-merge判定では、
+PR #25はDraftかつmerge state `CLEAN`であり、Milestone Bはmerge pendingであった。
 
 remote Evidenceの詳細とrun URLは`../architecture/validation/phase1b-cp7-domain-event-mybatis.md`を正本とする。
+
+[PR #25](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/25)はfinal head
+`84703a892b84e4980d30473131ca388a7e6aa453`からmerge commit
+`b3973e66134898765b95796c3622aaa68759b4fd`として、2026年8月29日16:39 JSTにmainへmergeされた。
+main pushのCI run `33241356803`では`Verify (ubuntu-24.04)`、`Milestone B Integration`、
+`Public API Compatibility`、Java Runtime Compatibility run `33241356811`ではfixture buildとJava 21／25 runtime検証が
+すべて成功した。main ruleset `21140116`もactive／strictかつrequired checks 4件で一致している。
+
+PR merge、main CI、rulesetおよびlocal mainのidentityを確認したため、Milestone Bを`COMPLETE / ACCEPTED`としてcloseする。
+Milestone Cの`feature/phase1b-operations-closeout`はmerge commit `b3973e6`から分岐済みであり、
+この時点ではCP8を`START READY / NOT STARTED`として開始し、その後Gate 8-1／8-2を経てGate 8-3を完了した。
+
+### 3.12 CP8 local検証完了
+
+同一Consumer executable JARを明示的なmaintenance modeだけnon-web processとして起動し、Spring Boot標準の
+`ApplicationRunner`／exit code経路と、PostgreSQL session advisory lockを専用JDBC connectionで保持する
+Customer-like単一実行contractを実装した。Framework artifact、Public Java API、production migration、
+新規business moduleは追加していない。
+
+細粒度testと実OS process acceptanceにより、同一task keyのwinner exit `0`／contender exit `10`と
+DB副作用1回、異なるtask keyの独立性、process kill後のsession lock解放／retry、invalid input exit `64`、
+non-web起動および`executionId`によるstructured log相関をPostgreSQL 17.11で確認した。CP1〜CP7回帰、
+release unit 10 projects、Architecture Contract 4件、ArchUnit Rules 66件も成功した。
+
+証拠の詳細は`../architecture/validation/phase1b-cp8-single-execution.md`を正本とする。
+
+### 3.13 CP9開始preflight／計測設計
+
+CP8完了commit `679b6f6a769e8f1208baaf7cc0b45d1f22668390`を開始基準とし、Tooling-ownedかつ非配布の
+`build-support/performance-baseline`について計測contractを設計した。同一fixture binaryをbare Spring Boot／
+KOIKI適用の2 assemblyから実行し、Phase 1bに存在するHTTP success／structured log、Validation／Problem Details、
+JPA／PostgreSQL writeおよびstartupだけを同一環境でpaired measurementする案をOwnerが承認した。
+
+fingerprint、raw、aggregateの3結果をversion付きschemaで分離し、cleanなharness commitから公式baselineを採取する。
+性能数値、PC間比較または案件SLAはquality gateにせず、harness、3 result schema、最小negative、再集計とcleanupだけを
+機械検証する。参考値をシンプルに比較できるようp50／p95へ限定し、Framework artifact、Public API、production設定、
+migrationは変更しない。
+
+設計の詳細は`../architecture/validation/phase1b-cp9-performance-baseline.md`を正本とする。
+
+### 3.14 CP9 harness実装
+
+Tooling-ownedの`build-support/performance-baseline`へshared fixture、bare／KOIKI assembly、外部process runner、
+fingerprint／raw／aggregate schemaと一括verification scriptを実装した。Framework release unit、Public API、production設定、
+migrationおよび既存Consumer production codeは変更していない。実行全般をやり直し、CP1〜CP8 aggregate回帰に続いて、
+隔離repositoryでharness 5 module、runner unit test 5件、bare／KOIKI実process、startupと3 workload、DB／log件数、再集計、
+3 positive／2 negative schemaを含むCP9 Smokeが成功した。全般レビューでclean preflight、response／sample acceptanceおよび
+version付き`Location`を補強し、再実行にも成功した（run ID `8f4f4b45b7174516827d81ff7d463abc`、計測sampleのfailure 0件）。
+Gate 9-2のlocal実process acceptanceを満たし、harness commit後のclean worktreeから公式baselineを採取できる状態とした。
+
+### 3.15 CP9公式baseline採取完了
+
+harness commit `dff9d8c0a1eb1b5e399e5dbf435534d4dec912b5`のclean worktreeから正式protocolを実行し、run ID
+`4b236a7e99b74ca0bc1a542aa668d30a`を`build-support/performance-baseline/results/20260829-232318`へ記録した。
+fingerprintは`gitDirty=false`、3 fork、startup 3 fork、warm-up 200、measurement 1,000、concurrency 1を示す。
+raw resultは18,006 sample、failure 0件で、8 variant／workload系列と4 paired comparisonを生成した。
+
+公式実行はCP1〜CP8 aggregate回帰、隔離release unit／harness build、dependency境界、status／response／DB／log、
+sample件数、決定的再集計、3 positive／2 negative schemaおよびcleanupをすべて通過した。性能数値は同一PC内の参考値であり、
+required閾値や案件SLAにはしない。以上によりDoD 1b-8とCP9を`LOCAL COMPLETE / OFFICIAL BASELINE RECORDED`とし、
+Milestone CはCP10 Developer Journey／DoD／Gate 2 closeoutへ進む。
+
+### 3.16 CP10 local closeout完了
+
+Gate 10-1でrelease unit、Public API、configuration properties、migration／table、DoD、ADR、SkillsおよびCIをinventoryし、
+Ownerは2026年8月30日にGate 10-2の最小実装を承認した。Framework production code、Public Java API、production migration、
+業務moduleを増やさず、Tooling-ownedなCP10 aggregate、Milestone C CI job、既存internal snapshot workflowのPhase 1b更新およびREADMEだけを変更した。
+
+CP10 aggregateは隔離repositoryへ10 projectsをclean stageし、root aggregatorを除くruntime release unit、既存Public API 5型、
+Starter 12 configuration properties、Framework SQL 0件、Customer migration／table 3件を確認した。package済みConsumer JARを
+専用PostgreSQL 17.11上で起動し、version付きHTTP→Use Case→同期event→Domain→Repository→DB、400／422 Problem Detailsと
+rollback、async相関log、health、同一JARのnon-web maintenance／副作用1回を外部観測した。CP1〜CP8 aggregate、CP9 smoke、
+child process／container／一時repository cleanupも含む差分review後の最終実行は8分35秒で成功した。
+
+さらにroot aggregatorを除く9成果物をfile repositoryへdeployし、別の空repositoryから全9座標をtransitive resolveするdry-runが
+1分36秒で成功した。通常CIへ`Milestone C Closeout`を接続し、承認済みmain完全SHAだけを対象に9成果物をpublishして
+remote artifactから独立Consumerをbuildする手動workflowを用意した。remote publish自体は未実施である。
+
+Ownerは5点の差分review反映と最終aggregate結果を確認し、状態を`CP10 LOCAL COMPLETE / GATE 2 LOCAL READY`と承認した。
+Milestone C PR、required checks、snapshot publication、mergeおよびmain CIを得るまでGate 2またはPhase 1bを完了扱いにしない。詳細は
+`../architecture/validation/phase1b-closeout.md`を正本とする。
 
 ## 4. Scope
 
@@ -492,7 +574,7 @@ Java Public APIが必要と判明した場合はCP8の実装前に型シグネ�
 | | | CP7 | Named Interface / Domain Event判断、MyBatis BOMのみ | ConsumerのTier 1 / 2間同期event、直接Bean参照なし、Level 0回帰 |
 | C Operations & Closeout | `feature/phase1b-operations-closeout` | CP8 | 単一実行contractと複数process排他 | Consumer同一成果物をWeb外起動、2 process競合、crash / retry |
 | | | CP9 | 性能baseline harness | Customer-like経路のKOIKI有無差分、fingerprint、raw result、schema負例 |
-| | | CP10 | Developer Journey、DoD、ADR、Skills、release unit、最終CI、Gate 2 | remote artifactからConsumerをbuild・起動し、全経路とrequired checksを再実行 |
+| | | CP10 | Developer Journey、DoD、ADR、Skills、release unit、最終CI、Gate 2 | 承認SHAのpreflightでpackage済み全経路とrequired checksを実行し、publish後はfresh repositoryから9成果物をresolveしてConsumerをbuild／test |
 
 各Milestoneは最新mainから分岐する。CPはreview可能な論理境界であり、必ず1 CP = 1 commitとはしない。
 
@@ -627,3 +709,5 @@ Phase 1aで得た定性的実績は、localのpositive / negative / restoreを�
 - `../architecture/validation/phase1b-cp1-modulith-2.1.1-regression.md`
 - `../architecture/validation/phase1b-cp1-runtime-artifact-consumer.md`
 - `../architecture/validation/phase1b-cp2-runtime-core.md`
+- `../architecture/validation/phase1b-cp8-single-execution.md`
+- `../architecture/validation/phase1b-cp9-performance-baseline.md`

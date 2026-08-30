@@ -1,10 +1,10 @@
-name: Publish internal snapshot
+name: Publish Phase 1b internal snapshot
 
 on:
   workflow_dispatch:
     inputs:
       expected_commit:
-        description: Full 40-character main commit SHA approved for publication
+        description: Full 40-character main commit SHA approved for Phase 1b publication
         required: true
         type: string
 
@@ -12,12 +12,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: phase1a-internal-snapshot
+  group: koiki-internal-snapshot
   cancel-in-progress: false
 
 jobs:
   authorize:
-    name: Confirm approved source
+    name: Confirm approved Phase 1b source
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
@@ -29,7 +29,7 @@ jobs:
           EXPECTED_COMMIT: ${{ inputs.expected_commit }}
         run: |
           if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
-            echo "Snapshots may only be published from refs/heads/main." >&2
+            echo "Phase 1b snapshots may only be published from refs/heads/main." >&2
             exit 1
           fi
           if [[ ! "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
@@ -42,18 +42,12 @@ jobs:
           fi
 
   preflight:
-    name: Preflight (${{ matrix.os }})
+    name: Phase 1b closeout preflight
     needs: authorize
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     permissions:
       contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          # windows-2025 temporarily disabled: production runtime is Linux-only, re-enable if that changes
-          - ubuntu-24.04
 
     steps:
       - name: Check out repository
@@ -68,30 +62,16 @@ jobs:
           java-version: "21"
           cache: maven
 
-      - name: Verify with Maven Wrapper on Windows
-        if: runner.os == 'Windows'
+      - name: Verify Phase 1b closeout
         shell: pwsh
-        run: .\mvnw.cmd --batch-mode --no-transfer-progress clean verify
-
-      - name: Verify with Maven Wrapper on Linux
-        if: runner.os == 'Linux'
-        shell: bash
-        run: ./mvnw --batch-mode --no-transfer-progress clean verify
-
-      - name: Verify Tier 1 and Tier 2 Feature Templates
-        shell: pwsh
-        run: pwsh -NoProfile -File build-support/feature-templates/verify-feature-templates.ps1
-
-      - name: Verify NullAway positive, negative, and restore paths
-        shell: pwsh
-        run: pwsh -NoProfile -File build-support/null-safety/verify-null-safety.ps1
+        run: pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp10-closeout.ps1
 
   publish:
-    name: Publish approved snapshot
+    name: Publish approved nine-artifact snapshot
     needs: preflight
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    environment: phase1a-internal-snapshot
+    environment: phase1b-internal-snapshot
     permissions:
       contents: read
       packages: write
@@ -112,13 +92,67 @@ jobs:
           server-username: GITHUB_ACTOR
           server-password: GITHUB_TOKEN
 
-      - name: Publish the approved four-artifact release unit
+      - name: Publish the approved Phase 1b release unit
         shell: bash
         run: >-
           ./mvnw --batch-mode --no-transfer-progress
-          -pl koiki-dependencies-bom,koiki-parent,koiki-architecture-contract,koiki-archunit-rules
+          -pl koiki-dependencies-bom,koiki-parent,koiki-architecture-contract,koiki-archunit-rules,koiki-starters/koiki-starter-api,koiki-starters/koiki-starter-data,koiki-starters/koiki-starter-data-jpa,koiki-starters/koiki-starter-observability,koiki-testing
           -DaltSnapshotDeploymentRepository=github::https://maven.pkg.github.com/zaziedlm/KOIKI-JAVAWEB
           -DdeployAtEnd=true
           clean deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  verify-remote-consumer:
+    name: Resolve snapshot and build independent Consumer
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Set up Temurin 21 and Maven authentication
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+
+      - name: Resolve all nine artifacts and test the independent Consumer
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $repository = Join-Path $env:RUNNER_TEMP 'phase1b-remote-repository'
+          $remote = 'github::default::https://maven.pkg.github.com/zaziedlm/KOIKI-JAVAWEB'
+          $artifacts = @(
+            'org.koikifw:koiki-dependencies-bom:0.1.0-SNAPSHOT:pom',
+            'org.koikifw:koiki-parent:0.1.0-SNAPSHOT:pom',
+            'org.koikifw:koiki-architecture-contract:0.1.0-SNAPSHOT:jar',
+            'org.koikifw:koiki-archunit-rules:0.1.0-SNAPSHOT:jar',
+            'org.koikifw:koiki-starter-api:0.1.0-SNAPSHOT:jar',
+            'org.koikifw:koiki-starter-data:0.1.0-SNAPSHOT:jar',
+            'org.koikifw:koiki-starter-data-jpa:0.1.0-SNAPSHOT:jar',
+            'org.koikifw:koiki-starter-observability:0.1.0-SNAPSHOT:jar',
+            'org.koikifw:koiki-testing:0.1.0-SNAPSHOT:jar'
+          )
+          foreach ($artifact in $artifacts) {
+            ./mvnw --batch-mode --no-transfer-progress --non-recursive `
+              "-Dmaven.repo.local=$repository" `
+              org.apache.maven.plugins:maven-dependency-plugin:3.9.0:get `
+              "-Dartifact=$artifact" "-DremoteRepositories=$remote" -Dtransitive=true
+            if ($LASTEXITCODE -ne 0) { throw "Remote resolution failed for $artifact" }
+          }
+          ./mvnw --batch-mode --no-transfer-progress `
+            "-Dmaven.repo.local=$repository" `
+            -f build-support/runtime-foundation-consumer/pom.xml clean verify
+          if ($LASTEXITCODE -ne 0) { throw 'Remote-artifact Consumer build failed' }
