@@ -7,15 +7,14 @@ Phase 0 Walking SkeletonとArchitecture Baselineは2026年8月19日に完了し�
 Phase 1a Build Foundationでは、検証済みの知見を正式なMaven成果物、Public API、CIおよび
 外部Consumer検証へ再構成し、2026年8月27日に完了しました。
 Phase 1b Runtime Foundationでは、Spring標準を優先したAPI、Data、JPA、Observabilityの
-runtime Starterと、Customer-like Consumerによる運用経路を実装・検証しています。
+runtime Starterと、Customer-like Consumerによる運用経路を実装・検証し、2026年8月30日に完了しました。
 
 ## 現在の状態
 
 - Phase 0 Architecture Baseline: COMPLETE / ACCEPTED
 - Phase 1a Build Foundation: COMPLETE / ACCEPTED
-- Phase 1b Milestone A / B: COMPLETE / ACCEPTED
-- Phase 1b Milestone C: CP10 LOCAL COMPLETE / PR PENDING
-- Phase 1b Runtime Foundation: GATE 2 LOCAL READY / REMOTE EVIDENCE PENDING
+- Phase 1b Milestone A / B / C: COMPLETE / ACCEPTED
+- Phase 1b Runtime Foundation: COMPLETE / GATE 2 ACCEPTED
 - 正式groupId / Java base package: `org.koikifw`
 - Build JDK / target bytecode: Java 21
 - Runtime compatibility target: Java 21 / Java 25
@@ -29,6 +28,8 @@ Validation文書を検証証拠として保持します。C1では正式4成果�
 C2ではそのsnapshotだけを利用するRepository外Consumerのlocal / remote検証を完了しました。
 C3ではPublic API互換性、C4ではJava 21 / 25 runtime互換性を正式required checkとして実証し、
 C5ではBaseline、Repository hygiene、DoD traceabilityおよびmain最終CIをcloseoutしました。
+Phase 1bでは9成果物の内部snapshotを公開し、fresh remote repositoryから全座標を解決して
+独立Customer-like Consumerをbuild／testする配布経路まで実証しました。
 
 ## 正本
 
