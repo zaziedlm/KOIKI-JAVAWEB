@@ -1,7 +1,7 @@
 # KOIKI-JavaWeb-FW グランドデザイン v0.2
 
 **文書版:** v0.2（構想確定・基本設計準備版）
-**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）
+**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、およびCognito / ALB SSOのセキュリティ解釈を進展）
 **文書状態:** ACCEPTED（Phase 0 Architecture Baseline）
 **承認日:** 2026年8月19日
 **Architecture Owner:** Shuichi Kataoka
@@ -243,7 +243,7 @@ UI は API 基盤の上に載る**公式プロファイル**として提供す�
 
 **KOIKIは年1回のメジャーリリースを行い、最新と直前の2ラインを管理対象とする。**各ラインのOSSサポートは、対応するSpring Bootの実際のOSSサポート終了日までとし、日付をリリース時に明示する。12か月の移行期間が必要な場合は商用延長サポートを選択肢とし、顧客への更新義務と移行支援を契約可能な形で定める。
 
-ブラウザ向け認証は HTTP Session を第一標準とし、セッションは Spring Session JDBC により既存 PostgreSQL へ格納する。外部 API およびサービス間連携には OAuth 2.0 Bearer JWT を用いる。OIDC を企業 SSO の優先方式とし、SAML、Cognito、ALB 認証、HENNGE 等を Adapter として追加できる構造を持つ。
+ブラウザ向け認証は HTTP Session を第一標準とし、セッションは Spring Session JDBC により既存 PostgreSQL へ格納する。外部 API およびサービス間連携には OAuth 2.0 Bearer JWT を用いる。OIDC を企業 SSO の優先方式とする。Amazon Cognito User PoolへKOIKI-JavaWebが直接接続する場合は標準OIDC Providerとして扱い、Cognito専用Framework APIを要求しない。ALB＋Cognito、ALB＋外部OIDC等のEdge Authenticationは、署名済みclaimと信頼境界を検証するcloud固有Adapterとして分離する。SAML、HENNGE等も同様に標準機能とAdapterの境界を保って追加できる構造を持つ。
 
 標準データベースは PostgreSQL／Aurora PostgreSQL とし、Oracle を設計適合対象とする。データアクセスは **JPA、MyBatis、JdbcClient の3系統**を公式化し、**モジュール単位で選択**する。既存 SQL 資産の移行を正式なユースケースとして扱う。
 
@@ -1416,9 +1416,21 @@ HTMX と Spring Security の統合には `wimdeblauwe/htmx-spring-boot` を用�
 
 ### 13.5 SPA プロファイル
 
-React 等の SPA を KOIKI 本体へ同梱しない。**BFF 層も設けない。**SPA は静的配信し、バックエンド API を直接利用する。
+React 等の SPA を KOIKI 本体へ同梱しない。KOIKI本体はBFF runtimeを必須配布しないが、**BFF architectureを禁止しない。**
+SPAの認証profileは、same-origin Session、Customer-owned BFF、direct Token SPAを明示的に選択する。
 
-> KOIKI-PYFW が Next.js BFF を撤去して純 SPA へ移行した経験に基づく判断である。
+> KOIKI-PYFW が Next.js BFF を撤去して純 SPA へ移行した経験は、軽量なdirect Token SPAの実現可能性を示す。
+> 一方、RFC 10017が業務・機微情報・個人情報を扱うbrowser applicationへBFFを強く推奨したことを受け、
+> Next.js BFFを現実的な推奨選択肢として復帰させる。これは純SPAの否定ではなく、セキュリティ解釈の進展である。
+
+| Profile | Browser境界 | KOIKI-JavaWeb | Position |
+|---|---|---|---|
+| same-origin Session SPA | Secure HttpOnly Session Cookie + CSRF | OIDC Client + application backend | **第一標準** |
+| Next.js BFF | BFF Session Cookie。OAuth tokenはserver側 | Bearer JWT Resource Server | frontend / API分離の業務・PII用途で推奨 |
+| direct Token SPA | Authorization Code + PKCEで得たAccess Token | Bearer JWT Resource Server | 明示opt-in。risk acceptance必須 |
+
+direct Token SPAはpublic clientであり、client secretをfrontendへ置かない。APIへ送るのはKOIKI API audienceの
+Access Tokenだけとし、ID TokenをAPI認証へ使用しない。Implicit flowは採用しない。
 
 KOIKI が提供するもの：
 
@@ -1429,12 +1441,14 @@ KOIKI が提供するもの：
 - OpenAPI 定義
 - 統一エラー形式（RFC Problem Details）
 - SSO / SAML の SPA コールバック契約
+- Authorization Code + PKCE、ID Token / Access Token分離、BFF session / token境界
 - リフレッシュトークン rotation・再利用検知・許可外リダイレクト URI の fail-closed（Token 方式利用時）
 - 最小参照実装（Phase 4）
 
 **専用 Starter は設けない。**`koiki-starter-api` と `koiki-starter-security` で必要な機能はすべて満たされるため、**SPA プロファイルの実体は契約文書と参照実装である。**
 
-これらの契約は KOIKI-PYFW dev/v0.8 が構築した実績のある仕様を移植する。言語非依存の仕様であり、そのまま転用できる。
+これらの契約はKOIKI-PYFW dev/v0.8のEvidenceを入力とし、Spring標準、RFC 9700、RFC 10017へfittingして再設計する。
+Pythonのendpoint、JWT Cookie、token実装またはmigrationをそのまま転用しない。
 
 ### 13.6 プロファイル併用
 
@@ -1443,7 +1457,9 @@ KOIKI が提供するもの：
 併用時の注意点：
 
 - CSRF の扱いが異なる（Thymeleaf は hidden field、SPA は double-submit）ため、Spring Security の設定を経路ごとに分離する
-- セッションは共有される。認証状態の一貫性を Phase 4 で検証する
+- same-origin Session profileではセッションを共有する。Bearer profileへCookie認証をfallbackさせない
+- Next.js BFFのsession / tokenはCustomer境界に置き、KOIKI APIはBFFからのBearerもrequestごとに検証する
+- profile間の認証状態、logout、CSRF / CORS境界をPhase 4で検証する
 
 ## 14. セキュリティアーキテクチャ
 
@@ -1464,10 +1480,18 @@ KOIKI が提供するもの：
 |---|---|---|
 | Spring MVC / Thymeleaf | HTTP Session | CSRF、Session Fixation、Cookie 保護 |
 | same-origin SPA | Secure HttpOnly Cookie Session | **Token をブラウザ Storage へ保存しない** |
+| frontend / API分離の業務SPA | Next.js等のBFF Session | BFFがconfidential clientとしてTokenをserver側管理 |
+| direct Token SPA | OAuth 2.0 Authorization Code + PKCE | public client。Access TokenだけをBearer送信。明示risk acceptance |
 | 外部 API | OAuth 2.0 Bearer JWT | issuer、audience、scope を検証 |
 | サービス間 | OAuth 2.0 Client Credentials 等 | 案件要件に応じる |
-| 企業 SSO | OIDC 優先 | SAML は拡張モジュール |
+| 企業 SSO（application direct） | Spring Security OIDC Client | Amazon Cognito User Poolを含む標準OIDC Providerへ直接接続。SAMLは拡張モジュール |
+| 企業 SSO（edge authenticated） | 検証済みPre-Authentication | ALB＋Cognito等。署名、期待するedge識別子、通信経路をcloud固有Adapterで検証 |
 | **多要素認証** | **Spring Security 7 の MFA** | 標準機能として利用可能。KOIKI 標準に含めるかは Phase 2 で判断する |
+
+Cognito発行Access TokenをAPIへ送る構成では、KOIKI-JavaWebをOAuth 2.0 Resource Serverとして扱う。
+Cognito Identity PoolによるAWS一時credential発行はWeb loginとは異なる責務であり、この認証profileへ含めない。
+Edge Authenticationのproduction Adapterと実ALB環境検証はcloud固有成果物として後続Phaseへ割り当て、
+Phase 2では共通trust contract、identity link、authority変換、auditおよび偽装headerのnegative pathを定義する。
 
 ### 14.3 セッションストア
 
@@ -2814,7 +2838,8 @@ expense.adapter.inbound.event   未処理申請を検査 → 存在すれば例�
 
 Phase 3のREST APIとPhase 2の認証基盤を利用してSPA最小参照実装（React）を追加する。
 **Thymeleaf と SPA の併用**、ブラウザ経路ごとの認証・CSRF設定、およびKOIKI-PYFWの
-SPA認証契約の移植を実証する。
+SPA認証EvidenceをSpring / OAuth標準へfittingした契約を実証する。same-origin Sessionを必須とし、
+Next.js BFFを最小参照候補、direct Token SPAをrisk acceptance付きprofileとして比較する。
 
 #### Phase 4 — Spring Batch
 

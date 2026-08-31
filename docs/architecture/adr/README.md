@@ -34,9 +34,9 @@ Level 2以降、Flyway三階層、非同期event等は、registerで示すPhase 
 | ADR-003 | Build | Phase 0で検証 | `../validation/walking-skeleton-build-foundation.md`（Maven／Parent／BOM） | ACCEPTED |
 | ADR-004 | Architecture | Phase 0で検証 | `../validation/walking-skeleton-archunit-distribution.md`、`../validation/walking-skeleton-tier2-practicality.md`（module境界） | ACCEPTED |
 | ADR-005 | Module Tooling | Phase 0で検証 | `../validation/walking-skeleton-tier2-practicality.md`（Level 0相当のmodule検証と同期連携。Level 2以降は対象外） | ACCEPTED |
-| ADR-006 | UIプロファイル方針 | 確定 | —（API基盤を正本とし、Thymeleaf＋HTMXとSPAは任意の対等profile。具体契約は後続Phaseで検証） | ACCEPTED |
-| ADR-007 | Browser Auth | 確定 | —（MVC／一般的なsame-origin SPAではHTTP Sessionが第一標準。stateless SPAを禁止しない） | ACCEPTED |
-| ADR-008 | API Auth | 確定 | —（外部API／stateless React SPAではAuthorization headerのBearer JWTが第一標準。Token lifecycleは後続Phaseで検証） | ACCEPTED |
+| ADR-006 | UIプロファイル方針 | 確定 | `../validation/phase2-spa-sso-security-fitting.md`（API基盤を正本とし、Thymeleaf＋HTMXとSPAは任意の対等profile。SPAはSession / BFF / direct Tokenを選択） | ACCEPTED |
+| ADR-007 | Browser Auth | 確定 | `../validation/phase2-spa-sso-security-fitting.md`（same-origin SPAではHTTP Sessionが第一標準。BFFを禁止せず、direct Token SPAはrisk acceptanceを要する） | ACCEPTED |
+| ADR-008 | API Auth | 確定 | `../validation/phase2-spa-sso-security-fitting.md`（BFF／外部API／direct Token SPAからはAuthorization headerのBearer Access Token。ID Tokenは拒否し、Token lifecycleは責務別に検証） | ACCEPTED |
 | ADR-009 | Enterprise SSO | 確定 | — | ACCEPTED |
 | ADR-010 | Database | 確定 | — | ACCEPTED |
 | ADR-011 | Persistence | 確定 | — | ACCEPTED |
@@ -88,6 +88,7 @@ ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
 | 2026年8月14日 | ADR-030、ADR-031、ADR-032、ADR-033、ADR-036 | ACCEPTED（Spring Framework 7正式APIへの記述修正を含む） | Shuichi Kataoka |
 | 2026年8月14日 | ADR-017、ADR-029、ADR-035、ADR-040、ADR-043 | ACCEPTED（サポート期間、Virtual Threads、Framework昇格の適用scope補足を含む） | Shuichi Kataoka |
 | 2026年8月15日 | ADR-019、ADR-037、ADR-038、ADR-039、ADR-044 | ACCEPTED（cacheのセキュリティ制約、read modelの依存方向、Oracle検証scopeの補足を含む） | Shuichi Kataoka |
+| 2026年8月31日 | ADR-006、ADR-007、ADR-008 | ACCEPTED（RFC 10017を受けたSPA Session / Next.js BFF / direct Token profileへのセキュリティ解釈の進展） | Shuichi Kataoka |
 
 ## 集計
 
