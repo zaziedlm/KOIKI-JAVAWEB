@@ -70,7 +70,7 @@ Level 2以降、Flyway三階層、非同期event等は、registerで示すPhase 
 | ADR-041 | Public API境界 | Phase 0で検証 | `../validation/walking-skeleton-archunit-distribution.md`（外部consumerを含む） | ACCEPTED |
 | ADR-042 | テーブル所有権とFlyway | Phase 0で検証 | `../validation/walking-skeleton-flyway-two-tier.md`（所有者別location／history） | ACCEPTED |
 | ADR-043 | Reference Application | 確定 | —（題材と単一モジュラーモノリスの構成方針を承認。Walking Skeletonのexpenseは正式Referenceではなく、DoD 0-6の業務仕様完了は別途判定） | ACCEPTED |
-| ADR-044 | Oracle検証戦略 | 確定 | —（Phase 2は固定したOracle Free環境での設計適合smoke。本番Oracleの正式対応はPhase 4のIntegration Baselineで判定） | ACCEPTED |
+| ADR-044 | Oracle検証戦略 | 確定 | —（2026年8月31日に従来のPhase 2 Oracle Free smoke判断をsupersede。Oracleは採用確度の低い将来optional patternとし、明示Customer要件と優先度に基づく`P4-ORACLE` Gate前はImage、Driver、Migration、SQL規約、Testcontainers、CIを選定しない） | ACCEPTED |
 | ADR-045 | Agent Skillsの設計方針 | Phase 0で検証 | `../validation/walking-skeleton-agent-skills.md`（最小2 Skillの正本、Codex／Claude Code導線、OpenSpecとの責務分離を検証。5本構成の残り3 Skillは後続Phaseで整備） | ACCEPTED |
 
 ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
@@ -89,6 +89,7 @@ ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
 | 2026年8月14日 | ADR-017、ADR-029、ADR-035、ADR-040、ADR-043 | ACCEPTED（サポート期間、Virtual Threads、Framework昇格の適用scope補足を含む） | Shuichi Kataoka |
 | 2026年8月15日 | ADR-019、ADR-037、ADR-038、ADR-039、ADR-044 | ACCEPTED（cacheのセキュリティ制約、read modelの依存方向、Oracle検証scopeの補足を含む） | Shuichi Kataoka |
 | 2026年8月31日 | ADR-006、ADR-007、ADR-008 | ACCEPTED（RFC 10017を受けたSPA Session / Next.js BFF / direct Token profileへのセキュリティ解釈の進展） | Shuichi Kataoka |
+| 2026年8月31日 | ADR-010、ADR-044 | ACCEPTED（PostgreSQL／Aurora PostgreSQLをproduction baselineとし、Oracleをoptional `P4-ORACLE` Gateまで具体化しない解釈へ改訂。Phase 2 Oracle Free smoke判断をsupersede） | Shuichi Kataoka |
 
 ## 集計
 

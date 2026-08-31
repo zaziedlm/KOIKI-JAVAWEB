@@ -7,6 +7,7 @@
 - **Branch / HEAD:** `feature/phase2-security-foundation` / `8234c31fc3c63997aae2ab19636609b661574627`
 - **Baseline main / merge base:** `b2e2123605e4d971c3ed5ccc729f668d91189d83`
 - **Gate:** `P2-1 INVENTORY COMPLETE / P2-F1〜F2 COMPLETE / P2-2 OWNER REVIEW REQUIRED`
+- **Subsequent status:** `P2-F1〜F4 / GATE F COMPLETE / GATE P2-2 APPROVED — P2-A1 READY`
 - **Production implementation:** 未開始
 - **OpenSpec:** Repositoryに存在しない
 
@@ -20,7 +21,8 @@ KOIKI-PYFW `dev/v0.8` / `cdd96d8`の認証・token・browser protection実装を
 React SPA / SSOについては`phase2-spa-sso-security-fitting.md`を正本とし、same-origin Session、
 Next.js BFF、direct Token SPAを別profileとしてPhase 2のSecurity境界へ取り込む。
 P2-F2のidentity / API / SPA / SSO semanticsは`phase2-security-semantics-fitting.md`を正本とする。
-2026年8月31日に本文とO-1〜O-6をOwner承認し、P2-F2を完了した。次はP2-F3 test designへ進む。
+2026年8月31日に本文とO-1〜O-6をOwner承認してP2-F2を完了し、その後P2-F3、Gate F、P2-F4も完了した。
+現行statusは本書冒頭のSubsequent statusとPhase 2実行計画を正本とする。
 
 ## 2. Source and environment identity
 
@@ -35,7 +37,7 @@ P2-F2のidentity / API / SPA / SSO semanticsは`phase2-security-semantics-fittin
 | Root `verify` | PASS、10 reactor projects、70 tests、8.364秒 |
 | Consumer dependency tree | PASS。Security、Session、OAuth2、Oracleは0件 |
 
-Dockerを必要とするPostgreSQL、2 instance、Oracleの実測は未実施である。daemon起動後も、Gate P2-2承認前は
+Dockerを必要とするPostgreSQL、2 instanceの実測は未実施である。daemon起動後も、Gate P2-2承認前は
 production実装を行わず、承認されたfixtureの検証時にだけ使用する。
 
 ## 3. Repository / release unit inventory
@@ -71,7 +73,7 @@ Phase 2の期限切れsession cleanupからConsumer codeを参照したり、直
 | `koiki-starter-security` | Milestone Aで必要性をfixture実証後 | Spring Security標準依存、profile別FilterChainの安全な既定、Method Security、header / CSRF既定。業務policyを含めない |
 | Security / identity contract artifact | Milestone B CP開始時に名称と型を再review | local identity、audit、外部IdP link、single executionのうちSpring標準だけでは表せない安定契約。`-api` / `-impl`を先行生成しない |
 | `koiki-reference-app` / `identity` | Milestone B | Reference-owned Tier 1 JPA application / module。Framework tableとmigrationを所有しない |
-| Phase 2 verification fixture | P2-A1から | Tooling-owned、非配布。細粒度negative path、PostgreSQL、2 instance、OIDC / JWT test issuer、Oracle smoke |
+| Phase 2 verification fixture | P2-A1から | Tooling-owned、非配布。細粒度negative path、PostgreSQL、2 instance、OIDC / JWT test issuer |
 
 契約artifactを1つにまとめるかidentity / audit / executionへ分けるかは、最初の公開型inventoryを提示してから決める。
 空moduleは作らない。
@@ -88,24 +90,19 @@ dependency managementは次を管理するため、KOIKI独自version override�
 | Spring Security | 7.1.1 |
 | Spring Session | 4.1.1 |
 | Testcontainers | 2.0.5 |
-| Flyway Oracle module | 12.4.0 |
-| Oracle JDBC `ojdbc11` / `ojdbc17` | 23.26.3.0.0 |
 
 候補のBoot 4 starterは`spring-boot-starter-security`、
 `spring-boot-starter-security-oauth2-client`、
 `spring-boot-starter-security-oauth2-resource-server`、
 `spring-boot-starter-session-jdbc`である。Authorization Server、SAML、Redis Session、WebFluxは除外する。
-Oracle smokeはtest scopeの`testcontainers-oracle-free`、`ojdbc11`、`flyway-database-oracle`を候補とする。
-
-Spring Security / Spring SessionはApache License 2.0、TestcontainersはMITである。Oracle JDBCとDB imageは
-採用前に配布・CI利用条件をOwner reviewし、license結果を第三者一覧へ記録する。
+Spring Security / Spring SessionはApache License 2.0、TestcontainersはMITである。Oracle関連dependency、DB image、
+MigrationおよびCIはPhase 2候補から除外し、optional `P4-ORACLE` Gateが将来承認された場合にlicenseを含めて選定する。
 
 公式確認先:
 
 - <https://docs.spring.io/spring-boot/appendix/dependency-versions/>
 - <https://docs.spring.io/spring-security/reference/whats-new.html>
 - <https://docs.spring.io/spring-session/reference/api.html>
-- <https://java.testcontainers.org/modules/databases/oraclefree/>
 
 ### 4.2 MFA recommendation
 
@@ -193,16 +190,18 @@ Access Tokenだけとし、ID Token、Cookie fallback、query tokenを拒否す�
 | `koiki_login_attempt` | account / source keyの失敗集計、lock判定。IP保持期間と匿名化は要決定 |
 | `koiki_external_identity_link` | issuer + subjectとFramework user ID。provider固有claimを保存しない |
 | `koiki_audit_event` | §15.4標準項目の安全な値。password / token / secret / PII全文を保存しない |
-| `koiki_session` / `koiki_session_attributes` | Spring Session JDBC。実際のtable-name設定と両DB DDLで確定 |
+| `koiki_session` / `koiki_session_attributes` | **APPROVED 2026-08-31**。Spring Session JDBC、Framework Flyway所有。列型、index、save mode、PostgreSQL DDLはP2-B3 / C1で実測 |
 
 全tableはFramework Flyway location `classpath:db/migration/koiki`と`koiki_flyway_history`を使う。
 Referenceはmigrationを持たず、公開contractから操作する。Customer tableから外部キーを張らない。
 ID型、timestamp精度、文字列長、index、retention、PII分類はDDL作成前のCPで確定する。
 
-### 6.2 Oracle rule
+### 6.2 Future database boundary
 
-最初はPostgreSQL / Oracle共通DDLを使用し、実測失敗前にvendor分岐しない。小文字・引用符なし、`VARCHAR`、
-Boolean型不使用、予約語回避、方言関数回避をreview checklistへ追加する。Oracle smokeは設計適合であり正式supportではない。
+PostgreSQL／Aurora PostgreSQLをproduction baselineとし、PostgreSQLで明瞭なMigrationを優先する。DB固有実装を
+Framework Public APIへ露出しない一方、未採用DB向けの共通DDL、vendor分岐または互換規約は先行生成しない。
+Oracleは採用確度の低い将来optional patternとしてtraceabilityだけを保持し、optional `P4-ORACLE` Gate前に
+edition / version、Image、Driver、Migration、SQL規約、TestcontainersまたはCIを選定しない。
 
 ## 7. Session / single execution
 
@@ -215,10 +214,13 @@ Boolean型不使用、予約語回避、方言関数回避をreview checklistへ
 - 2つの独立application processを同一PostgreSQLへ接続し、片方停止後に同じcookieで継続できることを外部観測する。
 - Web instance内の既定cleanupを無効化し、non-web maintenance processからのみcleanupする。
 
-### 7.2 Stop condition
+### 7.2 Owner decision and stop condition
 
-cleanupに必要なFramework-owned single-execution contractが存在しないため、Consumerのadvisory-lock codeを流用しない。
-PostgreSQLとOracleの双方で成立する排他方式、またはDB別adapterをfixtureで比較し、契約とfailure semanticsをOwner reviewする。
+2026年8月31日、Architecture Ownerはacquired / contended / failed等のvendor-neutral外部挙動をsingle-execution contractとして
+承認した。Consumerのadvisory-lock codeを流用せず、Phase 2ではPostgreSQL internal adapterをfixtureで実証する。
+Public APIは先行確定せず、P2-B1以降に型単位で再reviewする。DB固有実装をPublic APIへ露出する、追加権限を未確認で
+要求する、またはat-most-once / exactly-onceをEvidenceなしに保証する場合は作業を停止する。将来DB adapterは対象DBを
+採用するoptional Gate内で比較する。
 
 ## 8. Audit transaction
 
@@ -232,8 +234,8 @@ Public API候補は業務監査とセキュリティ監査を呼出時点で区�
 | Side effect | Phase 2では実装しない | Level 2までdeferred |
 
 Role / Permission管理と管理者Password変更はbusiness audit、本人reset要求、login成功 / 失敗、lock、logout、認可拒否は
-security auditとする。security audit書込み失敗時のfail-closed範囲は未決定であり、成功Login / reset token発行を
-継続させない案を第一候補としてCPで検証する。
+security auditとする。O-4のOwner承認により、login成功、reset token発行、管理解除はaudit書込み失敗時に
+fail closedとする。logout、disable、invalidationは防御的処理を継続し、audit失敗をalertする。
 
 ## 9. External environments
 
@@ -244,9 +246,9 @@ security auditとする。security audit書込み失敗時のfail-closed範囲�
 | ALB＋Cognito | Phase 2では署名・edge識別子・偽装headerのcontract / negative fixture | production Adapterと実ALB acceptanceはPhase 4候補 |
 | JWT | test内RSA key / JWKS、固定issuer / audience / Clock | private keyをartifact / logへ出さない |
 | 2 instance | PostgreSQL 17 Testcontainers + packaged app 2 process | Docker daemonが必要 |
-| Oracle | `testcontainers-oracle-free:2.0.5` + digest固定したOracle Free image | edition / version / image / license / runner容量をOwner決定 |
+| Oracle | 現行Phaseのrequired / optional fixtureともに使用しない | 採用確度の低い将来optional pattern。明示Customer要件と優先度に基づく`P4-ORACLE` Gateで環境選定から再開 |
 
-OIDC、JWT、OracleにRepository secretを必須としない構成を優先する。外部providerを使う場合はredirect URI、client、
+OIDC、JWTにRepository secretを必須としない構成を優先する。外部providerを使う場合はredirect URI、client、
 credential rotation、artifact retentionを別承認する。
 
 ## 10. Test / CI / evidence
@@ -256,9 +258,8 @@ credential rotation、artifact retentionを別承認する。
 3. packaged 2 instance session journey
 4. root / Public API / NullAway / ArchUnit / Java runtime aggregate
 5. milestone PR CI、merge後main CI
-6. Oracle nightlyは通常required checkから分離し、安定性確認後もrelease blockerとして扱う
+6. Oracle jobは現行Phaseのworkflowへ追加しない
 
-通常PRへOracleを入れない。nightly failureを黙ってrerun成功へ置換せず、product defect、image / runner outage、flakyを分類する。
 log / Problem Details / test report / artifactにpassword、token、secret、private key、PII全文がない検査を各milestoneへ入れる。
 
 ## 11. Governance inventory
@@ -271,7 +272,7 @@ ADR-006〜009、020、029、036、041、042、044は現時点の候補と矛盾�
 - local identityとauditの公開contractおよびtransaction failure semantics
 - Spring Session table / cleanup / single execution方式
 - MFA非採用と再判断条件
-- Oracle Free固定環境とnightly governance
+- ADR-010 / ADR-044のOracle optional scopeと`P4-ORACLE`再判断条件
 
 Security作業用SkillはMilestone Aで新設し、機械規則を複製せずprofile選択、secret、ownership、検証順を記述する。
 Reference `identity`は既存business-feature Skillを使用する。
@@ -284,8 +285,8 @@ Phase 2は開始可能だが、production実装開始にはGate P2-2 Owner承認
 1. Security / identity / audit / single-execution artifact境界と最初のPublic API
 2. required CIのlocal OIDC issuer方式、Cognito hosted acceptanceの任意性、ALB＋CognitoをPhase 4 Adapter候補とする境界
 3. Security audit失敗時のfail-closed範囲
-4. session table名、save mode、cleanup排他方式
-5. Oracle Free edition / version / image digest / license / nightly runner
+4. **RESOLVED 2026-08-31:** session table名を`koiki_session` / `koiki_session_attributes`として承認。save modeとPostgreSQL cleanup排他方式はP2-B3で実測
+5. **SUPERSEDED 2026-08-31:** 先行して承認したOracle Free image案を後続Owner判断で置換。Oracleは将来optional `P4-ORACLE`へ移し、Phase 2ではImage、Driver、Migration、SQL規約、Testcontainers、CIを選定しない
 6. MFAをPhase 2で有効化しない判断
 7. **RESOLVED P2-F2:** KOIKI-PYFW fitting matrix、email login identifierとimmutable user IDの分離
 8. token発行 / refresh / rotation / reuse検知 / revokeの実装phase。Phase 2へ前倒しする場合のDoD / ADR変更
@@ -294,3 +295,17 @@ Phase 2は開始可能だが、production実装開始にはGate P2-2 Owner承認
 
 提案する実行順と承認対象は
 `docs/development/KOIKI-JavaWeb-FW_Phase2実行計画_v0.1.md`に記録する。
+
+### 12.1 Subsequent Owner approval record
+
+2026年8月31日、Architecture OwnerはGate P2-2に残っていたSession table、Single execution、Oracleに関するphase allocationの
+3 choicesを承認した。Oracle Free imageの先行承認は同日の後続判断によりsupersedeされ、Phase 2の未決事項ではなく
+選定対象外となった。これは実行計画§2.2のchoicesを`0 OPEN / 13 APPROVED`とする判断であり、Gate P2-2本体または
+production実装開始の最終承認ではない。
+
+### 12.2 Gate P2-2 final Owner approval record
+
+2026年8月31日、Architecture OwnerはPhase 2実装範囲、Milestone、Ownership、Spring標準優先、Audit / Session / cleanup、
+およびP2-A1へ限定した初回production差分の6観点を最終承認した。Gate P2-2を`APPROVED`とし、P2-A1を開始可能とする。
+Public API、property名、FilterChain matcher、Session save mode、PostgreSQL内部排他方式およびCI required化は、
+先行固定せず各Owning CPでEvidenceに基づいてreviewする。

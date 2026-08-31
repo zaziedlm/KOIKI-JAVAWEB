@@ -41,7 +41,7 @@ P2-F2ではproduction code、dependency、Public Java type、endpoint、tableま
 - immutableでopaqueな`Framework user ID`を持つ。
 - email、OIDC `subject`、employee number、Cognito usernameをFramework user IDとして使用しない。
 - session principal、audit actor / subject、Role / Permission relation、external identity linkはFramework user IDを参照する。
-- IDのJava型、採番方式、物理列型はP2-B1 / B2のPublic API・Oracle fixture reviewまで固定しない。
+- IDのJava型、採番方式、物理列型はP2-B1 / B2のPublic API・PostgreSQL Migration reviewまで固定しない。
 - Customerの社員番号、所属、雇用状態、tenant固有属性をFramework userへ埋め込まない。
 
 ### 3.2 Account state
@@ -232,7 +232,8 @@ Security audit書込み失敗時のfail-closed範囲は承認済みdecision O-4�
 
 ## 12. P2-F3 handoff / acceptance matrix
 
-P2-F3は少なくとも次をtest topologyとnegative-path matrixへ変換する。
+P2-F3は少なくとも次をtest topologyとnegative-path matrixへ変換する。test topology、Fixture再利用経路および
+threat / negative-path matrixは`phase2-security-test-design.md`を正本とする。
 
 1. email canonical collision、unknown user、disabled、locked、password mismatchが同じ外部失敗になる。
 2. issuer + subjectはlinkでき、email一致だけではlinkされない。
@@ -251,7 +252,7 @@ P2-F3は少なくとも次をtest topologyとnegative-path matrixへ変換する
 
 | ID | Choice | Approved decision | Rejected / deferred alternative |
 |---|---|---|---|
-| O-1 | email canonicalization | Phase 2はASCII emailをcase-insensitiveに扱い、前後空白除去 + `Locale.ROOT` lowercaseをlookup keyとする。original valueは表示用に保持。provider alias変換なし | 国際化emailを初期対応する場合、Unicode / IDNA、case folding、Oracle照合を追加設計・実測 |
+| O-1 | email canonicalization | Phase 2はASCII emailをcase-insensitiveに扱い、前後空白除去 + `Locale.ROOT` lowercaseをlookup keyとする。original valueは表示用に保持。provider alias変換なし | 国際化emailを初期対応する場合、Unicode / IDNA、case folding、採用DBの照合規則を追加設計・実測 |
 | O-2 | unknown external identity | default deny。明示provisioning / linkだけ許可 | JIT作成はCustomer policy、初期Permission、重複・rollback・audit設計が必要 |
 | O-3 | Permission変更後のSession | 対象userの全KOIKI sessionを失効 | requestごとDB照会は負荷、authorization versionは追加contract / migrationが必要 |
 | O-4 | Security audit failure | login成功、reset token発行、管理解除はfail closed。logout / disable / invalidationは処理継続 + alert | 全best-effortは監査欠損、全fail-closedは防御的失効を妨げる |

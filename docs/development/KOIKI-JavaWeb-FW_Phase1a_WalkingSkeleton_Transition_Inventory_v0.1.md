@@ -210,7 +210,8 @@ Enterprise IntegrationおよびProduction Baselineを所定の後続Phaseへ送�
 | `walking-skeleton/ws-flyway-two-tier/`、Problem Details、Validation、Jackson 3、Resilience、構造化log、Actuator、OSIV、Testcontainers、単一実行基盤、性能baseline | Phase 1b | Runtime FoundationのStarter、設定、運用contractを先行実装すること |
 | `walking-skeleton/ws-tier2-practicality/`、正式Reference、MVC / HTMX、最小REST API、Spring Modulith Level 1、MyBatis詳細規約 | 主にPhase 3。一部runtime境界はPhase 1b | expense / masterdata、Controller、Template、JPA Entity、migration SQL、同期eventを正式Referenceへ昇格すること。Level 0の検証方法だけはB区分で参照できる |
 | Identity、認証・認可、Session、監査、CSRF、Security Header | Phase 2 | Security profile、table、Starterまたは仮Public APIを先行生成すること |
-| React SPA、Spring Modulith Level 2、非同期event、外部I/O、Batch、Oracle統合 | Phase 4 | Node.js frontend build、耐久event配信、外部連携contractを先行実装すること |
+| React SPA、Spring Modulith Level 2、非同期event、外部I/O、Batch | Phase 4 | Node.js frontend build、耐久event配信、外部連携contractを先行実装すること |
+| Oracle統合 | optional `P4-ORACLE` | 明示Customer要件と優先度の承認前にImage、Driver、Migration、SQL規約またはCIを先行実装すること |
 | Project Template、正式Container / Cloud Deployment、OpenRewrite、SBOM、Support、正式release | Phase 5 | Feature Templateを顧客Repository生成用Project Templateへ拡張すること、または内部snapshotを正式releaseと扱うこと |
 | `.agents/skills/openspec-*` | OpenSpec正式運用を決めるchange | OpenSpec試行用SkillをKOIKIの正式build成果物とみなすこと |
 | `.claude/commands/opsx/`、`.claude/skills/openspec-*` | 同上 | agent別生成物を無条件に正式配置すること |

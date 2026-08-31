@@ -1,7 +1,7 @@
 # KOIKI-JavaWeb-FW グランドデザイン v0.2
 
 **文書版:** v0.2（構想確定・基本設計準備版）
-**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、およびCognito / ALB SSOのセキュリティ解釈を進展）
+**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）
 **文書状態:** ACCEPTED（Phase 0 Architecture Baseline）
 **承認日:** 2026年8月19日
 **Architecture Owner:** Shuichi Kataoka
@@ -105,7 +105,7 @@
   - [16.5 共通化する機能](#165-共通化する機能)
   - [16.6 避ける抽象化](#166-避ける抽象化)
   - [16.7 所有権と Migration 管理](#167-所有権と-migration-管理)
-  - [16.8 Oracle 適合](#168-oracle-適合)
+  - [16.8 Oracleの将来optional pattern](#168-oracleの将来optional-pattern)
 - [17. トランザクションとモジュール間連携](#17-トランザクションとモジュール間連携)
   - [17.1 境界](#171-境界)
   - [17.2 原則](#172-原則)
@@ -245,7 +245,7 @@ UI は API 基盤の上に載る**公式プロファイル**として提供す�
 
 ブラウザ向け認証は HTTP Session を第一標準とし、セッションは Spring Session JDBC により既存 PostgreSQL へ格納する。外部 API およびサービス間連携には OAuth 2.0 Bearer JWT を用いる。OIDC を企業 SSO の優先方式とする。Amazon Cognito User PoolへKOIKI-JavaWebが直接接続する場合は標準OIDC Providerとして扱い、Cognito専用Framework APIを要求しない。ALB＋Cognito、ALB＋外部OIDC等のEdge Authenticationは、署名済みclaimと信頼境界を検証するcloud固有Adapterとして分離する。SAML、HENNGE等も同様に標準機能とAdapterの境界を保って追加できる構造を持つ。
 
-標準データベースは PostgreSQL／Aurora PostgreSQL とし、Oracle を設計適合対象とする。データアクセスは **JPA、MyBatis、JdbcClient の3系統**を公式化し、**モジュール単位で選択**する。既存 SQL 資産の移行を正式なユースケースとして扱う。
+標準データベースは PostgreSQL／Aurora PostgreSQL とする。Oracleは採用確度の低い将来optional patternとして記録するが、現行Phaseの実装、依存、Image、MigrationまたはCI対象にはしない。データアクセスは **JPA、MyBatis、JdbcClient の3系統**を公式化し、**モジュール単位で選択**する。既存 SQL 資産の移行を正式なユースケースとして扱う。
 
 言語は **Java 21** をターゲットバイトコードとし、Java 25 を推奨実行環境かつ互換確認対象とする。第一の参照実行環境は AWS ECS Fargate とするが、アプリケーション構造は Kubernetes-ready とし、EKS 向け運用資材は後続段階で提供する。デプロイ方式は Executable JAR およびコンテナを標準とする。
 
@@ -366,7 +366,7 @@ KOIKI-PYFW と Java 版の概念対応、および**単純に対応させては�
 - バッチ、ファイル、外部 API 連携を含む業務システム
 - 数十人から数千人規模の利用者を想定するシステム
 - AWS 上のコンテナ実行を中心とするシステム
-- 既存 Oracle／SQL 資産から Java へ移行するシステム
+- 既存SQL資産からJavaへ移行するシステム（Oracle移行はoptional `P4-ORACLE`承認時だけ対象化）
 
 ### 4.3 初期の主対象外
 
@@ -1002,7 +1002,7 @@ Tier 1 のモジュールが次のいずれかに該当した場合、Tier 2 へ
 
 次のいずれかに該当するモジュールに限り、業務モデルと永続化モデルを分離してよい。
 
-1. 永続化スキーマを変更できず、かつ業務モデルと構造が乖離している（既存 Oracle 資産の移行など。§4.2 の対象に含まれる）
+1. 永続化スキーマを変更できず、かつ業務モデルと構造が乖離している（既存SQL資産の移行など。Oracleはoptional `P4-ORACLE`承認時だけ対象化）
 2. 同一の業務モデルを複数の永続化先へ保存する必要がある
 3. スキーマ設計上の制約により、モデル側で守るべき不変条件を表現できない
 4. **永続化技術として MyBatis を採用する場合**（dirty checking が存在しないため、兼用方式が成立しない）
@@ -1431,6 +1431,8 @@ SPAの認証profileは、same-origin Session、Customer-owned BFF、direct Token
 
 direct Token SPAはpublic clientであり、client secretをfrontendへ置かない。APIへ送るのはKOIKI API audienceの
 Access Tokenだけとし、ID TokenをAPI認証へ使用しない。Implicit flowは採用しない。
+Access / Refresh Tokenは外部Authorization Serverから取得することを第一標準とし、Phase 2のKOIKI-JavaWebは
+OAuth2 Client / Resource Serverとして動作する。KOIKI自身によるtoken発行APIはPhase 2へ含めない。
 
 KOIKI が提供するもの：
 
@@ -1442,7 +1444,7 @@ KOIKI が提供するもの：
 - 統一エラー形式（RFC Problem Details）
 - SSO / SAML の SPA コールバック契約
 - Authorization Code + PKCE、ID Token / Access Token分離、BFF session / token境界
-- リフレッシュトークン rotation・再利用検知・許可外リダイレクト URI の fail-closed（Token 方式利用時）
+- 選択したAuthorization Server / clientによるリフレッシュトークン rotation・再利用検知、および許可外リダイレクト URI の fail-closed（Token 方式利用時）
 - 最小参照実装（Phase 4）
 
 **専用 Starter は設けない。**`koiki-starter-api` と `koiki-starter-security` で必要な機能はすべて満たされるため、**SPA プロファイルの実体は契約文書と参照実装である。**
@@ -1492,6 +1494,12 @@ Cognito発行Access TokenをAPIへ送る構成では、KOIKI-JavaWebをOAuth 2.0
 Cognito Identity PoolによるAWS一時credential発行はWeb loginとは異なる責務であり、この認証profileへ含めない。
 Edge Authenticationのproduction Adapterと実ALB環境検証はcloud固有成果物として後続Phaseへ割り当て、
 Phase 2では共通trust contract、identity link、authority変換、auditおよび偽装headerのnegative pathを定義する。
+
+Phase 2のKOIKI-JavaWebはOAuth2 ClientとJWT Resource Serverまでをproduction scopeとし、token endpoint、refresh、
+revocation endpoint、token tableまたはKOIKI独自JWT発行APIを提供しない。外部Authorization Serverを第一標準とする。
+KOIKI-hosted Authorization Serverが必要な場合はPhase 4 optional `P4-AS`としてP4-AS0でuse case、build-vs-buy、
+運用責任およびtopologyを再承認する。採用時もSpring標準を優先し、Resource Server / business applicationから
+論理的・security責任上分離するが、物理的なartifact / process / deployable構成はP4-AS0で決定する。
 
 ### 14.3 セッションストア
 
@@ -1545,7 +1553,7 @@ KOIKI は User、Role、Permission の標準モデルを任意モジュールと
 - Password Reset Token
 - Session 失効
 - 同時 Login 制御の拡張点
-- Refresh Token rotation／reuse 検知（Token 方式利用時）
+- 選択したAuthorization Server / clientにおけるRefresh Token rotation／reuse 検知（Token 方式利用時。Resource Serverの発行責務ではない）
 - MFA（§14.2）
 
 #### 認証試行制御
@@ -1668,7 +1676,7 @@ Unit Test だけで完了とせず、次を統合試験する。
 | 領域 | 方針 |
 |---|---|
 | 第一標準 DB | PostgreSQL / Aurora PostgreSQL |
-| 設計適合 DB | Oracle（§16.8） |
+| 将来optional DB候補 | Oracle（§16.8。現行Phaseで互換性をclaimしない） |
 | **更新系（既定）** | **Spring Data JPA** |
 | **更新系（SQL 指向）** | **MyBatis**（モジュール単位で選択。§16.2） |
 | **参照系（複雑クエリ・集計・帳票）** | **Spring JdbcClient**、または MyBatis モジュールでは MyBatis（§16.3） |
@@ -1732,9 +1740,10 @@ MyBatis-Spring は MyBatis を Spring トランザクションへ参加させ、
 - **Tier 1ではread modelという専用概念を設けない。**Tier 1にはDomain層が存在しないため、`application.dto`で足りる。read modelを所有する`application.query`はTier 2でのみ使用する
 - 分離方式において、read model は `converter` を経由しない（既に最終形であるため）
 
-#### Oracle 適合への影響
+#### 将来のDB差し替えへの影響
 
-JdbcClient および MyBatis で SQL を記述する箇所が増えるほど、§16.8 の Oracle 適合リスクが上がる。**SQL 記述規約をコードレビュー項目として Phase 2 から適用する。**
+JdbcClient および MyBatis で SQL を記述する箇所が増えるほど、将来別DBを採用する際の移行範囲が増える。現行Phaseでは
+PostgreSQLで明瞭なSQLを優先し、DB固有実装をPublic APIへ露出しない。Oracle固有の記述規約や互換性reviewは先行導入しない。
 
 ### 16.4 キャッシュ
 
@@ -1778,7 +1787,7 @@ Spring Modulith の Event Publication Registry および `@ApplicationModuleList
 
 兼用方式（§11.6）では DB 採番（sequence / identity）を利用できる。**分離方式では業務モデルが永続化前に完全な状態で成立する必要があるため、ドメイン側で採番する。**
 
-PostgreSQL と Oracle の双方で成立する採番方式を標準として定める。方式の選定にあたっては、インデックスの局所性と既存 SQL 資産移行時の既存採番との共存を評価する。
+PostgreSQL production baselineで成立する採番方式を標準として定める。方式の選定にあたっては、インデックスの局所性と既存 SQL 資産移行時の既存採番との共存を評価する。将来別DBを採用する場合は、そのGateで採番互換性を再評価する。
 
 ### 16.6 避ける抽象化
 
@@ -1841,44 +1850,21 @@ Spring Boot は Flyway Bean を1つ自動構成するため、複数構成には
 - **KOIKI が提供するマイグレーションは、既存データを破壊しない形とする。**カラム追加は可、削除は Deprecation 期間の経過後とする（§8.5 と整合）
 - Reference Application のテーブルを Customer Application が利用しない
 
-### 16.8 Oracle 適合
+### 16.8 Oracleの将来optional pattern
 
-初期リリースでは PostgreSQL を正式対象とするが、ID 採番、日時、Boolean、Paging、Schema、LOB、Lock、Flyway 等で **Oracle 移行を阻害しない設計**とする。
+Oracleは採用確度の低い将来候補としてtraceabilityだけを保持する。PostgreSQL／Aurora PostgreSQLを現行production baselineとし、
+Phase 2および現行の必須ロードマップではOracle互換性、移行容易性、正式対応または動作保証をclaimしない。
 
-#### 検証戦略
+2026年8月31日のArchitecture Owner判断により、従来の「Phase 2からOracle nightlyを開始する」方針をsupersedeした。
+現行PhaseではOracle edition / version、container image、JDBC Driver、Flyway vendor module、Migration差分、SQL互換規約、
+TestcontainersまたはCI系統を選定・実装しない。PostgreSQL向け設計を不必要に共通DDLへ制約しない。
 
-**Phase 2からOracle TestcontainersによるnightlyスモークをCIへ追加する**（§21.5）。開始時にOracle edition／version、container image、JDBC Driverを明示的に固定する。
+将来、明示的なCustomer要件と事業上の優先度が成立した場合だけ、optional `P4-ORACLE` Gateで対象機能、edition / version、
+運用・license責任、Migration戦略、Image / driver、single-executionを含むDB固有Adapter、test matrixおよび見積を再承認する。
+そのGateを通過するまではOracle対応成果物を先行生成しない。
 
-§5 の原則9「Production Parity」に対し、Oracle の CI を Phase 4 まで持たない構成では人的担保に依存することになる。**JdbcClient による read model（§16.3）と MyBatis の採用（§16.2）により SQL 記述量が増えたため、リスクは上昇している。**
-
-Phase 2 時点では Framework 所有のテーブルのみが存在するため範囲は限定的だが、**最も価値が高い「Flyway の DDL 方言差の検出」はこの段階で行える。**
-
-Phase 2のOracle Freeコンテナによる検証は、DDL、基本CRUD、ページング、楽観ロックに対する設計適合スモークであり、本番Oracleの正式サポートを意味しない。
-
-#### マイグレーション方針
-
-**Flyway の vendor 分岐を先行導入せず、PostgreSQL と Oracle の双方で通る共通 DDL でマイグレーションを記述する。**共通 DDL で通らないと判明した時点で、vendor 分岐の導入を判断する（判断はアーキテクチャオーナー）。
-
-vendor 分岐を先行導入すると、§16.7.2 の所有者別2階層と組み合わさり **2階層 × 2ベンダー = 4系統**となる。設計を先行して複雑化させる代償が大きい。**共通 DDL で書けるならそれが最善であり、書けないと判明してから分岐する方が合理的である。**
-
-#### SQL 記述規約
-
-DDL と DML の双方をカバーする Oracle 互換 SQL 記述規約を定め、**Phase 2 からコードレビュー項目として適用する。**
-
-- Boolean 型を使用しない（Oracle の対応状況が版により異なる）
-- 識別子は小文字・引用符なしで記述する
-- `VARCHAR` を用いる（`VARCHAR2` は Oracle 固有）
-- 予約語を識別子に用いない
-- シーケンスと IDENTITY の扱いを統一する
-- 方言依存の関数・構文を用いない
-
-**MyBatis は `databaseIdProvider` により、同一 Mapper 内で DB 種別ごとに SQL を切り替えられる。**JdbcClient にはない利点であり、Oracle 適合において有利に働く。
-
-#### スキーマ分離を採らない理由
-
-Oracle ではスキーマ＝ユーザであるため、スキーマによる所有権分離は権限管理を複雑にする。**接頭辞方式（§16.7.1）が単純であり、Oracle 適合にも適する。**
-
-Oracle正式対応時（Phase 4）には、対象とする本番Oracleのedition／versionとJDBC Driverをbaselineに固定し、専用Integration TestとMigration差分を提供する。
+将来判断を妨げないため、現行PhaseでもDB固有型やSQLをFramework Public APIへ露出せず、Migration ownershipとinternal Adapter境界を
+維持する。ただし、これはOracle適合の保証ではなく、通常のownership / encapsulation原則である。
 
 ---
 
@@ -2202,7 +2188,7 @@ SIGTERM 受信時に新規受付を停止し、処理中 Request を完了させ
 
 PostgreSQL 等の実 DB、必要な外部 Middleware を Testcontainers で起動し、本番との差異を縮小する（§5 原則9）。
 
-**Oracle についても Phase 2 から Testcontainers による nightly スモークを実施する**（§21.5、§16.8）。
+Oracle Testcontainersは現行Phaseへ導入しない。optional `P4-ORACLE`が承認された場合にだけ、対象環境と依存を選定する（§16.8）。
 
 ### 21.3 ArchUnit / Spring Modulith
 
@@ -2334,8 +2320,7 @@ PostgreSQL 等の実 DB、必要な外部 Middleware を Testcontainers で起�
 |---|---|---|---|---|
 | **主系統** | PostgreSQL | 21 | 全 PR・全マージ | Phase 1a |
 | **互換系統1** | PostgreSQL | **25 ランタイム** | nightly、リリース前 | Phase 1a |
-| **互換系統2** | **Oracle** | 21 | nightly | Phase 2 |
-| **互換系統3** | PostgreSQL | 21（**Virtual Threads 有効**） | nightly | Phase 4 |
+| **互換系統2** | PostgreSQL | 21（**Virtual Threads 有効**） | nightly | Phase 4 |
 
 **互換系統1では再コンパイルを行わない。**主系統で生成した成果物を Java 25 ランタイムで実行する。これにより、実際の顧客環境（Java 21 でビルドされた KOIKI を Java 25 で動かす）と同じ条件を検証する。
 
@@ -2607,7 +2592,6 @@ Executable JAR および Container を標準とし、外部 Tomcat への WAR �
 | 同期／非同期の判断（リスナー内の外部 I/O の有無） | §17.3 |
 | **MyBatis 経路の楽観ロック実装**（更新件数チェックの記述） | §12.5 |
 | **未フラッシュデータの読み取り**（同一 Tx 内で JPA 書き込み後の JdbcClient / MyBatis 読み取り） | §16.2 |
-| Oracle 互換 SQL 記述規約への適合 | §16.8 |
 | Framework へ入れるか否かの判断 | §9.2、§9.3 |
 | キャッシュ対象の妥当性 | §16.4 |
 | 監査の分類 | §15.2 |
@@ -2832,7 +2816,7 @@ expense.adapter.inbound.event   未処理申請を検査 → 存在すれば例�
 | 責務 | 精算済み申請から仕訳データを生成し、会計システムへ連携する |
 | 連携 | `ExpenseSettled`を非同期受信し、申請ごとに仕訳を冪等に生成する |
 | テーブル | **既存スキーマを模擬**し、接頭辞なしのテーブル名とする。§16.7.1 の「既存スキーマは接頭辞規約の対象外」という現実を示す |
-| 実証する内容 | **モデル分離オプトイン**（トリガ1: 永続化スキーマを変更できない）／**MyBatis 分離方式の構造**（`entity` / `converter` / `mapper`）／**楽観ロックの手動実装**／**`databaseIdProvider` による PostgreSQL・Oracle 切り替え**／`domain.gateway` とHTTP Service Clientによる外部連携／`@Retryable` / `@ConcurrencyLimit` |
+| 実証する内容 | **モデル分離オプトイン**（トリガ1: 永続化スキーマを変更できない）／**MyBatis 分離方式の構造**（`entity` / `converter` / `mapper`）／**楽観ロックの手動実装**／`domain.gateway` とHTTP Service Clientによる外部連携／`@Retryable` / `@ConcurrencyLimit` |
 
 #### Phase 4 — `expense` の React SPAとMVC / API併用構成
 
@@ -2875,7 +2859,7 @@ Next.js BFFを最小参照候補、direct Token SPAをrisk acceptance付きprofi
 | ADR-039 MyBatis | `accounting` | 4 |
 | ADR-041 Public API 境界 | Framework 側 | 1a |
 | ADR-042 テーブル所有権・Flyway | 全モジュール（`koiki_` / `kkref_` / 既存スキーマ模擬） | 1b〜4 |
-| ADR-044 Oracle 検証 | Framework テーブル（Phase 2）／`accounting`（Phase 4） | 2・4 |
+| ADR-044 Oracle optional判断 | 現行Phaseでは実証しない。optional `P4-ORACLE`承認時に実証箇所を追加 | conditional |
 
 **ADR を追加した際は、本表に実証箇所を記載する。**記載できない場合は §26.5 へ記録する。
 
@@ -3016,9 +3000,13 @@ Core Configuration／例外・Problem Details（`JacksonException` を含む）�
 
 **成果物**
 
-Spring Security 標準構成／Local User・Role・Permission／**HTTP Session（Spring Session JDBC）**／Password・Lock・Reset／**認証試行制御**／CSRF・Cookie・Security Header／**Audit Event の3分類実装**／OIDC Login／OAuth 2.0 Resource Server／Security Integration Test／**`identity` モジュール**／**Oracle 互換 SQL 記述規約**／第三者管理テーブルの例外一覧／OpenRewrite レシピの試作開始
+Spring Security 標準構成／Local User・Role・Permission／**HTTP Session（Spring Session JDBC）**／Password・Lock・Reset／**認証試行制御**／CSRF・Cookie・Security Header／**Audit Event の3分類実装**／OIDC Login／OAuth 2.0 Resource Server／Security Integration Test／**`identity` モジュール**／PostgreSQL Migration／第三者管理テーブルの例外一覧／OpenRewrite レシピの試作開始
 
 **前提** — 2-8（セッション清掃ジョブ）は Phase 1b の単一実行基盤に依存する。
+
+**Token責務境界** — Phase 2はOAuth2 Client / Resource Serverまでとし、KOIKI自身によるAccess / Refresh Token発行、
+refresh、revocation endpointおよびtoken永続化を成果物へ含めない。外部Authorization Serverを第一標準とし、
+KOIKI-hosted issuerはPhase 4 optional `P4-AS`の別Gateで判断する。
 
 **完了条件**
 
@@ -3034,8 +3022,9 @@ Spring Security 標準構成／Local User・Role・Permission／**HTTP Session�
 | 2-8 | 期限切れセッションの清掃ジョブが、単一実行基盤から起動する |
 | 2-9 | CSRF とセキュリティヘッダーが既定で有効であり、無効化には明示的な設定を要する |
 | 2-10 | `identity` モジュールから Framework 所有テーブルを操作できる |
-| 2-11 | Oracle 互換 SQL 記述規約がレビュー項目として適用されている |
-| 2-12 | **Oracle に対する nightly スモークが CI で動作し、Flyway マイグレーションの適用、基本 CRUD、ページング、楽観ロックが確認される** |
+
+旧DoD 2-11（Oracle互換SQL規約）と2-12（Oracle nightly）は2026年8月31日のOwner判断でPhase 2から除外した。
+Oracleはoptional `P4-ORACLE`承認時に新しいDoDと見積を設定し、旧番号を別要件へ再利用しない。
 
 **2-6 と 2-7 の対比が本 Phase の核心である。**監査の3分類（§15.2）が設計どおり機能することを、ロールバック挙動として実演する。
 
@@ -3069,7 +3058,13 @@ Spring Security 標準構成／Local User・Role・Permission／**HTTP Session�
 
 **成果物**
 
-`notification`（非同期、Level 2）／`accounting`（MyBatis 分離）／Phase 3の`expense` REST APIを利用する **SPA 最小参照実装**とMVC / SPA併用構成／**Oracle Integration Baseline**／SAML Extension／External API Resilience／Spring Batch／File・Object Storage／OpenTelemetry／**Container・ECS Reference**／**Virtual Threads 有効化ガイドと CI 検証系統**
+`notification`（非同期、Level 2）／`accounting`（MyBatis 分離）／Phase 3の`expense` REST APIを利用する **SPA 最小参照実装**とMVC / SPA併用構成／SAML Extension／External API Resilience／Spring Batch／File・Object Storage／OpenTelemetry／**Container・ECS Reference**／**Virtual Threads 有効化ガイドと CI 検証系統**
+
+**Optional work package** — KOIKI-hosted Authorization Serverは現行Phase 4の必須成果物・DoDに含めない。明示use caseがある場合に限り、
+`P4-AS0`でbuild-vs-buy、threat、protocol、運用Owner、Grand Design / ADR / DoD / 見積変更を承認してから開始する。
+
+**Optional work package** — Oracle対応は現行Phase 4の必須成果物・DoDに含めない。明示Customer要件と優先度が成立した場合に限り、
+`P4-ORACLE` Gateで対象範囲、edition / version、license、Migration、Image / driver、CI、運用Ownerおよび見積を承認してから開始する。
 
 **完了条件**
 
@@ -3080,15 +3075,13 @@ Spring Security 標準構成／Local User・Role・Permission／**HTTP Session�
 | 4-3 | **同一イベントが2回配信されても、通知が二重送信されない** |
 | 4-4 | FAILED publication の件数と滞留時間がメトリクスに現れ、再送手順が実行できる |
 | 4-5 | 完了済み publication のパージジョブが単一実行基盤から起動する |
-| 4-6 | **`accounting` が PostgreSQL と Oracle の双方で動作する** |
-| 4-7 | **Oracle に対する統合テストが CI で通る** |
-| 4-8 | **MyBatis 分離方式で楽観ロック競合が検出され、JPA 経路と同一のエラー応答が返る** |
-| 4-9 | 外部 API の障害時にリトライと流量制限が働き、タイムアウトが既定値で機能する |
-| 4-10 | **SPA から Cookie セッション認証で API を利用でき、CSRF double-submit が機能する** |
-| 4-11 | **Thymeleaf 経路と SPA 経路が同一アプリケーション内で併存し、CSRF 設定が経路ごとに分離されている** |
-| 4-12 | Spring Batch のジョブが単一実行基盤から起動し、二重起動しない |
-| 4-13 | **Virtual Threads を有効にした CI 検証系統が通る** |
-| 4-14 | 非同期リスナーにおいて相関ID が伝播し、ログが追跡可能である |
+| 4-6 | **MyBatis 分離方式で楽観ロック競合が検出され、JPA 経路と同一のエラー応答が返る** |
+| 4-7 | 外部 API の障害時にリトライと流量制限が働き、タイムアウトが既定値で機能する |
+| 4-8 | **SPA から Cookie セッション認証で API を利用でき、CSRF double-submit が機能する** |
+| 4-9 | **Thymeleaf 経路と SPA 経路が同一アプリケーション内で併存し、CSRF 設定が経路ごとに分離されている** |
+| 4-10 | Spring Batch のジョブが単一実行基盤から起動し、二重起動しない |
+| 4-11 | **Virtual Threads を有効にした CI 検証系統が通る** |
+| 4-12 | 非同期リスナーにおいて相関ID が伝播し、ログが追跡可能である |
 
 **4-2 と 4-3 が本 Phase の核心である。**耐久配信と冪等性は、非同期を採用する以上、動作を確認しないまま本番へ出せない。
 
@@ -3146,14 +3139,14 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 
 | リスク | 内容 | 対策 |
 |---|---|---|
-| DB 抽象化の失敗 | PostgreSQL と Oracle の差分を隠す | 方言差分の明示、**Oracle nightly（Phase 2 から）**、SQL 記述規約（§16.8） |
+| 将来DB対応の過大表明 | EvidenceなしにOracle互換・対応済みと表現する | PostgreSQLだけをproduction baselineと明記し、optional `P4-ORACLE` Gate前は互換性をclaimしない（§16.8） |
 | **兼用モデルのビュー層流出** | Spring MVC ＋ JPA では Entity を `Model` に載せる書き方が最も自然であり、規約だけでは守られない | OSIV 無効化、ArchUnit、描画まで含む Web Slice Test の3層（§13.3.3） |
 | **フォームバインドによるマスアサインメント** | `@ModelAttribute` で業務モデルへ直接バインドすると不変条件を迂回できる | Form オブジェクトの必須化と ArchUnit（§13.3） |
 | **テンプレートからの業務メソッド呼出** | 兼用方式固有。SpEL から状態遷移を起動できる | ビューモデル変換の徹底。Review Checklist と Agent Skills |
 | **MyBatis 経路の楽観ロック実装漏れ** | 更新件数チェックを忘れてもコードは動作する | Review Checklist の必須項目化、競合検出テストの必須化（§12.5） |
 | **未フラッシュデータの読み取り** | JPA 書き込み後に JdbcClient / MyBatis で読むと古い値が返る | §16.2 の規約、Review Checklist |
 | モジュール内の技術混在 | JPA と MyBatis が同一モジュールに混在する | ArchUnit（§21.3） |
-| 共通 DDL 制約によるスキーマ設計の歪み | 両 DB の共通部分に制約される | **通らないと判明した時点で vendor 分岐へ移行する**（§16.8） |
+| 将来DBを意識した先行抽象化 | 未採用DBの制約でPostgreSQL設計とPhase進行が歪む | DB固有実装はinternalへ閉じるが、未承認の共通DDL・vendor分岐・adapterを作らない（§16.8） |
 | 復元時の不変条件スキップ | DB 上の不正データが業務処理に流れる | 不変条件は状態変更時に守る。データ品質は DB 制約と移行時の検証で担保する |
 | `reconstitute` の誤用 | 業務的生成に復元用ファクトリが使われる | 命名規約、`converter` 以外からの呼出禁止（§11.7） |
 | キャッシュのインスタンス間不整合 | 更新が他インスタンスへ伝わらない | 対象の限定と TTL 必須。**イベント駆動の無効化は採用しない**（§16.4） |
@@ -3222,7 +3215,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | Phase 3 の肥大化 | HTMX 契約と Tier 1／2 実例の追加で検証が遅延する | SPA を Phase 4 へ送る。超過時は Tier 2 実例を最小構成へ |
 | 追従作業による Phase 進行の圧迫 | 各 Phase の完了時に追従工数が発生する | 小刻みな追従による変更量の分散。全 Phase の見積もりへ追従工数を計上 |
 | Flyway 複数構成の複雑性 | Spring Boot 自動構成と衝突し起動順序が不定になる | **Walking Skeleton の V2 で検証**（§27.3） |
-| Oracle nightly の実行時間 | コンテナ起動が遅く nightly が長時間化する | 検証範囲の限定（§16.8）。イメージ選定と実行時間を Phase 2 で評価 |
+| 低確度DB対応の先行コスト | Image、driver、Migration、CIの維持が中核機能を遅らせる | Oracleをoptional `P4-ORACLE`へ留保し、明示要件と見積承認前は成果物を作らない（§16.8） |
 | 顧客による Virtual Threads の誤有効化 | Java 21 ランタイムで有効化し pinning が発生する | 既定無効、有効化ガイドとチェックリスト（§23.3） |
 | 顧客による KOIKI テーブルへの外部キー作成 | KOIKI のスキーマ変更が制約される | §16.7.4 の規約。Migration Guide とレビュー項目に反映 |
 
@@ -3240,7 +3233,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 8. Session／JWT／OIDC／SAML 契約
 9. Audit Event 標準
 10. Data Access 選択ガイド
-11. **PostgreSQL／Oracle Migration 標準**（共通 DDL 記述規約を含む）
+11. **PostgreSQL Migration 標準**（Oracleはoptional `P4-ORACLE`採用時に別途作成）
 12. Transaction／Concurrency 標準
 13. **UI プロファイル標準**（Thymeleaf／HTMX／SPA）
 14. Batch／File 標準
@@ -3310,7 +3303,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 
 | ADR | テーマ | 決定 |
 |---|---|---|
-| ADR-010 | Database | PostgreSQL 標準、Oracle 適合 |
+| ADR-010 | Database | PostgreSQL／Aurora PostgreSQLをproduction標準。Oracleは将来optional候補 |
 | ADR-011 | Persistence | **JPA／MyBatis／JdbcClient の3系統。**選択はモジュール単位 |
 | ADR-012 | Migration | Flyway |
 | ADR-019 | マルチテナンシー | **単一テナントを前提とする**（v1.0 のスコープ外） |
@@ -3319,7 +3312,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | ADR-038 | read model | Query契約と`record`は`application.query`が所有。単一集約はJPAのclass-based射影、複雑queryはJdbcClient |
 | ADR-039 | MyBatis | 規約 ＋ BOM 管理（Level B）。モジュール単位で選択 |
 | ADR-042 | テーブル所有権と Flyway | 接頭辞規約 ＋ 所有者別の独立管理 |
-| ADR-044 | Oracle 検証戦略 | **Phase 2 から nightly スモーク。**vendor 分岐は先行導入しない |
+| ADR-044 | Oracle 検証戦略 | Phase 2 nightly判断をsupersede。Oracleはoptional `P4-ORACLE` Gate前に実装・依存・Image・CIを選定しない |
 
 ### Web API と外部連携
 

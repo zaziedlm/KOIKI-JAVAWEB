@@ -13,6 +13,11 @@ preflight／inventoryを新しいAI対話sessionで再開するための引継�
 - **Phase 2 status:** `START PREFLIGHT / INVENTORY NOT STARTED`
 - **OpenSpec:** handoff時点でRepositoryに`openspec/`は存在しない
 
+> **Superseded scope notice (2026-08-31):** 本書は開始時点のhistorical baselineとして保持する。
+> 後続のArchitecture Owner判断により、Oracleは採用確度の低い将来optional `P4-ORACLE`へ再配置された。
+> 本書内のPhase 2 Oracle image、Driver、共通DDL、DoD 2-11 / 2-12、nightlyおよびPhase 4必須Oracle Integrationの記述は
+> 現行計画ではない。現行判断はGrand Design、ADR-010 / ADR-044、Phase 2実行計画およびstart preflightを正本とする。
+
 PR #27のmerge commit `b2e2123`に対する最終CI run `33313844608`とJava Runtime Compatibility
 run `33313844638`はSUCCESSである。local `main`を`origin/main`へfast-forwardした後、同commitから本branchを作成した。
 

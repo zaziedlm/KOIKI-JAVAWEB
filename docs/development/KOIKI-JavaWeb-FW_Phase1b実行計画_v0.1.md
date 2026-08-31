@@ -465,7 +465,7 @@ KOIKI BOM / Parent / Starterを選ぶ
 | Phase | Customer-like Consumerから先に追加される姿 |
 |---|---|
 | Phase 1b | HTTP、error、DB、migration、log、health、単一実行を持つ業務アプリの器 |
-| Phase 2 | 認証・認可、Session、監査、identity、Oracle smoke |
+| Phase 2 | 認証・認可、Session、監査、identity、PostgreSQL Migration（Oracle smokeは2026年8月31日の後続Owner判断で除外） |
 | Phase 3 | 正式Referenceの`master` / `expense`、MVC / HTMX、REST、業務受入 |
 | Phase 4 | SPA、notification、accounting、MyBatis、外部I/O、Batch、Level 2 |
 | Phase 5 | Project Template、deployment reference、正式release、support |
