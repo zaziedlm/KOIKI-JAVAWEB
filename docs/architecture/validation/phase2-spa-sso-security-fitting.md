@@ -10,6 +10,8 @@
 KOIKI-JavaWebがAPI serverとなり、React SPAが利用する構成を、認証情報の置き場所とOAuth clientの所在で
 明示的に分ける。KOIKI本体へReactまたはNext.jsを同梱せず、Spring標準のSession / OAuth2 Client /
 Resource Server契約が各構成を支える。
+identity、authentication ingress、authority、logout、error、auditのprofile共通semanticsは
+`phase2-security-semantics-fitting.md`を正本とする。
 
 ## 2. Updated standards baseline
 
@@ -124,7 +126,7 @@ Profile間で1つのrequest pathへCookieとBearerのfallbackを設定しない�
 
 | CP / Phase | Deliverable |
 |---|---|
-| P2-F2 | ACCEPTEDのProfile S / B / Tを前提に、identity / CORS / logout semanticsとrisk acceptance手順を確定 |
+| P2-F2 | **COMPLETE**。ACCEPTEDのProfile S / B / Tを前提に、`phase2-security-semantics-fitting.md`のidentity / CORS / logout semanticsとrisk acceptance手順をOwner承認 |
 | P2-F3 | Profile S / B / Tのtest topology、threat / negative-path matrix、Spring component mappingを文書化。code変更は0 |
 | P2-A3 | Resource Server、CORS、issuer / audience / time / scope、ID Token拒否のnegative test |
 | P2-B3 | Profile SのSpring Session JDBC、CSRF、2 instance、logout |

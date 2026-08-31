@@ -6,7 +6,7 @@
 - **Architecture Owner:** Shuichi Kataoka
 - **Branch / HEAD:** `feature/phase2-security-foundation` / `8234c31fc3c63997aae2ab19636609b661574627`
 - **Baseline main / merge base:** `b2e2123605e4d971c3ed5ccc729f668d91189d83`
-- **Gate:** `P2-1 INVENTORY COMPLETE / PYFW FITTING INVENTORY COMPLETE / P2-2 OWNER REVIEW REQUIRED`
+- **Gate:** `P2-1 INVENTORY COMPLETE / P2-F1〜F2 COMPLETE / P2-2 OWNER REVIEW REQUIRED`
 - **Production implementation:** 未開始
 - **OpenSpec:** Repositoryに存在しない
 
@@ -19,6 +19,8 @@ KOIKI-PYFW `dev/v0.8` / `cdd96d8`の認証・token・browser protection実装を
 
 React SPA / SSOについては`phase2-spa-sso-security-fitting.md`を正本とし、same-origin Session、
 Next.js BFF、direct Token SPAを別profileとしてPhase 2のSecurity境界へ取り込む。
+P2-F2のidentity / API / SPA / SSO semanticsは`phase2-security-semantics-fitting.md`を正本とする。
+2026年8月31日に本文とO-1〜O-6をOwner承認し、P2-F2を完了した。次はP2-F3 test designへ進む。
 
 ## 2. Source and environment identity
 
@@ -276,7 +278,8 @@ Reference `identity`は既存business-feature Skillを使用する。
 
 ## 12. Gate P2-1 conclusion
 
-Phase 2は開始可能だが、production実装開始にはGate P2-2 Owner承認が必要である。特に次を未決定のまま進めない。
+Phase 2は開始可能だが、production実装開始にはGate P2-2 Owner承認が必要である。Gate P2-1時点の
+未決事項を次に示し、後続Fittingで解決した項目はstatusを明記する。
 
 1. Security / identity / audit / single-execution artifact境界と最初のPublic API
 2. required CIのlocal OIDC issuer方式、Cognito hosted acceptanceの任意性、ALB＋CognitoをPhase 4 Adapter候補とする境界
@@ -284,7 +287,7 @@ Phase 2は開始可能だが、production実装開始にはGate P2-2 Owner承認
 4. session table名、save mode、cleanup排他方式
 5. Oracle Free edition / version / image digest / license / nightly runner
 6. MFAをPhase 2で有効化しない判断
-7. KOIKI-PYFW fitting matrix、email login identifierとimmutable user IDの分離
+7. **RESOLVED P2-F2:** KOIKI-PYFW fitting matrix、email login identifierとimmutable user IDの分離
 8. token発行 / refresh / rotation / reuse検知 / revokeの実装phase。Phase 2へ前倒しする場合のDoD / ADR変更
 9. ACCEPTEDのSPA 3 profileを前提としたOIDC test provider、CORS property、logout semantics、profile別fixture、
    Phase 4 Next.js BFF参照実装およびALB＋Cognito production Adapterの採否

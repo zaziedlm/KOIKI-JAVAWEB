@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `GATE P2-1 / P2-F1 COMPLETE / P2-F2〜F4・GATE P2-2 OWNER REVIEW REQUIRED`
+**状態:** `GATE P2-1 / P2-F1〜F2 COMPLETE / P2-F3〜F4 NOT STARTED / GATE P2-2 OWNER REVIEW REQUIRED`
 **作成日:** 2026年8月31日
 **開始branch:** `feature/phase2-security-foundation`
 **開始基準main:** `b2e2123605e4d971c3ed5ccc729f668d91189d83`
@@ -15,6 +15,8 @@ remote environment、secret、snapshot、pushを変更しない。
 Preflight Evidenceは`../architecture/validation/phase2-start-preflight.md`を正本とする。
 KOIKI-PYFW fitting Evidenceは`../architecture/validation/phase2-koiki-pyfw-security-fitting.md`を正本とする。
 React SPA / SSO profile Evidenceは`../architecture/validation/phase2-spa-sso-security-fitting.md`を正本とする。
+P2-F2 identity / API / SPA / SSO semantics Evidenceは
+`../architecture/validation/phase2-security-semantics-fitting.md`を正本とする。
 `phase2-security-foundation-start-handoff-20260830.md`は開始時点のhistorical baselineとして保持し、milestone、CP、
 SPA / token scopeまたは承認状態が本計画と異なる場合は、Preflight Evidence、ADR、Grand Design更新、本計画を現行判断とする。
 
@@ -39,17 +41,22 @@ Architecture Ownerへ次を一括して承認依頼する。
 11. KOIKI-PYFWとのparityはendpoint / class / tableの移植ではなく、利用者向け能力とsecurity invariantのfittingとする。
 12. email addressはlogin identifierとして扱い、Framework内部のimmutable user ID、audit actor、external identity linkから分離する。
 
-### 2.2 Owner choices still required
+### 2.2 Gate choices and approval status
 
-| Choice | Recommended | Alternative / impact |
-|---|---|---|
-| OIDC test provider | required CIはcredential不要のlocal ephemeral issuer。Amazon Cognito User Poolは標準OIDC Providerの任意hosted acceptance候補 | hosted acceptanceは実環境に近いがsecret、可用性、redirect URI管理が必要 |
-| Security audit failure | login成功、reset token発行、管理解除はfail closed | best-effort継続は監査欠損を許すため例外承認が必要 |
-| Session table | `koiki_session` / `koiki_session_attributes`候補 | Spring既定名を使う場合はFramework管理例外表へ記録 |
-| Single execution | vendor-neutral contract + DB別internal adapterをfixture比較 | PostgreSQL専用Public APIはOracle適合と衝突 |
-| Oracle image | `gvenzl/oracle-free`のversion + digest固定、Linux hosted runner | Oracle公式registryはlicense受諾 / pull認証がCI運用を増やす |
-| Token lifecycle phase | Phase 2はfitting / contract gapまで、発行・refresh・revoke実装は後続phase | Phase 2へ前倒しする場合はDoD、Authorization Server、key / client運用、工数を追加review |
-| Login identifier | emailを入力ID、別のimmutable IDを内部参照に使用 | emailを主キー化すると変更・監査・IdP link・PII管理が不安定になる |
+| Choice | Recommended / accepted decision | Alternative / impact | Status |
+|---|---|---|---|
+| OIDC test provider | required CIはcredential不要のlocal ephemeral issuer。Amazon Cognito User Poolは標準OIDC Providerの任意hosted acceptance候補 | hosted acceptanceは実環境に近いがsecret、可用性、redirect URI管理が必要 | **OPEN** |
+| Security audit failure | login成功、reset token発行、管理解除はfail closed。logout / disable / invalidationは処理継続 + alert | 全best-effortは監査欠損、全fail-closedは防御的失効を妨げる | **APPROVED P2-F2 O-4** |
+| Session table | `koiki_session` / `koiki_session_attributes`候補 | Spring既定名を使う場合はFramework管理例外表へ記録 | **OPEN** |
+| Single execution | vendor-neutral contract + DB別internal adapterをfixture比較 | PostgreSQL専用Public APIはOracle適合と衝突 | **OPEN** |
+| Oracle image | `gvenzl/oracle-free`のversion + digest固定、Linux hosted runner | Oracle公式registryはlicense受諾 / pull認証がCI運用を増やす | **OPEN** |
+| Token lifecycle phase | Phase 2はfitting / contract gapまで、発行・refresh・revoke実装は後続phase | Phase 2へ前倒しする場合はDoD、Authorization Server、key / client運用、工数を追加review | **OPEN** |
+| Login identifier | emailを入力ID、別のimmutable IDを内部参照に使用 | emailを主キー化すると変更・監査・IdP link・PII管理が不安定になる | **APPROVED P2-F2** |
+| Email canonicalization | Phase 2はASCII emailをcase-insensitiveに扱い、前後空白除去 + `Locale.ROOT` lowercaseをlookup keyとする。original valueは表示用 | 国際化emailを初期対応する場合はUnicode / IDNA、case folding、Oracle照合の追加設計・実測が必要 | **APPROVED P2-F2 O-1** |
+| Unknown external identity | default deny。明示provisioning / linkだけ許可 | JIT作成はCustomer policy、初期Permission、重複・rollback・audit設計が必要 | **APPROVED P2-F2 O-2** |
+| Permission change / Session | 対象userの全KOIKI sessionを失効 | requestごとDB照会は負荷、authorization versionは追加contract / migrationが必要 | **APPROVED P2-F2 O-3** |
+| OIDC logout | local logoutを必須、RP-Initiated Logoutはprovider対応時のopt-in | IdP logout必須化はprovider差、availability、global logout影響を増やす | **APPROVED P2-F2 O-5** |
+| Current-user API | Frameworkはprincipal contractだけを候補とし、endpointはCustomer / Referenceが所有 | Framework `/me`固定はDTO、PII、versioningをPublic API化する | **APPROVED P2-F2 O-6** |
 
 ### 2.3 Accepted SPA architecture baseline
 
@@ -91,18 +98,19 @@ Deferred decisions: Customer属性、claim mapping、provisioning、SPA、業務
 | CP | Scope | Exit criteria |
 |---:|---|---|
 | P2-F1 | Python capability / invariant inventory | source commit固定、採用 / Spring置換 / 非採用 / deferredが全項目で明示 |
-| P2-F2 | identity / API / SPA / SSO semantics | email / immutable ID、external subject、trust source、Permission、profile別CORS / logout / error / audit semanticsをOwner review |
+| P2-F2 | identity / API / SPA / SSO semantics | **COMPLETE**。email / immutable ID、external subject、trust source、Permission、profile別CORS / logout / error / audit semanticsをOwner承認 |
 | P2-F3 | Spring replacement test design | local issuer、Cognito direct OIDC、Edge Authenticationを区別したtest topology、Spring component mapping、threat / negative-path matrix、dependency候補、stop conditionを文書化。code / dependency変更は0 |
 | P2-F4 | token lifecycle phase decision | Resource ServerとAuthorization Serverを分離し、発行 / refresh / rotation / reuse / revokeのphaseとdependencyを決定 |
 | Gate F | fitting acceptance | mapping、threat、negative path、deferred backlog承認。Gate P2-2判断へ接続 |
 
 Workstream FはPython repositoryを変更せず、Python endpoint互換APIやJWT Cookie方式をJava成果物へ固定しない。
 P2-F3ではfixture codeを作らず、実証はGate P2-2後のP2-A1〜A3へ一元化する。
-P2-F1は`phase2-koiki-pyfw-security-fitting.md`で完了し、P2-F2〜F4はOwner review対象とする。
+P2-F1は`phase2-koiki-pyfw-security-fitting.md`で完了した。P2-F2は
+`phase2-security-semantics-fitting.md`の本文とO-1〜O-6をOwner承認して完了した。P2-F3〜F4は未着手である。
 
 ### Gate P2-2 — minimum implementation approval
 
-Gate F、本計画、§2.2のOwner choicesを承認してからimplementation milestoneを開始する。
+Gate F、本計画、§2.2の残るOPEN choicesを承認してからimplementation milestoneを開始する。
 
 ### Milestone A — Authentication / Authorization profiles
 
@@ -255,7 +263,8 @@ Phase 1bから次の実績だけを計画へ反映する。
 
 ## 12. Owner review request
 
-Gate P2-2では§2.1の12判断、§2.2の7 choices、§2.3のACCEPTED baseline、Workstream Fのfitting結果を確認する。
+Gate P2-2では§2.1の12判断、§2.2の5 OPEN choices / 7 APPROVED choices、§2.3のACCEPTED baseline、
+Workstream Fのfitting結果を確認する。
 承認後の最初のproduction差分はP2-A1に限定し、
 `koiki-starter-security`の最小artifact / dependency fixture、default deny、CSRF / header defaults、
 negative tests、Public API inventoryまでとする。local identity、production migration、Reference、workflowは同じ差分へ含めない。

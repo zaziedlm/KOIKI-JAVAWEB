@@ -12,6 +12,8 @@
 KOIKI-JavaWeb-FWへ機械移植せず、Spring標準とKOIKIのOwnershipへ割り当て直すためのEvidenceである。
 Pythonのclass、endpoint、tableまたはmigrationをJavaのPublic APIやproduction SQLへ直接昇格させない。
 React SPA / Next.js BFF / SSOのdeployment profileは`phase2-spa-sso-security-fitting.md`を正本とする。
+P2-F2のidentity、authentication ingress、authority、logout、error、audit semanticsは
+`phase2-security-semantics-fitting.md`を正本とする。
 
 ## 2. Sources inspected
 
@@ -62,7 +64,8 @@ permission parity、通常logの機密値非露出を確認している。
 
 利用者が入力する**ユーザーIDはemail addressをlogin identifierとして扱える**。ただしemailは変更され得るため、
 Framework内部の主キー、監査actor ID、外部identity link、session principalの永続識別子には使わない。
-Python版もinteger `id`とemail / usernameを分離している。Java版は次をCP P2-F2で確定する。
+Python版もinteger `id`とemail / usernameを分離している。Java版の次の論点は
+`phase2-security-semantics-fitting.md`にOwner review案を記録した。
 
 - immutableなFramework user ID
 - normalized email login identifierと一意性 / case folding
@@ -126,7 +129,7 @@ production実装より先に次を完了する。
 | CP | Work | Exit criteria |
 |---:|---|---|
 | P2-F1 | capability / invariant inventory | 本記録、source commit、採用 / 非採用 / deferredが全項目で明示される |
-| P2-F2 | identity / API semantics fitting | email login identifier、immutable ID、status、authority、error / audit semanticsをOwner reviewできる |
+| P2-F2 | identity / API / SPA / SSO semantics fitting | **COMPLETE**。`phase2-security-semantics-fitting.md`本文とO-1〜O-6をOwner承認 |
 | P2-F3 | Spring replacement test design | Spring component mapping、test topology、threat / negative-path matrix、dependency候補、stop conditionを文書化する |
 | P2-F4 | token lifecycle phase decision | Resource ServerとAuthorization Serverを分離し、発行 / refresh / revokeのphase・dependency・Public API非公開境界をOwnerが判断する |
 | Gate F | fitting acceptance | matrix、negative tests、threats、deferred backlogが承認され、Gate P2-2 / P2-A1開始可否を判断できる |
