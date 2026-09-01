@@ -22,6 +22,7 @@
     <module>koiki-starters/koiki-starter-data</module>
     <module>koiki-starters/koiki-starter-data-jpa</module>
     <module>koiki-starters/koiki-starter-observability</module>
+    <module>koiki-starters/koiki-starter-security</module>
     <module>koiki-testing</module>
   </modules>
 

@@ -6,6 +6,15 @@ Set-StrictMode -Version Latest
 
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $wrapper = if ($IsWindows) { Join-Path $repositoryRoot 'mvnw.cmd' } else { Join-Path $repositoryRoot 'mvnw' }
+$jarToolName = if ($IsWindows) { 'jar.exe' } else { 'jar' }
+$jarTool = if ($env:JAVA_HOME) {
+    Join-Path $env:JAVA_HOME "bin/$jarToolName"
+} else {
+    (Get-Command $jarToolName -ErrorAction Stop).Source
+}
+if (-not (Test-Path -LiteralPath $jarTool -PathType Leaf)) {
+    throw "JDK jar tool was not found under JAVA_HOME: $jarTool"
+}
 $rootPom = Join-Path $repositoryRoot 'pom.xml'
 $consumerRoot = Join-Path $repositoryRoot 'build-support/runtime-foundation-consumer'
 $cp6Verification = Join-Path $PSScriptRoot 'verify-cp6-health-osiv.ps1'
@@ -114,7 +123,7 @@ try {
         if (-not (Test-Path -LiteralPath $artifact -PathType Leaf)) {
             throw "CP7 Consumer artifact was not found: $artifact"
         }
-        $entries = @(& jar tf $artifact)
+        $entries = @(& $jarTool tf $artifact)
         if ($entries -match 'KoikiDomainEventDetectionStrategy|org/springframework/modulith') {
             throw "Test-scope Spring Modulith configuration leaked into $artifact"
         }

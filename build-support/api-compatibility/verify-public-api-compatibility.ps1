@@ -7,6 +7,21 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
+function Resolve-JdkTool {
+    param([Parameter(Mandatory)][string]$Name)
+
+    $toolName = if ($IsWindows) { "$Name.exe" } else { $Name }
+    $tool = if ($env:JAVA_HOME) {
+        Join-Path $env:JAVA_HOME "bin/$toolName"
+    } else {
+        (Get-Command $toolName -ErrorAction Stop).Source
+    }
+    if (-not (Test-Path -LiteralPath $tool -PathType Leaf)) {
+        throw "JDK tool was not found: $tool"
+    }
+    return $tool
+}
+
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $verificationPom = Join-Path $PSScriptRoot 'pom.xml'
 $inventoryTool = Join-Path $PSScriptRoot 'PublicApiInventory.java'
@@ -16,6 +31,7 @@ $wrapper = if ($IsWindows) {
 } else {
     Join-Path $repositoryRoot 'mvnw'
 }
+$javaTool = Resolve-JdkTool -Name 'java'
 $temporaryRoot = Join-Path (
     [System.IO.Path]::GetTempPath()) (
     'koiki-phase1a-api-compatibility-' + [guid]::NewGuid().ToString('N'))
@@ -177,7 +193,7 @@ try {
 
     $classPath = @($currentContract, $currentRules, $archUnitJar, $jSpecifyJar) -join (
         [System.IO.Path]::PathSeparator)
-    $inventoryOutput = @(& java --class-path $classPath $inventoryTool `
+    $inventoryOutput = @(& $javaTool '-Xshare:off' --class-path $classPath $inventoryTool `
             'koiki-architecture-contract' $currentContract `
             'koiki-archunit-rules' $currentRules 2>&1)
     if ($LASTEXITCODE -ne 0) {

@@ -3298,6 +3298,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | ADR-009 | Enterprise SSO | OIDC 優先、SAML 拡張 |
 | ADR-020 | セッションストア | **Spring Session JDBC**（既存 PostgreSQL を利用、Redis 差し替え可） |
 | ADR-036 | レート制御 | インフラ層へ委ね、**認証試行制御のみアプリケーション内に持つ** |
+| ADR-046 | Security artifact / profile境界 | `koiki-starter-security`を単一artifactとし、internal Auto Configurationの最下位fallback chainで未一致requestをdenyする。Customer profileは高優先順位chainを合成し、公開Java型・property・error codeはEvidenceが必要になるまで追加しない |
 
 ### データ
 

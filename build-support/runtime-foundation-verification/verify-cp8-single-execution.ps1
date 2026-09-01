@@ -7,6 +7,15 @@ $verificationStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $wrapper = if ($IsWindows) { Join-Path $repositoryRoot 'mvnw.cmd' } else { Join-Path $repositoryRoot 'mvnw' }
+$javaToolName = if ($IsWindows) { 'java.exe' } else { 'java' }
+$javaTool = if ($env:JAVA_HOME) {
+    Join-Path $env:JAVA_HOME "bin/$javaToolName"
+} else {
+    (Get-Command $javaToolName -ErrorAction Stop).Source
+}
+if (-not (Test-Path -LiteralPath $javaTool -PathType Leaf)) {
+    throw "JDK java tool was not found under JAVA_HOME: $javaTool"
+}
 $rootPom = Join-Path $repositoryRoot 'pom.xml'
 $consumerRoot = Join-Path $repositoryRoot 'build-support/runtime-foundation-consumer'
 $consumerPom = Join-Path $consumerRoot 'pom.xml'
@@ -128,7 +137,7 @@ function Start-MaintenanceProcess {
         SPRING_DATASOURCE_USERNAME = $databaseUser
         SPRING_DATASOURCE_PASSWORD = $databasePassword
     }
-    return Start-CapturedProcess -FileName 'java' -Environment $environment -Arguments @(
+    return Start-CapturedProcess -FileName $javaTool -Environment $environment -Arguments @(
         '-jar', $script:consumerJar,
         '--koiki.consumer.mode=maintenance',
         "--koiki.consumer.task-key=$TaskKey",
