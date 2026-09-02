@@ -1,10 +1,10 @@
 # ADR Register
 
-**棚卸日:** 2026年8月14日
+**棚卸日:** 2026年9月1日
 
 **状態:** Accepted
 
-**承認日:** 2026年8月15日
+**承認日:** Phase 0 Baseline 2026年8月15日 / ADR-046 2026年9月1日
 
 **Decided by:** Shuichi Kataoka
 
@@ -23,7 +23,7 @@
 「Phase 0で検証」はADR全体の将来実装を完了したという意味ではない。たとえばSpring Modulithの
 Level 2以降、Flyway三階層、非同期event等は、registerで示すPhase 0検証scopeの外である。
 
-全有効ADRは、Architecture Ownerによるreviewを2026年8月15日に完了し、Phase 0 Architecture Baselineとして承認された。
+ADR-001〜ADR-045は、Architecture Ownerによるreviewを2026年8月15日に完了し、Phase 0 Architecture Baselineとして承認された。
 
 ## Register
 
@@ -34,9 +34,9 @@ Level 2以降、Flyway三階層、非同期event等は、registerで示すPhase 
 | ADR-003 | Build | Phase 0で検証 | `../validation/walking-skeleton-build-foundation.md`（Maven／Parent／BOM） | ACCEPTED |
 | ADR-004 | Architecture | Phase 0で検証 | `../validation/walking-skeleton-archunit-distribution.md`、`../validation/walking-skeleton-tier2-practicality.md`（module境界） | ACCEPTED |
 | ADR-005 | Module Tooling | Phase 0で検証 | `../validation/walking-skeleton-tier2-practicality.md`（Level 0相当のmodule検証と同期連携。Level 2以降は対象外） | ACCEPTED |
-| ADR-006 | UIプロファイル方針 | 確定 | —（API基盤を正本とし、Thymeleaf＋HTMXとSPAは任意の対等profile。具体契約は後続Phaseで検証） | ACCEPTED |
-| ADR-007 | Browser Auth | 確定 | —（MVC／一般的なsame-origin SPAではHTTP Sessionが第一標準。stateless SPAを禁止しない） | ACCEPTED |
-| ADR-008 | API Auth | 確定 | —（外部API／stateless React SPAではAuthorization headerのBearer JWTが第一標準。Token lifecycleは後続Phaseで検証） | ACCEPTED |
+| ADR-006 | UIプロファイル方針 | 確定 | `../validation/phase2-spa-sso-security-fitting.md`（API基盤を正本とし、Thymeleaf＋HTMXとSPAは任意の対等profile。SPAはSession / BFF / direct Tokenを選択） | ACCEPTED |
+| ADR-007 | Browser Auth | 確定 | `../validation/phase2-spa-sso-security-fitting.md`（same-origin SPAではHTTP Sessionが第一標準。BFFを禁止せず、direct Token SPAはrisk acceptanceを要する） | ACCEPTED |
+| ADR-008 | API Auth | 確定 | `../validation/phase2-spa-sso-security-fitting.md`（BFF／外部API／direct Token SPAからはAuthorization headerのBearer Access Token。ID Tokenは拒否し、Token lifecycleは責務別に検証） | ACCEPTED |
 | ADR-009 | Enterprise SSO | 確定 | — | ACCEPTED |
 | ADR-010 | Database | 確定 | — | ACCEPTED |
 | ADR-011 | Persistence | 確定 | — | ACCEPTED |
@@ -70,8 +70,9 @@ Level 2以降、Flyway三階層、非同期event等は、registerで示すPhase 
 | ADR-041 | Public API境界 | Phase 0で検証 | `../validation/walking-skeleton-archunit-distribution.md`（外部consumerを含む） | ACCEPTED |
 | ADR-042 | テーブル所有権とFlyway | Phase 0で検証 | `../validation/walking-skeleton-flyway-two-tier.md`（所有者別location／history） | ACCEPTED |
 | ADR-043 | Reference Application | 確定 | —（題材と単一モジュラーモノリスの構成方針を承認。Walking Skeletonのexpenseは正式Referenceではなく、DoD 0-6の業務仕様完了は別途判定） | ACCEPTED |
-| ADR-044 | Oracle検証戦略 | 確定 | —（Phase 2は固定したOracle Free環境での設計適合smoke。本番Oracleの正式対応はPhase 4のIntegration Baselineで判定） | ACCEPTED |
+| ADR-044 | Oracle検証戦略 | 確定 | —（2026年8月31日に従来のPhase 2 Oracle Free smoke判断をsupersede。Oracleは採用確度の低い将来optional patternとし、明示Customer要件と優先度に基づく`P4-ORACLE` Gate前はImage、Driver、Migration、SQL規約、Testcontainers、CIを選定しない） | ACCEPTED |
 | ADR-045 | Agent Skillsの設計方針 | Phase 0で検証 | `../validation/walking-skeleton-agent-skills.md`（最小2 Skillの正本、Codex／Claude Code導線、OpenSpecとの責務分離を検証。5本構成の残り3 Skillは後続Phaseで整備） | ACCEPTED |
+| ADR-046 | Security artifact / profile境界 | P2-A1で検証 | `../validation/phase2-p2-a1-contract-review.md`（単一Starter、internal Auto Configuration、default deny、Customer chain合成／明示置換、Public API 0型／property 0件） | ACCEPTED |
 
 ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
 
@@ -88,28 +89,34 @@ ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
 | 2026年8月14日 | ADR-030、ADR-031、ADR-032、ADR-033、ADR-036 | ACCEPTED（Spring Framework 7正式APIへの記述修正を含む） | Shuichi Kataoka |
 | 2026年8月14日 | ADR-017、ADR-029、ADR-035、ADR-040、ADR-043 | ACCEPTED（サポート期間、Virtual Threads、Framework昇格の適用scope補足を含む） | Shuichi Kataoka |
 | 2026年8月15日 | ADR-019、ADR-037、ADR-038、ADR-039、ADR-044 | ACCEPTED（cacheのセキュリティ制約、read modelの依存方向、Oracle検証scopeの補足を含む） | Shuichi Kataoka |
+| 2026年8月31日 | ADR-006、ADR-007、ADR-008 | ACCEPTED（RFC 10017を受けたSPA Session / Next.js BFF / direct Token profileへのセキュリティ解釈の進展） | Shuichi Kataoka |
+| 2026年8月31日 | ADR-010、ADR-044 | ACCEPTED（PostgreSQL／Aurora PostgreSQLをproduction baselineとし、Oracleをoptional `P4-ORACLE` Gateまで具体化しない解釈へ改訂。Phase 2 Oracle Free smoke判断をsupersede） | Shuichi Kataoka |
+| 2026年9月1日 | ADR-046 | ACCEPTED（P2-A1 fixtureにより単一Security Starter、internal Auto Configuration、default deny、Customer chain合成／明示置換、Public API最小境界を確認） | Shuichi Kataoka |
 
 ## 集計
 
 | 項目 | 件数 |
 |---|---:|
-| 有効ADR | 43 |
+| 有効ADR | 44 |
 | 確定 | 28 |
 | Phase 0で検証 | 15 |
+| P2-A1で検証 | 1 |
 | PENDING | 0 |
-| ACCEPTED | 43 |
+| ACCEPTED | 44 |
 
 ## Owner Review Result
 
-Architecture Ownerは次を確認し、全有効ADRをPhase 0 Architecture Baselineとして承認した。
+Architecture Ownerは次を確認し、ADR-001〜ADR-045をPhase 0 Architecture Baselineとして承認した。
 
-- §30の有効ADR 43件と過不足がない
+- ADR-046追加前の§30と対応するPhase 0有効ADR 43件に過不足がない
 - 区分が実装済み／未実装という意味に誤読されない
 - 「Phase 0で検証」の15件に再現可能な証拠がある
 - 検証scope外の後続判断を先行確定していない
 - 各決定をPhase 0 Architecture Baselineとして維持できる
 
 後続Phaseで実装証拠が前提を否定した場合は、Architecture Governanceに従って対象ADRを再reviewする。
+
+ADR-046はP2-A1の実装Evidenceに基づき、2026年9月1日にArchitecture Ownerが承認した。
 
 今後、後から再判断し得る技術判断を追加・変更する場合も、手続きのためにADRを増やすのではなく、
 技術判断、理由、状態、再判断条件を残すために使用する。

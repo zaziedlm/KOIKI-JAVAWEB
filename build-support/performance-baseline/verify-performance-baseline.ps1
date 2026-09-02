@@ -11,6 +11,15 @@ Set-StrictMode -Version Latest
 $harnessRoot = $PSScriptRoot
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $harnessRoot '../..'))
 $wrapper = if ($IsWindows) { Join-Path $repositoryRoot 'mvnw.cmd' } else { Join-Path $repositoryRoot 'mvnw' }
+$javaToolName = if ($IsWindows) { 'java.exe' } else { 'java' }
+$javaTool = if ($env:JAVA_HOME) {
+    Join-Path $env:JAVA_HOME "bin/$javaToolName"
+} else {
+    (Get-Command $javaToolName -ErrorAction Stop).Source
+}
+if (-not (Test-Path -LiteralPath $javaTool -PathType Leaf)) {
+    throw "JDK java tool was not found under JAVA_HOME: $javaTool"
+}
 $rootPom = Join-Path $repositoryRoot 'pom.xml'
 $harnessPom = Join-Path $harnessRoot 'pom.xml'
 $cp8Verification = Join-Path $repositoryRoot 'build-support/runtime-foundation-verification/verify-cp8-single-execution.ps1'
@@ -101,7 +110,7 @@ function Start-Application {
         '--spring.datasource.username=postgres',
         '--spring.datasource.password=postgres'
     )
-    $process = Start-Process -FilePath 'java' -ArgumentList $arguments `
+    $process = Start-Process -FilePath $javaTool -ArgumentList $arguments `
         -RedirectStandardOutput $LogPath -RedirectStandardError ($LogPath + '.err') `
         -PassThru -NoNewWindow
     $null = $processes.Add($process)
@@ -137,7 +146,7 @@ function Stop-Application {
 
 function Invoke-Runner {
     param([Parameter(Mandatory)][string[]]$Arguments)
-    & java -jar $script:runnerJar @Arguments
+    & $javaTool -jar $script:runnerJar @Arguments
     if ($LASTEXITCODE -ne 0) {
         throw "Performance runner failed with exit code $LASTEXITCODE"
     }
@@ -391,7 +400,7 @@ try {
         gitCommit = $gitCommit
         gitDirty = $gitDirty
         host = $hostInfo
-        java = ((& java -version 2>&1 | Select-Object -First 1) -replace '"', '')
+        java = ((& $javaTool -version 2>&1 | Select-Object -First 1) -replace '"', '')
         jvmArguments = @('-Xms256m', '-Xmx256m')
         maven = '3.9.16'
         docker = $dockerVersion

@@ -2,5 +2,5 @@
 
 KOIKI Spring Boot StarterのCanonical ownership locationです。
 
-Phase 1aでは正式Starterを作成していません。Runtime StarterはPhase 1b以降の所定の検証で
-OwnershipとPublic APIを確定してから追加し、空Maven Moduleを先行作成しません。
+Runtime Starterは所定Phaseの検証でOwnershipとPublic APIを確定してから追加し、空Maven Moduleを
+先行作成しません。Phase 2では、承認済みP2-A1から`koiki-starter-security`を正式Starterとして追加します。

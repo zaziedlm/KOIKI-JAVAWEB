@@ -7,6 +7,15 @@ $verificationStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $wrapper = if ($IsWindows) { Join-Path $repositoryRoot 'mvnw.cmd' } else { Join-Path $repositoryRoot 'mvnw' }
+$javaToolName = if ($IsWindows) { 'java.exe' } else { 'java' }
+$javaTool = if ($env:JAVA_HOME) {
+    Join-Path $env:JAVA_HOME "bin/$javaToolName"
+} else {
+    (Get-Command $javaToolName -ErrorAction Stop).Source
+}
+if (-not (Test-Path -LiteralPath $javaTool -PathType Leaf)) {
+    throw "JDK java tool was not found under JAVA_HOME: $javaTool"
+}
 $rootPom = Join-Path $repositoryRoot 'pom.xml'
 $consumerRoot = Join-Path $repositoryRoot 'build-support/runtime-foundation-consumer'
 $consumerPom = Join-Path $consumerRoot 'pom.xml'
@@ -290,9 +299,9 @@ function Assert-ReleaseUnitInventory {
     $groupRepository = Join-Path $isolatedRepository 'org/koikifw'
     $actualArtifacts = @(Get-ChildItem -LiteralPath $groupRepository -Directory |
         Select-Object -ExpandProperty Name | Sort-Object)
-    $difference = @(Compare-Object ($expectedArtifacts | Sort-Object) $actualArtifacts)
-    if ($difference.Count -ne 0) {
-        throw "Staged release unit differs from the approved 10 projects: $($difference | Out-String)"
+    $missingArtifacts = @($expectedArtifacts | Where-Object { $_ -notin $actualArtifacts })
+    if ($missingArtifacts.Count -ne 0) {
+        throw "The current release unit is missing Phase 1b approved projects: $($missingArtifacts -join ', ')"
     }
 
     foreach ($artifact in $expectedArtifacts) {
@@ -380,7 +389,7 @@ Assert-SafeTemporaryPath -Path $verificationRoot
 New-Item -ItemType Directory -Path $isolatedRepository -Force | Out-Null
 
 try {
-    Invoke-KoikiMaven -Label 'Stage the clean 10-project KOIKI release unit' -Arguments @(
+    Invoke-KoikiMaven -Label 'Stage the current KOIKI release unit for Phase 1b regression' -Arguments @(
         '-f', $rootPom, 'clean', 'install', '-DskipTests')
     Assert-ReleaseUnitInventory
     Assert-PublicApiInventory
@@ -451,7 +460,7 @@ try {
     }
 
     Write-Host '=== Start the packaged Consumer in web mode ==='
-    $webProcess = Start-CapturedProcess -FileName 'java' -Environment $processEnvironment -Arguments @(
+    $webProcess = Start-CapturedProcess -FileName $javaTool -Environment $processEnvironment -Arguments @(
         '-jar', $consumerJar,
         "--server.port=$applicationPort",
         '--spring.main.banner-mode=off',
@@ -565,7 +574,7 @@ try {
 
     Write-Host '=== Start the same packaged Consumer JAR as a non-web maintenance process ==='
     $maintenancePort = Get-FreeTcpPort
-    $maintenance = Start-CapturedProcess -FileName 'java' -Environment $processEnvironment -Arguments @(
+    $maintenance = Start-CapturedProcess -FileName $javaTool -Environment $processEnvironment -Arguments @(
         '-jar', $consumerJar,
         '--koiki.consumer.mode=maintenance',
         '--koiki.consumer.task-key=workitem-maintenance-primary',

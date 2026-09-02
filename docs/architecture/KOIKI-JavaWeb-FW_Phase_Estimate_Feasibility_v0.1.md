@@ -1,8 +1,8 @@
 # KOIKI-JavaWeb-FW Phase Estimate / Feasibility
 
 **版:** v0.1<br>
-**評価日:** 2026年8月19日<br>
-**状態:** ACCEPTED<br>
+**評価日:** 2026年8月19日／2026年8月31日（Oracle scope再校正）<br>
+**状態:** ACCEPTED（2026年8月31日scope addendum反映）<br>
 **対象:** Phase 1a〜5<br>
 **基準Commit:** `8d90ea1`
 
@@ -57,7 +57,7 @@ AI支援による短縮を期待する作業は次のとおりである。
 次はAIへ委譲しても短縮率が低いか、Owner自身の判断・確認時間を省略できない。
 
 - Architecture、Public API、Security、support scope、例外受容の最終判断
-- 外部service、Oracle、OIDC、cloud、license、契約、secret等の環境成立待ち
+- 外部service、OIDC、cloud、license、契約、secret等の環境成立待ち（Oracleはoptional `P4-ORACLE`承認時だけ対象）
 - 非決定的なIntegration / E2E障害、性能観測、運用手順の実演
 - Owner Review、Phase完了判定、release判断
 
@@ -78,9 +78,9 @@ commitmentではなく、scope比較と分割判断のための初期値であ�
 |---|---:|---:|---:|---:|---:|---|
 | Phase 1a | 45〜74標準人日 | 20% | 54〜89標準人日 | 0.45〜0.60 | **24〜53日** | **実行可能** |
 | Phase 1b | 69〜114標準人日 | 25% | 86〜143標準人日 | 0.50〜0.65 | **43〜93日** | **要分割** |
-| Phase 2 | 115〜189標準人日 | 30% | 150〜246標準人日 | 0.60〜0.75 | **90〜185日** | **要分割** |
+| Phase 2 | 96〜158標準人日 | 30% | 125〜206標準人日 | 0.60〜0.75 | **75〜155日** | **要分割** |
 | Phase 3 | 120〜194標準人日 | 30% | 156〜252標準人日 | 0.50〜0.65 | **78〜164日** | **要分割** |
-| Phase 4 | 168〜279標準人日 | 35% | 227〜377標準人日 | 0.60〜0.75 | **136〜283日** | **要分割** |
+| Phase 4 | 140〜231標準人日 | 35% | 189〜312標準人日 | 0.60〜0.75 | **114〜234日** | **要分割** |
 | Phase 5 | 155〜255標準人日 | 35% | 209〜344標準人日 | 0.55〜0.70 | **115〜241日** | **要分割** |
 
 AI支援係数は、次の確度と作業特性を根拠とする。
@@ -89,9 +89,9 @@ AI支援係数は、次の確度と作業特性を根拠とする。
 |---|---|---|
 | Phase 1a | 高 | Walking Skeletonで検証済みのbuild、ArchUnit、外部consumerを正式化する定型作業が中心 |
 | Phase 1b | 中〜高 | runtime codeは加速できるが、単一実行基盤と性能baselineは実環境での確認が必要 |
-| Phase 2 | 中 | Security判断、複数instance、OIDC、Oracle環境はOwner確認と外部依存が大きい |
+| Phase 2 | 中 | Security判断、複数instance、OIDCのOwner確認と外部依存が大きい |
 | Phase 3 | 中 | 業務仕様が確定済みでcode・test生成を加速できるが、全状態・権限・拒否flowの受入確認が必要 |
-| Phase 4 | 低 | 非同期、外部I/O、Oracle、SPA、Batch、observabilityの統合と障害実演が支配する |
+| Phase 4 | 低 | 非同期、外部I/O、SPA、Batch、observabilityの統合と障害実演が支配する。Oracleは必須scope外 |
 | Phase 5 | 低 | 文書・recipe・templateは加速できるが、Security Review、support、cloud実演はOwner責務が大きい |
 
 AI支援Owner稼働日は、下限を`標準計画range下限 × 係数下限`、上限を
@@ -158,7 +158,7 @@ ECSまたはKubernetes固有のReferenceは後続Phaseで扱う。
 
 **Owner Review:** ACCEPTED（2026年8月19日、Shuichi Kataoka）
 
-Security、identity、監査、共有session、Oracle nightlyを一度に扱うため、独立した3系列へ分ける。
+Security、identity、監査、共有sessionおよびPostgreSQL Migrationを扱うため、独立した3系列へ分ける。
 Reference仕様§14.2の業務結果も同じtest証拠へ統合する。
 
 `Phase共通`には、Password・Reset、Security Integration Test、第三者管理tableの例外一覧、
@@ -186,15 +186,15 @@ Local Identityのscopeは次のとおりとする。
 | 2-8 | 7〜12人日 | 1b-7、Spring Session cleanup、既定process内cleanupの無効化 | 各Web instanceで既定cleanupが残り、多重起動または外部jobとの削除競合が発生する |
 | 2-9 | 7〜11人日 | CSRF、Cookie、Security Header、Session / Bearer経路のSecurityFilterChain | 認証経路のmatcherに隙間が生じる、例外的無効化が広がる、Phase 4で決めるSPA固有方式を先行固定する |
 | 2-10 | 8〜13人日 | `identity` ownership、Framework tableの公開contract | 業務moduleがFramework内部schemaへ密結合する、顧客固有属性をFramework tableへ取り込む |
-| 2-11 | 4〜6人日 | Oracle互換SQL規約、review checklist | 規約が人手確認だけとなり継続適用されない |
-| 2-12 | 15〜25人日 | 固定したOracle DB / JDBC Driver、CI secrets、Flyway | license・環境可用性、image起動時間、PostgreSQLとの差異によりnightlyが不安定になる |
-
 **内部マイルストーン:** (A) 認証・認可profile、OIDC、Bearer Resource Server、CSRF・Header既定値、
 (B) Local Identity・Spring Session・認証試行制御・監査3分類・cleanup、
-(C) Oracle互換規約・Oracle nightly・第三者管理table一覧・OpenRewrite試作。<br>
-**判定:** 要分割。OIDC test provider、固定したOracle検証環境、複数instance test環境を
+(C) PostgreSQL Migration・第三者管理table一覧・package / Consumer・OpenRewrite試作。<br>
+**判定:** 要分割。OIDC test providerと複数instance test環境を
 Phase開始条件として確保すれば実行可能である。SPAのtoken保管、refresh、logout、CSRFの
 具体方式はPhase 4へ残し、Phase 2ではSession経路とBearer Resource Server経路を独立して実証する。
+
+旧DoD 2-11（4〜6標準人日）と2-12（15〜25標準人日）は2026年8月31日のOwner判断でPhase 2から除外し、
+上表とPhase 2集計を再校正した。Oracleはoptional `P4-ORACLE`承認時に新しいscopeと見積を設定する。
 
 ## 6. Phase 3 — Reference Vertical Slice
 
@@ -241,8 +241,11 @@ converter・`@MybatisTest`・楽観lock・reconstituteの検証、およびArchU
 
 **Owner Review:** ACCEPTED（2026年8月19日、Shuichi Kataoka）
 
-非同期耐久配信、Oracle、MyBatis、外部API、SPA、Batch、observability、containerを含み、
+非同期耐久配信、MyBatis、外部API、SPA、Batch、observability、containerを含み、
 最も統合リスクが高い。外部環境を早期に用意し、4系列を別々に完成させてから統合する。
+
+Oracle対応は現行Phase 4の必須scope外である。明示Customer要件と優先度に基づくoptional `P4-ORACLE` Gateが
+承認された場合にだけ、対象範囲と見積を別work packageとして追加する。
 
 Reference仕様`AC-P4-01`〜`AC-P4-08`をPhase 4の業務受入範囲とし、通知・仕訳・remindの
 at-least-once処理、外部I/O障害、application再起動、およびBatch重複起動に対して、
@@ -267,21 +270,19 @@ Resilience4j採否評価、横断的なADR・Skills・CI・運用文書を割り
 | 4-3 | 8〜14人日 | event ID、冪等key、notification記録 | at-least-once配信で二重副作用が発生する |
 | 4-4 | 8〜14人日 | metrics、FAILED運用、再送手順 | metricだけあり、運用者が安全に再送できない |
 | 4-5 | 5〜8人日 | 1b-7、publication retention | purgeと配信が競合し、必要recordを削除する |
-| 4-6 | 18〜30人日 | `accounting`、Tier 2分離model、MyBatis、既存schema模擬、PostgreSQL / Oracle | SQL方言差、分離modelの変換、driver差異、イベントから仕訳への冪等変換漏れ |
-| 4-7 | 10〜18人日 | Oracle Integration環境、CI | 外部環境の不安定さで品質gateが常時blockされる |
-| 4-8 | 10〜16人日 | MyBatis楽観lock、共通error contract | JPAとMyBatisで競合意味・HTTP応答がずれる |
-| 4-9 | 10〜16人日 | external API stub、retry / concurrency limit、Resilience4j採否評価 | 非冪等操作をretryする、timeoutの層が競合する、評価なしに第三者libraryを標準化する |
-| 4-10 | 18〜30人日 | React SPA、Phase 2認証、Phase 3 REST API、CSRF設計、frontend test | Session CookieとJWT Cookieを混同する、token保管・Cookie属性・CSRF境界を誤設計する |
-| 4-11 | 10〜16人日 | MVC / SPA routing、Session / Bearer SecurityFilterChain | 経路matcherの隙間から保護設定を迂回する、またはtransportごとに認可・Use Caseの意味が分岐する |
-| 4-12 | 12〜20人日 | Spring Batch、remind・月次締め、1b-7、job repository | schedulerとBatch双方の排他が不整合となる、再実行で通知または精算を重複する |
-| 4-13 | 8〜13人日 | Java 21互換系統、Java 25以上のVirtual Threads有効系統、負荷test | Java 21で誤って既定有効化する、thread-local依存・driver・pool制約を検証せず互換性を誤認する |
-| 4-14 | 6〜10人日 | async context propagation、OpenTelemetry | trace / correlationの欠落または高cardinality化 |
+| 4-6 | 10〜16人日 | MyBatis楽観lock、共通error contract | JPAとMyBatisで競合意味・HTTP応答がずれる |
+| 4-7 | 10〜16人日 | external API stub、retry / concurrency limit、Resilience4j採否評価 | 非冪等操作をretryする、timeoutの層が競合する、評価なしに第三者libraryを標準化する |
+| 4-8 | 18〜30人日 | React SPA、Phase 2認証、Phase 3 REST API、CSRF設計、frontend test | Session CookieとJWT Cookieを混同する、token保管・Cookie属性・CSRF境界を誤設計する |
+| 4-9 | 10〜16人日 | MVC / SPA routing、Session / Bearer SecurityFilterChain | 経路matcherの隙間から保護設定を迂回する、またはtransportごとに認可・Use Caseの意味が分岐する |
+| 4-10 | 12〜20人日 | Spring Batch、remind・月次締め、1b-7、job repository | schedulerとBatch双方の排他が不整合となる、再実行で通知または精算を重複する |
+| 4-11 | 8〜13人日 | Java 21互換系統、Java 25以上のVirtual Threads有効系統、負荷test | Java 21で誤って既定有効化する、thread-local依存・driver・pool制約を検証せず互換性を誤認する |
+| 4-12 | 6〜10人日 | async context propagation、OpenTelemetry | trace / correlationの欠落または高cardinality化 |
 
 **内部マイルストーン:** (A) Level 2・notification・冪等性・監視・再送・パージ、
-(B) accounting・MyBatis・PostgreSQL / Oracle・外部API、
+(B) accounting・MyBatis・PostgreSQL・外部API、
 (C) React SPA・MVC併用・Session / Bearer認証・CSRF・SAML、
 (D) Batch・File / Object Storage・OpenTelemetry・Container / ECS・Virtual Threads。<br>
-**判定:** 要分割。Phase 3完了に加え、Oracle、SAML test IdP、mail / API stub、Object Storage、
+**判定:** 要分割。Phase 3完了に加え、SAML test IdP、mail / API stub、Object Storage、
 container / ECS検証環境、およびJava 25以上のCI runnerを開始前に確保する。各系列で
 グランドデザイン§27.8とReference仕様§14.4へ追跡可能な統合証拠が得られない場合はPhase 5へ進まない。
 
@@ -343,7 +344,7 @@ Phase 1a Build Foundation
 Phase 1b-7 単一実行基盤 -> Phase 2-8 / Phase 4-5 / Phase 4-12
 Phase 1b-8 性能harness  -> Phase 5-6
 Phase 2 認証・認可      -> Phase 3 MVC / API -> Phase 4 SPA
-Phase 2 Oracle smoke    -> Phase 4 Oracle Integration
+optional P4-ORACLE      -> 明示Customer要件・優先度・別見積による条件付きwork package
 Phase 3 MyBatis規約     -> Phase 4 accounting
 Phase 0-8 baseline表    -> Phase 5-3
 ```
@@ -356,7 +357,7 @@ Phase 0-8 baseline表    -> Phase 5-3
 1. Phase 1a〜5に、現時点で技術的に成立不能と判断するDoDはない。
 2. Phase 1aは現在のscopeのまま実行可能である。
 3. Phase 1b〜5は、一人projectでPhase全体を一括着手せず、本書の内部マイルストーン単位に分割する。
-4. Phase 2以降は外部環境を開始条件として確認する。利用不能な場合は該当DoDを黙って除外せず、
+4. Phase 2以降は承認済みscopeに必要な外部環境を開始条件として確認する。利用不能な場合は該当DoDを黙って除外せず、
    Governanceに従い`保留`または例外承認として記録する。
 5. 各Phase開始時に前Phaseの実績を反映してrangeを再計算し、上限を継続的に超える場合はscopeを
    削るのではなく、Phase内分割またはロードマップ改定をArchitecture Ownerが判断する。

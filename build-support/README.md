@@ -90,6 +90,15 @@ Application-owned handlerへのback offを累積検証する。Milestone Aの最
 pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp3-runtime-core.ps1
 ```
 
+## Security Foundation
+
+`security-foundation-verification/`はPhase 2 Security FoundationのT0〜T6を累積するTooling所有の
+非配布Harnessです。Root Reactor、正式release unit、BOM、snapshot publishおよび`koiki-testing`には含めません。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-a1-security-foundation.ps1
+```
+
 Maven Toolchains例は開発環境の再現用に保持します。Walking Skeleton専用のclass version確認と
 Java 25 runtime scriptは、C4のmanifest・hash・class major・Java 21 / 25検証へ置き換えたため除去しました。
 Maven Wrapper bootstrap scriptは公式`bin`型を再生成する保守手段として保持します。

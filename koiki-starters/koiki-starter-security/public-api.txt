@@ -1,0 +1,8 @@
+# KOIKI Phase 2 P2-A1 minimal security foundation Public API inventory v3
+ARTIFACT koiki-starter-security
+PUBLIC_JAVA_TYPES 0
+PUBLIC_CONFIGURATION_PROPERTIES 0
+PUBLIC_SECURITY_ERROR_CODES 0
+INTERNAL_PACKAGE org.koikifw.starter.security.internal
+CUSTOMIZATION_BEAN koikiSecurityFallbackFilterChain
+CUSTOMIZATION_MODE COMPOSE_OR_EXPLICIT_REPLACE
