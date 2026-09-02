@@ -5,16 +5,16 @@
 | Item | Result |
 |---|---|
 | Phase / milestone | Phase 2 / Milestone A |
-| Gate | Gate A local acceptance COMPLETE / remote required checks PENDING |
+| Gate | Gate A local acceptance COMPLETE / implementation HEAD remote CI COMPLETE / required check review PENDING |
 | Validation date | 2026年9月2日 |
 | Branch | `feature/phase2-security-foundation` |
 | Start commit | `2bd67a5`（P2-A3完了） |
 | Java / Maven | Java 21.0.12.1、Java 25 runtime / Maven 3.9.16 |
 
 本記録は、P2-A1〜A3で成立させたSecurity Foundationを、Root Reactor外Consumer、Public API境界、
-Java runtime matrixおよびsecret non-exposureを含むGate A local aggregateとして検証したEvidenceである。
-`Security Foundation Integration` jobはlocal差分として追加した。required check変更、push、PR、mergeまたは
-snapshot publishは実施していない。
+Java runtime matrixおよびsecret non-exposureを含むGate A aggregateとして検証したEvidenceである。
+local aggregateに加え、Draft PR #28のimplementation HEADで`Security Foundation Integration`を含む
+remote CIの成立を確認した。required check変更、Ready for review、mergeまたはsnapshot publishは実施していない。
 
 ## 2. Gate A Consumer boundary
 
@@ -82,18 +82,48 @@ OIDC registration、issuer、client credential、audience、scope mapping、matc
 維持する。FrameworkはSpring / Boot標準seamとdefault-deny fallbackだけを提供し、test fixtureやConsumer固有契約を
 公開しない。
 
-## 6. Remote-operation boundary and Gate decision
+## 6. Remote PR verification
+
+2026年9月2日、Draft PR [#28](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/28)
+`feat(security): establish Phase 2 Milestone A security foundation`でremote CIを確認した。
+
+| Item | Observable result |
+|---|---|
+| PR boundary | base `main` / head `feature/phase2-security-foundation` / Draft |
+| Implementation HEAD | `b762549859649e52edebbc6891780271f23c4228` |
+| Merge test ref | `73d321da1e5d8166f0063b92b170475fdcb07d38` |
+| CI run | `33599209707` |
+| Security job | `Security Foundation Integration` / job `100148955356` / success |
+| Execution time | 2026-09-02 06:31:23Z〜06:34:17Z、約2分54秒 |
+| Runtime matrix | `expected=21 actual=21`、`expected=25 actual=25` |
+| Same-artifact proof | SHA-256 `BFD4764B14B6CB210338EEA2A7B1016647845649F5307B6EC537894A1D3CF74A`不変 |
+| Cumulative tests | 23 tests、failure / error / skip 0 |
+| Public API fixture | `C3 Gate 3 Public API fixture verification: SUCCESS` |
+| Final marker | `Phase 2 Gate A local Security aggregate succeeded.` |
+| Permissions | `contents: read`、`metadata: read`のみ。secret / Packages権限なし |
+| Cleanup | setup-java、checkoutおよびorphan process cleanupを含むpost job完了 |
+| PR check rollup | `Security Foundation Integration`を含む7 checksすべてsuccess |
+| PR state | mergeable `MERGEABLE` / merge state `CLEAN` |
+
+remote上でもJava 21でbuildした同一Consumer JARをJava 21 / 25で実行でき、local Gate Aと同じ最終markerまで
+到達した。別jobの`Public API Compatibility`もsuccessとなり、published baselineとの比較を含む既存required
+checksに回帰がないことを確認した。
+
+## 7. Remote-operation boundary and Gate decision
 
 localではPublic APIのpositive / negative fixtureによりcompatibility detector自体を確認した。
-一方、published baseline artifactとの比較はpackage tokenとremote artifactを必要とするため実施していない。
+published baseline artifactとの比較はpackage tokenとremote artifactを必要とするためlocalでは実施せず、
+Draft PRの`Public API Compatibility` job成功をremote Evidenceとした。
 Framework側CIへ`Security Foundation Integration` jobを追加し、Temurin 21をbuild JDK、Temurin 25を追加runtimeとして
 Gate A aggregateを実行する構成にした。このjobは`contents: read`だけを明示し、secretやPackages権限を持たない。
 2026年9月2日、Architecture Ownerは、外部IdP、DB、containerまたは常駐processを使用しないGate Aでは、local aggregateの
 3回連続成功に加えて同一commitをremoteで3回rerunする技術的効果は限定的と判断した。required化の前提をfinal HEADでの
 remote 1回成功、cleanupと実行時間の確認およびOwner Reviewへ変更し、Milestone Bの3回連続成功条件は維持する。
-remoteでのjob実行、published baseline compatibility、push / PR、required化およびremote required checksは、実行計画§8に従い
-それぞれOwner承認後に実施する。
+remoteでのjob実行、published baseline compatibility、push / Draft PRおよびremote checksは完了した。
+`Security Foundation Integration`のrequired check化、Ready for reviewおよびmergeは、実行計画§8に従い
+それぞれOwner判断後に実施する。
 
-したがって、Gate Aのlocal implementationとacceptance Evidenceは完了しているが、Gate A全体を`ACCEPTED`とはまだ判定しない。
-次の判断点は、この差分をcommitした後、remote operationを開始するOwner承認である。Milestone BはGate Aのremote review / mergeを
+したがって、Gate Aのlocal implementation、implementation HEADでのremote acceptanceおよびEvidence作成は完了しているが、
+Gate A全体を`ACCEPTED`とはまだ判定しない。次の判断点は、本Evidenceを反映したfinal HEADのremote checksを確認した後、
+`Security Foundation Integration`をrequired checkへ追加するかのOwner Reviewである。Milestone BはGate Aのremote review / mergeを
 完了するまで開始しない。
