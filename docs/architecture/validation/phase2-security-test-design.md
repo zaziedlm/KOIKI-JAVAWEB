@@ -298,7 +298,7 @@ ephemeral issuerを理由に追加しない。test-only signingはAuthorization 
 | focused local | T0〜T3、変更module + verification fixture | 各commit前 | Java 21、credential / Docker不要、Repository Wrapper | Owning CP必須。最短のdiagnostic経路 |
 | PostgreSQL local integration | T4〜T6の該当scenario | B1〜B3変更時 | Java 21、local Docker、PostgreSQL Testcontainers | Owning CP必須。container cleanup確認 |
 | root Verify | reactor unit / integration、T0〜T3回帰 | 全PR / `main` | 既存`Verify (ubuntu-24.04)`、`contents: read`、secretなし | 既存required pathへ累積。ただし長時間process testを混在させない |
-| Security Foundation Integration候補 | T4〜T6、migration、audit、JDBC Session、package済み2 process | Security実装を含むPR / `main` | Linux、Java 21、PostgreSQL、`contents: read`、secretなし | 3回連続成功、時間、cleanupをOwner review後にrequired化 |
+| Security Foundation Integration（Milestone B拡張） | T4〜T6、migration、audit、JDBC Session、package済み2 process | Milestone B実装を含むPR / `main` | Linux、Java 21、PostgreSQL、`contents: read`、secretなし | PostgreSQL / 複数process追加後に3回連続成功、時間、cleanupをOwner reviewしてrequired化を再判断 |
 | Java runtime compatibility | package済み同一artifactのJava 21 / 25実行 | Gate A以降のPR / nightly | 既存workflow原則を再利用し、runtime別rebuildなし | production Security artifact追加後に対象拡張をreview |
 | hosted Cognito acceptance | discovery、login、claim、optional RP-Initiated Logout | `workflow_dispatch`または承認済み検証 | Environment approval、最小secret、固定redirect URI、artifact非保存 | optional。required PR / releaseの代替にしない |
 | Oracle compatibility | 現行Phaseでは実施しない | optional `P4-ORACLE`承認後に再設計 | 現時点では環境・依存未選定 | Phase 2の完了条件・CIへ入れない |

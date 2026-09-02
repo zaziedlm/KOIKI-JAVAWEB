@@ -27,8 +27,8 @@ KOIKIでは、CIとartifact公開を別の権限境界として扱います。
   Developer Journey、release unit／Public API／migration／table inventoryおよびCP9短縮Smokeを検証します。
   CP9性能数値を閾値にせず、`contents: read`だけで実行し、secretやPackages権限を追加しません。
 - 通常の`Verify` jobは`contents: read`だけで、secretやpackage権限を使用しません。
-- `Security Foundation Integration`のrequired check化は、remote PRで3回連続成功しcleanupの安定性を
-  Owner Reviewした後に判断します。
+- `Security Foundation Integration`のrequired check化は、final HEADのremote PRで1回成功し、cleanupと実行時間を
+  Owner Reviewした後に判断します。同一commitの意図的な複数rerunは条件にしません。
 - 独立した`Public API Compatibility` jobだけが`contents: read`と`packages: read`を持ち、C1 baseline、
   inventory、japicmp正常系とGate 3 fixtureを同じTooling scriptで検証します。
 - Public API jobはRepositoryの`GITHUB_TOKEN`だけを使用し、追加PAT secret、Maven cache、

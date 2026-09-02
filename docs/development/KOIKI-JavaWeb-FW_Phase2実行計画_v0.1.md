@@ -227,10 +227,15 @@ CP9 performance公式baselineとPhase 1b snapshotは再採取しない。
 
 - focused validationと通常root verifyはlocalで実行する。
 - workflow追加、required check変更、environment / secret作成、push、PR、merge、snapshot publishは個別Owner承認後だけ行う。
-- Milestone A / Bのintegration jobは3回連続成功とcleanup確認後にrequired化をreviewする。
+- Milestone Aのintegration jobは、final HEADでremote 1回成功し、cleanupと実行時間を確認した後にrequired化をreviewする。
+- Milestone BのPostgreSQL integration jobは、3回連続成功とcontainer / process cleanup確認後にrequired化をreviewする。
 - Oracle jobは現行Phaseのworkflowへ追加しない。
 - CI permissionsは原則`contents: read`。package / environment権限を通常CIへ追加しない。
 - private key、client secret、password、token、PIIをsource、log、artifact、Problem Detailsへ残さない。
+
+2026年9月2日、Architecture Ownerは、外部IdP、DB、containerまたは常駐processを使用しないMilestone Aについて、
+local aggregate 3回連続成功済みであることを踏まえ、同一commitのremote rerunをrequired化条件としない判断を承認した。
+Testcontainers、実DBおよび複数processの安定性を扱うMilestone Bの3回連続成功条件は維持する。
 
 ## 9. ADR / Skill / documentation targets
 

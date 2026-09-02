@@ -88,8 +88,11 @@ localではPublic APIのpositive / negative fixtureによりcompatibility detect
 一方、published baseline artifactとの比較はpackage tokenとremote artifactを必要とするため実施していない。
 Framework側CIへ`Security Foundation Integration` jobを追加し、Temurin 21をbuild JDK、Temurin 25を追加runtimeとして
 Gate A aggregateを実行する構成にした。このjobは`contents: read`だけを明示し、secretやPackages権限を持たない。
-remoteでのjob実行、published baseline compatibility、push / PR、3回連続成功後のrequired化およびremote required checksは、
-実行計画§8に従いそれぞれOwner承認後に実施する。
+2026年9月2日、Architecture Ownerは、外部IdP、DB、containerまたは常駐processを使用しないGate Aでは、local aggregateの
+3回連続成功に加えて同一commitをremoteで3回rerunする技術的効果は限定的と判断した。required化の前提をfinal HEADでの
+remote 1回成功、cleanupと実行時間の確認およびOwner Reviewへ変更し、Milestone Bの3回連続成功条件は維持する。
+remoteでのjob実行、published baseline compatibility、push / PR、required化およびremote required checksは、実行計画§8に従い
+それぞれOwner承認後に実施する。
 
 したがって、Gate Aのlocal implementationとacceptance Evidenceは完了しているが、Gate A全体を`ACCEPTED`とはまだ判定しない。
 次の判断点は、この差分をcommitした後、remote operationを開始するOwner承認である。Milestone BはGate Aのremote review / mergeを
