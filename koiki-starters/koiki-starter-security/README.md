@@ -17,6 +17,11 @@ verification fixtureで確認し、`docs/architecture/validation/phase2-p2-a1-t0
 P2-A1の公開Java型、公開configuration property、Security error codeは0件である。
 `koiki.security.*`のenabled propertyやprofile matcher propertyはA1では提供せず、Owning CPのEvidence前に固定しない。
 
+P2-A2ではStarterのServlet Auto ConfigurationがSpring標準Method Securityを有効化する。
+local Form Login、HTTP Session、application-owned URL chain、RoleからPermissionへの展開は、非配布T2 fixtureで
+Spring標準componentによる成立性を実証する。test identity、Permission文字列、routeまたはcredentialを正式Starterへ置かず、
+公開Java型、configuration property、Security error codeは引き続き0件とする。
+
 test user、test route、test keyは非配布fixtureだけに置き、正式Starterのproduction sourceには含めない。
 Customer固有Role / Permission、login UI、identity persistence、OAuth2 Client / Resource Server、
 Spring Session JDBCおよびMigrationはOwning CPまで追加しない。Authorization ServerはPhase 2対象外とする。

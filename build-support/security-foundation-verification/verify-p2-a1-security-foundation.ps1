@@ -196,7 +196,7 @@ try {
     Assert-SecurityContract -FormalJar $formalJar
     Assert-NoSensitiveContent -Files (@($formalJar, $fixtureJar) + $reportFiles)
 
-    Write-Host 'P2-A1 dependency and T0/T1 verification succeeded.'
+    Write-Host 'Security dependency and cumulative T0/T1/T2 verification succeeded.'
 } finally {
     if (Test-Path -LiteralPath $verificationRoot) {
         Assert-SafeTemporaryPath -Path $verificationRoot
