@@ -8,6 +8,11 @@ KOIKIでは、CIとartifact公開を別の権限境界として扱います。
 - `ubuntu-24.04` / Temurin 21で、Maven Wrapperから`clean verify`を実行します。production runtimeを
   Linux-onlyとしたため、Windows matrixは再採用判断まで無効です。
 - NullAwayのpositive、意図的違反のexpected failure、restoreを隔離fixtureから検証します。
+- `Security Foundation Integration` jobは、隔離Maven repositoryへrelease unitをstageし、Root Reactor外の
+  Customer-like Consumerをbuild／test／packageします。Java 21でbuildした同一JARをJava 21／25で実行し、
+  Security依存、Public API fixture、secret non-exposureおよびcleanupを累積検証します。
+- `Security Foundation Integration`はFramework側の外部利用互換性を検証するjobであり、Customer業務アプリの
+  CI Templateではありません。`contents: read`だけを使用し、secretまたはPackages権限を追加しません。
 - Phase 1b Milestone Aでは、隔離Maven repositoryへrelease unitをstageし、Starter細粒度fixtureと
   独立Customer-like ConsumerのProblem Details／Validation／Jackson例外経路を累積検証します。
 - Milestone AのCP3 aggregate scriptは当時の後続依存禁止contractを保存し、Milestone B以降の通常CIからは
@@ -22,6 +27,8 @@ KOIKIでは、CIとartifact公開を別の権限境界として扱います。
   Developer Journey、release unit／Public API／migration／table inventoryおよびCP9短縮Smokeを検証します。
   CP9性能数値を閾値にせず、`contents: read`だけで実行し、secretやPackages権限を追加しません。
 - 通常の`Verify` jobは`contents: read`だけで、secretやpackage権限を使用しません。
+- `Security Foundation Integration`のrequired check化は、remote PRで3回連続成功しcleanupの安定性を
+  Owner Reviewした後に判断します。
 - 独立した`Public API Compatibility` jobだけが`contents: read`と`packages: read`を持ち、C1 baseline、
   inventory、japicmp正常系とGate 3 fixtureを同じTooling scriptで検証します。
 - Public API jobはRepositoryの`GITHUB_TOKEN`だけを使用し、追加PAT secret、Maven cache、

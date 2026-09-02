@@ -13,7 +13,8 @@
 
 本記録は、P2-A1〜A3で成立させたSecurity Foundationを、Root Reactor外Consumer、Public API境界、
 Java runtime matrixおよびsecret non-exposureを含むGate A local aggregateとして検証したEvidenceである。
-workflow変更、required check変更、push、PR、mergeまたはsnapshot publishは実施していない。
+`Security Foundation Integration` jobはlocal差分として追加した。required check変更、push、PR、mergeまたは
+snapshot publishは実施していない。
 
 ## 2. Gate A Consumer boundary
 
@@ -85,8 +86,10 @@ OIDC registration、issuer、client credential、audience、scope mapping、matc
 
 localではPublic APIのpositive / negative fixtureによりcompatibility detector自体を確認した。
 一方、published baseline artifactとの比較はpackage tokenとremote artifactを必要とするため実施していない。
-ローカルで3回成功したGate A aggregateの既存CIへの組み込みとrequired化、published baseline compatibility、
-push / PRおよびremote required checksは、実行計画§8に従いOwner承認後に実施する。
+Framework側CIへ`Security Foundation Integration` jobを追加し、Temurin 21をbuild JDK、Temurin 25を追加runtimeとして
+Gate A aggregateを実行する構成にした。このjobは`contents: read`だけを明示し、secretやPackages権限を持たない。
+remoteでのjob実行、published baseline compatibility、push / PR、3回連続成功後のrequired化およびremote required checksは、
+実行計画§8に従いそれぞれOwner承認後に実施する。
 
 したがって、Gate Aのlocal implementationとacceptance Evidenceは完了しているが、Gate A全体を`ACCEPTED`とはまだ判定しない。
 次の判断点は、この差分をcommitした後、remote operationを開始するOwner承認である。Milestone BはGate Aのremote review / mergeを
