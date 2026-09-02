@@ -154,12 +154,19 @@ try {
     $productionDependencies = Get-Content -Raw -LiteralPath $productionTree
     $fixtureDependencies = Get-Content -Raw -LiteralPath $fixtureTree
 
-    if ($productionDependencies -notmatch 'org[.]springframework[.]boot:spring-boot-starter-security:jar:') {
-        throw 'Boot Security Starter is missing from the production dependency tree.'
+    foreach ($requiredProductionDependency in @(
+        'org.springframework.boot:spring-boot-starter-security:jar:',
+        'org.springframework.boot:spring-boot-starter-security-oauth2-client:jar:',
+        'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server:jar:')) {
+        if ($productionDependencies -notmatch [regex]::Escape($requiredProductionDependency)) {
+            throw "Required Boot-managed production dependency is missing: $requiredProductionDependency"
+        }
     }
     foreach ($requiredTestDependency in @(
         'org.springframework.boot:spring-boot-starter-test:jar:',
         'org.springframework.boot:spring-boot-starter-security-test:jar:',
+        'org.springframework.boot:spring-boot-starter-security-oauth2-client-test:jar:',
+        'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test:jar:',
         'org.springframework.boot:spring-boot-starter-webmvc:jar:')) {
         if ($fixtureDependencies -notmatch [regex]::Escape($requiredTestDependency)) {
             throw "Required Boot-managed test dependency is missing: $requiredTestDependency"
@@ -168,7 +175,7 @@ try {
 
     Write-Host '=== Resolved Boot-managed Security baseline ==='
     ($productionDependencies + "`n" + $fixtureDependencies) -split "`r?`n" |
-        Select-String -Pattern '(spring-boot-starter-security|spring-boot-starter-test|spring-security-(config|core|crypto|test|web)):jar:' |
+        Select-String -Pattern '(spring-boot-starter-security|spring-boot-starter-test|spring-security-(config|core|crypto|oauth2|test|web)):jar:' |
         ForEach-Object { Write-Host $_.Line.Trim() }
 
     $combinedDependencies = $productionDependencies + "`n" + $fixtureDependencies
@@ -196,7 +203,7 @@ try {
     Assert-SecurityContract -FormalJar $formalJar
     Assert-NoSensitiveContent -Files (@($formalJar, $fixtureJar) + $reportFiles)
 
-    Write-Host 'Security dependency and cumulative T0/T1/T2 verification succeeded.'
+    Write-Host 'Security dependency and cumulative verification succeeded.'
 } finally {
     if (Test-Path -LiteralPath $verificationRoot) {
         Assert-SafeTemporaryPath -Path $verificationRoot

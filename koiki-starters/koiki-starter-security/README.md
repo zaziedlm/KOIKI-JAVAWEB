@@ -23,5 +23,14 @@ Spring標準componentによる成立性を実証する。test identity、Permiss
 公開Java型、configuration property、Security error codeは引き続き0件とする。
 
 test user、test route、test keyは非配布fixtureだけに置き、正式Starterのproduction sourceには含めない。
-Customer固有Role / Permission、login UI、identity persistence、OAuth2 Client / Resource Server、
-Spring Session JDBCおよびMigrationはOwning CPまで追加しない。Authorization ServerはPhase 2対象外とする。
+Customer固有Role / Permission、login UI、identity persistence、Spring Session JDBCおよびMigrationは
+Owning CPまで追加しない。Authorization ServerはPhase 2対象外とする。
+
+P2-A3ではSpring Boot標準のOAuth2 ClientとResource Server starterをdependencyとして提供する。
+Customerはbrowser / callback pathとBearer API pathを別の`SecurityFilterChain`で明示し、OIDC LoginのHTTP Sessionと
+Bearer JWTを同じpathでfallback認証させない。issuer、client registration、audience、scope変換、CORS allowlistは、
+Boot標準`spring.security.oauth2.*`設定またはCustomer-owned Spring beanで構成する。
+
+Starter独自のOIDC / JWT parser、token発行、client secret、profile matcher property、AWS header認証は提供しない。
+署名・issuer・audience・時刻・scopeの検証、authorization-codeのstate / nonce、Session / Bearer分離、CORS negativeは
+非配布T3 fixtureで確認する。P2-A3でも公開Java型、configuration property、Security error codeは0件のままである。
