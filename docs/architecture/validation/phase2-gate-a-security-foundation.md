@@ -5,7 +5,7 @@
 | Item | Result |
 |---|---|
 | Phase / milestone | Phase 2 / Milestone A |
-| Gate | Gate A local acceptance COMPLETE / implementation HEAD remote CI COMPLETE / required check review PENDING |
+| Gate | Gate A local acceptance COMPLETE / remote CI COMPLETE / required check COMPLETE / PR review PENDING |
 | Validation date | 2026年9月2日 |
 | Branch | `feature/phase2-security-foundation` |
 | Start commit | `2bd67a5`（P2-A3完了） |
@@ -14,7 +14,8 @@
 本記録は、P2-A1〜A3で成立させたSecurity Foundationを、Root Reactor外Consumer、Public API境界、
 Java runtime matrixおよびsecret non-exposureを含むGate A aggregateとして検証したEvidenceである。
 local aggregateに加え、Draft PR #28のimplementation HEADで`Security Foundation Integration`を含む
-remote CIの成立を確認した。required check変更、Ready for review、mergeまたはsnapshot publishは実施していない。
+remote CIの成立を確認し、Owner承認後にmain rulesetのrequired checkへ追加した。
+Ready for review、mergeまたはsnapshot publishは実施していない。
 
 ## 2. Gate A Consumer boundary
 
@@ -91,6 +92,7 @@ OIDC registration、issuer、client credential、audience、scope mapping、matc
 |---|---|
 | PR boundary | base `main` / head `feature/phase2-security-foundation` / Draft |
 | Implementation HEAD | `b762549859649e52edebbc6891780271f23c4228` |
+| Evidence HEAD | `24a1ced539c82dcaf7d84c0b62c249e92be0726b` / 7 checksすべてsuccess |
 | Merge test ref | `73d321da1e5d8166f0063b92b170475fdcb07d38` |
 | CI run | `33599209707` |
 | Security job | `Security Foundation Integration` / job `100148955356` / success |
@@ -120,10 +122,12 @@ Gate A aggregateを実行する構成にした。このjobは`contents: read`だ
 3回連続成功に加えて同一commitをremoteで3回rerunする技術的効果は限定的と判断した。required化の前提をfinal HEADでの
 remote 1回成功、cleanupと実行時間の確認およびOwner Reviewへ変更し、Milestone Bの3回連続成功条件は維持する。
 remoteでのjob実行、published baseline compatibility、push / Draft PRおよびremote checksは完了した。
-`Security Foundation Integration`のrequired check化、Ready for reviewおよびmergeは、実行計画§8に従い
+Evidence HEAD `24a1ced539c82dcaf7d84c0b62c249e92be0726b`でも7 checksすべての成功を確認した後、
+Architecture Ownerの承認に基づき、2026年9月2日に`Security Foundation Integration`をmain ruleset
+`main-merge-protection`（ID `21140116`）のrequired checkへ追加した。既存5 required checks、strict policy、
+PR保護およびbypassなしは維持されている。Ready for reviewおよびmergeは、実行計画§8に従い
 それぞれOwner判断後に実施する。
 
-したがって、Gate Aのlocal implementation、implementation HEADでのremote acceptanceおよびEvidence作成は完了しているが、
-Gate A全体を`ACCEPTED`とはまだ判定しない。次の判断点は、本Evidenceを反映したfinal HEADのremote checksを確認した後、
-`Security Foundation Integration`をrequired checkへ追加するかのOwner Reviewである。Milestone BはGate Aのremote review / mergeを
-完了するまで開始しない。
+したがって、Gate Aのlocal implementation、remote acceptance、Evidence作成およびrequired check化は完了しているが、
+Gate A全体を`ACCEPTED`とはまだ判定しない。次の判断点は、PR #28をReady for reviewへ変更するOwner判断とremote review / mergeである。
+Milestone BはGate Aのremote review / mergeを完了するまで開始しない。
