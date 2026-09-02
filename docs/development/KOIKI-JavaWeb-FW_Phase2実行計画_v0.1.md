@@ -54,6 +54,8 @@ Architecture Ownerへ次を一括して承認依頼する。
 | Choice | Recommended / accepted decision | Alternative / impact | Status |
 |---|---|---|---|
 | OIDC test provider | required CIはcredential不要のlocal ephemeral issuer。Amazon Cognito User Poolは標準OIDC Providerの任意hosted acceptance候補 | hosted acceptanceは実環境に近いがsecret、可用性、redirect URI管理が必要 | **APPROVED GATE F F-3** |
+| Application / Audit log classification | ログ種別はApplication logとDBを正本とするAudit logの2つとし、Securityを第3のログ種別にしない。Security関連事象は目的に応じてApplication log、Audit logまたは双方へ安全な別表現で記録する | Security専用ログ種別を追加すると、運用監視と監査証跡の責務、保存先、failure semanticsが重複する | **APPROVED OWNER 2026-09-02** |
+| Audit contract / transaction | 単一Audit Starter、Business / Security別recorder、immutable value、safe unchecked failure、recorder façade + internal `MANDATORY` / `REQUIRES_NEW` executor、JPA `persist + flush`、DB正本を採用する | Security Starter混在、単一classification引数、result返却、JDBC例外化、外部log backend依存は誤分類・監査欠損・scope拡大を招く | **APPROVED OWNER B1-C1〜C7 2026-09-02** |
 | Security audit failure | login成功、reset token発行、管理解除はfail closed。logout / disable / invalidationは処理継続 + alert | 全best-effortは監査欠損、全fail-closedは防御的失効を妨げる | **APPROVED P2-F2 O-4** |
 | Session store failure | 全Session失効を伴うmutationは永続失効不能ならrollback + safe failure / alert。logoutはlocal context / Cookieを消去するが永続削除失敗を成功扱いしない | 全best-effortはstale Sessionを残し、logout自体のfail-closedはlocal防御操作を妨げる | **APPROVED GATE F F-4** |
 | Session table | `koiki_session` / `koiki_session_attributes`をFramework Flywayで管理し、Spring Session schema自動初期化を無効化。列型、index、save mode、PostgreSQL DDLはP2-B3 / C1で実測 | Spring既定名を使う場合はFramework管理例外表へ記録 | **APPROVED OWNER 2026-08-31** |
@@ -70,7 +72,9 @@ Architecture Ownerへ次を一括して承認依頼する。
 #### 2.2.1 Remaining-choice Owner approval record
 
 2026年8月31日、Architecture OwnerはSession table、Single execution、Oracleに関するphase allocationの3件を承認した。
-これにより§2.2は`0 OPEN / 13 APPROVED`とする。同日に先行して承認されたOracle Free image案は、後続のOwner判断により
+2026年9月2日、Application / Audit logの2分類とSecurityを横断的性質として扱う境界を承認した。
+同日、P2-B1のAudit contract / transactionに関するB1-C1〜C7を推奨案どおり承認した。
+これにより§2.2は`0 OPEN / 15 APPROVED`とする。8月31日に先行して承認されたOracle Free image案は、後続のOwner判断により
 supersedeされた履歴として保持する。save modeとPostgreSQL内部排他方式は、承認済みのstop conditionに従ってP2-B3で
 実測・記録するimplementation decisionである。Oracleの具体的patch / digestはPhase 2の未決事項ではなく、選定対象外である。
 
