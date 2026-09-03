@@ -156,13 +156,20 @@ Milestone Aは1 PRを上限とする。OIDC providerまたはprofile matcherが�
 | CP | Scope | Exit criteria |
 |---:|---|---|
 | P2-B1 | Audit contractとtransaction fixture | 実PostgreSQLで2-6 / 2-7のrollback対比、failure semantics |
-| P2-B2 | User / Role / Permission、Password / Lock / Reset、attempt制御、migration | email / immutable ID分離、raw secret非保存、enumeration防止、並行失敗閾値、optimistic lock、所有権完全一致 |
+| P2-B2 | User / Role / Permission、Password / Lock、attempt制御、Reset設計境界、migration | email / immutable ID分離、raw secret非保存、enumeration防止、並行失敗閾値、optimistic lock、所有権完全一致 |
 | P2-B3 | Spring Session JDBC、2 instance、logout、cleanup / single execution | DoD 2-5、2-8。`koiki_session*`、Web cleanup競合なし、片instance停止後も継続。vendor-neutral結果とPostgreSQL internal adapterを実証 |
 | P2-B4 | Reference `identity` | DoD 2-10。Tier 1、Framework contract経由、管理操作のMethod Security / audit |
 | Gate B | aggregate / PR | DoD 2-5〜2-8、2-10、packaged journey、Public API inventory / japicmp方針 |
 
 P2-B1でPublic API候補を型単位reviewする。P2-B2以降を先行して契約を既成事実化しない。P2-B3ではPhase 1b Consumerの
 lock codeをcopyせず、EvidenceからFramework production contractを再実装する。
+
+2026年9月3日、P2-B1をacceptしてADR-047を確定し、`phase2-p2-b2-start-handoff-20260903.md`でP2-B2の
+contract / table review、実装・検証順、Gate BおよびMilestone Cまでのtask mapを開始した。
+同日、`../architecture/validation/phase2-p2-b2-contract-review.md`でB2-C1〜C10の具体的比較・推奨案を作成し、
+Architecture Ownerが全項目を推奨案どおり承認した。B2-1を完了し、B2-2 Identity core / migrationを開始可能とする。
+初期適用projectはSSO認証を想定するため、B2-C7ではlocal resetの安全条件を設計に保持しつつ、reset専用Public API、
+token / mail delivery、table、property、endpointのproduction実装を将来要件成立時の別CPへdeferする案とした。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 

@@ -153,7 +153,7 @@ P2-A2  + T2: local identity / login / Permission scenarios
 P2-A3  + T3: OIDC / JWT / SPA-BFF-Edge boundary
    ↓ same scenarios against real persistence
 P2-B1  + T4: audit transaction and failure semantics
-P2-B2  + T4: identity / lock / reset / migration
+P2-B2  + T4: identity / lock / migration + reset defer境界
    ↓ same authenticated paths against shared session
 P2-B3  + T5 + T6: JDBC Session / logout / 2 instance / cleanup
 ```
@@ -217,7 +217,7 @@ Security / Business auditおよびそれらの非露出性である。
 | N-04 forged edge identity / trust-boundary bypass | trust検証済みfixture principalだけが通常のidentity linkと認可を通過 | raw `x-amzn-oidc-*`、wrong signer / edge ID、許可外network path相当fixture、email-only identityをdeny | verifier unavailable / key取得失敗相当をdenyし、header fallbackしない | raw headerでprincipalが成立せず、検証済みprincipalもPermission不足なら403。AWS production適合とは記録しない | T1 / T3、A1 / A3。cloud実環境はPhase 4 |
 | N-05 privilege escalation by claim / scope | allowlist済みgroup / scopeだけをKOIKI Permissionへ変換 | unknown、malformed、case違い、過剰scope、別profileのauthorityを無視し、deny by default | 必須mapping設定が空、重複または曖昧なら起動失敗。実行時のunknown値にはPermissionを付与しない | AuthenticationのauthorityとURL / Method双方の結果を確認。unknown値をlog / metricの高cardinality tagにしない | T0 / T2 / T3、A1〜A3 |
 | N-06 authorization bypass | 必要Permissionを持つuserだけがURL経由とUse Case direct invocationの双方で成功 | anonymousは401、認証済み権限不足は403、UI / Controller迂回のdirect invocationもdeny | chain / matcher欠落、重複、順序誤りを起動失敗またはunmatched denyへ倒す | protected処理と永続変更が拒否時に未実行。responseへ必要Permissionやresource ownershipを露出しない | T0〜T2 / T4、A1〜A2 / B1 |
-| N-07 stale-session authorization | logout、disable、password reset、Permission変更後に対象userの全KOIKI Sessionを失効 | 旧Cookie、別instance上のSession、固定化前Sessionで再利用不可。対象外userのSessionは維持 | Security audit失敗時もlogout / disable / invalidationを完了してalert。Session store障害時は成功を偽装せずR-01へ接続 | Session row / Cookie / SecurityContext、2 instanceでの再request、対象範囲、alertを確認 | T4〜T6、B1〜B3、O-3〜O-5 |
+| N-07 stale-session authorization | logout、disable、password変更、Permission変更後に対象userの全KOIKI Sessionを失効。local resetは将来activation時に同じ条件を適用 | 旧Cookie、別instance上のSession、固定化前Sessionで再利用不可。対象外userのSessionは維持 | Security audit失敗時もlogout / disable / invalidationを完了してalert。Session store障害時は成功を偽装せずR-01へ接続 | Session row / Cookie / SecurityContext、2 instanceでの再request、対象範囲、alertを確認。resetは初期SSO scopeで未実装 | T4〜T6、B1〜B3、O-3〜O-5。resetは将来CP |
 | N-08 secret / PII disclosure | browser / APIの成功・失敗Evidenceが最小principal IDと低cardinality categoryだけを含む | password、token、code、PKCE verifier、nonce、client secret、claim全文、raw unknown emailを投入して非露出を確認 | provider / DB例外、debug stack、test失敗、artifact生成時にもredactionを維持 | response、Cookie、header、application / audit log、metric、test report、build artifactを走査 | T1〜T6、A1〜B3、O-4 |
 | N-09 audit tampering / inconsistent transaction | Security auditは分離transaction、Business auditは対象変更と同一transactionで保存 | actor偽装、外部subject / emailをactor IDに使用、authorization deny reasonの外部露出を禁止 | Security audit失敗ではlogin成功等をfail closed、logout等は処理継続 + alert。Business audit失敗では対象変更をrollback | 実PostgreSQLでtransaction境界、row有無、対象状態、外部response、alertを同時確認 | T4、B1〜B2、O-4 |
 | N-10 cross-profile credential fallback | Session、Bearer、検証済みEdge principalが各profileの明示pathだけで成立 | CookieをBearer pathへ、Bearerをbrowser loginへ、raw Edge headerを任意pathへ提示してdeny。unmatched pathもdeny | profile matcher重複 / 空白、必要property欠落、issuer ambiguityをT0で検出 | 想定外credentialから別Providerへfallbackせず、SecurityContext未確立。401 / 403 / redirectはprofile契約どおり | T0 / T1 / T3、A1 / A3 |
@@ -226,7 +226,7 @@ Security / Business auditおよびそれらの非露出性である。
 
 | ID | Residual / unresolved point | Gate treatment |
 |---|---|---|
-| R-01 | Session store障害中のdisable、Permission変更、password resetとSession失効のatomicity / compensation | Gate F F-4で承認済み。永続失効不能時のmutation rollback / safe failureを適用し、失効未完了を成功扱いしない |
+| R-01 | Session store障害中のdisable、Permission変更、password変更とSession失効のatomicity / compensation。将来local resetも同じ対象 | Gate F F-4で承認済み。永続失効不能時のmutation rollback / safe failureを適用し、失効未完了を成功扱いしない。reset実測は将来CP |
 | R-02 | ALB署名、edge ARN / network trustおよびkey rotationのAWS実環境適合 | Phase 4 cloud Adapter候補。Phase 2ではcontract fixtureを越えた適合をclaimしない |
 | R-03 | hosted Cognito availability、tenant設定差、RP-Initiated Logout差 | optional hosted acceptance。required PR testはlocal standard OIDC contractで再現 |
 | R-04 | Access / Refresh Token発行、rotation、reuse、revoke | P2-F4でphaseとdependencyを決定。P2-F3 Resource Server testへ混入させない |
@@ -330,8 +330,9 @@ workflow、required check、Environmentまたはsecretは本記録では変更�
 2. §10のrequired PR、PostgreSQL integration、optional hosted Cognito、Phase 4 Edgeの実行境界を承認する。
 3. required OIDC Evidenceはcredential不要のlocal ephemeral issuerとし、hosted Cognitoは任意acceptanceとする。
 4. R-01は次を推奨する。
-   - disable、password reset、Permission削減等の全Session失効を伴う状態変更は、永続的失効を完了できなければ
+   - disable、password変更、Permission削減等の全Session失効を伴う状態変更は、永続的失効を完了できなければ
      mutationをrollbackしてsafe failure + alertとする。
+   - 将来local password resetを有効化する場合も同じR-01を適用するが、初期SSO scopeではresetをproduction実装しない。
    - logoutはSession store障害時もlocal SecurityContextとclient Cookieを消去するが、永続Session削除を成功扱いせず、
      safe failure + alertとして再試行可能にする。
    - audit storeだけの障害にはO-4を適用し、Session store障害と混同しない。

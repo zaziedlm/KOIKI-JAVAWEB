@@ -219,4 +219,5 @@ fixture非配布およびcontainer / 一時領域cleanupの検査も成功した
 
 詳細Evidenceは`../architecture/validation/phase2-p2-b1-t4-verification.md`を参照する。2026年9月3日、Architecture Ownerは
 P2-B1の実装・検証を確認してacceptし、Audit contract / transaction境界をADR-047として確定した。次はP2-B2 Identity / lock / resetの
-開始整理へ進む。P2-B2は別commit pointとし、本P2-B1差分へ混在させない。
+開始整理へ進む。P2-B2は別commit pointとし、本P2-B1差分へ混在させない。開始境界とGate B以降のtask mapは
+`phase2-p2-b2-start-handoff-20260903.md`を正本とする。
