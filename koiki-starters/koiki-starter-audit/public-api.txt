@@ -1,0 +1,15 @@
+# KOIKI Phase 2 P2-B1 Audit Public API inventory v1
+ARTIFACT koiki-starter-audit
+PUBLIC_JAVA_TYPES 6
+TYPE org.koikifw.audit.AuditActor
+TYPE org.koikifw.audit.AuditEvent
+TYPE org.koikifw.audit.AuditRecordingException
+TYPE org.koikifw.audit.AuditResult
+TYPE org.koikifw.audit.BusinessAuditRecorder
+TYPE org.koikifw.audit.SecurityAuditRecorder
+PUBLIC_CONFIGURATION_PROPERTIES 0
+PUBLIC_AUDIT_ERROR_CODES 0
+INTERNAL_PACKAGE org.koikifw.audit.internal
+BUSINESS_TRANSACTION MANDATORY
+SECURITY_TRANSACTION REQUIRES_NEW
+AUDIT_SOURCE_OF_TRUTH DATABASE

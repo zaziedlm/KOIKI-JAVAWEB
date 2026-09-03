@@ -1,7 +1,7 @@
 # KOIKI-JavaWeb-FW グランドデザイン v0.2
 
 **文書版:** v0.2（構想確定・基本設計準備版）
-**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）
+**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）／2026年9月3日（Phase 2 Audit contract / transaction境界をADR-047として反映）
 **文書状態:** ACCEPTED（Phase 0 Architecture Baseline）
 **承認日:** 2026年8月19日
 **Architecture Owner:** Shuichi Kataoka
@@ -3299,6 +3299,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | ADR-020 | セッションストア | **Spring Session JDBC**（既存 PostgreSQL を利用、Redis 差し替え可） |
 | ADR-036 | レート制御 | インフラ層へ委ね、**認証試行制御のみアプリケーション内に持つ** |
 | ADR-046 | Security artifact / profile境界 | `koiki-starter-security`を単一artifactとし、internal Auto Configurationの最下位fallback chainで未一致requestをdenyする。Customer profileは高優先順位chainを合成し、公開Java型・property・error codeはEvidenceが必要になるまで追加しない |
+| ADR-047 | Audit contract / transaction境界 | 単一`koiki-starter-audit`にBusiness / Security別recorderとimmutable valueを置く。internal executorでBusinessは`MANDATORY`、Securityは`REQUIRES_NEW`、JPAは`persist + flush`とし、安全な固定categoryのunchecked failureだけを公開する。DB rowをAudit正本としApplication log／外部backendへ依存させない。production MigrationはP2-C1、複数DataSourceや外部完全配送は明示要件成立時に再判断する |
 
 ### データ
 

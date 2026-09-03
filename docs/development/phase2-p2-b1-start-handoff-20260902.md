@@ -9,9 +9,9 @@ P2-B1 Audit contract / transaction fixtureを安全に開始するためのhando
 - **Architecture Owner:** Shuichi Kataoka
 - **Branch:** `feature/phase2-security-local-identity-session-audit`
 - **Start commit:** `7f63bc1234aa7f79416e36dd8c15c1da0ab6987c`（PR #28 merge commit）
-- **Phase status:** `Gate A COMPLETE / ACCEPTED — B1-1 APPROVED / B1-2 READY`
+- **Phase status:** `Gate A COMPLETE / ACCEPTED — P2-B1 COMPLETE / ACCEPTED — P2-B2 READY`
 - **Ownership:** Framework（Audit contract / transaction semantics）+ Tooling（非配布PostgreSQL fixture）
-- **Production target:** Owner承認済みの単一`koiki-starter-audit`。再開後のB1-2まで生成しない
+- **Production target:** Owner承認済みの単一`koiki-starter-audit`。B1-2で最小実装済み
 - **Verification target:** T4 Audit transaction fixture、実PostgreSQL
 
 ## 2. Required reading order
@@ -50,7 +50,7 @@ P2-B1開始時のlocal baselineは次のとおりである。
 ## 4. P2-B1 scope and exit criteria
 
 ```text
-Phase / status: Phase 2 / Milestone B / P2-B1 READY
+Phase / status: Phase 2 / Milestone B / P2-B1 COMPLETE / ACCEPTED
 Ownership: Framework Audit contract + internal persistence、Tooling PostgreSQL fixture
 Primary layer: T4 Audit transaction boundary
 Database: PostgreSQL Testcontainers
@@ -202,7 +202,7 @@ Tooling-ownedとし、Root Reactor、正式release unit、Framework Public API�
 - Audit transactionがApplication log、ファイルまたは外部log backendの可用性へ依存する。
 - 新規artifactが空、未使用、または将来用途だけで必要になる。
 
-## 11. Next decision point
+## 11. Implementation and verification result
 
 B1-1の型単位contract review案を`../architecture/validation/phase2-p2-b1-contract-review.md`へ記録した。
 単一Audit Starter、Business / Security別interface、immutable Audit value、安全なfailure exception、recorder façadeと
@@ -210,5 +210,13 @@ B1-1の型単位contract review案を`../architecture/validation/phase2-p2-b1-co
 Public API増分を6型と見積もった。
 
 2026年9月2日、Architecture Ownerは同reviewのB1-C1〜C7を推奨案どおり承認した。承認時点でproduction source、POM、
-root Reactor、BOM、Public API inventoryまたはfixtureの変更は0である。再開後の次工程はB1-2 T4 transaction fixtureとし、
-実PostgreSQL Evidenceが承認案を否定した場合は実装を固定せずcontract reviewへ戻る。
+root Reactor、BOM、Public API inventoryまたはfixtureの変更は0であった。
+
+2026年9月3日、承認済みcontractを単一`koiki-starter-audit`と非配布T4 fixtureへ実装した。実PostgreSQLでT4 8件、
+累積T0〜T4 31件が成功し、root Reactor 12 / 12、Architecture Contract 4件、ArchUnit Rules 66件も成功した。
+Public APIは承認済み6型、configuration property 0件、Audit error code 0件である。dependency、artifact、秘密情報・PII、
+fixture非配布およびcontainer / 一時領域cleanupの検査も成功した。
+
+詳細Evidenceは`../architecture/validation/phase2-p2-b1-t4-verification.md`を参照する。2026年9月3日、Architecture Ownerは
+P2-B1の実装・検証を確認してacceptし、Audit contract / transaction境界をADR-047として確定した。次はP2-B2 Identity / lock / resetの
+開始整理へ進む。P2-B2は別commit pointとし、本P2-B1差分へ混在させない。

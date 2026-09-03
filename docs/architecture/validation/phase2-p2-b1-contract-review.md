@@ -4,7 +4,7 @@
 
 - **Review date:** 2026年9月2日
 - **Work package:** `P2-B1 / B1-1`
-- **Status:** `COMPLETE / ARCHITECTURE OWNER APPROVED — B1-2 READY`
+- **Status:** `COMPLETE / ARCHITECTURE OWNER APPROVED — P2-B1 ACCEPTED / ADR-047`
 - **Approved by:** Shuichi Kataoka、2026年9月2日
 - **Ownership:** Framework（Audit contract / internal persistence）+ Tooling（T4 PostgreSQL fixture）
 - **Production change at approval:** 0。B1-2より前にPublic API、artifact、migrationを追加していない
@@ -211,8 +211,11 @@ P2-B1はApplicationとAuditが同じprimary DataSource / transaction managerを�
 | B1-C6 | Persistence implementation | internal JPA `EntityManager.persist + flush`、単一primary transaction manager | Spring Data Repositoryは過剰、JDBC例外化と複数DB対応は要件成立時に再review | **APPROVED** |
 | B1-C7 | Log boundary | DB rowをAudit正本とし、Application log / external backendへ依存しない | CloudWatch / fileへの完全配送は後続要件で再設計 | **APPROVED** |
 
-2026年9月2日、Architecture OwnerはB1-C1〜C7を推奨案どおり承認した。次工程はB1-2として最小artifactと
-T4 fixtureを実装する。実PostgreSQLでの実測が承認案を否定した場合は実装を固定せず、本reviewへ戻る。
+2026年9月2日、Architecture OwnerはB1-C1〜C7を推奨案どおり承認した。承認後のB1-2では最小artifactと
+T4 fixtureを実装し、実PostgreSQLでの実測が承認案を否定した場合は実装を固定せず、本reviewへ戻ることとした。
 
 本review承認だけではADR registerを変更しない。B1-2の実PostgreSQL Evidenceが承認案を支持し、Ownerがcontractをacceptした時点で、
 Phase 2計画§7に従いAudit contract / transaction判断をADR候補として記録する。
+
+2026年9月3日、B1-2〜B1-3を実装し、`phase2-p2-b1-t4-verification.md`の実PostgreSQL EvidenceがB1-C1〜C7を
+支持することを確認した。同日、Architecture OwnerはP2-B1をacceptし、Audit contract / transaction境界をADR-047として確定した。

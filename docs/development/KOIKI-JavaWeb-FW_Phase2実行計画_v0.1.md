@@ -74,6 +74,7 @@ Architecture Ownerへ次を一括して承認依頼する。
 2026年8月31日、Architecture OwnerはSession table、Single execution、Oracleに関するphase allocationの3件を承認した。
 2026年9月2日、Application / Audit logの2分類とSecurityを横断的性質として扱う境界を承認した。
 同日、P2-B1のAudit contract / transactionに関するB1-C1〜C7を推奨案どおり承認した。
+2026年9月3日、実PostgreSQLのT4 Evidenceを確認してP2-B1をacceptし、同判断をADR-047として確定した。
 これにより§2.2は`0 OPEN / 15 APPROVED`とする。8月31日に先行して承認されたOracle Free image案は、後続のOwner判断により
 supersedeされた履歴として保持する。save modeとPostgreSQL内部排他方式は、承認済みのstop conditionに従ってP2-B3で
 実測・記録するimplementation decisionである。Oracleの具体的patch / digestはPhase 2の未決事項ではなく、選定対象外である。

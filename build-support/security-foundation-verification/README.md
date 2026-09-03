@@ -33,3 +33,14 @@ Gate AではP2-A3 cumulative acceptanceに加え、正式release unitを別の�
 Root Reactor外のCustomer-like Consumerをbuild / test / packageする。同一Consumer JARをJava 21 / 25で実行し、
 Public API正負fixture、root verify、runtime dependency境界、secret non-exposureおよび一時領域cleanupを確認する。
 published baselineとのPublic API compatibilityとremote required checksは、Owner承認後のPR境界で実行する。
+
+P2-B1のT4 Audit transaction aggregateは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b1-audit-transaction.ps1
+```
+
+T4ではfixture-owned schemaとPostgreSQL Testcontainersを使い、Business auditの同一transaction、Security auditの
+独立transaction、保存失敗時のrollback / fail-closed / continue + alert、transaction外呼出拒否、correlationおよび
+actor / payload非露出をDB rowで観測する。scriptはT0〜T4の31 tests、承認済みPublic API 6型、正式Audit JARの
+internal境界、production / test dependency、非配布fixture、secret / PII非露出および一時領域cleanupを検査する。
