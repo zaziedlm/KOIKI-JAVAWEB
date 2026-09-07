@@ -171,5 +171,6 @@ Cookie jar、DB row、終了codeをHarness側から観測する。production sou
 
 ## 11. Immediate next action
 
+B3-4を別端末・新規対話で再開する場合は、`phase2-p2-b3-b3-4-start-handoff-20260908.md`を開始正本とする。
 B3-4 Two-process continuityへ進み、package済み同一JARの2 process継続、片系停止、別processからの失効、旧Cookie拒否および
 実Session store障害のHTTP結果をT6で外部観測する。cleanup / single executionはB3-5より前へ先行しない。
