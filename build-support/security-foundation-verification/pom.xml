@@ -21,6 +21,18 @@
   <dependencies>
     <dependency>
       <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-identity</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-data</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.koikifw</groupId>
       <artifactId>koiki-starter-audit</artifactId>
       <scope>test</scope>
     </dependency>

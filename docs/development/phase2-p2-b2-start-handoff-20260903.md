@@ -9,7 +9,7 @@ Account Lock、認証試行制御、Password Resetの将来境界とIdentity mig
 - **Architecture Owner:** Shuichi Kataoka
 - **Branch:** `feature/phase2-security-local-identity-session-audit`
 - **Start commit:** `2942db7`（P2-B1 Audit contract / transaction）
-- **Phase status:** `P2-B1 COMPLETE / ACCEPTED — P2-B2 B2-1 COMPLETE / APPROVED — B2-2 READY`
+- **Phase status:** `P2-B1 COMPLETE / ACCEPTED — P2-B2 B2-1〜B2-2 COMPLETE / APPROVED — B2-3 READY`
 - **Ownership:** Framework（Identity contract / persistence / migration）+ Tooling（非配布T4 PostgreSQL fixture）
 - **Primary target:** Local Identity、Password / Lock、Role / Permission、external identity link、login attempt
 - **Deferred:** Local Password Reset詳細実装は将来要件成立時の別CP、Spring Session JDBCはP2-B3、Reference `identity`はP2-B4、Audit / Session migration総合はP2-C1
@@ -124,6 +124,7 @@ test user、raw credential、failure switch、clock、source key、並行実行h
 
 - 承認済み最小artifact、User / Role / Permission / credential / external link modelとIdentity migrationを追加する。
 - canonical unique、FK、version、raw secret非保存を実PostgreSQLで確認する。
+- **Status:** `COMPLETE / ARCHITECTURE OWNER APPROVED`（2026年9月7日）
 - **Commit point:** Identity core / migration。
 
 ### B2-3 — Authentication / attempt / lock
@@ -135,6 +136,8 @@ test user、raw credential、failure switch、clock、source key、並行実行h
 ### B2-4 — Identity administration
 
 - Role / Permission / link / account / password管理とAudit semanticsを検証する。reset専用成果物の非混入も確認する。
+- external issuerは検証済み値との完全一致を維持して独自正規化せず、unknown / 表記不一致をdenyする。管理unlinkは
+  最後の認証手段でも許可し、Business audit rollbackと対象userのSession全失効を確認する。self-service unlinkは含めない。
 - Session全失効の未実装部分をP2-B3 handoffへ明示する。
 - **Commit point:** Identity administration。
 
@@ -182,6 +185,6 @@ test user、raw credential、failure switch、clock、source key、並行実行h
 
 ## 11. Immediate next action
 
-2026年9月3日、B2-C1〜C10のOwner承認によりB2-1を完了した。次はB2-2として、承認済みの単一
-`koiki-starter-identity`、10型Public API、User / Role / Permission / credential / external link modelおよび
-Identity migrationを実装する。reset専用API / table / deliveryとSpring Session production実装は混在させない。
+2026年9月7日、Identity core / migrationの実装、実PostgreSQLを含むT0〜T4 39/39、およびArchitecture Owner reviewにより
+B2-2を完了した。次はB2-3として、Spring AuthenticationProvider / UserDetailsService seam、generic failure、ACCOUNT / SOURCE
+attemptのatomic update、lock / unlockおよびSecurity audit failure semanticsを実装・検証する。

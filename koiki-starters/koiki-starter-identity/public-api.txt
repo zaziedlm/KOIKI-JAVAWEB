@@ -1,0 +1,24 @@
+# KOIKI Phase 2 P2-B2 Identity Public API inventory v1
+ARTIFACT koiki-starter-identity
+PUBLIC_JAVA_TYPES 10
+TYPE org.koikifw.identity.AuthenticationSource
+TYPE org.koikifw.identity.FrameworkPrincipal
+TYPE org.koikifw.identity.FrameworkUserId
+TYPE org.koikifw.identity.IdentityAdministration
+TYPE org.koikifw.identity.IdentityFailure
+TYPE org.koikifw.identity.IdentityOperationException
+TYPE org.koikifw.identity.IdentityQuery
+TYPE org.koikifw.identity.IdentityUser
+TYPE org.koikifw.identity.UserSessionInvalidator
+TYPE org.koikifw.identity.UserStatus
+PUBLIC_CONFIGURATION_PROPERTIES 0
+PUBLIC_IDENTITY_ERROR_CODES 5
+ERROR_CODE INVALID_INPUT
+ERROR_CODE NOT_FOUND
+ERROR_CODE CONFLICT
+ERROR_CODE CONCURRENT_MODIFICATION
+ERROR_CODE DEPENDENCY_FAILURE
+INTERNAL_PACKAGE org.koikifw.identity.internal
+IDENTITY_TABLES 8
+PASSWORD_RESET DEFERRED
+SESSION_ADAPTER P2-B3

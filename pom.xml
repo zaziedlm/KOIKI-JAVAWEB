@@ -24,6 +24,7 @@
     <module>koiki-starters/koiki-starter-observability</module>
     <module>koiki-starters/koiki-starter-audit</module>
     <module>koiki-starters/koiki-starter-security</module>
+    <module>koiki-starters/koiki-starter-identity</module>
     <module>koiki-testing</module>
   </modules>
 

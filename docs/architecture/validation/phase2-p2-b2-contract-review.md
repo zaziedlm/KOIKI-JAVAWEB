@@ -323,11 +323,16 @@ generic response、Audit failure、Session失効および運用を再reviewす�
 | provider別user table | Reject。OIDC / EdgeごとにschemaとAPIが分裂する |
 | **verified issuer + subject link** | **Recommended.** 認証protocolとFramework userを安定keyで接続する |
 
-- `issuer`と`subject`は検証済みadapterからだけ受け、case-sensitiveなopaque stringとして保存する。
+- `issuer`と`subject`は検証済みadapterからだけ受け、case-sensitiveなopaque stringとして保存する。OIDCでは検証済みの
+  `iss`を完全一致のまま使用し、lowercase、末尾slash除去、URL decode等の独自正規化を行わない。
 - `(issuer, subject)`をglobal unique、`(user_id, issuer)`もuniqueとし、同一issuerの複数accountを1 userへ結び付けない。
 - email、display name、group、claim全文をlink tableへ保存しない。
 - link / unlinkは`IdentityAdministration`経由だけとし、Business auditと同じtransactionで成功またはrollbackする。
 - unlinkは対象link経由の新規loginを即時拒否し、P2-B3の`UserSessionInvalidator`で対象userの全Sessionを失効する。
+- 管理者によるunlinkは、侵害されたlinkを確実に切断できるよう、最後の認証手段であっても許可する。認証手段を持たない
+  `ACTIVE` userは再link待ちまたはaccess遮断状態として許容し、DBで認証手段1件以上を強制しない。
+- self-service unlinkはP2-B2で提供しない。将来要件が成立した場合は、別の有効な認証手段、直近の再認証、Auditおよび
+  Session失効を別CPでreviewする。
 - unknown issuer / subject、disabled user、unique競合はsafe failureとし、User / link rowを自動作成しない。
 
 ## 11. B2-C9 — Identity tables and migration boundary
@@ -426,7 +431,8 @@ Owner承認後に`phase2-security-semantics-fitting.md`の広い表現をこのm
 6. raw unknown email / IPを保存せず、同じsource HMACは同じbucket、key変更後は別bucketとなる。
 7. password policy、delegating hash、legacy match後upgrade、credential消去を確認する。
 8. reset専用Public API、property、table、endpoint、delivery adapterがproduction artifactへ入っていないことをinventoryで確認する。
-9. external issuer + subject競合、email auto-link拒否、Business audit rollbackを確認する。
+9. external issuer + subject競合、issuer完全一致と独自正規化の禁止、email auto-link拒否、最後の認証手段の管理unlink、
+   Business audit rollbackを確認する。
 10. Audit / invalidator failureが§13どおりで、Session失効未実装を成功claimしない。
 11. row、Application log、Audit、response、Surefire report、JARをsecret / PII patternで走査する。
 12. T0〜T4 aggregate、root verify、Null Safety、ArchUnit、cleanupが成功する。

@@ -44,3 +44,14 @@ T4ではfixture-owned schemaとPostgreSQL Testcontainersを使い、Business aud
 独立transaction、保存失敗時のrollback / fail-closed / continue + alert、transaction外呼出拒否、correlationおよび
 actor / payload非露出をDB rowで観測する。scriptはT0〜T4の31 tests、承認済みPublic API 6型、正式Audit JARの
 internal境界、production / test dependency、非配布fixture、secret / PII非露出および一時領域cleanupを検査する。
+
+P2-B2 B2-2のIdentity core / migration aggregateは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b2-identity-core.ps1
+```
+
+B2-2ではPostgreSQL Testcontainers上でIdentity production migrationを適用し、8 table、再実行no-op、canonical email、
+Role / Permission、FK、external identity link、login attempt CHECK、versionおよびraw secret非保存を観測する。
+scriptはT0〜T4の39 tests、承認済みIdentity Public API 10型、error code 5件、正式JAR内migration / internal境界、
+PostgreSQL用Flyway module、reset / Spring Session非混入および非配布fixture境界を検査する。

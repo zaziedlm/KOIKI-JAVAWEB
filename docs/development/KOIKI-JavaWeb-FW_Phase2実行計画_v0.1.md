@@ -170,6 +170,9 @@ contract / table review、実装・検証順、Gate BおよびMilestone Cまで�
 Architecture Ownerが全項目を推奨案どおり承認した。B2-1を完了し、B2-2 Identity core / migrationを開始可能とする。
 初期適用projectはSSO認証を想定するため、B2-C7ではlocal resetの安全条件を設計に保持しつつ、reset専用Public API、
 token / mail delivery、table、property、endpointのproduction実装を将来要件成立時の別CPへdeferする案とした。
+2026年9月7日、`../architecture/validation/phase2-p2-b2-b2-2-verification.md`のIdentity core / migration、Public API 10型、
+8 table、実PostgreSQL T4および配布境界をArchitecture Ownerがreviewし、B2-2を承認した。次はB2-3
+Authentication / attempt / lockへ進む。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
