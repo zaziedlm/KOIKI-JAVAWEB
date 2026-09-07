@@ -66,6 +66,10 @@ class IdentityUserEntity {
         return email;
     }
 
+    String canonicalEmail() {
+        return canonicalEmail;
+    }
+
     String status() {
         return status;
     }

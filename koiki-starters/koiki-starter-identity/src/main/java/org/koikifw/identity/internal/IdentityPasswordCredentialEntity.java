@@ -39,4 +39,16 @@ class IdentityPasswordCredentialEntity {
         this.createdAt = Instant.EPOCH;
         this.updatedAt = Instant.EPOCH;
     }
+
+    String encodedPassword() {
+        return encodedPassword;
+    }
+
+    @Nullable Instant lockedUntil() {
+        return lockedUntil;
+    }
+
+    long version() {
+        return version;
+    }
 }

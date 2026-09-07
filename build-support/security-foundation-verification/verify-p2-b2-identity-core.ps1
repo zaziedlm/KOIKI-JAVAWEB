@@ -31,6 +31,8 @@ $expectedSuites = [ordered]@{
     'AuditTransactionFixtureTest' = 8
     'IdentityPublicContractTest' = 3
     'IdentityCoreMigrationFixtureTest' = 5
+    'IdentityAuthenticationAutoConfigurationContextTest' = 3
+    'IdentityAuthenticationFixtureTest' = 6
 }
 
 function Assert-SafeTemporaryPath {
@@ -77,7 +79,7 @@ function Assert-SurefireResults {
         }
         $total += [int]$suite.tests
     }
-    if ($total -ne 39) {
+    if ($total -ne 48) {
         throw "Unexpected cumulative test count: $total"
     }
 }
@@ -101,7 +103,19 @@ function Assert-IdentityContract {
         'TYPE org.koikifw.identity.IdentityUser',
         'TYPE org.koikifw.identity.UserSessionInvalidator',
         'TYPE org.koikifw.identity.UserStatus',
-        'PUBLIC_CONFIGURATION_PROPERTIES 0',
+        'PUBLIC_CONFIGURATION_PROPERTIES 12',
+        'PROPERTY koiki.identity.local-authentication.enabled',
+        'PROPERTY koiki.identity.password.maximum-length',
+        'PROPERTY koiki.identity.login-attempt.account-threshold',
+        'PROPERTY koiki.identity.login-attempt.account-window',
+        'PROPERTY koiki.identity.login-attempt.account-lock-duration',
+        'PROPERTY koiki.identity.login-attempt.source-protection',
+        'PROPERTY koiki.identity.login-attempt.source-threshold',
+        'PROPERTY koiki.identity.login-attempt.source-window',
+        'PROPERTY koiki.identity.login-attempt.source-block-duration',
+        'PROPERTY koiki.identity.login-attempt.retention',
+        'PROPERTY koiki.identity.login-attempt.source-hmac-key-id',
+        'PROPERTY koiki.identity.login-attempt.source-hmac-key',
         'PUBLIC_IDENTITY_ERROR_CODES 5',
         'ERROR_CODE INVALID_INPUT',
         'ERROR_CODE NOT_FOUND',
@@ -164,6 +178,45 @@ function Assert-IdentityContract {
             throw "Deferred reset or Session content leaked into Identity: $($forbiddenEntries.FullName -join ', ')"
         }
 
+        $metadataEntry = $archive.GetEntry('META-INF/additional-spring-configuration-metadata.json')
+        if ($null -eq $metadataEntry) {
+            throw 'Identity configuration property metadata is missing.'
+        }
+        $metadataReader = [System.IO.StreamReader]::new($metadataEntry.Open())
+        try {
+            $metadata = $metadataReader.ReadToEnd() | ConvertFrom-Json
+        } finally {
+            $metadataReader.Dispose()
+        }
+        $expectedProperties = @(
+            'koiki.identity.local-authentication.enabled',
+            'koiki.identity.password.maximum-length',
+            'koiki.identity.login-attempt.account-threshold',
+            'koiki.identity.login-attempt.account-window',
+            'koiki.identity.login-attempt.account-lock-duration',
+            'koiki.identity.login-attempt.source-protection',
+            'koiki.identity.login-attempt.source-threshold',
+            'koiki.identity.login-attempt.source-window',
+            'koiki.identity.login-attempt.source-block-duration',
+            'koiki.identity.login-attempt.retention',
+            'koiki.identity.login-attempt.source-hmac-key-id',
+            'koiki.identity.login-attempt.source-hmac-key')
+        $actualProperties = @($metadata.properties | Select-Object -ExpandProperty name)
+        if (@(Compare-Object -ReferenceObject $expectedProperties `
+                    -DifferenceObject $actualProperties -SyncWindow 0).Count -ne 0) {
+            throw 'Identity configuration property metadata differs from the approved B2-3 contract.'
+        }
+        $sourceProtectionHint = @($metadata.hints | Where-Object {
+            $_.name -eq 'koiki.identity.login-attempt.source-protection'
+        })
+        if ($sourceProtectionHint.Count -ne 1) {
+            throw 'Identity source protection metadata must expose exactly one value hint.'
+        }
+        $sourceProtectionValues = @($sourceProtectionHint[0].values.value) -join ','
+        if ($sourceProtectionValues -ne 'APPLICATION,EXTERNAL') {
+            throw 'Identity source protection metadata must expose only APPLICATION and EXTERNAL.'
+        }
+
         $importsEntry = $archive.GetEntry(
             'META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports')
         if ($null -eq $importsEntry) {
@@ -175,7 +228,10 @@ function Assert-IdentityContract {
         } finally {
             $reader.Dispose()
         }
-        if ($imports -ne 'org.koikifw.identity.internal.KoikiIdentityAutoConfiguration') {
+        $expectedImports = @(
+            'org.koikifw.identity.internal.KoikiIdentityAutoConfiguration',
+            'org.koikifw.identity.internal.KoikiIdentityAuthenticationAutoConfiguration') -join "`n"
+        if (($imports -replace "`r`n", "`n") -ne $expectedImports) {
             throw "Unexpected Identity Auto Configuration import: $imports"
         }
     } finally {
@@ -236,7 +292,7 @@ try {
         throw 'The non-distributed T4 fixture was installed into the release repository.'
     }
 
-    Write-Host 'Phase 2 P2-B2 Identity core verification succeeded (T0-T4 39/39).'
+    Write-Host 'Phase 2 P2-B2 Identity authentication verification succeeded (T0-T4 48/48).'
 } finally {
     if (Test-Path -LiteralPath $verificationRoot) {
         Assert-SafeTemporaryPath -Path $verificationRoot

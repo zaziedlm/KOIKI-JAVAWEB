@@ -200,7 +200,7 @@ beanとして選ぶ。P2-B2 fixtureはネットワーク不要のdeterministic c
 | unsalted SHA-256(email / IP) | dictionary attackで復元可能 | Reject |
 | unknown emailもHMAC集計 | email自体は隠せるが、秘密鍵rotationと不要なidentifier追跡を増やす | Defer。現要件では不要 |
 | **known user ID + source HMAC、unknown email非保存** | account lockは既知ID、unknown試行は送信元だけ集計 | **Recommended.** 最小PIIでenumeration防止とsource throttlingを両立 |
-| applicationはaccountだけ、sourceはWAFだけ | 単純だがP2-B2のsource並行検証ができない | WAFは追加防御として推奨するが単独案は不採用 |
+| applicationはaccountだけ、sourceは承認済み公開境界 | client sourceを識別できるBFF / ingressへ責務を移せる | 明示的な`EXTERNAL` modeとして採用。単なる無効化は不採用 |
 
 ### 7.2 Recommended key semantics
 
@@ -211,6 +211,11 @@ beanとして選ぶ。P2-B2 fixtureはネットワーク不要のdeterministic c
 - reverse proxy headerをIdentity Starterが直接信用しない。Servlet container / deploymentでtrusted proxy処理後のremote addressだけを使う。
 - HMAC key、raw IP、raw unknown emailをAudit、Application log、metric tag、exception、test reportへ出さない。
 - Application内のsource制御はWAF / load balancerのrate limitを置き換えない。
+- local password認証は`koiki.identity.local-authentication.enabled=false`を既定とし、利用applicationだけが明示的に有効化する。
+- source保護は`APPLICATION`を既定とする。`EXTERNAL`は、実client sourceを識別してlocal login要求を最初に受ける
+  承認済み公開境界が同等制御を所有する場合だけ選択し、KOIKIはSOURCE rowを作成しない。ACCOUNT保護は継続する。
+- BFF / SSRの採用だけでは`EXTERNAL`を選択しない。BFFがlocal loginを中継してsourceを集約する構成では、公開境界側の
+  代替制御をdeployment acceptanceで確認する。
 
 ## 8. B2-C6 — Attempt and lock semantics
 
@@ -228,10 +233,12 @@ locked accountへの追加試行は`locked_until`を延長せず、source counte
 数値は次のpropertyでCustomer調整を許す。
 
 ```properties
+koiki.identity.local-authentication.enabled=false
 koiki.identity.password.maximum-length=128
 koiki.identity.login-attempt.account-threshold=5
 koiki.identity.login-attempt.account-window=15m
 koiki.identity.login-attempt.account-lock-duration=30m
+koiki.identity.login-attempt.source-protection=APPLICATION
 koiki.identity.login-attempt.source-threshold=100
 koiki.identity.login-attempt.source-window=15m
 koiki.identity.login-attempt.source-block-duration=15m
@@ -250,8 +257,9 @@ koiki.identity.login-attempt.source-hmac-key=<base64 secret from secret manager>
 | Attempt retention | 各window / block以上、30 days以下 |
 
 0、負値、範囲外、retention不足または相互矛盾はstartup failureとする。
-`source-hmac-key`に既定値を置かず、短いkey、空keyまたはplaceholderをstartupで拒否する。property valueはActuator、config dump、
-test reportへ出さない。`minimum-length`、token byte数、hash方式は安全性を弱める設定になるためproperty化しない。
+`APPLICATION`では`source-hmac-key`に既定値を置かず、短いkey、空keyまたはplaceholderをstartupで拒否する。
+`EXTERNAL`ではHMAC keyを要求せず、source fingerprint用beanも生成しない。property valueはActuator、config dump、test reportへ
+出さない。`minimum-length`、token byte数、hash方式は安全性を弱める設定になるためproperty化しない。
 
 ### 8.2 Concurrency and audit failure
 
@@ -428,7 +436,8 @@ Owner承認後に`phase2-security-semantics-fitting.md`の広い表現をこのm
 3. canonical email collisionをDBでも拒否し、email変更後もuser ID、attempt、Role、Audit actorが変わらない。
 4. persistent UserでForm Loginが成立し、unknown / bad password / disabled / lockedの外部response / Cookieが同一である。
 5. 2 instance相当の並行失敗でaccount thresholdを迂回せず、lost updateなしに1回だけlockへ遷移する。
-6. raw unknown email / IPを保存せず、同じsource HMACは同じbucket、key変更後は別bucketとなる。
+6. raw unknown email / IPを保存せず、`APPLICATION`では同じsource HMACが同じbucket、key変更後は別bucketとなる。
+   `EXTERNAL`ではSOURCE rowを作らずACCOUNT保護を維持する。
 7. password policy、delegating hash、legacy match後upgrade、credential消去を確認する。
 8. reset専用Public API、property、table、endpoint、delivery adapterがproduction artifactへ入っていないことをinventoryで確認する。
 9. external issuer + subject競合、issuer完全一致と独自正規化の禁止、email auto-link拒否、最後の認証手段の管理unlink、
@@ -445,7 +454,7 @@ Owner承認後に`phase2-security-semantics-fitting.md`の広い表現をこのm
 | B2-C2 | 10型のuse-case API / value / SPI、Spring / JPA型非公開、reset専用型なし | Entity / Repository公開はOwnership越境。使用前のreset API固定も避ける | **APPROVED** |
 | B2-C3 | User `ACTIVE/DISABLED`、local credential lock、Role→Permission、external linkを分離 | `LOCKED` User status、direct user Permission、email auto-linkは不採用 | **APPROVED** |
 | B2-C4 | Delegating encoder、15〜128 code points、compositionなし、checker必須 | 独自hash、NoOp、定期変更、checker skipは不採用 | **APPROVED** |
-| B2-C5 | known user ID + source HMAC、unknown email非保存 | raw / plain hash PIIは不採用。unknown email HMACは要件成立までdefer | **APPROVED** |
+| B2-C5 | known user ID + unknown email非保存。SOURCEは`APPLICATION`既定、承認済み公開境界へ移す`EXTERNAL`を明示選択可 | raw / plain hash PIIと暗黙disableは不採用。unknown email HMACは要件成立までdefer | **APPROVED** |
 | B2-C6 | account 5 / 15m / lock 30m、source 100 / 15m / block 15m、atomic upsert | read-modify-write / optimistic retryだけではcounter欠落risk | **APPROVED** |
 | B2-C7 | 初期SSO前提ではlocal resetを実装せず、安全条件と将来activation criteriaだけを保持 | B2でのtoken / mail / table先行実装、IdP reset複製は不採用 | **APPROVED** |
 | B2-C8 | verified issuer + subject、2 unique制約、明示link / unlink | email auto-link / JITは不採用 | **APPROVED** |
@@ -458,3 +467,8 @@ B2-2 Identity core / migrationへ進める。後続の実PostgreSQL Evidenceが�
 
 本承認はP2-B2実装完了、Spring Session JDBCまたは実Session全失効の成立を意味しない。B2-2〜B2-5のEvidenceとOwner acceptance後に
 P2-B2をcloseし、P2-B3の実Session Evidence後にB2-C10のadapter実装を確定する。ADR候補化もP2-B2 acceptanceまで行わない。
+
+2026年9月7日、Architecture OwnerはB2-3で具体化したlocal認証opt-in、SOURCE `APPLICATION / EXTERNAL`責務分離、
+generic failure、attempt / lockおよびSecurity Audit failure semanticsをreviewし、B2-C4〜C6の設計判断として承認した。
+同日、SOURCE遮断DB読取障害のgeneric failure補正後を含むT0〜T4 aggregate 48 / 48とroot Reactor 13 / 13を確認し、
+B2-3の実装を最終承認した。

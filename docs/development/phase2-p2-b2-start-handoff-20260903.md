@@ -9,7 +9,7 @@ Account Lock、認証試行制御、Password Resetの将来境界とIdentity mig
 - **Architecture Owner:** Shuichi Kataoka
 - **Branch:** `feature/phase2-security-local-identity-session-audit`
 - **Start commit:** `2942db7`（P2-B1 Audit contract / transaction）
-- **Phase status:** `P2-B1 COMPLETE / ACCEPTED — P2-B2 B2-1〜B2-2 COMPLETE / APPROVED — B2-3 READY`
+- **Phase status:** `P2-B1 COMPLETE / ACCEPTED — P2-B2 B2-1〜B2-3 COMPLETE / ARCHITECTURE OWNER APPROVED — B2-4 READY`
 - **Ownership:** Framework（Identity contract / persistence / migration）+ Tooling（非配布T4 PostgreSQL fixture）
 - **Primary target:** Local Identity、Password / Lock、Role / Permission、external identity link、login attempt
 - **Deferred:** Local Password Reset詳細実装は将来要件成立時の別CP、Spring Session JDBCはP2-B3、Reference `identity`はP2-B4、Audit / Session migration総合はP2-C1
@@ -130,7 +130,10 @@ test user、raw credential、failure switch、clock、source key、並行実行h
 ### B2-3 — Authentication / attempt / lock
 
 - Spring AuthenticationProvider / UserDetailsService seamへ接続する。
-- generic failure、並行閾値、lock、自動 / 管理解除、Security audit failureを検証する。
+- generic failure、並行閾値、lock、自動解除、Security audit failureを検証する。
+- local password認証は明示opt-inとし、SOURCE保護は`APPLICATION`既定、承認済み公開境界へ責務移動する
+  `EXTERNAL`を選択可能とする。`EXTERNAL`でもACCOUNT保護は維持する。
+- **Status:** `COMPLETE / ARCHITECTURE OWNER APPROVED`（2026年9月7日）
 - **Commit point:** authentication protection。
 
 ### B2-4 — Identity administration
@@ -185,6 +188,10 @@ test user、raw credential、failure switch、clock、source key、並行実行h
 
 ## 11. Immediate next action
 
-2026年9月7日、Identity core / migrationの実装、実PostgreSQLを含むT0〜T4 39/39、およびArchitecture Owner reviewにより
-B2-2を完了した。次はB2-3として、Spring AuthenticationProvider / UserDetailsService seam、generic failure、ACCOUNT / SOURCE
-attemptのatomic update、lock / unlockおよびSecurity audit failure semanticsを実装・検証する。
+2026年9月7日、B2-3のSpring AuthenticationProvider / UserDetailsService seam、generic failure、ACCOUNT / SOURCE attemptの
+atomic update、lock / automatic unlock、hash upgradeおよびSecurity audit failure semanticsを実装した。PostgreSQL fixtureは
+SOURCE遮断DB読取障害のgeneric failureを加えて6 testsへ更新した。Auto Configuration context 3 / 3、
+T0〜T4 aggregate 48 / 48、root Reactor 13 / 13、
+Architecture Contract 4 / 4、ArchUnit 66 / 66は成功済みであり、Architecture Ownerは§2.1〜2.4の設計判断を承認した。
+Architecture Ownerは修正箇所と最終検証結果を確認してB2-3を最終承認した。次はB2-4 Identity administrationとして、
+Role / Permission / external link / account / password管理とAudit semanticsの実装・検証へ進む。

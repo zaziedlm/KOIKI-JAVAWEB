@@ -55,3 +55,12 @@ B2-2ではPostgreSQL Testcontainers上でIdentity production migrationを適用�
 Role / Permission、FK、external identity link、login attempt CHECK、versionおよびraw secret非保存を観測する。
 scriptはT0〜T4の39 tests、承認済みIdentity Public API 10型、error code 5件、正式JAR内migration / internal境界、
 PostgreSQL用Flyway module、reset / Spring Session非混入および非配布fixture境界を検査する。
+
+P2-B2 B2-3では同じaggregateへ`IdentityAuthenticationFixtureTest` 6 testsと
+`IdentityAuthenticationAutoConfigurationContextTest` 3 testsを追加する。永続Userによる認証、
+legacy hash upgrade、credential消去、automatic unlock、unknown / bad / disabled / lockedのgeneric failure、並行ACCOUNT lock、
+HMAC化したSOURCE block、SOURCE遮断DB読取障害のgeneric failure、およびSecurity Audit失敗時のfail-closed / 防御状態維持を
+PostgreSQL上で確認する。
+context testではlocal認証の既定OFF、`EXTERNAL`でのHMAC非要求とACCOUNT保護bean維持、`APPLICATION`のHMAC設定不備による
+startup failureを確認する。aggregateはT0〜T4の48 testsとなり、Identityの公開設定12件とAuto Configuration imports 2件も
+完全一致で検査する。
