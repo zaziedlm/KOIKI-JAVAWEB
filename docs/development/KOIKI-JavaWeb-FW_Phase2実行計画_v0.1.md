@@ -178,6 +178,11 @@ Authentication / attempt / lockへ進む。
 Public API / property / error / table inventory、secret / PIIおよびcleanupを再検証し、B2-5のOwner review対象とした。
 同日、失敗時reportのSecret / PII境界をToolingで補強し、負例と56 / 56正常回帰を確認した。Architecture Ownerは
 B2-5の5項目を最終承認し、P2-B2を`COMPLETE / ARCHITECTURE OWNER APPROVED`としてcloseした。次はP2-B3へ進む。
+同日、`phase2-p2-b3-start-handoff-20260907.md`でSpring Session JDBC、全Session失効、2 process継続、
+cleanup / single executionの実装・検証順とB3-C1〜C10の事前review境界を整理し、B3-1を開始した。
+`phase2-p2-b3-contract-review.md`にartifact、Public API、schema、serialization、失敗時挙動、cleanup、
+single execution、設定、T5 / T6およびCI境界の比較・推奨案を作成し、Architecture Owner review対象とした。
+Architecture Ownerは同日B3-C1〜C10を推奨案どおり承認し、B3-1を`COMPLETE`としてB3-2 Session core / migrationを開始可能とした。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
