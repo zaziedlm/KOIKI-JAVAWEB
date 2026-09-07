@@ -64,3 +64,12 @@ PostgreSQL上で確認する。
 context testではlocal認証の既定OFF、`EXTERNAL`でのHMAC非要求とACCOUNT保護bean維持、`APPLICATION`のHMAC設定不備による
 startup failureを確認する。aggregateはT0〜T4の48 testsとなり、Identityの公開設定12件とAuto Configuration imports 2件も
 完全一致で検査する。
+
+P2-B2 B2-4では同じaggregateへ`IdentityAdministrationFixtureTest` 6 testsと
+`IdentityAdministrationAutoConfigurationContextTest` 2 testsを追加する。user lifecycle、password policyと
+compromised password拒否、Role / Permission変更、external identityの完全一致、optimistic version、Business Audit失敗および
+password、User Role、Role Permission、external unlinkのSession invalidator失敗時rollbackをPostgreSQL上で確認する。
+さらにaccount disableはSecurity Audit失敗後もSession失効とdisableを完了し、management unlockはAudit失敗時にrollbackする。
+context testでは必須4依存の欠落時にQueryを維持して管理beanを構成せず、全依存充足時だけ構成することを確認する。
+aggregateはT0〜T4の56 testsとなる。
+fixture invalidatorが確認するのは同期SPIの呼出しとtransaction結果までであり、Spring Session row削除と旧Cookie拒否はP2-B3に残す。

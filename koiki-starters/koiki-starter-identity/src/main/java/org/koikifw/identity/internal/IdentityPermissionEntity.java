@@ -35,4 +35,21 @@ class IdentityPermissionEntity {
         this.createdAt = Instant.EPOCH;
         this.updatedAt = Instant.EPOCH;
     }
+
+    static IdentityPermissionEntity create(UUID permissionId, String permissionCode, Instant now) {
+        IdentityPermissionEntity permission = new IdentityPermissionEntity();
+        permission.permissionId = permissionId;
+        permission.permissionCode = permissionCode;
+        permission.createdAt = now;
+        permission.updatedAt = now;
+        return permission;
+    }
+
+    UUID permissionId() {
+        return permissionId;
+    }
+
+    String permissionCode() {
+        return permissionCode;
+    }
 }

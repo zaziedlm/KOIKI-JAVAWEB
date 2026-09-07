@@ -58,6 +58,20 @@ class IdentityUserEntity {
         updatedAt = now;
     }
 
+    void enable(Instant now) {
+        status = "ACTIVE";
+        updatedAt = now;
+    }
+
+    void disable(Instant now) {
+        status = "DISABLED";
+        updatedAt = now;
+    }
+
+    void touch(Instant now) {
+        updatedAt = now;
+    }
+
     UUID userId() {
         return userId;
     }

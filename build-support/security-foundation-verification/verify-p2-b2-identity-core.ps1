@@ -33,6 +33,8 @@ $expectedSuites = [ordered]@{
     'IdentityCoreMigrationFixtureTest' = 5
     'IdentityAuthenticationAutoConfigurationContextTest' = 3
     'IdentityAuthenticationFixtureTest' = 6
+    'IdentityAdministrationAutoConfigurationContextTest' = 2
+    'IdentityAdministrationFixtureTest' = 6
 }
 
 function Assert-SafeTemporaryPath {
@@ -79,7 +81,7 @@ function Assert-SurefireResults {
         }
         $total += [int]$suite.tests
     }
-    if ($total -ne 48) {
+    if ($total -ne 56) {
         throw "Unexpected cumulative test count: $total"
     }
 }
@@ -292,7 +294,7 @@ try {
         throw 'The non-distributed T4 fixture was installed into the release repository.'
     }
 
-    Write-Host 'Phase 2 P2-B2 Identity authentication verification succeeded (T0-T4 48/48).'
+    Write-Host 'Phase 2 P2-B2 Identity administration verification succeeded (T0-T4 56/56).'
 } finally {
     if (Test-Path -LiteralPath $verificationRoot) {
         Assert-SafeTemporaryPath -Path $verificationRoot

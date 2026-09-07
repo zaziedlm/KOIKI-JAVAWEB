@@ -147,7 +147,7 @@ class IdentityAuthenticationProperties {
     }
 
     void validate() {
-        requireRange(password.maximumLength, 64, 1024, "password.maximum-length");
+        validatePasswordPolicy();
         requireRange(loginAttempt.accountThreshold, 3, 10, "login-attempt.account-threshold");
         requireRange(loginAttempt.sourceThreshold, 10, 10_000, "login-attempt.source-threshold");
         requireDuration(loginAttempt.accountWindow, "login-attempt.account-window");
@@ -164,6 +164,10 @@ class IdentityAuthenticationProperties {
         if (loginAttempt.sourceProtection == SourceProtection.APPLICATION) {
             requireHmacConfiguration();
         }
+    }
+
+    void validatePasswordPolicy() {
+        requireRange(password.maximumLength, 64, 1024, "password.maximum-length");
     }
 
     byte[] decodedSourceKey() {

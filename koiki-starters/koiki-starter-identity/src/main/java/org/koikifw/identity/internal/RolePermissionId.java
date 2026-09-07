@@ -22,6 +22,11 @@ class RolePermissionId implements Serializable {
         this.permissionId = new UUID(0L, 0L);
     }
 
+    RolePermissionId(UUID roleId, UUID permissionId) {
+        this.roleId = Objects.requireNonNull(roleId, "roleId");
+        this.permissionId = Objects.requireNonNull(permissionId, "permissionId");
+    }
+
     UUID roleId() {
         return roleId;
     }

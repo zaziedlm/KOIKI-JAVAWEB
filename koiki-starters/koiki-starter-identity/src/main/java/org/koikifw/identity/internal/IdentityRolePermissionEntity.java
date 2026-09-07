@@ -3,6 +3,7 @@ package org.koikifw.identity.internal;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.util.UUID;
 
 @SuppressWarnings("UnusedVariable")
 @Entity(name = "KoikiIdentityRolePermission")
@@ -14,5 +15,9 @@ class IdentityRolePermissionEntity {
 
     protected IdentityRolePermissionEntity() {
         this.id = new RolePermissionId();
+    }
+
+    IdentityRolePermissionEntity(UUID roleId, UUID permissionId) {
+        this.id = new RolePermissionId(roleId, permissionId);
     }
 }

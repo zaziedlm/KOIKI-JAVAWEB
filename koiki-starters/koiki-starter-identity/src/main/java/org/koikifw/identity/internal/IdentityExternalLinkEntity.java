@@ -43,4 +43,16 @@ class IdentityExternalLinkEntity {
         this.createdAt = Instant.EPOCH;
         this.updatedAt = Instant.EPOCH;
     }
+
+    static IdentityExternalLinkEntity create(
+            UUID linkId, UUID userId, String issuer, String subject, Instant now) {
+        IdentityExternalLinkEntity link = new IdentityExternalLinkEntity();
+        link.linkId = linkId;
+        link.userId = userId;
+        link.issuer = issuer;
+        link.subject = subject;
+        link.createdAt = now;
+        link.updatedAt = now;
+        return link;
+    }
 }

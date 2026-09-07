@@ -9,7 +9,7 @@ Account Lock、認証試行制御、Password Resetの将来境界とIdentity mig
 - **Architecture Owner:** Shuichi Kataoka
 - **Branch:** `feature/phase2-security-local-identity-session-audit`
 - **Start commit:** `2942db7`（P2-B1 Audit contract / transaction）
-- **Phase status:** `P2-B1 COMPLETE / ACCEPTED — P2-B2 B2-1〜B2-3 COMPLETE / ARCHITECTURE OWNER APPROVED — B2-4 READY`
+- **Phase status:** `P2-B1 COMPLETE / ACCEPTED — P2-B2 B2-1〜B2-4 COMPLETE / ARCHITECTURE OWNER APPROVED — B2-5 READY`
 - **Ownership:** Framework（Identity contract / persistence / migration）+ Tooling（非配布T4 PostgreSQL fixture）
 - **Primary target:** Local Identity、Password / Lock、Role / Permission、external identity link、login attempt
 - **Deferred:** Local Password Reset詳細実装は将来要件成立時の別CP、Spring Session JDBCはP2-B3、Reference `identity`はP2-B4、Audit / Session migration総合はP2-C1
@@ -142,6 +142,7 @@ test user、raw credential、failure switch、clock、source key、並行実行h
 - external issuerは検証済み値との完全一致を維持して独自正規化せず、unknown / 表記不一致をdenyする。管理unlinkは
   最後の認証手段でも許可し、Business audit rollbackと対象userのSession全失効を確認する。self-service unlinkは含めない。
 - Session全失効の未実装部分をP2-B3 handoffへ明示する。
+- **Status:** `COMPLETE / ARCHITECTURE OWNER APPROVED`（2026年9月7日）
 - **Commit point:** Identity administration。
 
 ### B2-5 — Regression / evidence
@@ -188,10 +189,10 @@ test user、raw credential、failure switch、clock、source key、並行実行h
 
 ## 11. Immediate next action
 
-2026年9月7日、B2-3のSpring AuthenticationProvider / UserDetailsService seam、generic failure、ACCOUNT / SOURCE attemptの
-atomic update、lock / automatic unlock、hash upgradeおよびSecurity audit failure semanticsを実装した。PostgreSQL fixtureは
-SOURCE遮断DB読取障害のgeneric failureを加えて6 testsへ更新した。Auto Configuration context 3 / 3、
-T0〜T4 aggregate 48 / 48、root Reactor 13 / 13、
-Architecture Contract 4 / 4、ArchUnit 66 / 66は成功済みであり、Architecture Ownerは§2.1〜2.4の設計判断を承認した。
-Architecture Ownerは修正箇所と最終検証結果を確認してB2-3を最終承認した。次はB2-4 Identity administrationとして、
-Role / Permission / external link / account / password管理とAudit semanticsの実装・検証へ進む。
+2026年9月7日、B2-4の`IdentityAdministration` production実装とPostgreSQL fixtureを追加した。user / Role / Permission、
+local credential、external link管理、optimistic version、Business / Security Audit failure matrixおよび同期Session invalidatorの
+呼出し・失敗時rollbackを確認した。Owner review後、必須4依存の欠落／充足によるAuto Configuration境界と、password、
+User Role、Role Permission、external unlinkのSession失効失敗時rollbackを直接検証した。T0〜T4 aggregate 56 / 56、
+root Reactor 13 / 13、Architecture Contract 4 / 4、
+ArchUnit 66 / 66は成功済みである。Spring Session row削除と旧Cookie拒否はP2-B3の実証対象であり、B2-4では成功claimしない。
+Architecture Ownerは補強結果を確認してB2-4を最終承認した。次はB2-5 regression / evidenceへ進む。

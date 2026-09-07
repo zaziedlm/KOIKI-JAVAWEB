@@ -22,6 +22,11 @@ class UserRoleId implements Serializable {
         this.roleId = new UUID(0L, 0L);
     }
 
+    UserRoleId(UUID userId, UUID roleId) {
+        this.userId = Objects.requireNonNull(userId, "userId");
+        this.roleId = Objects.requireNonNull(roleId, "roleId");
+    }
+
     UUID userId() {
         return userId;
     }

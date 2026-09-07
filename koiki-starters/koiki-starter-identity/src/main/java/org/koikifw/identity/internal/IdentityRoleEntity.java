@@ -35,4 +35,29 @@ class IdentityRoleEntity {
         this.createdAt = Instant.EPOCH;
         this.updatedAt = Instant.EPOCH;
     }
+
+    static IdentityRoleEntity create(UUID roleId, String roleCode, Instant now) {
+        IdentityRoleEntity role = new IdentityRoleEntity();
+        role.roleId = roleId;
+        role.roleCode = roleCode;
+        role.createdAt = now;
+        role.updatedAt = now;
+        return role;
+    }
+
+    UUID roleId() {
+        return roleId;
+    }
+
+    String roleCode() {
+        return roleCode;
+    }
+
+    long version() {
+        return version;
+    }
+
+    void touch(Instant now) {
+        updatedAt = now;
+    }
 }

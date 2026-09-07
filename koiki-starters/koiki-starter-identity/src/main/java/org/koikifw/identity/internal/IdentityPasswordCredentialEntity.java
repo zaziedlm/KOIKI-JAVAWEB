@@ -40,6 +40,26 @@ class IdentityPasswordCredentialEntity {
         this.updatedAt = Instant.EPOCH;
     }
 
+    static IdentityPasswordCredentialEntity create(UUID userId, String encodedPassword, Instant now) {
+        IdentityPasswordCredentialEntity credential = new IdentityPasswordCredentialEntity();
+        credential.userId = userId;
+        credential.encodedPassword = encodedPassword;
+        credential.createdAt = now;
+        credential.updatedAt = now;
+        return credential;
+    }
+
+    void changePassword(String value, Instant now) {
+        encodedPassword = value;
+        lockedUntil = null;
+        updatedAt = now;
+    }
+
+    void unlock(Instant now) {
+        lockedUntil = null;
+        updatedAt = now;
+    }
+
     String encodedPassword() {
         return encodedPassword;
     }
