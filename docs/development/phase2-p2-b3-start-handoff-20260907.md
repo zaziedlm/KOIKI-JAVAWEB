@@ -6,7 +6,7 @@
 - **Architecture Owner:** Shuichi Kataoka
 - **Branch:** `feature/phase2-security-local-identity-session-audit`
 - **Start commit:** `889bb40`（P2-B2 Regression / Evidence closeout）
-- **Phase status:** `P2-B3 B3-1 COMPLETE / ARCHITECTURE OWNER APPROVED — B3-2 READY`
+- **Phase status:** `P2-B3 B3-2 COMPLETE / ARCHITECTURE OWNER APPROVED — B3-3 READY`
 - **Ownership:** Framework（Session persistence / invalidation / cleanup contract）+ Tooling（非配布T5 / T6、2 process fixture）
 - **Primary target:** Spring Session JDBC、全Session失効、logout、2 process継続、期限切れcleanup / single execution
 - **Deferred:** Reference `identity`はP2-B4、全Framework migration / supported upgradeはP2-C1、CI required化はGate B
@@ -117,6 +117,10 @@ Cookie jar、DB row、終了codeをHarness側から観測する。production sou
 
 - 承認済みartifactへSpring Session JDBC、Auto Configuration、2 table migrationを追加する。
 - initializer、table名、flush / save、Cookie既定およびSession属性境界を検証する。
+- **Review artifact:** `../architecture/validation/phase2-p2-b3-b3-2-verification.md`。
+- **Status:** `COMPLETE / ARCHITECTURE OWNER APPROVED`（2026年9月8日）。
+- **Observed:** T0〜T5 15 suite / 62 tests成功。`ON_SAVE` / `ON_SET_ATTRIBUTE`を実測確定。
+- **Review:** 5 review pointsと外部TLS終端 / Secure Cookie補足をArchitecture Ownerが承認。
 
 ### B3-3 — Invalidation / logout
 
@@ -160,6 +164,6 @@ Cookie jar、DB row、終了codeをHarness側から観測する。production sou
 
 ## 11. Immediate next action
 
-B3-2 Session core / migrationへ進み、承認済みartifactへSpring Session JDBC、Auto Configuration、2 table migrationを追加する。
-initializer、table名、Web cleanup無効、flush / saveおよびserialization境界をT0 / T5で実測し、契約前提が成立しない場合は
-実装を止めて再reviewする。
+B3-3 Invalidation / logoutへ進み、承認済み`UserSessionInvalidator`をSpring Session JDBC adapterへ接続する。
+principal indexによる対象userの全Session失効、対象外user非影響、旧Cookie拒否、logoutおよびSession store障害時の
+failure semanticsをT5で実証する。2 process継続とcleanup / single executionはB3-4 / B3-5より前へ先行しない。

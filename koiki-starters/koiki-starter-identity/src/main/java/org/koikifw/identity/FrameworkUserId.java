@@ -1,10 +1,15 @@
 package org.koikifw.identity;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
 /** Immutable and opaque identifier for a framework user. */
-public final class FrameworkUserId {
+public final class FrameworkUserId implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final UUID value;
 

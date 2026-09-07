@@ -21,6 +21,12 @@
   <dependencies>
     <dependency>
       <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-session-jdbc</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.koikifw</groupId>
       <artifactId>koiki-starter-identity</artifactId>
       <scope>test</scope>
     </dependency>

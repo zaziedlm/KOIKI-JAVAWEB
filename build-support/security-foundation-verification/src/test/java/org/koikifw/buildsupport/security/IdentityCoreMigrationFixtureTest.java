@@ -61,7 +61,7 @@ class IdentityCoreMigrationFixtureTest {
     }
 
     @Test
-    void appliesOnlyTheEightApprovedIdentityTablesAndIsRestartSafe() {
+    void appliesTheEightApprovedIdentityTablesAndIsRestartSafe() {
         List<String> tables = jdbcClient.sql(
                         """
                         SELECT table_name
@@ -82,7 +82,7 @@ class IdentityCoreMigrationFixtureTest {
                         "koiki_password_credential",
                         "koiki_login_attempt",
                         "koiki_external_identity_link")
-                .doesNotContain("koiki_password_reset", "koiki_session");
+                .doesNotContain("koiki_password_reset");
 
         List<Integer> timestampPrecisions = jdbcClient.sql(
                         """

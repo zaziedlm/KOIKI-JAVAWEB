@@ -1,5 +1,9 @@
 package org.koikifw.identity.internal;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,14 +16,17 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 final class KoikiIdentityUserDetails
-        implements UserDetails, CredentialsContainer, FrameworkPrincipal {
+        implements UserDetails, CredentialsContainer, FrameworkPrincipal, Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final FrameworkUserId userId;
     private final Set<String> permissions;
     private final Collection<? extends GrantedAuthority> authorities;
     private final boolean authenticationAllowed;
     private final long credentialVersion;
-    private String password;
+    private transient String password;
 
     KoikiIdentityUserDetails(
             FrameworkUserId userId,
@@ -87,5 +94,11 @@ final class KoikiIdentityUserDetails
                 authorities,
                 authenticationAllowed,
                 credentialVersion + 1);
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        stream.defaultReadObject();
+        password = "";
     }
 }

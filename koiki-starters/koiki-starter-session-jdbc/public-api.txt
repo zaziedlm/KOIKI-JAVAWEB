@@ -1,0 +1,19 @@
+# KOIKI Phase 2 P2-B3 B3-2 Session JDBC Public API inventory v1
+ARTIFACT koiki-starter-session-jdbc
+PUBLIC_JAVA_TYPES 0
+PUBLIC_KOIKI_CONFIGURATION_PROPERTIES 0
+SPRING_CONFIGURATION_PROPERTIES 9
+PROPERTY spring.session.jdbc.initialize-schema=never
+PROPERTY spring.session.jdbc.table-name=koiki_session
+PROPERTY spring.session.jdbc.cleanup-cron=-
+PROPERTY spring.session.jdbc.flush-mode=on-save
+PROPERTY spring.session.jdbc.save-mode=on-set-attribute
+PROPERTY server.servlet.session.cookie.http-only=true
+PROPERTY server.servlet.session.cookie.secure=true
+PROPERTY server.servlet.session.cookie.same-site=lax
+PROPERTY spring.session.timeout
+SESSION_TABLES 2
+TABLE koiki_session
+TABLE koiki_session_attributes
+SESSION_INVALIDATOR B3-3
+SESSION_CLEANUP B3-5

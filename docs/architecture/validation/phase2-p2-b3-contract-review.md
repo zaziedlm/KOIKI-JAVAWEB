@@ -232,6 +232,11 @@ Phase 1bの外部contractと試験方法は再利用するが、Customer-like `W
 Starter導入自体をSession有効化のopt-inとし、`koiki.session.enabled`の二重スイッチは追加しない。Cookie名、domain、path、timeoutは
 Spring / Boot標準propertyを使い、同義のKOIKI propertyを作らない。`SameSite=None`やHttpOnly無効化を黙って受け入れない。
 
+productionのHTTPS境界はbrowserからALB等の外部入口までを指し、containerまでのend-to-end TLSを必須とはしない。
+外部入口でTLSを終端してcontainerへHTTP転送する場合も、browser向けCookieは`Secure=true`を維持する。
+`X-Forwarded-Proto`等をSpringへ反映する`server.forward-headers-strategy`はApplication / deployment assemblyで設定し、
+信頼されたproxyからだけ転送headerを受け入れる。これはcloud固有adapterやSession Starterの固定propertyにはしない。
+
 maintenance taskの選択、scheduler、retry、process timeoutはApplication / deployment責務とするため、汎用
 `koiki.maintenance.*`をStarterへ追加しない。Applicationは公開`SessionCleanup`を自身のnon-web command adapterから呼ぶ。
 
@@ -259,6 +264,8 @@ T6はTooling-owned fixture applicationの同一package済みJARを使い、同�
 
 production sourceへtest endpoint、sleep、failure switch、固定user、固定portまたはcredentialを追加しない。Fixture routeとidentityは
 非配布Tooling内だけに置く。logだけを証拠にせず、HTTP、Cookie、DB row、process exit、PostgreSQL lock状態を組み合わせる。
+production相当のproxy条件では`X-Forwarded-Proto=https`を認識してSession Cookieへ`Secure`が付くことを確認し、
+直接HTTP loopbackで`Secure=false`を使用する場合はtest scopeだけに限定する。
 
 ## 12. B3-C10 — CI and distribution
 

@@ -183,6 +183,13 @@ cleanup / single executionの実装・検証順とB3-C1〜C10の事前review境�
 `phase2-p2-b3-contract-review.md`にartifact、Public API、schema、serialization、失敗時挙動、cleanup、
 single execution、設定、T5 / T6およびCI境界の比較・推奨案を作成し、Architecture Owner review対象とした。
 Architecture Ownerは同日B3-C1〜C10を推奨案どおり承認し、B3-1を`COMPLETE`としてB3-2 Session core / migrationを開始可能とした。
+2026年9月8日、B3-2ではoptional `koiki-starter-session-jdbc`、Framework所有のSession 2 table migration、
+initializer / table / Web cleanupのFail Fast境界を実装した。実PostgreSQLで`ON_SAVE` / `ON_SET_ATTRIBUTE`のwrite境界と
+immutable principal ID / credential非永続化を確認し、T0〜T5 15 suite / 62 testsが成功した。
+`../architecture/validation/phase2-p2-b3-b3-2-verification.md`をArchitecture Owner review対象とし、
+全Session失効 / logout、2 process、maintenance cleanupはB3-3〜B3-5へ残す。
+同日、Architecture OwnerはB3-2の5 review pointsと外部TLS終端 / Secure Cookieの補足を確認し、B3-2を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はB3-3 Invalidation / logoutへ進む。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
