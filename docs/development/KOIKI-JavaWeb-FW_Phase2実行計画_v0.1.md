@@ -190,6 +190,15 @@ immutable principal ID / credential非永続化を確認し、T0〜T5 15 suite /
 全Session失効 / logout、2 process、maintenance cleanupはB3-3〜B3-5へ残す。
 同日、Architecture OwnerはB3-2の5 review pointsと外部TLS終端 / Secure Cookieの補足を確認し、B3-2を
 `COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はB3-3 Invalidation / logoutへ進む。
+同日、B3-3では既存`UserSessionInvalidator`をSpring Session JDBCのimmutable principal indexへ接続し、対象userだけの
+全Session同期失効とSpring Security標準chain上の永続local logoutを実装した。実PostgreSQLとMockMvcによるServlet filter chain上の
+HTTP動作でSession row削除、Cookie失効、同一processでの旧Cookie拒否を確認し、注入したSession invalidate障害ではlocal context / credential / Cookieを
+消去しつつ成功redirectを止めることを確認した。T0〜T5 15 suite / 66 testsが成功し、
+`../architecture/validation/phase2-p2-b3-b3-3-verification.md`をArchitecture Owner review対象とした。
+package済み2 processでの継続 / 旧Cookie拒否と実store障害のHTTP結果はB3-4、cleanup / single executionはB3-5へ残す。
+同日、Architecture OwnerはB3-3の5 review pointsを確認し、MockMvcによるServlet filter chain上のHTTP動作と
+package済みprocessへのnetwork越しHTTP試験の証拠境界を明確化したうえで、B3-3を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はB3-4 Two-process continuityへ進む。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 

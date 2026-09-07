@@ -15,5 +15,6 @@ PROPERTY spring.session.timeout
 SESSION_TABLES 2
 TABLE koiki_session
 TABLE koiki_session_attributes
-SESSION_INVALIDATOR B3-3
+SESSION_INVALIDATOR org.koikifw.identity.UserSessionInvalidator
+SESSION_LOGOUT Spring Security LogoutHandler internal
 SESSION_CLEANUP B3-5

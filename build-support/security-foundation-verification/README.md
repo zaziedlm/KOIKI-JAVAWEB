@@ -81,7 +81,7 @@ DB row / Auditの非露出はfixtureの意味的assertionで確認し、合成cr
 隔離Maven repositoryへ入らないことを検査する。root `clean verify`とNullAway正負fixtureは別commandで実行し、
 Identityの公開baseline / japicmpはGate B以降のOwner reviewへ残す。
 
-P2-B3 B3-2のSession core / migration aggregateは次で検証する。
+P2-B3 B3-3のSession invalidation / logout aggregateは次で検証する。
 
 ```powershell
 pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b3-session-core.ps1
@@ -92,6 +92,9 @@ B3-2では新規optional `koiki-starter-session-jdbc`を正式release unitへsta
 PostgreSQL上ではFramework Flywayが管理する2 tableだけを使用し、migration再実行no-op、save前にはrowを書かないこと、
 読取だけでは属性rowを書き換えず属性変更時だけ更新することを観測する。さらに実local認証で生成した
 `FrameworkPrincipal`を保存・復元し、DBのprincipal indexがimmutable user ID、復元後credentialが空であることを確認する。
-aggregateは既存Security / Audit / Identity回帰を含むT0〜T5 62 tests、Session Public Java型0件、KOIKI固有property 0件、
+B3-3では既存`UserSessionInvalidator`をSpring Session JDBCのimmutable principal indexへ接続し、対象userだけの全Session失効、
+MockMvcによるServlet filter chain上のlogin / logout、Session row削除、Cookie失効、同一processでの旧Cookie拒否およびSession invalidate障害時の
+local SecurityContext / credential / Cookie消去とsafe failureを確認する。
+aggregateは既存Security / Audit / Identity回帰を含むT0〜T5 66 tests、Session Public Java型0件、KOIKI固有property 0件、
 Spring標準property 9件、2 table、依存境界、正式artifact / log / reportのsecret / PII非露出および一時領域cleanupを検査する。
-全Session失効 / logoutはB3-3、2 process継続はB3-4、maintenance cleanup / single executionはB3-5に残す。
+package済み2 process継続 / 別processでの旧Cookie拒否 / 実store障害はB3-4、maintenance cleanup / single executionはB3-5に残す。

@@ -1,6 +1,13 @@
 package org.koikifw.buildsupport.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.config.Customizer.withDefaults;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,23 +18,35 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.koikifw.identity.FrameworkPrincipal;
 import org.koikifw.identity.FrameworkUserId;
+import org.koikifw.identity.UserSessionInvalidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.web.http.SessionRepositoryFilter;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootTest(
         classes = SessionJdbcCoreMigrationFixtureTest.FixtureApplication.class,
@@ -61,6 +80,15 @@ class SessionJdbcCoreMigrationFixtureTest {
 
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
+
+    @Autowired
+    private UserSessionInvalidator sessionInvalidator;
+
+    @Autowired
+    private WebApplicationContext applicationContext;
+
+    @Autowired
+    private SessionRepositoryFilter<?> sessionRepositoryFilter;
 
     @BeforeEach
     void clearFixtureState() {
@@ -189,6 +217,103 @@ class SessionJdbcCoreMigrationFixtureTest {
         saveAndAssertRestoredPrincipal(sessionRepository, securityContext);
     }
 
+    @Test
+    void invalidatesEverySessionForOnlyTheExactImmutableUserId() {
+        FrameworkUserId target = FrameworkUserId.parse(USER_ID.toString());
+        FrameworkUserId other = FrameworkUserId.parse(
+                "00000000-0000-4000-8000-000000000302");
+
+        List<String> targetSessions = saveIndexedSessions(sessionRepository, target, 2);
+        List<String> otherSessions = saveIndexedSessions(sessionRepository, other, 1);
+
+        sessionInvalidator.invalidateAll(target);
+
+        assertThat(targetSessions)
+                .allSatisfy(sessionId -> assertThat(sessionRowCount(sessionId)).isZero());
+        assertThat(otherSessions)
+                .allSatisfy(sessionId -> assertThat(sessionRowCount(sessionId)).isOne());
+        assertThat(jdbcClient.sql("SELECT count(*) FROM koiki_session_attributes")
+                        .query(Integer.class)
+                        .single())
+                .isOne();
+    }
+
+    @Test
+    void logsOutThroughSpringSecurityDeletesTheRowAndRejectsTheOldCookie()
+            throws Exception {
+        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext)
+                .addFilters(sessionRepositoryFilter)
+                .apply(springSecurity())
+                .build();
+        String loginEmail = "logout-user" + Character.toString(64) + "invalid.example";
+        jdbcClient.sql(
+                        """
+                        INSERT INTO koiki_user(user_id, email, canonical_email, status)
+                        VALUES (:userId, :email, :email, 'ACTIVE')
+                        """)
+                .param("userId", USER_ID)
+                .param("email", loginEmail)
+                .update();
+        jdbcClient.sql(
+                        """
+                        INSERT INTO koiki_password_credential(user_id, encoded_password)
+                        VALUES (:userId, :encodedPassword)
+                        """)
+                .param("userId", USER_ID)
+                .param("encodedPassword", passwordEncoder.encode(RAW_PASSWORD))
+                .update();
+
+        MvcResult login = mockMvc.perform(post("/login")
+                        .with(csrf())
+                        .param("username", loginEmail)
+                        .param("password", RAW_PASSWORD))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        jakarta.servlet.http.Cookie sessionCookie =
+                login.getResponse().getCookie("SESSION");
+        assertThat(sessionCookie).isNotNull();
+        assertThat(jdbcClient.sql("SELECT count(*) FROM koiki_session")
+                        .query(Integer.class)
+                        .single())
+                .isOne();
+
+        mockMvc.perform(get("/fixture/session").cookie(sessionCookie))
+                .andExpect(status().isOk());
+        MvcResult logout = mockMvc.perform(post("/logout")
+                        .with(csrf())
+                        .cookie(sessionCookie))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?logout"))
+                .andReturn();
+        assertThat(logout.getResponse().getCookie("SESSION"))
+                .isNotNull()
+                .extracting(jakarta.servlet.http.Cookie::getMaxAge)
+                .isEqualTo(0);
+        assertThat(jdbcClient.sql("SELECT count(*) FROM koiki_session")
+                        .query(Integer.class)
+                        .single())
+                .isZero();
+
+        mockMvc.perform(get("/fixture/session").cookie(sessionCookie))
+                .andExpect(status().is3xxRedirection());
+    }
+
+    private <S extends Session> List<String> saveIndexedSessions(
+            SessionRepository<S> repository, FrameworkUserId userId, int count) {
+        java.util.ArrayList<String> sessionIds = new java.util.ArrayList<>();
+        for (int index = 0; index < count; index++) {
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(UsernamePasswordAuthenticationToken.authenticated(
+                    userId.toString(), null, List.of()));
+            S session = repository.createSession();
+            session.setAttribute(
+                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+            repository.save(session);
+            sessionIds.add(session.getId());
+        }
+        return List.copyOf(sessionIds);
+    }
+
     private <S extends Session> void saveAndAssertRestoredPrincipal(
             SessionRepository<S> repository, SecurityContext securityContext) {
         S session = repository.createSession();
@@ -253,5 +378,30 @@ class SessionJdbcCoreMigrationFixtureTest {
     @SpringBootConfiguration
     @EnableAutoConfiguration
     @Import(AuditPostgreSqlTestConfiguration.class)
-    static class FixtureApplication {}
+    static class FixtureApplication {
+
+        @Bean
+        @Order(0)
+        SecurityFilterChain fixtureSessionSecurityFilterChain(HttpSecurity http)
+                throws Exception {
+            http.securityMatcher("/login", "/logout", "/fixture/session");
+            http.authorizeHttpRequests(requests -> requests.anyRequest().authenticated());
+            http.formLogin(withDefaults());
+            return http.build();
+        }
+
+        @Bean
+        FixtureSessionController fixtureSessionController() {
+            return new FixtureSessionController();
+        }
+    }
+
+    @RestController
+    static class FixtureSessionController {
+
+        @GetMapping("/fixture/session")
+        String session() {
+            return "active";
+        }
+    }
 }

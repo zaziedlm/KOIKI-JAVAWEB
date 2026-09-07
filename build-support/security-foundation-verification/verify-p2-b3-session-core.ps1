@@ -34,8 +34,8 @@ $expectedSuites = [ordered]@{
     'IdentityAuthenticationFixtureTest' = 6
     'IdentityAdministrationAutoConfigurationContextTest' = 2
     'IdentityAdministrationFixtureTest' = 6
-    'SessionJdbcAutoConfigurationContextTest' = 3
-    'SessionJdbcCoreMigrationFixtureTest' = 3
+    'SessionJdbcAutoConfigurationContextTest' = 5
+    'SessionJdbcCoreMigrationFixtureTest' = 5
 }
 $forbiddenSensitivePatterns = [ordered]@{
     'private key material' = '-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'
@@ -108,7 +108,7 @@ function Assert-SurefireResults {
         }
         $total += [int]$suite.tests
     }
-    if ($total -ne 62) {
+    if ($total -ne 66) {
         throw "Unexpected cumulative test count: $total"
     }
 }
@@ -146,7 +146,8 @@ function Assert-SessionContract {
         'SESSION_TABLES 2',
         'TABLE koiki_session',
         'TABLE koiki_session_attributes',
-        'SESSION_INVALIDATOR B3-3',
+        'SESSION_INVALIDATOR org.koikifw.identity.UserSessionInvalidator',
+        'SESSION_LOGOUT Spring Security LogoutHandler internal',
         'SESSION_CLEANUP B3-5')
     if (@(Compare-Object -ReferenceObject $expectedInventory `
                 -DifferenceObject $actualInventory -SyncWindow 0).Count -ne 0) {
@@ -252,7 +253,7 @@ try {
             $formalJar,
             (Get-Item -LiteralPath $verificationLog)) + $reportFiles)
 
-    Write-Host 'Phase 2 P2-B3 Session core verification succeeded (T0-T5 62/62).'
+    Write-Host 'Phase 2 P2-B3 Session invalidation / logout verification succeeded (T0-T5 66/66).'
 } catch {
     $verificationFailure = $_
     $failureEvidence = @()
