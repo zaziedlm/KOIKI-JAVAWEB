@@ -20,6 +20,7 @@ $verificationRoot = Join-Path ([System.IO.Path]::GetTempPath()) (
 $isolatedRepository = Join-Path $verificationRoot 'repository'
 $identityTree = Join-Path $verificationRoot 'identity-dependency-tree.txt'
 $dataTree = Join-Path $verificationRoot 'data-dependency-tree.txt'
+$verificationLog = Join-Path $verificationRoot 'verification-output.log'
 $fixtureTarget = Join-Path $PSScriptRoot 'target'
 $expectedSuites = [ordered]@{
     'SecurityDependencyBaselineTest' = 1
@@ -35,6 +36,13 @@ $expectedSuites = [ordered]@{
     'IdentityAuthenticationFixtureTest' = 6
     'IdentityAdministrationAutoConfigurationContextTest' = 2
     'IdentityAdministrationFixtureTest' = 6
+}
+$forbiddenSensitivePatterns = [ordered]@{
+    'private key material' = '-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'
+    'credential assignment' = '(?i)(?:password|client[_-]?secret|access[_-]?token)\s*[:=]\s*(?!\?)[^\s<]+'
+    'source HMAC key assignment' = '(?i)source-hmac-key\s*=\s*[^\s<,\"]+'
+    'email-shaped PII' = '(?i)[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
+    'authorization header' = '(?i)authorization\s*[:=]\s*(?:basic|bearer)\s+'
 }
 
 function Assert-SafeTemporaryPath {
@@ -54,9 +62,28 @@ function Invoke-KoikiMaven {
     )
 
     Write-Host "=== $Label ==="
-    & $wrapper --batch-mode --no-transfer-progress "-Dmaven.repo.local=$isolatedRepository" @Arguments
-    if ($LASTEXITCODE -ne 0) {
-        throw "$Label failed with exit code $LASTEXITCODE"
+    $output = @(& $wrapper --batch-mode --no-transfer-progress `
+            "-Dmaven.repo.local=$isolatedRepository" @Arguments 2>&1)
+    $exitCode = $LASTEXITCODE
+    Assert-NoSensitiveText -Content ($output -join [Environment]::NewLine) `
+        -Source "$Label Maven output"
+    $output | ForEach-Object { Write-Host $_ }
+    $output | Add-Content -LiteralPath $verificationLog
+    if ($exitCode -ne 0) {
+        throw "$Label failed with exit code $exitCode"
+    }
+}
+
+function Assert-NoSensitiveText {
+    param(
+        [Parameter(Mandatory)][AllowEmptyString()][string]$Content,
+        [Parameter(Mandatory)][string]$Source
+    )
+
+    foreach ($entry in $forbiddenSensitivePatterns.GetEnumerator()) {
+        if ($Content -match $entry.Value) {
+            throw "Sensitive content detected in ${Source}: $($entry.Key)"
+        }
     }
 }
 
@@ -83,6 +110,16 @@ function Assert-SurefireResults {
     }
     if ($total -ne 56) {
         throw "Unexpected cumulative test count: $total"
+    }
+}
+
+function Assert-NoSensitiveContent {
+    param([Parameter(Mandatory)][System.IO.FileInfo[]]$Files)
+
+    foreach ($file in $Files) {
+        $content = [System.Text.Encoding]::Latin1.GetString(
+            [System.IO.File]::ReadAllBytes($file.FullName))
+        Assert-NoSensitiveText -Content $content -Source $file.FullName
     }
 }
 
@@ -243,6 +280,8 @@ function Assert-IdentityContract {
 
 Assert-SafeTemporaryPath -Path $verificationRoot
 New-Item -ItemType Directory -Path $isolatedRepository -Force | Out-Null
+$formalJar = $null
+$fixtureVerificationStarted = $false
 
 try {
     Invoke-KoikiMaven -Label 'Stage the formal KOIKI release unit' -Arguments @(
@@ -254,6 +293,7 @@ try {
         'koiki-starter-identity-0.1.0-SNAPSHOT.jar'))
     Assert-IdentityContract -FormalJar $formalJar
 
+    $fixtureVerificationStarted = $true
     Invoke-KoikiMaven -Label 'Verify cumulative T0-T4 and Identity core with PostgreSQL' -Arguments @(
         '-f', $fixturePom, 'clean', 'verify')
     Assert-SurefireResults
@@ -294,7 +334,36 @@ try {
         throw 'The non-distributed T4 fixture was installed into the release repository.'
     }
 
+    $reportFiles = @(Get-ChildItem -LiteralPath (
+            Join-Path $fixtureTarget 'surefire-reports') -File)
+    Assert-NoSensitiveContent -Files (@(
+            $formalJar,
+            (Get-Item -LiteralPath $verificationLog)) + $reportFiles)
+
     Write-Host 'Phase 2 P2-B2 Identity administration verification succeeded (T0-T4 56/56).'
+} catch {
+    $verificationFailure = $_
+    $failureEvidence = @()
+    if ($null -ne $formalJar -and (Test-Path -LiteralPath $formalJar.FullName)) {
+        $failureEvidence += $formalJar
+    }
+    if (Test-Path -LiteralPath $verificationLog) {
+        $failureEvidence += Get-Item -LiteralPath $verificationLog
+    }
+    $reportRoot = Join-Path $fixtureTarget 'surefire-reports'
+    if ($fixtureVerificationStarted -and (Test-Path -LiteralPath $reportRoot)) {
+        $failureEvidence += @(Get-ChildItem -LiteralPath $reportRoot -File)
+    }
+    if ($failureEvidence.Count -ne 0) {
+        try {
+            Assert-NoSensitiveContent -Files $failureEvidence
+        } catch {
+            throw ("{0} Sensitive-output inspection also failed: {1}" -f `
+                    $verificationFailure.Exception.Message, $_.Exception.Message)
+        }
+        Write-Host 'Sensitive-output inspection after verification failure succeeded.'
+    }
+    throw $verificationFailure
 } finally {
     if (Test-Path -LiteralPath $verificationRoot) {
         Assert-SafeTemporaryPath -Path $verificationRoot

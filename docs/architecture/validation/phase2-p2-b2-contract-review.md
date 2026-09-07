@@ -472,3 +472,8 @@ P2-B2をcloseし、P2-B3の実Session Evidence後にB2-C10のadapter実装を確
 generic failure、attempt / lockおよびSecurity Audit failure semanticsをreviewし、B2-C4〜C6の設計判断として承認した。
 同日、SOURCE遮断DB読取障害のgeneric failure補正後を含むT0〜T4 aggregate 48 / 48とroot Reactor 13 / 13を確認し、
 B2-3の実装を最終承認した。
+
+同日、B2-4 Identity administrationを承認後、`phase2-p2-b2-b2-5-verification.md`のT0〜T4 56 / 56、
+inventory、Secret / PII、Null Safety、root regressionおよびcleanupを確認した。失敗時report境界のTooling補強と
+負例再検証を含むB2-5の5項目をArchitecture Ownerが最終承認し、P2-B2をcloseした。B2-C10の実Spring Session
+adapterと効果検証は、承認済み境界どおりP2-B3へ引き継ぐ。

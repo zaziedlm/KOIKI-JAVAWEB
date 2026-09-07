@@ -73,3 +73,10 @@ password、User Role、Role Permission、external unlinkのSession invalidator�
 context testでは必須4依存の欠落時にQueryを維持して管理beanを構成せず、全依存充足時だけ構成することを確認する。
 aggregateはT0〜T4の56 testsとなる。
 fixture invalidatorが確認するのは同期SPIの呼出しとtransaction結果までであり、Spring Session row削除と旧Cookie拒否はP2-B3に残す。
+
+P2-B2 B2-5では同じaggregateをcloseout evidenceとして再実行し、正式Identity JAR、Maven実行log、全Surefire reportへ
+private key、credential、SOURCE HMAC key、email形式PII、Authorization headerが残らないことを追加検査する。
+Maven出力は画面表示前に検査し、検証失敗時も生成済みJAR、log、reportを再検査してから失敗を通知する。
+DB row / Auditの非露出はfixtureの意味的assertionで確認し、合成credentialを含むfixture JARは正式release unitと
+隔離Maven repositoryへ入らないことを検査する。root `clean verify`とNullAway正負fixtureは別commandで実行し、
+Identityの公開baseline / japicmpはGate B以降のOwner reviewへ残す。

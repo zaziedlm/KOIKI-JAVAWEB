@@ -42,6 +42,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 @SpringBootTest(
         classes = IdentityAuthenticationFixtureTest.FixtureApplication.class,
@@ -52,8 +54,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
             "koiki.identity.local-authentication.enabled=true",
             "koiki.identity.login-attempt.account-threshold=3",
             "koiki.identity.login-attempt.source-threshold=10",
-            "koiki.identity.login-attempt.source-hmac-key-id=fixture-v1",
-            "koiki.identity.login-attempt.source-hmac-key=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE="
+            "koiki.identity.login-attempt.source-hmac-key-id=fixture-v1"
         })
 @Import({
     AuditPostgreSqlTestConfiguration.class,
@@ -63,6 +64,15 @@ class IdentityAuthenticationFixtureTest {
 
     private static final UUID USER_ID =
             UUID.fromString("00000000-0000-4000-8000-000000000301");
+    private static final String SOURCE_HMAC_KEY =
+            "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE=";
+
+    @DynamicPropertySource
+    static void sourceProtectionProperties(DynamicPropertyRegistry registry) {
+        registry.add(
+                "koiki.identity.login-attempt.source-hmac-key",
+                () -> SOURCE_HMAC_KEY);
+    }
 
     @Autowired
     @Qualifier("koikiIdentityAuthenticationProvider")

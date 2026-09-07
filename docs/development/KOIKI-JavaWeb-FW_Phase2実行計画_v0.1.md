@@ -173,6 +173,11 @@ token / mail delivery、table、property、endpointのproduction実装を将来�
 2026年9月7日、`../architecture/validation/phase2-p2-b2-b2-2-verification.md`のIdentity core / migration、Public API 10型、
 8 table、実PostgreSQL T4および配布境界をArchitecture Ownerがreviewし、B2-2を承認した。次はB2-3
 Authentication / attempt / lockへ進む。
+同日、B2-3 Authentication / attempt / lockとB2-4 Identity administrationをArchitecture Ownerが承認した。
+`../architecture/validation/phase2-p2-b2-b2-5-verification.md`ではT0〜T4 56 / 56、root回帰、NullAway正負、
+Public API / property / error / table inventory、secret / PIIおよびcleanupを再検証し、B2-5のOwner review対象とした。
+同日、失敗時reportのSecret / PII境界をToolingで補強し、負例と56 / 56正常回帰を確認した。Architecture Ownerは
+B2-5の5項目を最終承認し、P2-B2を`COMPLETE / ARCHITECTURE OWNER APPROVED`としてcloseした。次はP2-B3へ進む。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 

@@ -9,7 +9,7 @@ Account Lock、認証試行制御、Password Resetの将来境界とIdentity mig
 - **Architecture Owner:** Shuichi Kataoka
 - **Branch:** `feature/phase2-security-local-identity-session-audit`
 - **Start commit:** `2942db7`（P2-B1 Audit contract / transaction）
-- **Phase status:** `P2-B1 COMPLETE / ACCEPTED — P2-B2 B2-1〜B2-4 COMPLETE / ARCHITECTURE OWNER APPROVED — B2-5 READY`
+- **Phase status:** `P2-B1 COMPLETE / ACCEPTED — P2-B2 COMPLETE / ARCHITECTURE OWNER APPROVED — P2-B3 READY`
 - **Ownership:** Framework（Identity contract / persistence / migration）+ Tooling（非配布T4 PostgreSQL fixture）
 - **Primary target:** Local Identity、Password / Lock、Role / Permission、external identity link、login attempt
 - **Deferred:** Local Password Reset詳細実装は将来要件成立時の別CP、Spring Session JDBCはP2-B3、Reference `identity`はP2-B4、Audit / Session migration総合はP2-C1
@@ -149,6 +149,11 @@ test user、raw credential、failure switch、clock、source key、並行実行h
 
 - T0〜T4 aggregate、root、Null Safety、API / table inventory、migration、secret / PII、cleanupを確認する。
 - P2-B2 Evidenceを記録し、Owner acceptance後にP2-B3へ進む。
+- **Status:** `COMPLETE / ARCHITECTURE OWNER APPROVED`（2026年9月7日、Shuichi Kataoka）。
+- `../architecture/validation/phase2-p2-b2-b2-5-verification.md`にT0〜T4 56 / 56、root 13 / 13、Architecture Contract 4 / 4、
+  ArchUnit 66 / 66、NullAway正負、secret / PII scanおよびcontainer / temporary resource cleanupを記録した。
+- Owner reviewで指摘された失敗時report境界を補強し、fixture HMACの動的property供給、表示前Maven出力scan、
+  失敗後のJAR / log / report再scanを追加した。Docker接続失敗の負例と、その後の56 / 56正常回帰を確認済みである。
 - **Commit point:** P2-B2 closeout。必要ならB2-2〜B2-5を1つに統合できるが、未承認contractと実装を同時commitしない。
 
 ## 8. Downstream task map
@@ -195,4 +200,7 @@ local credential、external link管理、optimistic version、Business / Securit
 User Role、Role Permission、external unlinkのSession失効失敗時rollbackを直接検証した。T0〜T4 aggregate 56 / 56、
 root Reactor 13 / 13、Architecture Contract 4 / 4、
 ArchUnit 66 / 66は成功済みである。Spring Session row削除と旧Cookie拒否はP2-B3の実証対象であり、B2-4では成功claimしない。
-Architecture Ownerは補強結果を確認してB2-4を最終承認した。次はB2-5 regression / evidenceへ進む。
+Architecture Ownerは補強結果を確認してB2-4を最終承認した。2026年9月7日、B2-5 regression / evidenceを実行し、
+T0〜T4 56 / 56、root回帰、NullAway正負、inventory、secret / PIIおよびcleanupを確認した。
+Architecture OwnerはB2-5の5項目とTooling補強結果を最終承認し、P2-B2をcloseした。次はP2-B3の
+Spring Session JDBC contract / implementation / evidence整理へ進む。
