@@ -48,13 +48,16 @@ class FixtureController {
             @RequestParam String email,
             @RequestParam String password,
             @RequestParam UUID roleId,
-            @RequestParam UUID permissionId) {
+            @RequestParam String roleCode,
+            @RequestParam UUID permissionId,
+            @RequestParam String permissionCode) {
         requireBootstrapKey(bootstrapKey);
 
         jdbcClient.sql(
                         """
                         INSERT INTO koiki_user(user_id, email, canonical_email, status)
                         VALUES (:userId, :email, :email, 'ACTIVE')
+                        ON CONFLICT (user_id) DO NOTHING
                         """)
                 .param("userId", userId)
                 .param("email", email)
@@ -63,24 +66,34 @@ class FixtureController {
                         """
                         INSERT INTO koiki_password_credential(user_id, encoded_password)
                         VALUES (:userId, :encodedPassword)
+                        ON CONFLICT (user_id) DO NOTHING
                         """)
                 .param("userId", userId)
                 .param("encodedPassword", passwordEncoder.encode(password))
                 .update();
-        jdbcClient.sql("INSERT INTO koiki_role(role_id, role_code) VALUES (:roleId, 'B3_READER')")
+        jdbcClient.sql(
+                        """
+                        INSERT INTO koiki_role(role_id, role_code)
+                        VALUES (:roleId, :roleCode)
+                        ON CONFLICT (role_id) DO NOTHING
+                        """)
                 .param("roleId", roleId)
+                .param("roleCode", roleCode)
                 .update();
         jdbcClient.sql(
                         """
                         INSERT INTO koiki_permission(permission_id, permission_code)
-                        VALUES (:permissionId, 'ORDER:READ')
+                        VALUES (:permissionId, :permissionCode)
+                        ON CONFLICT (permission_id) DO NOTHING
                         """)
                 .param("permissionId", permissionId)
+                .param("permissionCode", permissionCode)
                 .update();
         jdbcClient.sql(
                         """
                         INSERT INTO koiki_user_role(user_id, role_id)
                         VALUES (:userId, :roleId)
+                        ON CONFLICT DO NOTHING
                         """)
                 .param("userId", userId)
                 .param("roleId", roleId)
@@ -89,10 +102,51 @@ class FixtureController {
                         """
                         INSERT INTO koiki_role_permission(role_id, permission_id)
                         VALUES (:roleId, :permissionId)
+                        ON CONFLICT DO NOTHING
                         """)
                 .param("roleId", roleId)
                 .param("permissionId", permissionId)
                 .update();
+    }
+
+    @PostMapping("/fixture/setup-external")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    void setupExternal(
+            @RequestHeader("X-Koiki-Fixture-Key") String bootstrapKey,
+            @RequestParam UUID linkId,
+            @RequestParam UUID userId,
+            @RequestParam String issuer,
+            @RequestParam String subject) {
+        requireBootstrapKey(bootstrapKey);
+        jdbcClient.sql(
+                        """
+                        INSERT INTO koiki_external_identity_link(link_id, user_id, issuer, subject)
+                        VALUES (:linkId, :userId, :issuer, :subject)
+                        """)
+                .param("linkId", linkId)
+                .param("userId", userId)
+                .param("issuer", issuer)
+                .param("subject", subject)
+                .update();
+    }
+
+    @PostMapping("/fixture/reset")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    void reset(@RequestHeader("X-Koiki-Fixture-Key") String bootstrapKey) {
+        requireBootstrapKey(bootstrapKey);
+        jdbcClient.sql("DELETE FROM koiki_session_attributes").update();
+        jdbcClient.sql("DELETE FROM koiki_session").update();
+        jdbcClient.sql("DELETE FROM koiki_login_attempt").update();
+        jdbcClient.sql("DELETE FROM koiki_external_identity_link").update();
+        jdbcClient.sql("DELETE FROM koiki_role_permission").update();
+        jdbcClient.sql("DELETE FROM koiki_user_role").update();
+        jdbcClient.sql("DELETE FROM koiki_password_credential").update();
+        jdbcClient.sql("DELETE FROM koiki_user").update();
+        jdbcClient.sql("DELETE FROM koiki_permission").update();
+        jdbcClient.sql("DELETE FROM koiki_role").update();
+        jdbcClient.sql("DELETE FROM koiki_audit_event").update();
     }
 
     @GetMapping("/fixture/session")

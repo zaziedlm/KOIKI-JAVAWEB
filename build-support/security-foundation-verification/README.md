@@ -99,7 +99,7 @@ aggregateは既存Security / Audit / Identity回帰を含むT0〜T5 66 tests、S
 Spring標準property 9件、2 table、依存境界、正式artifact / log / reportのsecret / PII非露出および一時領域cleanupを検査する。
 package済み2 process継続 / 別processでの旧Cookie拒否 / 実store障害はB3-4、maintenance cleanup / single executionはB3-5に残す。
 
-B3-4の最初のT6 process sliceは次で検証する。
+B3-4のT6 two-process / Identity mutation sliceは次で検証する。
 
 ```powershell
 pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b3-session-two-process.ps1
@@ -107,5 +107,7 @@ pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b
 
 正式release unitを隔離Maven repositoryへstageした後、非配布fixtureを別invocationでpackageする。同じ1個の
 executable JARをloopback上の2 processとして起動し、process Aでの標準Form Login、process BでのSession継続、
-process A停止後のprocess B継続、およびimmutable principal indexをHTTP / DB / process状態から確認する。
-Identity mutation matrix、Session DELETE権限障害、proxy下Cookie属性は後続B3-4 sliceで追加する。
+process A停止後のprocess B継続、およびimmutable principal indexをHTTP / DB / process状態から確認する。さらに操作ごとに
+fresh fixture stateを作り、disable、password、user Role、Role Permission、external unlinkをPublic `IdentityAdministration`で
+実行する。A由来の対象旧CookieがBで拒否され、対象Session rowが削除される一方、専用control/admin Sessionが継続すること、
+および各Identity状態遷移を確認する。Session DELETE権限障害、proxy下Cookie属性は後続B3-4 sliceで追加する。
