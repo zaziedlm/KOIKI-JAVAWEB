@@ -35,7 +35,8 @@ $expectedSuites = [ordered]@{
     'IdentityAdministrationAutoConfigurationContextTest' = 2
     'IdentityAdministrationFixtureTest' = 6
     'SessionJdbcAutoConfigurationContextTest' = 5
-    'SessionJdbcCoreMigrationFixtureTest' = 5
+    'SessionJdbcCoreMigrationFixtureTest' = 6
+    'SessionCleanupContractTest' = 5
 }
 $forbiddenSensitivePatterns = [ordered]@{
     'private key material' = '-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'
@@ -108,7 +109,7 @@ function Assert-SurefireResults {
         }
         $total += [int]$suite.tests
     }
-    if ($total -ne 66) {
+    if ($total -ne 72) {
         throw "Unexpected cumulative test count: $total"
     }
 }
@@ -131,7 +132,10 @@ function Assert-SessionContract {
         Where-Object { $_ -ne '' -and -not $_.StartsWith('#') })
     $expectedInventory = @(
         'ARTIFACT koiki-starter-session-jdbc',
-        'PUBLIC_JAVA_TYPES 0',
+        'PUBLIC_JAVA_TYPES 3',
+        'TYPE org.koikifw.session.SessionCleanup',
+        'TYPE org.koikifw.session.SessionCleanupException',
+        'TYPE org.koikifw.session.SessionCleanupResult',
         'PUBLIC_KOIKI_CONFIGURATION_PROPERTIES 0',
         'SPRING_CONFIGURATION_PROPERTIES 9',
         'PROPERTY spring.session.jdbc.initialize-schema=never',
@@ -148,7 +152,7 @@ function Assert-SessionContract {
         'TABLE koiki_session_attributes',
         'SESSION_INVALIDATOR org.koikifw.identity.UserSessionInvalidator',
         'SESSION_LOGOUT Spring Security LogoutHandler internal',
-        'SESSION_CLEANUP B3-5')
+        'SESSION_CLEANUP org.koikifw.session.SessionCleanup')
     if (@(Compare-Object -ReferenceObject $expectedInventory `
                 -DifferenceObject $actualInventory -SyncWindow 0).Count -ne 0) {
         throw 'Session JDBC inventory differs from the approved B3 contract.'
@@ -161,8 +165,13 @@ function Assert-SessionContract {
             $_.FullName -match '^org/koikifw/session/[^/]+\.class$' `
                 -and $_.FullName -notmatch '/package-info\.class$'
         })
-        if ($publicClasses.Count -ne 0) {
-            throw "Session JDBC exposes an unexpected public type: $($publicClasses.FullName -join ', ')"
+        $expectedPublicClasses = @(
+            'org/koikifw/session/SessionCleanup.class',
+            'org/koikifw/session/SessionCleanupException.class',
+            'org/koikifw/session/SessionCleanupResult.class')
+        if (@(Compare-Object -ReferenceObject $expectedPublicClasses `
+                    -DifferenceObject @($publicClasses.FullName) -SyncWindow 0).Count -ne 0) {
+            throw "Session JDBC public types differ from the approved contract: $($publicClasses.FullName -join ', ')"
         }
 
         $migrationEntry = $archive.GetEntry(
@@ -253,7 +262,7 @@ try {
             $formalJar,
             (Get-Item -LiteralPath $verificationLog)) + $reportFiles)
 
-    Write-Host 'Phase 2 P2-B3 Session invalidation / logout verification succeeded (T0-T5 66/66).'
+    Write-Host 'Phase 2 P2-B3 Session cleanup contract verification succeeded (T0-T5 72/72).'
 } catch {
     $verificationFailure = $_
     $failureEvidence = @()

@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.koikifw.identity.FrameworkPrincipal;
 import org.koikifw.identity.FrameworkUserId;
 import org.koikifw.identity.UserSessionInvalidator;
+import org.koikifw.session.SessionCleanup;
+import org.koikifw.session.SessionCleanupResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -83,6 +85,9 @@ class SessionJdbcCoreMigrationFixtureTest {
 
     @Autowired
     private UserSessionInvalidator sessionInvalidator;
+
+    @Autowired
+    private SessionCleanup sessionCleanup;
 
     @Autowired
     private WebApplicationContext applicationContext;
@@ -236,6 +241,34 @@ class SessionJdbcCoreMigrationFixtureTest {
                         .query(Integer.class)
                         .single())
                 .isOne();
+    }
+
+    @Test
+    void cleansOnlyExpiredSessionsThroughTheFrameworkCleanupUseCase() {
+        String expiredSessionId = saveStateSession(sessionRepository, "expired");
+        String activeSessionId = saveStateSession(sessionRepository, "active");
+        jdbcClient.sql(
+                        "UPDATE koiki_session SET expiry_time = 0 WHERE session_id = :sessionId")
+                .param("sessionId", expiredSessionId)
+                .update();
+
+        assertThat(sessionCleanup.cleanUpExpiredSessions())
+                .isEqualTo(SessionCleanupResult.COMPLETED);
+
+        assertThat(sessionRowCount(expiredSessionId)).isZero();
+        assertThat(sessionRowCount(activeSessionId)).isOne();
+        assertThat(jdbcClient.sql("SELECT count(*) FROM koiki_session_attributes")
+                        .query(Integer.class)
+                        .single())
+                .isOne();
+    }
+
+    private <S extends Session> String saveStateSession(
+            SessionRepository<S> repository, String state) {
+        S session = repository.createSession();
+        session.setAttribute("koiki.fixture.state", state);
+        repository.save(session);
+        return session.getId();
     }
 
     @Test

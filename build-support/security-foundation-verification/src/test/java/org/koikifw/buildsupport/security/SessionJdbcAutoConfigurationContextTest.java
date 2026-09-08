@@ -31,6 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.transaction.PlatformTransactionManager;
 
 class SessionJdbcAutoConfigurationContextTest {
 
@@ -44,6 +45,8 @@ class SessionJdbcAutoConfigurationContextTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(KoikiSessionJdbcAutoConfiguration.class))
             .withBean(DataSource.class, () -> mock(DataSource.class))
+            .withBean(PlatformTransactionManager.class,
+                    () -> mock(PlatformTransactionManager.class))
             .withPropertyValues(APPROVED_VALUES);
 
     @AfterEach
@@ -94,6 +97,8 @@ class SessionJdbcAutoConfigurationContextTest {
         runner.run(context -> {
             assertThat(context).hasNotFailed();
             assertThat(context).hasBean("koikiSessionJdbcSettingsGuard");
+            assertThat(context).hasSingleBean(JdbcIndexedSessionRepository.class);
+            assertThat(context).hasSingleBean(org.koikifw.session.SessionCleanup.class);
         });
 
         assertRejected("spring.session.jdbc.initialize-schema=always", "initialize-schema");

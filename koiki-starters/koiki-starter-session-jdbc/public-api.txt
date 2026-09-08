@@ -1,6 +1,9 @@
-# KOIKI Phase 2 P2-B3 B3-2 Session JDBC Public API inventory v1
+# KOIKI Phase 2 P2-B3 B3-5 Session JDBC Public API inventory v1
 ARTIFACT koiki-starter-session-jdbc
-PUBLIC_JAVA_TYPES 0
+PUBLIC_JAVA_TYPES 3
+TYPE org.koikifw.session.SessionCleanup
+TYPE org.koikifw.session.SessionCleanupException
+TYPE org.koikifw.session.SessionCleanupResult
 PUBLIC_KOIKI_CONFIGURATION_PROPERTIES 0
 SPRING_CONFIGURATION_PROPERTIES 9
 PROPERTY spring.session.jdbc.initialize-schema=never
@@ -17,4 +20,4 @@ TABLE koiki_session
 TABLE koiki_session_attributes
 SESSION_INVALIDATOR org.koikifw.identity.UserSessionInvalidator
 SESSION_LOGOUT Spring Security LogoutHandler internal
-SESSION_CLEANUP B3-5
+SESSION_CLEANUP org.koikifw.session.SessionCleanup
