@@ -98,3 +98,14 @@ local SecurityContext / credential / Cookie消去とsafe failureを確認する�
 aggregateは既存Security / Audit / Identity回帰を含むT0〜T5 66 tests、Session Public Java型0件、KOIKI固有property 0件、
 Spring標準property 9件、2 table、依存境界、正式artifact / log / reportのsecret / PII非露出および一時領域cleanupを検査する。
 package済み2 process継続 / 別processでの旧Cookie拒否 / 実store障害はB3-4、maintenance cleanup / single executionはB3-5に残す。
+
+B3-4の最初のT6 process sliceは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b3-session-two-process.ps1
+```
+
+正式release unitを隔離Maven repositoryへstageした後、非配布fixtureを別invocationでpackageする。同じ1個の
+executable JARをloopback上の2 processとして起動し、process Aでの標準Form Login、process BでのSession継続、
+process A停止後のprocess B継続、およびimmutable principal indexをHTTP / DB / process状態から確認する。
+Identity mutation matrix、Session DELETE権限障害、proxy下Cookie属性は後続B3-4 sliceで追加する。
