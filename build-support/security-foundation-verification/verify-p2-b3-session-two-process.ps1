@@ -164,6 +164,7 @@ function Start-FixtureProcess {
             'SPRING_DATASOURCE_USERNAME' = $appRole
             'SPRING_DATASOURCE_PASSWORD' = $appPassword
             'KOIKI_FIXTURE_BOOTSTRAP_KEY' = $bootstrapKey
+            'SERVER_FORWARD_HEADERS_STRATEGY' = 'framework'
         }
     }
     if ($IsWindows) {
@@ -256,6 +257,76 @@ function New-FixtureClient {
     }
     [void]$httpResources.Add($resource)
     return $resource
+}
+
+function Assert-ProxyCookieAttributes {
+    param([Parameter(Mandatory)][int]$Port)
+
+    $handler = [System.Net.Http.HttpClientHandler]::new()
+    $handler.AllowAutoRedirect = $false
+    $handler.UseCookies = $false
+    $client = [System.Net.Http.HttpClient]::new($handler)
+    $client.Timeout = [TimeSpan]::FromSeconds(10)
+    try {
+        $directRequest = [System.Net.Http.HttpRequestMessage]::new(
+            [System.Net.Http.HttpMethod]::Get,
+            "http://127.0.0.1:$Port/login")
+        try {
+            $directResponse = $client.SendAsync($directRequest).GetAwaiter().GetResult()
+            try {
+                if ([int]$directResponse.StatusCode -ne 200) {
+                    throw 'The direct HTTP Form Login page was not available.'
+                }
+                $directCookies = @($directResponse.Headers.GetValues('Set-Cookie') |
+                    Where-Object { $_ -match '^SESSION=' })
+                if ($directCookies.Count -ne 1) {
+                    throw 'Direct HTTP did not issue exactly one Session Cookie.'
+                }
+                $directCookie = $directCookies[0]
+                if ($directCookie -match '(?i)(?:^|;\s*)Secure(?:;|$)' -or
+                    $directCookie -notmatch '(?i)(?:^|;\s*)HttpOnly(?:;|$)' -or
+                    $directCookie -notmatch '(?i)(?:^|;\s*)SameSite=Lax(?:;|$)') {
+                    throw 'The direct HTTP Session Cookie attributes were unexpected.'
+                }
+            } finally {
+                $directResponse.Dispose()
+            }
+        } finally {
+            $directRequest.Dispose()
+        }
+
+        $forwardedRequest = [System.Net.Http.HttpRequestMessage]::new(
+            [System.Net.Http.HttpMethod]::Get,
+            "http://127.0.0.1:$Port/login")
+        $forwardedRequest.Headers.TryAddWithoutValidation(
+            'X-Forwarded-Proto', 'https') | Out-Null
+        try {
+            $forwardedResponse = $client.SendAsync($forwardedRequest).GetAwaiter().GetResult()
+            try {
+                if ([int]$forwardedResponse.StatusCode -ne 200) {
+                    throw 'The forwarded HTTPS Form Login page was not available.'
+                }
+                $forwardedCookies = @($forwardedResponse.Headers.GetValues('Set-Cookie') |
+                    Where-Object { $_ -match '^SESSION=' })
+                if ($forwardedCookies.Count -ne 1) {
+                    throw 'Forwarded HTTPS did not issue exactly one Session Cookie.'
+                }
+                $forwardedCookie = $forwardedCookies[0]
+                if ($forwardedCookie -notmatch '(?i)(?:^|;\s*)Secure(?:;|$)' -or
+                    $forwardedCookie -notmatch '(?i)(?:^|;\s*)HttpOnly(?:;|$)' -or
+                    $forwardedCookie -notmatch '(?i)(?:^|;\s*)SameSite=Lax(?:;|$)') {
+                    throw 'The forwarded HTTPS Session Cookie attributes were unexpected.'
+                }
+            } finally {
+                $forwardedResponse.Dispose()
+            }
+        } finally {
+            $forwardedRequest.Dispose()
+        }
+    } finally {
+        $client.Dispose()
+        $handler.Dispose()
+    }
 }
 
 function Invoke-FixtureLogin {
@@ -702,6 +773,7 @@ try {
         -Port $portB -DatabasePort $databasePort `
         -OutputPath $processBLog -ErrorPath $processBError
     Wait-FixtureReady -Process $processB -Port $portB
+    Assert-ProxyCookieAttributes -Port $portB
 
     $continuity = New-MutationScenario
     $continuityTarget = $continuity.Targets[0]
@@ -1079,7 +1151,8 @@ try {
 
 if ($verificationSucceeded) {
     Write-Host (
-        'Phase 2 P2-B3 two-process store-failure slice succeeded: ' +
+        'Phase 2 P2-B3 two-process B3-4 slice succeeded: ' +
         'A/B continuity, five normal and five DELETE-failure Identity mutations, ' +
-        'logout safe failure/recovery, control continuity, and B continuity after A stop.')
+        'logout safe failure/recovery, proxy-aware Cookie attributes, control continuity, ' +
+        'and B continuity after A stop.')
 }

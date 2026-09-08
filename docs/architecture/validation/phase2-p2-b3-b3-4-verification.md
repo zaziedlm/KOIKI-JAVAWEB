@@ -1,16 +1,16 @@
-# Phase 2 P2-B3 B3-4 Two-process continuity verification
+# Phase 2 P2-B3 B3-4 Two-process Session verification
 
 ## 1. Status and scope
 
 - **Verification date:** 2026年9月8日
 - **Work package:** `P2-B3 / B3-4`
-- **Status:** `IN PROGRESS — THIRD SLICE VERIFIED`
+- **Status:** `COMPLETE — READY FOR ARCHITECTURE OWNER REVIEW`
 - **Ownership:** Tooling（非配布T6 fixture / process Harness）
 - **Baseline:** B3-C1〜C10、B3-2、B3-3 Architecture Owner承認済み
 
 本記録は、package済み同一JARの2 process Session継続、片系停止後の継続、および5種のIdentity mutationによる
-別processでの旧Cookie拒否、および実Session DELETE権限障害を外部観測した証拠である。proxy下Cookie属性は未実装であり、
-B3-4全体の完了はclaimしない。cleanup / single executionはB3-5へ維持する。
+別processでの旧Cookie拒否、実Session DELETE権限障害、およびproxy下Cookie属性を外部観測した証拠である。
+B3-4 exit criteriaを満たした実装証拠としてOwner reviewへ提示する。cleanup / single executionはB3-5へ維持する。
 
 ## 2. Implemented Tooling boundary
 
@@ -30,6 +30,8 @@ B3-4全体の完了はclaimしない。cleanup / single executionはB3-5へ維�
 
 `verify-p2-b3-session-two-process.ps1`は、GUID付きOS一時directoryへisolated repository、fixture build、process logを
 閉じ込める。同じ1個のfixture JARをprocess A / Bで起動し、Cookieはmemory上の`CookieContainer`だけに保持する。
+信頼proxy条件はHarnessがfixture processへ渡す`server.forward-headers-strategy=framework`だけで有効化し、Framework既定や
+production設定へ追加しない。
 
 ## 3. Two-process and Identity mutation observations
 
@@ -63,13 +65,17 @@ B3-4全体の完了はclaimしない。cleanup / single executionはB3-5へ維�
     コピー済み旧Cookieは残り得ることを確認し、それらまで失効したとはclaimしない。
 18. operator向けsafe markerをprocess logで確認し、responseへJDBC URL、SQL、framework class、stack traceを露出しない。
 19. `finally`を含む権限復旧後、コピー済みSessionの通常logoutが成功し、対象principal rowを0件にできる。
+20. 直接HTTPのlogin responseはSession Cookieへ`HttpOnly` / `SameSite=Lax`を付け、test scopeの境界として`Secure`を付けない。
+21. 同じprocessへ`X-Forwarded-Proto=https`を提示すると、login responseのSession Cookieへ`Secure` / `HttpOnly` /
+    `SameSite=Lax`が付く。Cookie値は出力せず属性だけをmemory上で判定する。
 
 Harnessの最終結果は次のとおりである。
 
 ```text
-Phase 2 P2-B3 two-process store-failure slice succeeded:
+Phase 2 P2-B3 two-process B3-4 slice succeeded:
 A/B continuity, five normal and five DELETE-failure Identity mutations,
-logout safe failure/recovery, control continuity, and B continuity after A stop.
+logout safe failure/recovery, proxy-aware Cookie attributes, control continuity,
+and B continuity after A stop.
 ```
 
 ## 4. Regression, sensitive data and cleanup
@@ -98,8 +104,8 @@ workspace fixture target: absent
 実装途中のHTTP client失敗を含むnegative executionでも、Harnessが開始したprocess、PostgreSQL containerおよび一時directoryが
 回収された。PostgreSQL起動直後のadmin接続はbounded retryと単一transactionにし、無期限waitまたは部分的なrole作成を残さない。
 
-## 5. Remaining B3-4 work
+## 5. Review boundary and next work
 
-次のsliceでは、proxy下Cookie属性を直接HTTP loopback継続試験と分離して確認する。
+B3-4はArchitecture Owner review待ちであり、本記録だけでOwner承認済みとはclaimしない。
 
 B3-5の`SessionCleanup`、maintenance lifecycle、advisory lock、競合 / crash recoveryは先行しない。

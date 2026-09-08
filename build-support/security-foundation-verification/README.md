@@ -113,4 +113,5 @@ fresh fixture stateを作り、disable、password、user Role、Role Permission�
 および各Identity状態遷移を確認する。加えて、非owner app roleの`koiki_session` DELETEだけを一時失効し、
 5 mutationすべてのsafe failure、Identity / Business Audit
 rollback、既存Session継続、およびlogoutのlocal Cookie消去 / 非成功結果を確認する。権限復旧後の正常logoutも確認する。
-proxy下Cookie属性は後続B3-4 sliceで追加する。
+さらにfixture processだけでSpringのforwarded header処理を有効にし、直接HTTPでは`Secure`なし、
+`X-Forwarded-Proto=https`では`Secure`あり、両方で`HttpOnly` / `SameSite=Lax`となるSession Cookie属性を比較する。
