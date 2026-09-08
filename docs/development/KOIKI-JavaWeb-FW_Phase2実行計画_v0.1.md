@@ -199,6 +199,17 @@ package済み2 processでの継続 / 旧Cookie拒否と実store障害のHTTP結�
 同日、Architecture OwnerはB3-3の5 review pointsを確認し、MockMvcによるServlet filter chain上のHTTP動作と
 package済みprocessへのnetwork越しHTTP試験の証拠境界を明確化したうえで、B3-3を
 `COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はB3-4 Two-process continuityへ進む。
+同日、B3-4ではpackage済み同一JARの2 process継続、5種のIdentity mutation、Session DELETE権限障害、
+logout safe failure / recoveryおよびproxy下Cookie属性をHTTP / DB / process状態で確認した。
+B3-5では公開`SessionCleanup` 3型、Spring標準cleanup、PostgreSQL advisory lock、non-web lifecycleを実装し、
+期限切れだけの削除、winner / contender、OS kill後のlock解放とretryを確認した。
+`001e619`のcleanな同一HEADでT0〜T6 aggregateを3回連続実行し、各回のT0〜T5 72 / 72、B3-4 / B3-5 T6、
+inventory / sensitive-output scanおよびresource cleanupが成功した。root Reactor 14 / 14とNullAway正負 / restoreも成功し、
+`../architecture/validation/phase2-p2-b3-b3-6-closeout.md`をP2-B3最終Architecture Owner review対象とする。
+Milestone B integration jobの候補化条件は満たすが、workflow接続 / required化はP2-B4完了後のGate B reviewへ留保する。
+同日、Architecture OwnerはB3-4 / B3-5の個別EvidenceとB3-6の5 review pointsを承認し、P2-B3を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。Session Foundation以外の汎用non-web Worker / Batch基盤は
+本承認に含めず、次のCPをP2-B4 Reference `identity`とする。判断と実装EvidenceはADR-048へ接続する。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
@@ -286,7 +297,7 @@ Testcontainers、実DBおよび複数processの安定性を扱うMilestone Bの3
 | SPA Session / BFF / direct Token profile | P2-F2。Grand Design §13.5 / §14.2、ADR-006〜008の進展をEvidenceへ接続 |
 | Security profile / artifact ADR | P2-A1 |
 | Identity / Audit / transaction ADR | P2-B1 |
-| Session / cleanup / single execution ADR | P2-B3 |
+| ADR-048 Session JDBC / cleanup / single execution境界 | P2-B3（2026年9月8日 ACCEPTED） |
 | MFA decision record | P2-A1 |
 | ADR-010 / ADR-044 Oracle optional scope update | Gate P2-2前。本計画とGrand Designへ反映 |
 | Security Agent Skill | P2-A1。判断、secret境界、検証順だけを記述 |

@@ -4,7 +4,8 @@
 
 - **Verification date:** 2026年9月8日
 - **Work package:** `P2-B3 / B3-4`
-- **Status:** `COMPLETE — READY FOR ARCHITECTURE OWNER REVIEW`
+- **Status:** `COMPLETE / ARCHITECTURE OWNER APPROVED`
+- **Approved by:** Shuichi Kataoka、2026年9月8日
 - **Ownership:** Tooling（非配布T6 fixture / process Harness）
 - **Baseline:** B3-C1〜C10、B3-2、B3-3 Architecture Owner承認済み
 
@@ -104,8 +105,11 @@ workspace fixture target: absent
 実装途中のHTTP client失敗を含むnegative executionでも、Harnessが開始したprocess、PostgreSQL containerおよび一時directoryが
 回収された。PostgreSQL起動直後のadmin接続はbounded retryと単一transactionにし、無期限waitまたは部分的なrole作成を残さない。
 
-## 5. Review boundary and next work
+## 5. Architecture Owner review result
 
-B3-4はArchitecture Owner review待ちであり、本記録だけでOwner承認済みとはclaimしない。
+2026年9月8日、Architecture OwnerはB3-6 closeoutの全体reviewにおいて、package済み同一JARの2 process継続、
+5種のIdentity mutationとcontrol Session、Session DELETE権限障害時のrollback / logout safe failure、
+およびproxy下Cookie属性のHTTP / DB / process Evidenceを確認し、B3-4を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。
 
-B3-5の`SessionCleanup`、maintenance lifecycle、advisory lock、競合 / crash recoveryは先行しない。
+B3-5の`SessionCleanup`、maintenance lifecycle、advisory lock、競合 / crash recoveryは本承認の後続scopeとする。

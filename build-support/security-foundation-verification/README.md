@@ -81,7 +81,7 @@ DB row / Auditの非露出はfixtureの意味的assertionで確認し、合成cr
 隔離Maven repositoryへ入らないことを検査する。root `clean verify`とNullAway正負fixtureは別commandで実行し、
 Identityの公開baseline / japicmpはGate B以降のOwner reviewへ残す。
 
-P2-B3 B3-3のSession invalidation / logout aggregateは次で検証する。
+P2-B3のT0〜T5 Session core / invalidation / cleanup contract aggregateは次で検証する。
 
 ```powershell
 pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b3-session-core.ps1
@@ -95,9 +95,9 @@ PostgreSQL上ではFramework Flywayが管理する2 tableだけを使用し、mi
 B3-3では既存`UserSessionInvalidator`をSpring Session JDBCのimmutable principal indexへ接続し、対象userだけの全Session失効、
 MockMvcによるServlet filter chain上のlogin / logout、Session row削除、Cookie失効、同一processでの旧Cookie拒否およびSession invalidate障害時の
 local SecurityContext / credential / Cookie消去とsafe failureを確認する。
-aggregateは既存Security / Audit / Identity回帰を含むT0〜T5 66 tests、Session Public Java型0件、KOIKI固有property 0件、
+aggregateは既存Security / Audit / Identity回帰を含むT0〜T5 72 tests、Session Public Java型3件、KOIKI固有property 0件、
 Spring標準property 9件、2 table、依存境界、正式artifact / log / reportのsecret / PII非露出および一時領域cleanupを検査する。
-package済み2 process継続 / 別processでの旧Cookie拒否 / 実store障害はB3-4、maintenance cleanup / single executionはB3-5に残す。
+package済み2 process継続 / 別processでの旧Cookie拒否 / 実store障害はB3-4 Harnessが所有する。
 
 B3-4のT6 two-process / Identity mutation / store failure sliceは次で検証する。
 
@@ -115,3 +115,24 @@ fresh fixture stateを作り、disable、password、user Role、Role Permission�
 rollback、既存Session継続、およびlogoutのlocal Cookie消去 / 非成功結果を確認する。権限復旧後の正常logoutも確認する。
 さらにfixture processだけでSpringのforwarded header処理を有効にし、直接HTTPでは`Secure`なし、
 `X-Forwarded-Proto=https`では`Secure`あり、両方で`HttpOnly` / `SameSite=Lax`となるSession Cookie属性を比較する。
+
+B3-5のT6 non-web cleanup / single execution sliceは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b3-session-cleanup-process.ps1
+```
+
+同一package済みJARを`WebApplicationType.NONE`で1回実行し、期限切れSessionだけの削除、winner exit `0`、
+contender exit `10`、副作用1回、winnerのOS kill後のPostgreSQL advisory lock解放とretry exit `0`を外部観測する。
+遅延triggerと観測tableはHarnessが一時PostgreSQLだけへ作り、production source / migrationへ入れない。
+
+B3-6のlocal closeoutは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b3-session-closeout.ps1
+```
+
+cleanな同一HEADでcore、B3-4 Web T6、B3-5 non-web T6を3回連続実行し、各round後のprocess / container /
+一時directory cleanupを確認する。その後root `clean verify`とNullAway positive / expected negative / restoreを実行する。
+各Harnessが所有する正式artifact / dependency / Public API inventoryとsensitive-output scanを再利用し、
+workflow追加またはrequired check変更は行わない。

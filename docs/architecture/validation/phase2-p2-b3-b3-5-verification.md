@@ -4,7 +4,8 @@
 
 - **Verification date:** 2026年9月8日
 - **Work package:** `P2-B3 / B3-5`
-- **Status:** `COMPLETE — READY FOR ARCHITECTURE OWNER REVIEW`
+- **Status:** `COMPLETE / ARCHITECTURE OWNER APPROVED`
+- **Approved by:** Shuichi Kataoka、2026年9月8日
 - **Ownership:** Framework（Session cleanup contract / PostgreSQL internal adapter）、Tooling（非配布T6 fixture / process Harness）
 - **Baseline:** B3-C1〜C10、B3-2 / B3-3 Architecture Owner承認済み、B3-4実装完了
 
@@ -78,9 +79,10 @@ Phase 2 P2-B3 B3-5 Session cleanup / single execution verification succeeded
 遅延trigger、観測table、固定待機は一時PostgreSQL内のHarness専用test mechanismであり、正式artifact、production migration、
 Framework Public APIには含めていない。production sourceへscheduler、sleep、failure switch、test endpoint、固定port / credentialを追加していない。
 
-## 5. Review boundary and next work
+## 5. Architecture Owner review result
 
-B3-5はArchitecture Owner review待ちであり、本記録だけでOwner承認済みとはclaimしない。
+2026年9月8日、Architecture OwnerはB3-6 closeoutの全体reviewにおいて、Session固有Public API 3型、Spring標準cleanup、
+PostgreSQL internal advisory lock、non-web lifecycle、競合 / crash recoveryおよびfixture非配布境界を確認し、B3-5を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。
 
-B3-6ではT0〜T6 aggregateを3回連続実行し、artifact / dependency / Public API inventory、sensitive output、cleanup状態を再確認して
-P2-B3 closeout evidenceを作成する。Milestone B CI接続 / required化はGate B reviewまで留保し、Reference `identity`はP2-B4より前へ進めない。
+Milestone B CI接続 / required化はGate B reviewまで留保し、Reference `identity`はP2-B4より前へ進めない。
