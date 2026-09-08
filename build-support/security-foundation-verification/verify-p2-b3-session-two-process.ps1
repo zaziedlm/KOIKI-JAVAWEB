@@ -34,6 +34,7 @@ $databaseName = 'postgres'
 $bootstrapKey = [System.Guid]::NewGuid().ToString('N') + [System.Guid]::NewGuid().ToString('N')
 $appPassword = [System.Guid]::NewGuid().ToString('N') + [System.Guid]::NewGuid().ToString('N')
 $containerStarted = $false
+$sessionDeleteRevoked = $false
 $processA = $null
 $processB = $null
 $fixtureJar = $null
@@ -422,6 +423,92 @@ function Invoke-AdminMutation {
     }
 }
 
+function Get-FixtureCsrfToken {
+    param([Parameter(Mandatory)][object]$Session)
+
+    $response = $Session.Client.GetAsync(
+        "http://127.0.0.1:$portB/fixture/csrf").GetAwaiter().GetResult()
+    $token = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+    if ([int]$response.StatusCode -ne 200 -or [string]::IsNullOrWhiteSpace($token)) {
+        throw 'The authenticated fixture CSRF token was not available.'
+    }
+    return $token
+}
+
+function Copy-FixtureSession {
+    param([Parameter(Mandatory)][object]$Session)
+
+    $sourceCookies = @($Session.Cookies.GetCookies(
+            [Uri]"http://127.0.0.1:$portB/") | Where-Object Name -eq 'SESSION')
+    if ($sourceCookies.Count -ne 1) {
+        throw 'The Session Cookie could not be copied for bounded failure observation.'
+    }
+    $copy = New-FixtureClient
+    $copy.Cookies.Add(
+        [Uri]"http://127.0.0.1:$portB/",
+        [System.Net.Cookie]::new('SESSION', $sourceCookies[0].Value, '/'))
+    return $copy
+}
+
+function Invoke-AdminMutationFailure {
+    param(
+        [Parameter(Mandatory)][object]$AdminSession,
+        [Parameter(Mandatory)][string]$Path,
+        [Parameter(Mandatory)][hashtable]$Fields
+    )
+
+    $csrfToken = Get-FixtureCsrfToken -Session $AdminSession
+    $formFields = [System.Collections.Generic.Dictionary[string, string]]::new()
+    foreach ($entry in $Fields.GetEnumerator()) {
+        $formFields.Add($entry.Key, [string]$entry.Value)
+    }
+    $formFields.Add('_csrf', $csrfToken)
+    $body = [System.Net.Http.FormUrlEncodedContent]::new($formFields)
+    try {
+        $response = $AdminSession.Client.PostAsync(
+            "http://127.0.0.1:$portB$Path", $body).GetAwaiter().GetResult()
+    } finally {
+        $body.Dispose()
+    }
+    $responseText = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+    if ([int]$response.StatusCode -lt 400) {
+        throw 'The Session DELETE failure was exposed as a successful Identity mutation.'
+    }
+    if ($responseText -match '(?i)(?:jdbc:|delete\s+from|org\.springframework|postgresql|stacktrace)') {
+        throw 'The Identity failure response exposed an internal persistence detail.'
+    }
+}
+
+function Invoke-FixtureLogout {
+    param(
+        [Parameter(Mandatory)][object]$Session,
+        [Parameter(Mandatory)][string]$CsrfToken,
+        [switch]$ExpectFailure
+    )
+
+    $fields = [System.Collections.Generic.Dictionary[string, string]]::new()
+    $fields.Add('_csrf', $CsrfToken)
+    $body = [System.Net.Http.FormUrlEncodedContent]::new($fields)
+    try {
+        $response = $Session.Client.PostAsync(
+            "http://127.0.0.1:$portB/logout", $body).GetAwaiter().GetResult()
+    } finally {
+        $body.Dispose()
+    }
+    $responseText = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+    if ($ExpectFailure) {
+        if ([int]$response.StatusCode -lt 400) {
+            throw 'The persistent Session logout failure was exposed as a success redirect.'
+        }
+        if ($responseText -match '(?i)(?:jdbc:|delete\s+from|org\.springframework|postgresql|stacktrace)') {
+            throw 'The logout failure response exposed an internal persistence detail.'
+        }
+    } elseif ([int]$response.StatusCode -notin @(302, 303) -or
+        -not $response.Headers.Location.ToString().Contains('/login?logout')) {
+        throw 'Logout did not complete after Session DELETE permission was restored.'
+    }
+}
+
 function Assert-ControlContinues {
     param([Parameter(Mandatory)][object]$Scenario)
 
@@ -438,6 +525,58 @@ function Assert-NoPrincipalSession {
     if ($count -ne '0') {
         throw 'An invalidated principal retained a persisted Session row.'
     }
+}
+
+function Disable-SessionDeletePermission {
+    Invoke-Postgres -Label 'Session DELETE permission revoke' -Sql (
+        "REVOKE DELETE ON public.koiki_session FROM $appRole;") | Out-Null
+    $script:sessionDeleteRevoked = $true
+    $boundary = Invoke-Postgres -Label 'Restricted Session permission observation' -Sql (
+        "SELECT has_table_privilege('$appRole', 'public.koiki_session', 'SELECT') || '|' || " +
+        "has_table_privilege('$appRole', 'public.koiki_session', 'DELETE') || '|' || " +
+        "has_table_privilege('$appRole', 'public.koiki_session_attributes', 'DELETE');")
+    if ($boundary -ne 'true|false|true') {
+        throw 'The Session DELETE-only failure boundary was not established.'
+    }
+}
+
+function Enable-SessionDeletePermission {
+    Invoke-Postgres -Label 'Session DELETE permission restore' -Sql (
+        "GRANT DELETE ON public.koiki_session TO $appRole;") | Out-Null
+    $boundary = Invoke-Postgres -Label 'Restored Session permission observation' -Sql (
+        "SELECT has_table_privilege(" +
+        "'$appRole', 'public.koiki_session', 'DELETE')::text;")
+    if ($boundary -ne 'true') {
+        throw 'The Session DELETE permission was not restored.'
+    }
+    $script:sessionDeleteRevoked = $false
+}
+
+function Assert-NoMutationAudit {
+    param([Parameter(Mandatory)][string]$Action)
+
+    $count = Invoke-Postgres -Label 'Rolled-back mutation Audit observation' -Sql (
+        "SELECT count(*) FROM koiki_audit_event WHERE action = '$Action';")
+    if ($count -ne '0') {
+        throw 'A failed Identity mutation retained its mutation Audit row.'
+    }
+}
+
+function Wait-OperatorFailureMarker {
+    $deadline = [DateTimeOffset]::UtcNow.AddSeconds(5)
+    while ([DateTimeOffset]::UtcNow -lt $deadline) {
+        foreach ($logPath in @($processBLog, $processBError)) {
+            if (Test-Path -LiteralPath $logPath) {
+                $content = Get-Content -Raw -LiteralPath $logPath
+                if ($null -ne $content -and $content.Contains(
+                        'KOIKI persistent session logout failed; local state was cleared')) {
+                    return
+                }
+            }
+        }
+        Start-Sleep -Milliseconds 100
+    }
+    throw 'The operator-visible persistent logout failure marker was not recorded.'
 }
 
 Assert-SafeTemporaryPath -Path $verificationRoot
@@ -688,6 +827,166 @@ try {
         throw 'External unlink did not retain the alternate local authentication method.'
     }
 
+    $disableFailureScenario = New-MutationScenario
+    $disableFailureTarget = $disableFailureScenario.Targets[0]
+    Disable-SessionDeletePermission
+    Invoke-AdminMutationFailure -AdminSession $disableFailureScenario.Admin.Session `
+        -Path '/fixture/admin/disable' `
+        -Fields @{userId = $disableFailureTarget.UserId; expectedVersion = 0}
+    $failedDisableState = Invoke-Postgres -Label 'Failed disable rollback observation' -Sql (
+        "SELECT status || '|' || version FROM koiki_user " +
+        "WHERE user_id = '$($disableFailureTarget.UserId)';")
+    if ($failedDisableState -ne 'ACTIVE|0') {
+        throw 'Account disable escaped the Session invalidation rollback.'
+    }
+    Assert-NoMutationAudit -Action 'DISABLE_ACCOUNT'
+    Invoke-AuthenticatedObservation -Client $disableFailureTarget.Session.Client -Port $portB `
+        -ExpectedUserId $disableFailureTarget.UserId -ExpectedPermissions 'ORDER:READ'
+    Assert-ControlContinues -Scenario $disableFailureScenario
+    Enable-SessionDeletePermission
+
+    $userRoleFailureScenario = New-MutationScenario
+    $userRoleFailureTarget = $userRoleFailureScenario.Targets[0]
+    Disable-SessionDeletePermission
+    Invoke-AdminMutationFailure -AdminSession $userRoleFailureScenario.Admin.Session `
+        -Path '/fixture/admin/user-role' `
+        -Fields @{
+            userId = $userRoleFailureTarget.UserId
+            roleCode = 'B3_TARGET'
+            expectedVersion = 0
+        }
+    $failedUserRoleState = Invoke-Postgres `
+        -Label 'Failed user Role rollback observation' -Sql (
+            "SELECT u.version || '|' || count(ur.role_id) FROM koiki_user u " +
+            "LEFT JOIN koiki_user_role ur ON ur.user_id = u.user_id " +
+            "WHERE u.user_id = '$($userRoleFailureTarget.UserId)' GROUP BY u.version;")
+    if ($failedUserRoleState -ne '0|1') {
+        throw 'User Role revoke escaped the Session invalidation rollback.'
+    }
+    Assert-NoMutationAudit -Action 'REVOKE_ROLE'
+    Invoke-AuthenticatedObservation -Client $userRoleFailureTarget.Session.Client -Port $portB `
+        -ExpectedUserId $userRoleFailureTarget.UserId -ExpectedPermissions 'ORDER:READ'
+    Assert-ControlContinues -Scenario $userRoleFailureScenario
+    Enable-SessionDeletePermission
+
+    $rolePermissionFailureScenario = New-MutationScenario -TargetCount 2
+    Disable-SessionDeletePermission
+    Invoke-AdminMutationFailure -AdminSession $rolePermissionFailureScenario.Admin.Session `
+        -Path '/fixture/admin/role-permission' `
+        -Fields @{
+            roleCode = 'B3_TARGET'
+            permissionCode = 'ORDER:READ'
+            expectedRoleVersion = 0
+        }
+    $failedRolePermissionState = Invoke-Postgres `
+        -Label 'Failed Role Permission rollback observation' -Sql (
+            "SELECT r.version || '|' || count(rp.permission_id) FROM koiki_role r " +
+            "LEFT JOIN koiki_role_permission rp ON rp.role_id = r.role_id " +
+            "WHERE r.role_code = 'B3_TARGET' GROUP BY r.version;")
+    if ($failedRolePermissionState -ne '0|1') {
+        throw 'Role Permission revoke escaped the Session invalidation rollback.'
+    }
+    Assert-NoMutationAudit -Action 'REVOKE_PERMISSION'
+    foreach ($failureTarget in $rolePermissionFailureScenario.Targets) {
+        Invoke-AuthenticatedObservation -Client $failureTarget.Session.Client -Port $portB `
+            -ExpectedUserId $failureTarget.UserId -ExpectedPermissions 'ORDER:READ'
+    }
+    Assert-ControlContinues -Scenario $rolePermissionFailureScenario
+    Enable-SessionDeletePermission
+
+    $externalFailureScenario = New-MutationScenario
+    $externalFailureTarget = $externalFailureScenario.Targets[0]
+    $failureIssuer = 'https://issuer.invalid.example/b34-failure'
+    Invoke-BootstrapPost -Path '/fixture/setup-external' -Body @{
+        linkId = [string][System.Guid]::NewGuid()
+        userId = [string]$externalFailureTarget.UserId
+        issuer = $failureIssuer
+        subject = 'subject-' + [System.Guid]::NewGuid().ToString('N')
+    }
+    Disable-SessionDeletePermission
+    Invoke-AdminMutationFailure -AdminSession $externalFailureScenario.Admin.Session `
+        -Path '/fixture/admin/external-unlink' `
+        -Fields @{
+            userId = $externalFailureTarget.UserId
+            issuer = $failureIssuer
+            expectedVersion = 0
+        }
+    $failedExternalState = Invoke-Postgres `
+        -Label 'Failed external unlink rollback observation' -Sql (
+            "SELECT u.version || '|' || count(l.link_id) FROM koiki_user u " +
+            "LEFT JOIN koiki_external_identity_link l ON l.user_id = u.user_id " +
+            "WHERE u.user_id = '$($externalFailureTarget.UserId)' GROUP BY u.version;")
+    if ($failedExternalState -ne '0|1') {
+        throw 'External unlink escaped the Session invalidation rollback.'
+    }
+    Assert-NoMutationAudit -Action 'UNLINK_EXTERNAL_IDENTITY'
+    Invoke-AuthenticatedObservation -Client $externalFailureTarget.Session.Client -Port $portB `
+        -ExpectedUserId $externalFailureTarget.UserId -ExpectedPermissions 'ORDER:READ'
+    Assert-ControlContinues -Scenario $externalFailureScenario
+    Enable-SessionDeletePermission
+
+    $deleteFailureScenario = New-MutationScenario
+    $deleteFailureTarget = $deleteFailureScenario.Targets[0]
+    $logoutCsrfToken = Get-FixtureCsrfToken -Session $deleteFailureTarget.Session
+    $copiedTargetSession = Copy-FixtureSession -Session $deleteFailureTarget.Session
+    $encodedPasswordBefore = Invoke-Postgres `
+        -Label 'Pre-failure password state observation' -Sql (
+            "SELECT encoded_password FROM koiki_password_credential " +
+            "WHERE user_id = '$($deleteFailureTarget.UserId)';")
+
+    Disable-SessionDeletePermission
+
+    $failedPassword = 'K9!' + [System.Guid]::NewGuid().ToString('N') + 'fR'
+    Invoke-AdminMutationFailure -AdminSession $deleteFailureScenario.Admin.Session `
+        -Path '/fixture/admin/password' `
+        -Fields @{
+            userId = $deleteFailureTarget.UserId
+            password = $failedPassword
+            expectedVersion = 0
+        }
+    $failedMutationState = Invoke-Postgres `
+        -Label 'Failed mutation rollback observation' -Sql (
+            "SELECT u.version || '|' || c.version || '|' || " +
+            "(SELECT count(*) FROM koiki_audit_event " +
+            "WHERE action = 'SET_LOCAL_PASSWORD') FROM koiki_user u " +
+            "JOIN koiki_password_credential c ON c.user_id = u.user_id " +
+            "WHERE u.user_id = '$($deleteFailureTarget.UserId)';")
+    $encodedPasswordAfter = Invoke-Postgres `
+        -Label 'Post-failure password state observation' -Sql (
+            "SELECT encoded_password FROM koiki_password_credential " +
+            "WHERE user_id = '$($deleteFailureTarget.UserId)';")
+    if ($failedMutationState -ne '0|0|0' -or
+        $encodedPasswordAfter -ne $encodedPasswordBefore) {
+        throw 'Identity mutation or Business Audit escaped the Session invalidation rollback.'
+    }
+    Assert-NoMutationAudit -Action 'SET_LOCAL_PASSWORD'
+    Invoke-AuthenticatedObservation -Client $deleteFailureTarget.Session.Client -Port $portB `
+        -ExpectedUserId $deleteFailureTarget.UserId -ExpectedPermissions 'ORDER:READ'
+    Assert-ControlContinues -Scenario $deleteFailureScenario
+
+    Invoke-FixtureLogout -Session $deleteFailureTarget.Session `
+        -CsrfToken $logoutCsrfToken -ExpectFailure
+    Wait-OperatorFailureMarker
+    $currentCookies = @($deleteFailureTarget.Session.Cookies.GetCookies(
+            [Uri]"http://127.0.0.1:$portB/") | Where-Object Name -eq 'SESSION')
+    if ($currentCookies.Count -ne 0) {
+        throw 'The current client retained its Session Cookie after failed persistent logout.'
+    }
+    $retainedSessionRow = Invoke-Postgres `
+        -Label 'Failed logout retained row observation' -Sql (
+            "SELECT count(*) FROM koiki_session " +
+            "WHERE principal_name = '$($deleteFailureTarget.UserId)';")
+    if ($retainedSessionRow -ne '1') {
+        throw 'The failed persistent logout did not retain its expected Session row.'
+    }
+    Invoke-AuthenticatedObservation -Client $copiedTargetSession.Client -Port $portB `
+        -ExpectedUserId $deleteFailureTarget.UserId -ExpectedPermissions 'ORDER:READ'
+
+    Enable-SessionDeletePermission
+    $recoveryLogoutToken = Get-FixtureCsrfToken -Session $copiedTargetSession
+    Invoke-FixtureLogout -Session $copiedTargetSession -CsrfToken $recoveryLogoutToken
+    Assert-NoPrincipalSession -UserId $deleteFailureTarget.UserId
+
     $finalContinuity = New-MutationScenario
     $finalTarget = $finalContinuity.Targets[0]
     Invoke-AuthenticatedObservation -Client $finalTarget.Session.Client -Port $portB `
@@ -720,6 +1019,16 @@ try {
     throw
 } finally {
     try {
+        $permissionRestoreFailure = $null
+        if ($sessionDeleteRevoked -and $containerStarted) {
+            try {
+                Invoke-Postgres -Label 'Final Session DELETE permission restore' -Sql (
+                    "GRANT DELETE ON public.koiki_session TO $appRole;") | Out-Null
+                $sessionDeleteRevoked = $false
+            } catch {
+                $permissionRestoreFailure = $_
+            }
+        }
         foreach ($resource in $httpResources) {
             $resource.Client.Dispose()
             $resource.Handler.Dispose()
@@ -754,6 +1063,9 @@ try {
         if ($evidenceFiles.Count -ne 0) {
             Assert-NoSensitiveFiles -Files $evidenceFiles
         }
+        if ($null -ne $permissionRestoreFailure) {
+            throw 'The Session DELETE permission could not be restored during final cleanup.'
+        }
     } finally {
         if (Test-Path -LiteralPath $verificationRoot) {
             Assert-SafeTemporaryPath -Path $verificationRoot
@@ -767,7 +1079,7 @@ try {
 
 if ($verificationSucceeded) {
     Write-Host (
-        'Phase 2 P2-B3 two-process mutation slice succeeded: ' +
-        'A/B continuity, five fresh-state Identity mutations, control continuity, ' +
-        'and B continuity after A stop.')
+        'Phase 2 P2-B3 two-process store-failure slice succeeded: ' +
+        'A/B continuity, five normal and five DELETE-failure Identity mutations, ' +
+        'logout safe failure/recovery, control continuity, and B continuity after A stop.')
 }

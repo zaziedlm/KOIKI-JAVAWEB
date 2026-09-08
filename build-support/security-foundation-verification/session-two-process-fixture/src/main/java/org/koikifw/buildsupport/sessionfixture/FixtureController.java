@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -157,6 +158,11 @@ class FixtureController {
         return principal.userId() + "|" + String.join(",", principal.permissions().stream()
                 .sorted()
                 .toList());
+    }
+
+    @GetMapping("/fixture/csrf")
+    String csrf(CsrfToken csrfToken) {
+        return csrfToken.getToken();
     }
 
     private void requireBootstrapKey(String presentedKey) {

@@ -4,12 +4,12 @@
 
 - **Verification date:** 2026年9月8日
 - **Work package:** `P2-B3 / B3-4`
-- **Status:** `IN PROGRESS — SECOND SLICE VERIFIED`
+- **Status:** `IN PROGRESS — THIRD SLICE VERIFIED`
 - **Ownership:** Tooling（非配布T6 fixture / process Harness）
 - **Baseline:** B3-C1〜C10、B3-2、B3-3 Architecture Owner承認済み
 
 本記録は、package済み同一JARの2 process Session継続、片系停止後の継続、および5種のIdentity mutationによる
-別processでの旧Cookie拒否を外部観測した証拠である。実Session DELETE権限障害およびproxy下Cookie属性は未実装であり、
+別processでの旧Cookie拒否、および実Session DELETE権限障害を外部観測した証拠である。proxy下Cookie属性は未実装であり、
 B3-4全体の完了はclaimしない。cleanup / single executionはB3-5へ維持する。
 
 ## 2. Implemented Tooling boundary
@@ -22,6 +22,8 @@ B3-4全体の完了はclaimしない。cleanup / single executionはB3-5へ維�
 - loopbackだけへbindし、readiness、実行時生成identityのsetup / reset、認証済みprincipal観測、および
   `IdentityAdministration`を呼ぶ管理endpointだけを提供する。
 - 標準Form LoginとCSRF tokenを使用し、Session Cookie形式や認証filterを独自実装しない。
+- Spring標準`DefaultCookieSerializer`をfixture beanとして公開し、Session Starterが提供する`HttpSecurity` logout customizerを
+  fixtureの明示Security chainへ合成する。
 - 管理endpointはfixture専用`IDENTITY:ADMIN` Permissionと通常のCSRF保護を要求する。
 - fixture-owned Customer migrationはT6に必要なAudit tableだけを持ち、Framework migrationへ昇格させない。
 - credential、bootstrap key、user ID、email、role / permission IDはHarnessが実行ごとに生成する。
@@ -52,13 +54,22 @@ B3-4全体の完了はclaimしない。cleanup / single executionはB3-5へ維�
 12. Role Permission revokeは同一Roleを持つ2 userの旧CookieとSession rowをともに失効し、relation 0件 / Role version 1を
     確認する。
 13. external unlinkはlink 0件 / user version 1となり、代替認証手段としてlocal password credential 1件を維持する。
+14. 管理connectionから非owner app roleの`koiki_session` DELETEだけをrevokeし、SELECTと
+    `koiki_session_attributes` DELETEを維持した狭い実store障害を作る。
+15. disable、password変更、user Role revoke、Role Permission revoke、external unlinkをそれぞれfresh stateで再実行すると
+    すべて非成功responseとなり、対象Identityのstatus / version / relation / credential hashとmutation固有Auditがrollbackする。
+16. 各失敗ケースで対象旧Sessionと別Roleのcontrol/admin Sessionが継続する。Role Permissionでは同一Roleの2 userとも継続する。
+17. logoutの永続削除失敗は成功redirectにならず、current clientのCookie jarからSession Cookieを消去する。一方、永続Session rowと
+    コピー済み旧Cookieは残り得ることを確認し、それらまで失効したとはclaimしない。
+18. operator向けsafe markerをprocess logで確認し、responseへJDBC URL、SQL、framework class、stack traceを露出しない。
+19. `finally`を含む権限復旧後、コピー済みSessionの通常logoutが成功し、対象principal rowを0件にできる。
 
 Harnessの最終結果は次のとおりである。
 
 ```text
-Phase 2 P2-B3 two-process mutation slice succeeded:
-A/B continuity, five fresh-state Identity mutations, control continuity,
-and B continuity after A stop.
+Phase 2 P2-B3 two-process store-failure slice succeeded:
+A/B continuity, five normal and five DELETE-failure Identity mutations,
+logout safe failure/recovery, control continuity, and B continuity after A stop.
 ```
 
 ## 4. Regression, sensitive data and cleanup
@@ -89,7 +100,6 @@ workspace fixture target: absent
 
 ## 5. Remaining B3-4 work
 
-次のsliceでは、app roleのSession table `DELETE`権限だけを一時失効させ、Identity mutation / Business Audit rollbackと
-logout local消去 / 非成功結果を確認する。proxy下Cookie属性は直接HTTP loopback継続試験と分離して追加する。
+次のsliceでは、proxy下Cookie属性を直接HTTP loopback継続試験と分離して確認する。
 
 B3-5の`SessionCleanup`、maintenance lifecycle、advisory lock、競合 / crash recoveryは先行しない。
