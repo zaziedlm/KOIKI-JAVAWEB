@@ -1,5 +1,8 @@
 [CmdletBinding()]
-param()
+param(
+    [switch]$InspectOnly,
+    [string]$ExpectedHead
+)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -81,7 +84,54 @@ function Invoke-VerificationStep {
     Write-Host "P2-B4 closeout round $Round ${Name}: SUCCESS ($($timer.Elapsed))"
 }
 
+function Get-OwnedVerificationProcessIds {
+    param([Parameter(Mandatory)][string]$Marker)
+
+    $processIds = [System.Collections.Generic.List[int]]::new()
+
+    if ($IsWindows) {
+        $javaProcesses = @(Get-CimInstance -ClassName Win32_Process `
+                -Filter "Name = 'java.exe' OR Name = 'javaw.exe'" `
+                -Property ProcessId, CommandLine)
+        foreach ($process in $javaProcesses) {
+            $commandLine = [string]$process.CommandLine
+            if ($commandLine.Contains($Marker, [StringComparison]::OrdinalIgnoreCase)) {
+                $processIds.Add([int]$process.ProcessId)
+            }
+        }
+        return @($processIds)
+    }
+
+    if ($IsLinux) {
+        foreach ($processDirectory in @(Get-ChildItem -LiteralPath '/proc' `
+                    -Directory -Filter '[0-9]*' -ErrorAction Stop)) {
+            $commPath = Join-Path $processDirectory.FullName 'comm'
+            $commandLinePath = Join-Path $processDirectory.FullName 'cmdline'
+            try {
+                $processName = ([System.IO.File]::ReadAllText($commPath)).Trim()
+                if ($processName -ne 'java') {
+                    continue
+                }
+                $commandLineBytes = [System.IO.File]::ReadAllBytes($commandLinePath)
+                $commandLine = [System.Text.Encoding]::UTF8.GetString($commandLineBytes)
+                if ($commandLine.Contains($Marker, [StringComparison]::Ordinal)) {
+                    $processIds.Add([int]$processDirectory.Name)
+                }
+            } catch [System.IO.IOException] {
+                # The process may exit between /proc enumeration and inspection.
+            } catch [System.UnauthorizedAccessException] {
+                throw "Process inspection was denied for PID $($processDirectory.Name)."
+            }
+        }
+        return @($processIds)
+    }
+
+    throw 'Process inspection supports Windows and Linux only.'
+}
+
 function Assert-NoResidualResources {
+    $failures = [System.Collections.Generic.List[string]]::new()
+
     foreach ($containerPrefix in @(
             'koiki-b34-',
             'koiki-b35-',
@@ -91,10 +141,30 @@ function Assert-NoResidualResources {
                 '--filter' "name=$containerPrefix" `
                 '--format' '{{.Names}}' 2>&1)
         if ($LASTEXITCODE -ne 0) {
-            throw 'Docker cleanup inspection failed.'
+            $failures.Add("Docker inspection failed for prefix $containerPrefix.")
+            continue
         }
         if ($containerNames.Count -ne 0) {
-            throw "A P2-B verification container remains: $containerPrefix"
+            $failures.Add("A P2-B verification container remains: $containerPrefix")
+        }
+    }
+
+    foreach ($processMarker in @(
+            'koiki-session-two-process-',
+            'koiki-session-cleanup-',
+            'koiki-reference-b44-')) {
+        try {
+            $processIds = @(Get-OwnedVerificationProcessIds -Marker $processMarker)
+        } catch {
+            $failures.Add(
+                "Process inspection failed for marker ${processMarker}: " +
+                $_.Exception.Message)
+            continue
+        }
+        if ($processIds.Count -ne 0) {
+            $failures.Add(
+                "A P2-B verification process remains for marker ${processMarker}: " +
+                ($processIds -join ', '))
         }
     }
 
@@ -109,7 +179,7 @@ function Assert-NoResidualResources {
                 -LiteralPath ([System.IO.Path]::GetTempPath()) `
                 -Directory -Filter $pattern -ErrorAction SilentlyContinue)
         if ($temporaryDirectories.Count -ne 0) {
-            throw "A P2-B temporary directory remains: $pattern"
+            $failures.Add("A P2-B temporary directory remains: $pattern")
         }
     }
 
@@ -118,36 +188,96 @@ function Assert-NoResidualResources {
             (Join-Path $PSScriptRoot 'session-two-process-fixture/target'),
             (Join-Path $PSScriptRoot 'session-cleanup-process-fixture/target'))) {
         if (Test-Path -LiteralPath $fixtureTarget) {
-            throw "A non-distributed fixture target remains: $fixtureTarget"
+            $failures.Add("A non-distributed fixture target remains: $fixtureTarget")
         }
     }
+
+    if ($failures.Count -ne 0) {
+        throw ('P2-B residual-resource inspection failed: ' + ($failures -join ' | '))
+    }
 }
 
-$head = Get-GitOutput -Arguments @('rev-parse', 'HEAD') |
-    Select-Object -First 1
-Assert-CleanRepositoryState -ExpectedHead $head
-Assert-NoResidualResources
+function Assert-FinalIntegrity {
+    param([Parameter(Mandatory)][string]$ExpectedHead)
 
-for ($round = 1; $round -le 3; $round++) {
-    foreach ($step in $verificationSteps) {
-        Invoke-VerificationStep `
-            -Round $round -Name $step.Name -Path $step.Path
+    $failures = [System.Collections.Generic.List[string]]::new()
+    try {
+        Assert-CleanRepositoryState -ExpectedHead $ExpectedHead
+        Write-Host 'P2-B4 final repository inspection: SUCCESS'
+    } catch {
+        $failures.Add("Repository inspection: $($_.Exception.Message)")
     }
+    try {
+        Assert-NoResidualResources
+        Write-Host 'P2-B4 final residual-resource inspection: SUCCESS'
+    } catch {
+        $failures.Add("Residual-resource inspection: $($_.Exception.Message)")
+    }
+    if ($failures.Count -ne 0) {
+        throw ('P2-B4 final integrity inspection failed: ' + ($failures -join ' | '))
+    }
+}
+
+$head = if ([string]::IsNullOrWhiteSpace($ExpectedHead)) {
+    Get-GitOutput -Arguments @('rev-parse', 'HEAD') |
+        Select-Object -First 1
+} else {
+    $ExpectedHead
+}
+
+if ($InspectOnly) {
+    Assert-FinalIntegrity -ExpectedHead $head
+    Write-Host 'P2-B4 final repository and residual-resource inspection: SUCCESS'
+    return
+}
+
+$verificationFailure = $null
+try {
     Assert-CleanRepositoryState -ExpectedHead $head
     Assert-NoResidualResources
+
+    for ($round = 1; $round -le 3; $round++) {
+        foreach ($step in $verificationSteps) {
+            Invoke-VerificationStep `
+                -Round $round -Name $step.Name -Path $step.Path
+        }
+        Assert-CleanRepositoryState -ExpectedHead $head
+        Assert-NoResidualResources
+    }
+
+    Write-Host '=== P2-B4 final Root Reactor regression ==='
+    & $wrapper --batch-mode --no-transfer-progress clean verify
+    if ($LASTEXITCODE -ne 0) {
+        throw "P2-B4 Root Reactor regression failed with exit code $LASTEXITCODE."
+    }
+
+    Write-Host '=== P2-B4 final Null Safety verification ==='
+    & $nullSafetyVerifier
+} catch {
+    $verificationFailure = $_
 }
 
-Write-Host '=== P2-B4 final Root Reactor regression ==='
-& $wrapper --batch-mode --no-transfer-progress clean verify
-if ($LASTEXITCODE -ne 0) {
-    throw "P2-B4 Root Reactor regression failed with exit code $LASTEXITCODE."
+$integrityFailure = $null
+try {
+    Assert-FinalIntegrity -ExpectedHead $head
+} catch {
+    $integrityFailure = $_
 }
 
-Write-Host '=== P2-B4 final Null Safety verification ==='
-& $nullSafetyVerifier
+if ($null -ne $verificationFailure) {
+    if ($null -ne $integrityFailure) {
+        throw (
+            'P2-B4 closeout failed: {0} Final integrity inspection also failed: {1}' -f
+            $verificationFailure.Exception.Message,
+            $integrityFailure.Exception.Message)
+    }
+    $PSCmdlet.ThrowTerminatingError($verificationFailure)
+}
 
-Assert-CleanRepositoryState -ExpectedHead $head
-Assert-NoResidualResources
+if ($null -ne $integrityFailure) {
+    $PSCmdlet.ThrowTerminatingError($integrityFailure)
+}
+
 Write-Host (
     'Phase 2 P2-B4 closeout succeeded: three consecutive P2-B1-B4 ' +
     'aggregates, Root Reactor, Null Safety, inventory, sensitive-output ' +

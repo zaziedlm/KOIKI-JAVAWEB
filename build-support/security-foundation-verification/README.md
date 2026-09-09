@@ -169,3 +169,18 @@ Public API / migration inventoryとsensitive-output検査を再利用する。
 
 このlocal closeoutはworkflow、remote environmentまたはrequired checkを変更しない。Architecture Owner承認後だけ、
 Gate BでMilestone B aggregateのCI候補化、Public API / japicmp方針およびrequired化を別途reviewする。
+
+Gate Bでは同じcloseout scriptを`Local Identity Session Audit Integration` jobのlocal / CI共通正本として再利用する。
+通常実行は一次失敗を保持しつつ最終repository / residual-resource検査を必ず試行する。CIの`if: always()`最終stepでは、
+次のinspection-only commandを使用し、aggregate stepの失敗後にもclean worktree、expected HEAD、所有container、
+外部起動したJava child process、一時directoryおよび非配布fixture targetを独立して検査する。process検査はJava processに限定し、
+WindowsではCIM、Linuxでは`/proc`から一時path markerとの一致を確認してPIDだけを扱い、command line本体を出力しない。repository内JARを起動するB4 Reference processには、
+Harness生成の非機密JVM markerを付与し、同じ検査へ接続する。このmarkerをproduct codeまたは公開propertyとして利用しない。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b4-closeout.ps1 `
+  -InspectOnly -ExpectedHead <commit-sha>
+```
+
+CI job timeoutは60分、aggregate stepは52分、最終inspectionは5分とする。timeout / cancelにより最終inspection自体を
+完了できなかった場合はcleanup成功とみなさない。remote実行、required check化、push / PRは個別Owner承認後に行う。

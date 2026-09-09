@@ -24,6 +24,7 @@ $javaTool = if ($IsWindows) {
 $temporaryRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath())
 $verificationRoot = Join-Path $temporaryRoot (
     'koiki-reference-b44-' + [System.Guid]::NewGuid().ToString('N'))
+$processMarker = [System.IO.Path]::GetFileName($verificationRoot)
 $isolatedRepository = Join-Path $verificationRoot 'repository'
 $mavenLog = Join-Path $verificationRoot 'maven-output.log'
 $processLog = Join-Path $verificationRoot 'reference-process.log'
@@ -149,7 +150,10 @@ function Start-ReferenceProcess {
 
     $startArguments = @{
         FilePath = $javaTool
-        ArgumentList = @('-jar', $referenceJar)
+        ArgumentList = @(
+            "-Dkoiki.verification.process-marker=$processMarker",
+            '-jar',
+            $referenceJar)
         PassThru = $true
         RedirectStandardOutput = $processLog
         RedirectStandardError = $processError

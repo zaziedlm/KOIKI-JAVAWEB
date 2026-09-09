@@ -220,6 +220,10 @@ workflow追加、remote実行およびrequired check変更はGate Bの個別Owne
 独立`Local Identity Session Audit Integration` job、同一final HEADのremote 3回連続成功、Phase 2 Public API inventoryの
 baseline候補化、途中失敗時を含むcleanup検査およびrequired化の別Owner判断を固定した。GB-1を完了し、次をGB-2
 CI候補実装とする。push / PR / remote実行およびruleset変更は引き続き個別Owner承認まで行わない。
+同日、Architecture OwnerはGB-2 CI候補実装の5 review pointsを承認した。既存B4-5 closeoutの正本利用、独立CI job、
+失敗後の最終inspection、一次失敗を保持するcleanup failure集約およびGB-2〜GB-4の検証境界を確定し、GB-2を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はGB-3 local final verificationとし、remote push / PR、
+remote CI実行およびrequired check変更は引き続き個別Owner承認まで行わない。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
