@@ -6,6 +6,7 @@ Set-StrictMode -Version Latest
 
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $rootPom = Join-Path $repositoryRoot 'pom.xml'
+$formalReleaseProjects = '!koiki-reference-app'
 $fixtureRoot = Join-Path $PSScriptRoot 'session-cleanup-process-fixture'
 $fixturePom = Join-Path $fixtureRoot 'pom.xml'
 $wrapper = if ($IsWindows) {
@@ -250,7 +251,8 @@ try {
         -Arguments @('version', '--format', '{{.Server.Version}}') | Out-Null
 
     Invoke-KoikiMaven -Label 'Stage the formal KOIKI release unit' -Arguments @(
-        '-f', $rootPom, 'clean', 'install', '-DskipTests')
+        '-f', $rootPom, '-pl', $formalReleaseProjects,
+        'clean', 'install', '-DskipTests')
     Invoke-KoikiMaven -Label 'Package the non-distributed B3-5 fixture' -Arguments @(
         '-f', $fixturePom, 'clean', 'package',
         "-Dkoiki.fixture.build.directory=$fixtureBuildRoot")

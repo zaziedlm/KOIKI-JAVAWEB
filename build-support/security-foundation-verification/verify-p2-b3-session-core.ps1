@@ -5,6 +5,7 @@ $ErrorActionPreference = 'Stop'
 
 $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $rootPom = Join-Path $repositoryRoot 'pom.xml'
+$formalReleaseProjects = '!koiki-reference-app'
 $sessionRoot = Join-Path $repositoryRoot 'koiki-starters/koiki-starter-session-jdbc'
 $sessionPom = Join-Path $sessionRoot 'pom.xml'
 $sessionInventory = Join-Path $sessionRoot 'public-api.txt'
@@ -216,7 +217,8 @@ $fixtureVerificationStarted = $false
 
 try {
     Invoke-KoikiMaven -Label 'Stage the formal KOIKI release unit' -Arguments @(
-        '-f', $rootPom, 'clean', 'install', '-DskipTests')
+        '-f', $rootPom, '-pl', $formalReleaseProjects,
+        'clean', 'install', '-DskipTests')
 
     $artifactRoot = Join-Path $isolatedRepository (
         'org/koikifw/koiki-starter-session-jdbc/0.1.0-SNAPSHOT')

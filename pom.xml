@@ -27,6 +27,7 @@
     <module>koiki-starters/koiki-starter-identity</module>
     <module>koiki-starters/koiki-starter-session-jdbc</module>
     <module>koiki-testing</module>
+    <module>koiki-reference-app</module>
   </modules>
 
 </project>
