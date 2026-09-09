@@ -136,3 +136,21 @@ cleanな同一HEADでcore、B3-4 Web T6、B3-5 non-web T6を3回連続実行し�
 一時directory cleanupを確認する。その後root `clean verify`とNullAway positive / expected negative / restoreを実行する。
 各Harnessが所有する正式artifact / dependency / Public API inventoryとsensitive-output scanを再利用し、
 workflow追加またはrequired check変更は行わない。
+
+P2-B4 B4-4のpackage済みReference journeyは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b4-reference-journey.ps1
+```
+
+正式Framework release unitの14 projectを隔離Maven repositoryへstageした後、Reference applicationを別invocationで
+packageする。Harness所有の一時PostgreSQLとruntime生成したadmin / target / control identityを使い、標準Form Loginから
+`IDENTITY_ADMIN`のassign / revoke、Business Audit、optimistic version、対象userの全Session失効、admin / control Sessionの
+継続、および再login後のauthorization反映をHTTP / DB / Cookieから確認する。permission不足のcontrol userによる
+valid CSRF付きdirect POSTは403となり、Identity / Audit / Sessionが変化しないことを確認する。
+
+Business Audit INSERT権限とSpring Session DELETE権限を個別に一時失効し、いずれも503の固定応答、Identity / Auditの
+rollback、既存対象Sessionの継続を検査する。一時audit tableとidentity / credentialはHarnessだけが生成し、Referenceの
+production migration、fixture route、固定credential、failure switchにはしない。ReferenceのBOM分離、正式release repository
+非収載、Public API / source / template / route inventory、deferred dependency非追加、sensitive-output非露出、所有process / container /
+一時directory cleanupも同じ実行で検査する。
