@@ -154,3 +154,18 @@ rollback、既存対象Sessionの継続を検査する。一時audit tableとide
 production migration、fixture route、固定credential、failure switchにはしない。ReferenceのBOM分離、正式release repository
 非収載、Public API / source / template / route inventory、deferred dependency非追加、sensitive-output非露出、所有process / container /
 一時directory cleanupも同じ実行で検査する。
+
+B4-5のP2-B1〜B4 local closeoutは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b4-closeout.ps1
+```
+
+cleanな同一HEADで、B1 / B2回帰を含むB3 T0〜T5 core、B3 two-process、B3 non-web cleanup、
+B4 package済みReference journeyを3回連続実行する。各round後にHarness所有container、一時directory、
+非配布fixture targetのcleanupとHEAD / worktree不変を確認する。その後Root Reactor 15 projectと
+NullAway positive / expected negative / restoreを実行する。各子Harnessのartifact / dependency /
+Public API / migration inventoryとsensitive-output検査を再利用する。
+
+このlocal closeoutはworkflow、remote environmentまたはrequired checkを変更しない。Architecture Owner承認後だけ、
+Gate BでMilestone B aggregateのCI候補化、Public API / japicmp方針およびrequired化を別途reviewする。
