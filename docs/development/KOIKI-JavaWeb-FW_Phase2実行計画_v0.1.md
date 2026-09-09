@@ -224,6 +224,10 @@ CI候補実装とする。push / PR / remote実行およびruleset変更は引�
 失敗後の最終inspection、一次失敗を保持するcleanup failure集約およびGB-2〜GB-4の検証境界を確定し、GB-2を
 `COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はGB-3 local final verificationとし、remote push / PR、
 remote CI実行およびrequired check変更は引き続き個別Owner承認まで行わない。
+同日、CI候補を含む`e048529`のcleanな同一HEADでGB-3 local final verificationを実行した。B1〜B4の6工程を
+3ラウンド連続成功し、Root Reactor 15 / 15、104 tests、Null Safety正負 / restoreおよび終了後の独立cleanup検査も
+成功した。Architecture OwnerはGB-3の5 review pointsを承認し、GB-3を`COMPLETE / ARCHITECTURE OWNER APPROVED`
+とした。次はGB-4とし、remote push / PR、remote CI実行およびrequired check変更は個別Owner承認まで行わない。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 

@@ -6,7 +6,7 @@
 - Architecture Owner: Shuichi Kataoka
 - branch: `feature/phase2-security-local-identity-session-audit`
 - 引継ぎcommit: `4931f83`（P2-B4承認済みcloseout記録）
-- Phase status: `GB-2 COMPLETE / ARCHITECTURE OWNER APPROVED — GB-3 READY`
+- Phase status: `GB-3 COMPLETE / ARCHITECTURE OWNER APPROVED — GB-4 READY`
 - 所有者: Tooling / Architecture Evidence / CI Policy
 - 主対象: DoD 2-5〜2-8および2-10、package済みjourney、Public API inventory / `japicmp`方針、CI候補review
 - 先送り: P2-C1 migration集約、業務application、申請承認workflow、snapshot publish
@@ -43,6 +43,8 @@
    一次失敗を保持するerror handlingを受入条件とする。
 10. 同日、Architecture OwnerはGB-2 CI候補実装のreview points 1〜5を承認した。次はworkflow候補を含むclean HEADで
     GB-3 local final verificationを実行する。remote操作とrequired check変更は引き続き未承認である。
+11. 同日、`e048529`のcleanな同一HEADでGB-3 local aggregateを完了し、Architecture Ownerはreview points 1〜5を
+    承認した。次はGB-4とするが、remote push / PR、remote CI実行およびrequired check変更は個別承認まで実施しない。
 
 ## 4. Gate B完了条件
 
