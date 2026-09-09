@@ -210,6 +210,16 @@ Milestone B integration jobの候補化条件は満たすが、workflow接続 / 
 同日、Architecture OwnerはB3-4 / B3-5の個別EvidenceとB3-6の5 review pointsを承認し、P2-B3を
 `COMPLETE / ARCHITECTURE OWNER APPROVED`とした。Session Foundation以外の汎用non-web Worker / Batch基盤は
 本承認に含めず、次のCPをP2-B4 Reference `identity`とする。判断と実装EvidenceはADR-048へ接続する。
+2026年9月9日、B4-C1〜C8、B4-2、B4-3およびB4-4を順次承認し、`1ec1fae`のcleanな同一HEADで
+B1 Audit、B2 Identity、B3 core / two-process / cleanupおよびB4 package済みReference journeyの6工程を
+3回連続実行した。Root Reactor 15 / 15、104 tests、NullAway正負 / restore、inventory、sensitive-output、
+所有resource cleanupも成功し、`../architecture/validation/phase2-p2-b4-b4-5-closeout.md`の5 review pointsを
+Architecture Ownerが承認した。P2-B4を`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次をGate B reviewとする。
+workflow追加、remote実行およびrequired check変更はGate Bの個別Owner承認前に行わない。
+2026年9月10日、Architecture OwnerはGate B契約GB-C1〜C7を承認した。B4-5 closeoutをlocal / CI aggregateの正本とし、
+独立`Local Identity Session Audit Integration` job、同一final HEADのremote 3回連続成功、Phase 2 Public API inventoryの
+baseline候補化、途中失敗時を含むcleanup検査およびrequired化の別Owner判断を固定した。GB-1を完了し、次をGB-2
+CI候補実装とする。push / PR / remote実行およびruleset変更は引き続き個別Owner承認まで行わない。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
