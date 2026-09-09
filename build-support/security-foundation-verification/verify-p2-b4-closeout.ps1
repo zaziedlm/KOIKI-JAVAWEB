@@ -99,6 +99,8 @@ function Assert-NoResidualResources {
     }
 
     foreach ($pattern in @(
+            'koiki-audit-transaction-*',
+            'koiki-identity-core-*',
             'koiki-session-core-*',
             'koiki-session-two-process-*',
             'koiki-session-cleanup-*',
