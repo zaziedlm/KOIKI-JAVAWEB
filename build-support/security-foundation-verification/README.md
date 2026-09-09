@@ -161,8 +161,8 @@ B4-5のP2-B1〜B4 local closeoutは次で検証する。
 pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b4-closeout.ps1
 ```
 
-cleanな同一HEADで、B1 / B2回帰を含むB3 T0〜T5 core、B3 two-process、B3 non-web cleanup、
-B4 package済みReference journeyを3回連続実行する。各round後にHarness所有container、一時directory、
+cleanな同一HEADで、B1 Audit専用contract、B2 Identity専用contract、B1 / B2回帰を含むB3 T0〜T5 core、
+B3 two-process、B3 non-web cleanup、B4 package済みReference journeyを3回連続実行する。各round後にHarness所有container、一時directory、
 非配布fixture targetのcleanupとHEAD / worktree不変を確認する。その後Root Reactor 15 projectと
 NullAway positive / expected negative / restoreを実行する。各子Harnessのartifact / dependency /
 Public API / migration inventoryとsensitive-output検査を再利用する。

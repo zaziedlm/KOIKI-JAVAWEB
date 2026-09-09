@@ -14,7 +14,15 @@ $nullSafetyVerifier = Join-Path $repositoryRoot (
     'build-support/null-safety/verify-null-safety.ps1')
 $verificationSteps = @(
     [ordered]@{
-        Name = 'P2-B1/B2/B3 T0-T5 core / inventory'
+        Name = 'P2-B1 Audit contract / transaction / inventory'
+        Path = Join-Path $PSScriptRoot 'verify-p2-b1-audit-transaction.ps1'
+    },
+    [ordered]@{
+        Name = 'P2-B2 Identity core / inventory'
+        Path = Join-Path $PSScriptRoot 'verify-p2-b2-identity-core.ps1'
+    },
+    [ordered]@{
+        Name = 'P2-B1/B2/B3 T0-T5 Session core / inventory'
         Path = Join-Path $PSScriptRoot 'verify-p2-b3-session-core.ps1'
     },
     [ordered]@{

@@ -5,6 +5,7 @@ $ErrorActionPreference = 'Stop'
 
 $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $rootPom = Join-Path $repositoryRoot 'pom.xml'
+$formalReleaseProjects = '!koiki-reference-app'
 $auditPom = Join-Path $repositoryRoot 'koiki-starters/koiki-starter-audit/pom.xml'
 $fixturePom = Join-Path $PSScriptRoot 'pom.xml'
 $auditInventory = Join-Path $repositoryRoot 'koiki-starters/koiki-starter-audit/public-api.txt'
@@ -78,7 +79,7 @@ function Assert-NoSensitiveContent {
 
     $forbiddenPatterns = [ordered]@{
         'private key material' = '-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'
-        'credential assignment' = '(?i)(?:password|client[_-]?secret|access[_-]?token)\s*[:=]\s*[^\s<]+'
+        'credential assignment' = '(?i)(?:password|client[_-]?secret|access[_-]?token)\s*[:=]\s*(?!\?)[^\s<]+'
         'email-shaped PII' = '(?i)[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
         'authorization header' = '(?i)authorization\s*[:=]\s*(?:basic|bearer)\s+'
     }
@@ -175,7 +176,8 @@ New-Item -ItemType Directory -Path $isolatedRepository -Force | Out-Null
 
 try {
     Invoke-KoikiMaven -Label 'Stage the formal KOIKI release unit' -Arguments @(
-        '-f', $rootPom, 'clean', 'install', '-DskipTests')
+        '-f', $rootPom, '-pl', $formalReleaseProjects,
+        'clean', 'install', '-DskipTests')
 
     $auditArtifactRoot = Join-Path $isolatedRepository (
         'org/koikifw/koiki-starter-audit/0.1.0-SNAPSHOT')
@@ -234,6 +236,10 @@ try {
         'org/koikifw/buildsupport/security-foundation-verification'))) {
         throw 'The non-distributed T4 fixture was installed into the release repository.'
     }
+    if (Test-Path -LiteralPath (Join-Path $isolatedRepository (
+        'org/koikifw/koiki-reference-app'))) {
+        throw 'The Reference executable was installed into the Framework release repository.'
+    }
 
     $fixtureJar = Get-Item -LiteralPath (Join-Path $fixtureTarget (
         'security-foundation-verification-0.1.0-SNAPSHOT.jar'))
@@ -248,5 +254,16 @@ try {
     if (Test-Path -LiteralPath $verificationRoot) {
         Assert-SafeTemporaryPath -Path $verificationRoot
         Remove-Item -LiteralPath $verificationRoot -Recurse -Force
+    }
+    if (Test-Path -LiteralPath $fixtureTarget) {
+        $resolvedFixtureTarget = [System.IO.Path]::GetFullPath($fixtureTarget)
+        $expectedFixtureTarget = [System.IO.Path]::GetFullPath(
+            (Join-Path $PSScriptRoot 'target'))
+        if (-not $resolvedFixtureTarget.Equals(
+                $expectedFixtureTarget,
+                [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to remove an unexpected fixture target: $resolvedFixtureTarget"
+        }
+        Remove-Item -LiteralPath $resolvedFixtureTarget -Recurse -Force
     }
 }

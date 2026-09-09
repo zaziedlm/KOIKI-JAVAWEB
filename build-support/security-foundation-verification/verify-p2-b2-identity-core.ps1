@@ -375,4 +375,15 @@ try {
         Assert-SafeTemporaryPath -Path $verificationRoot
         Remove-Item -LiteralPath $verificationRoot -Recurse -Force
     }
+    if (Test-Path -LiteralPath $fixtureTarget) {
+        $resolvedFixtureTarget = [System.IO.Path]::GetFullPath($fixtureTarget)
+        $expectedFixtureTarget = [System.IO.Path]::GetFullPath(
+            (Join-Path $PSScriptRoot 'target'))
+        if (-not $resolvedFixtureTarget.Equals(
+                $expectedFixtureTarget,
+                [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to remove an unexpected fixture target: $resolvedFixtureTarget"
+        }
+        Remove-Item -LiteralPath $resolvedFixtureTarget -Recurse -Force
+    }
 }
