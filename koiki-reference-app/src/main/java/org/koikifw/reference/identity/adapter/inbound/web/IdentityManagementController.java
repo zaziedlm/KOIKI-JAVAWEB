@@ -5,9 +5,11 @@ import org.koikifw.reference.identity.application.IdentityUserManagement;
 import org.koikifw.reference.identity.application.IdentityUserView;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.view.RedirectView;
@@ -46,11 +48,34 @@ public class IdentityManagementController {
         return "identity/user-detail";
     }
 
+    @PostMapping("/identity/users/{userId}/roles")
+    RedirectView assignRole(
+            @PathVariable String userId, @ModelAttribute IdentityRoleChangeForm form) {
+        FrameworkUserId parsed = parseUserId(userId);
+        identityUserManagement.assignRole(
+                parsed, form.requiredRoleCode(), form.requiredExpectedVersion());
+        return userDetailRedirect(parsed);
+    }
+
+    @PostMapping("/identity/users/{userId}/roles/{roleCode}/revoke")
+    RedirectView revokeRole(
+            @PathVariable String userId,
+            @PathVariable String roleCode,
+            @ModelAttribute IdentityRoleChangeForm form) {
+        FrameworkUserId parsed = parseUserId(userId);
+        identityUserManagement.revokeRole(parsed, roleCode, form.requiredExpectedVersion());
+        return userDetailRedirect(parsed);
+    }
+
     private static FrameworkUserId parseUserId(String userId) {
         try {
             return FrameworkUserId.parse(userId);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, INVALID_USER_ID);
         }
+    }
+
+    private static RedirectView userDetailRedirect(FrameworkUserId userId) {
+        return new RedirectView("/identity/users/" + userId);
     }
 }

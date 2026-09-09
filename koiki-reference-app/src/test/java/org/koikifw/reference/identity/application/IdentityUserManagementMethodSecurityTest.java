@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.koikifw.identity.FrameworkUserId;
+import org.koikifw.identity.IdentityAdministration;
 import org.koikifw.identity.IdentityQuery;
 import org.koikifw.identity.IdentityUser;
 import org.koikifw.identity.UserStatus;
@@ -40,9 +42,12 @@ class IdentityUserManagementMethodSecurityTest {
     @Autowired
     private IdentityQuery query;
 
+    @Autowired
+    private IdentityAdministration administration;
+
     @BeforeEach
     void resetQuery() {
-        reset(query);
+        reset(query, administration);
     }
 
     @Test
@@ -63,14 +68,42 @@ class IdentityUserManagementMethodSecurityTest {
     @WithMockUser(authorities = "EXPENSE:READ")
     void rejectsInsufficientPermissionBeforeCallingFrameworkQuery() {
         assertThrows(AccessDeniedException.class, () -> management.findUser(USER_ID));
-        verifyNoInteractions(query);
+        verifyNoInteractions(query, administration);
     }
 
     @Test
     @WithAnonymousUser
     void rejectsAnonymousInvocationBeforeCallingFrameworkQuery() {
         assertThrows(AccessDeniedException.class, () -> management.findUser(USER_ID));
-        verifyNoInteractions(query);
+        verifyNoInteractions(query, administration);
+    }
+
+    @Test
+    @WithMockUser(authorities = "IDENTITY:ADMIN")
+    void allowsIdentityAdministratorToChangeRoleMembership() {
+        management.assignRole(USER_ID, "EXPENSE_READER", 2);
+        management.revokeRole(USER_ID, "EXPENSE_READER", 3);
+
+        verify(administration).assignRole(USER_ID, "EXPENSE_READER", 2);
+        verify(administration).revokeRole(USER_ID, "EXPENSE_READER", 3);
+    }
+
+    @Test
+    @WithMockUser(authorities = "EXPENSE:READ")
+    void rejectsInsufficientPermissionBeforeCallingFrameworkMutation() {
+        assertThrows(
+                AccessDeniedException.class,
+                () -> management.assignRole(USER_ID, "EXPENSE_READER", 2));
+        verifyNoInteractions(query, administration);
+    }
+
+    @Test
+    @WithAnonymousUser
+    void rejectsAnonymousInvocationBeforeCallingFrameworkMutation() {
+        assertThrows(
+                AccessDeniedException.class,
+                () -> management.revokeRole(USER_ID, "EXPENSE_READER", 2));
+        verifyNoInteractions(query, administration);
     }
 
     @Configuration(proxyBeanMethods = false)
@@ -83,8 +116,14 @@ class IdentityUserManagementMethodSecurityTest {
         }
 
         @Bean
-        IdentityUserManagement identityUserManagement(IdentityQuery identityQuery) {
-            return new IdentityUserManagement(identityQuery);
+        IdentityAdministration identityAdministration() {
+            return mock(IdentityAdministration.class);
+        }
+
+        @Bean
+        IdentityUserManagement identityUserManagement(
+                IdentityQuery identityQuery, IdentityAdministration identityAdministration) {
+            return new IdentityUserManagement(identityQuery, identityAdministration);
         }
     }
 }

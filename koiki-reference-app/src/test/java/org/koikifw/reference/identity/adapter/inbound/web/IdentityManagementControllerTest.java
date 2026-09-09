@@ -2,9 +2,12 @@ package org.koikifw.reference.identity.adapter.inbound.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,6 +19,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.koikifw.identity.FrameworkUserId;
+import org.koikifw.identity.IdentityFailure;
+import org.koikifw.identity.IdentityOperationException;
 import org.koikifw.identity.UserStatus;
 import org.koikifw.reference.identity.application.IdentityUserManagement;
 import org.koikifw.reference.identity.application.IdentityUserView;
@@ -32,6 +37,7 @@ class IdentityManagementControllerTest {
     void setUp() {
         management = mock(IdentityUserManagement.class);
         mockMvc = MockMvcBuilders.standaloneSetup(new IdentityManagementController(management))
+                .setControllerAdvice(new IdentityManagementExceptionHandler())
                 .build();
     }
 
@@ -89,5 +95,59 @@ class IdentityManagementControllerTest {
                 .andExpect(result -> assertThat(result.getResolvedException())
                         .isInstanceOfSatisfying(ResponseStatusException.class, exception ->
                                 assertThat(exception.getReason()).isEqualTo("Identity user was not found.")));
+    }
+
+    @Test
+    void assignsRoleAndRedirectsToFreshUserDetail() throws Exception {
+        FrameworkUserId userId = FrameworkUserId.parse(UUID.randomUUID().toString());
+
+        mockMvc.perform(post("/identity/users/{userId}/roles", userId)
+                        .param("roleCode", "EXPENSE_READER")
+                        .param("expectedVersion", "2"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/identity/users/" + userId));
+
+        verify(management).assignRole(userId, "EXPENSE_READER", 2);
+    }
+
+    @Test
+    void revokesRoleAndRedirectsToFreshUserDetail() throws Exception {
+        FrameworkUserId userId = FrameworkUserId.parse(UUID.randomUUID().toString());
+
+        mockMvc.perform(post(
+                                "/identity/users/{userId}/roles/{roleCode}/revoke",
+                                userId,
+                                "EXPENSE_READER")
+                        .param("expectedVersion", "3"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/identity/users/" + userId));
+
+        verify(management).revokeRole(userId, "EXPENSE_READER", 3);
+    }
+
+    @Test
+    void rejectsRoleAssignmentWithoutRequiredInput() throws Exception {
+        FrameworkUserId userId = FrameworkUserId.parse(UUID.randomUUID().toString());
+
+        mockMvc.perform(post("/identity/users/{userId}/roles", userId))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(management);
+    }
+
+    @Test
+    void returnsConflictWithoutTreatingStaleVersionAsSuccess() throws Exception {
+        FrameworkUserId userId = FrameworkUserId.parse(UUID.randomUUID().toString());
+        doThrow(new IdentityOperationException(IdentityFailure.CONCURRENT_MODIFICATION))
+                .when(management)
+                .assignRole(userId, "EXPENSE_READER", 2);
+
+        mockMvc.perform(post("/identity/users/{userId}/roles", userId)
+                        .param("roleCode", "EXPENSE_READER")
+                        .param("expectedVersion", "2"))
+                .andExpect(status().isConflict())
+                .andExpect(view().name("identity/error"))
+                .andExpect(model().attribute(
+                        "message", "Identity data changed. Reload the user and try again."));
     }
 }

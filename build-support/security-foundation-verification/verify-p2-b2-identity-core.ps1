@@ -5,6 +5,7 @@ $ErrorActionPreference = 'Stop'
 
 $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $rootPom = Join-Path $repositoryRoot 'pom.xml'
+$formalReleaseProjects = '!koiki-reference-app'
 $identityRoot = Join-Path $repositoryRoot 'koiki-starters/koiki-starter-identity'
 $identityPom = Join-Path $identityRoot 'pom.xml'
 $identityInventory = Join-Path $identityRoot 'public-api.txt'
@@ -285,7 +286,8 @@ $fixtureVerificationStarted = $false
 
 try {
     Invoke-KoikiMaven -Label 'Stage the formal KOIKI release unit' -Arguments @(
-        '-f', $rootPom, 'clean', 'install', '-DskipTests')
+        '-f', $rootPom, '-pl', $formalReleaseProjects,
+        'clean', 'install', '-DskipTests')
 
     $artifactRoot = Join-Path $isolatedRepository (
         'org/koikifw/koiki-starter-identity/0.1.0-SNAPSHOT')
@@ -332,6 +334,10 @@ try {
     if (Test-Path -LiteralPath (Join-Path $isolatedRepository (
         'org/koikifw/buildsupport/security-foundation-verification'))) {
         throw 'The non-distributed T4 fixture was installed into the release repository.'
+    }
+    if (Test-Path -LiteralPath (Join-Path $isolatedRepository (
+        'org/koikifw/koiki-reference-app'))) {
+        throw 'The Reference executable was installed into the Framework release repository.'
     }
 
     $reportFiles = @(Get-ChildItem -LiteralPath (

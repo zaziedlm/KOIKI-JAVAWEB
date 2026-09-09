@@ -20,8 +20,22 @@
   </dl>
   <h2>Roles</h2>
   <ul>
-    <li th:each="role : ${user.roleCodes}" th:text="${role}"></li>
+    <li th:each="role : ${user.roleCodes}">
+      <span th:text="${role}"></span>
+      <form th:action="@{/identity/users/{userId}/roles/{roleCode}/revoke(userId=${user.userId},roleCode=${role})}"
+            method="post">
+        <input type="hidden" name="expectedVersion" th:value="${user.version}">
+        <button type="submit">Revoke role</button>
+      </form>
+    </li>
   </ul>
+  <h2>Assign role</h2>
+  <form th:action="@{/identity/users/{userId}/roles(userId=${user.userId})}" method="post">
+    <label for="roleCode">Role code</label>
+    <input id="roleCode" name="roleCode" type="text" required>
+    <input type="hidden" name="expectedVersion" th:value="${user.version}">
+    <button type="submit">Assign role</button>
+  </form>
   <h2>Permissions</h2>
   <ul>
     <li th:each="permission : ${user.permissionCodes}" th:text="${permission}"></li>
