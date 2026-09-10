@@ -228,6 +228,12 @@ remote CI実行およびrequired check変更は引き続き個別Owner承認ま�
 3ラウンド連続成功し、Root Reactor 15 / 15、104 tests、Null Safety正負 / restoreおよび終了後の独立cleanup検査も
 成功した。Architecture OwnerはGB-3の5 review pointsを承認し、GB-3を`COMPLETE / ARCHITECTURE OWNER APPROVED`
 とした。次はGB-4とし、remote push / PR、remote CI実行およびrequired check変更は個別Owner承認まで行わない。
+同日、個別承認に基づきDraft PR #29でGB-4 remote verificationを実行した。初回Linux runで判明したJAR entry順序依存と
+Phase 1b CP10 SQL検査範囲を補正し、final HEAD `f30a340`でlocal B4-5 closeout、既存remote check回帰および
+`Local Identity Session Audit Integration`の39分11秒、32分20秒、34分31秒の3回連続成功を確認した。
+全3回でaggregateと最終cleanup inspectionが成功し、Architecture Ownerは5 review pointsを承認した。GB-4を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次を候補jobのrequired check化reviewとする。main ruleset変更、
+PR mergeおよびmerge後main CIは本承認に含めず、引き続き個別判断とする。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
