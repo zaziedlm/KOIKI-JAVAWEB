@@ -1,7 +1,8 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `GATE P2-1 / P2-F1〜F4 COMPLETE / GATE F COMPLETE / GATE P2-2 APPROVED — P2-A1 READY`
+**状態:** `GATE B COMPLETE / ARCHITECTURE OWNER APPROVED — P2-C1 REVIEW READY`
 **作成日:** 2026年8月31日
+**最終更新日:** 2026年9月10日
 **開始branch:** `feature/phase2-security-foundation`
 **開始基準main:** `b2e2123605e4d971c3ed5ccc729f668d91189d83`
 
@@ -241,6 +242,15 @@ GitHub Actions integration ID `15368`でmain rulesetへ追加した。更新後�
 `COMPLETE / ARCHITECTURE OWNER APPROVED`とした。本required化はFramework Repository固有とし、Customer業務アプリの
 CIは利用Starter、業務リスク、構成およびデプロイ形態に応じて別途軽量化・段階化する。Draft解除、PR mergeおよび
 merge後main CIは引き続き個別Owner判断へ残す。
+同日、PR #29のrequired checks全件成功後、source final HEAD `c053fd8`をmerge commit方式でmainへmergeした。
+merge commit `97d8ff2`に対するpush eventのCI run `34466016255`とJava Runtime Compatibility run
+`34466016290`は全8 jobが成功した。main rulesetもactive、strict、bypassなし、required check 7件を維持している。
+`../architecture/validation/phase2-gate-b-closeout.md`へ最終Evidenceを集約し、Gate B final Architecture Owner reviewを
+開始可能とする。P2-C1のFramework Migration全体集約、第三者table一覧、clean install / supported upgradeは先行しない。
+同日、Architecture OwnerはGate B final closeoutの5 review pointsを承認した。「Migration全体集約」を
+「Framework Flyway正本の全体集約」と正確化し、P2-B2 / P2-B3の個別Framework migration検証済みという事実と、
+P2-C1へ残す統合検証境界を明確化した。Gate Bを`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はP2-C1の
+契約レビューとする。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
