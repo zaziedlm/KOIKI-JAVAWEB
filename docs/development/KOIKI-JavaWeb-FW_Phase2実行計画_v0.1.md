@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `GATE B COMPLETE / ARCHITECTURE OWNER APPROVED — P2-C1 REVIEW READY`
+**状態:** `GATE B COMPLETE / ARCHITECTURE OWNER APPROVED — P2-C1 CONTRACT REVIEW PREPARED`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月10日
 **開始branch:** `feature/phase2-security-foundation`
@@ -251,6 +251,10 @@ merge commit `97d8ff2`に対するpush eventのCI run `34466016255`とJava Runti
 「Framework Flyway正本の全体集約」と正確化し、P2-B2 / P2-B3の個別Framework migration検証済みという事実と、
 P2-C1へ残す統合検証境界を明確化した。Gate Bを`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はP2-C1の
 契約レビューとする。
+同日、main merge commit `8873942`から`feature/phase2-p2-c1-postgresql-migration`を作成し、P2-C1のread-only
+inventory、contract review案および翌日再開用handoffを準備した。Audit migration version、Starter依存順、
+table ownership、clean install matrix、Phase 1b supported upgrade起点およびTooling境界はArchitecture Owner review前の
+提案であり、production SQL、Java、POM、test、scriptまたはCIは変更していない。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
