@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.koikifw</groupId>
+    <artifactId>koiki-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>org.koikifw.buildsupport</groupId>
+  <artifactId>session-two-process-fixture</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+
+  <name>KOIKI Session Two Process Fixture</name>
+
+  <properties>
+    <koiki.fixture.build.directory>${project.basedir}/target</koiki.fixture.build.directory>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-session-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <directory>${koiki.fixture.build.directory}</directory>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

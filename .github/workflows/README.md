@@ -29,6 +29,17 @@ KOIKIでは、CIとartifact公開を別の権限境界として扱います。
 - 通常の`Verify` jobは`contents: read`だけで、secretやpackage権限を使用しません。
 - `Security Foundation Integration`は、final HEADのremote PRで1回成功し、cleanupと実行時間をOwner Reviewしたうえで、
   main rulesetのrequired checkへ追加済みです。同一commitの意図的な複数rerunは条件にしません。
+- `Local Identity Session Audit Integration`はPhase 2 Milestone BのCI候補です。B1 Audit、B2 Identity、B3 Session、
+  B4 package済みReference journeyを3ラウンド連続実行し、Root Reactor、Null Safety、Public API / dependency / migration
+  inventory、sensitive-outputおよび所有resource cleanupを累積検証します。
+- このjobは`ubuntu-24.04`、Temurin 21、`contents: read`だけを使用し、secret、Packages、environment権限または
+  Maven cacheを追加しません。job timeoutは60分、aggregate stepは52分とし、`if: always()`の最終stepへ5分を確保します。
+- aggregateは一次失敗を保持したまま最終残留検査も報告します。最終stepはexpected HEAD、clean worktree、所有container、
+  外部起動したJava child process、一時directoryおよびfixture targetを独立検査し、GitHub hosted runnerの破棄だけを
+  cleanup成功証拠にしません。
+- `Local Identity Session Audit Integration`は、同一final HEADで39分11秒、32分20秒、34分31秒のremote
+  3回連続成功と全回cleanup成功をOwner Reviewし、2026年9月10日にmain rulesetのrequired checkへ追加済みです。
+  Framework Repository固有のGateであり、Customer業務アプリへ同一の3ラウンドaggregateを必須化しません。
 - 独立した`Public API Compatibility` jobだけが`contents: read`と`packages: read`を持ち、C1 baseline、
   inventory、japicmp正常系とGate 3 fixtureを同じTooling scriptで検証します。
 - Public API jobはRepositoryの`GITHUB_TOKEN`だけを使用し、追加PAT secret、Maven cache、

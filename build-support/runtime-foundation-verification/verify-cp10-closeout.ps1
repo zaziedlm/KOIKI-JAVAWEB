@@ -352,14 +352,21 @@ function Assert-PublicApiInventory {
 
 function Assert-MigrationInventory {
     $formalRoots = @(
-        'koiki-dependencies-bom', 'koiki-parent', 'koiki-architecture-contract',
-        'koiki-archunit-rules', 'koiki-starters', 'koiki-testing')
+        'koiki-dependencies-bom',
+        'koiki-parent',
+        'koiki-architecture-contract',
+        'koiki-archunit-rules',
+        'koiki-starters/koiki-starter-api',
+        'koiki-starters/koiki-starter-data',
+        'koiki-starters/koiki-starter-data-jpa',
+        'koiki-starters/koiki-starter-observability',
+        'koiki-testing')
     $frameworkSql = @($formalRoots | ForEach-Object {
         Get-ChildItem -LiteralPath (Join-Path $repositoryRoot $_) -Recurse -Filter '*.sql' |
             Where-Object { $_.FullName -notlike '*target*' }
     })
     if ($frameworkSql.Count -ne 0) {
-        throw "Framework production SQL inventory must be empty: $($frameworkSql.FullName -join ', ')"
+        throw "Phase 1b formal production SQL inventory must be empty: $($frameworkSql.FullName -join ', ')"
     }
 
     $expectedMigrations = @(

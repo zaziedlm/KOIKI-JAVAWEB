@@ -5,7 +5,7 @@
 | Item | Result |
 |---|---|
 | Phase / milestone | Phase 2 / Milestone A |
-| Gate | Gate A local acceptance COMPLETE / remote CI COMPLETE / required check COMPLETE / PR review PENDING |
+| Gate | Gate A COMPLETE / ACCEPTED |
 | Validation date | 2026年9月2日 |
 | Branch | `feature/phase2-security-foundation` |
 | Start commit | `2bd67a5`（P2-A3完了） |
@@ -15,7 +15,7 @@
 Java runtime matrixおよびsecret non-exposureを含むGate A aggregateとして検証したEvidenceである。
 local aggregateに加え、Draft PR #28のimplementation HEADで`Security Foundation Integration`を含む
 remote CIの成立を確認し、Owner承認後にmain rulesetのrequired checkへ追加した。
-Ready for review、mergeまたはsnapshot publishは実施していない。
+PR #28のreview / mergeとmerge後main CIまで成功した。snapshot publishは実施していない。
 
 ## 2. Gate A Consumer boundary
 
@@ -125,9 +125,20 @@ remoteでのjob実行、published baseline compatibility、push / Draft PRおよ
 Evidence HEAD `24a1ced539c82dcaf7d84c0b62c249e92be0726b`でも7 checksすべての成功を確認した後、
 Architecture Ownerの承認に基づき、2026年9月2日に`Security Foundation Integration`をmain ruleset
 `main-merge-protection`（ID `21140116`）のrequired checkへ追加した。既存5 required checks、strict policy、
-PR保護およびbypassなしは維持されている。Ready for reviewおよびmergeは、実行計画§8に従い
-それぞれOwner判断後に実施する。
+PR保護およびbypassなしは維持されている。
 
-したがって、Gate Aのlocal implementation、remote acceptance、Evidence作成およびrequired check化は完了しているが、
-Gate A全体を`ACCEPTED`とはまだ判定しない。次の判断点は、PR #28をReady for reviewへ変更するOwner判断とremote review / mergeである。
-Milestone BはGate Aのremote review / mergeを完了するまで開始しない。
+Architecture OwnerはPR #28をReady for reviewへ変更後にmergeした。merge後mainの観測結果は次のとおりである。
+
+| Item | Observable result |
+|---|---|
+| PR | [#28](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/28) / `MERGED` |
+| Merge time | 2026-09-02 07:10:21Z |
+| Merge commit | `7f63bc1234aa7f79416e36dd8c15c1da0ab6987c` |
+| Main CI | run `33602262294` / 5 jobsすべてsuccess |
+| Java runtime CI | run `33602262153` / 2 jobsすべてsuccess |
+| Required Security check | `Security Foundation Integration` success |
+| Local synchronization | `main`、upstream、`origin/main`がmerge commitで一致、worktree clean |
+
+Gate Aのlocal implementation、remote acceptance、Evidence、required check化、PR mergeおよびmerge後main CIが
+すべて成立したため、2026年9月2日にPhase 2 Milestone A / Gate Aを`COMPLETE / ACCEPTED`と判定する。
+Milestone Bはmerge commit `7f63bc1`をbaselineとしてP2-B1から開始する。

@@ -203,8 +203,9 @@ Customer configurationと運用Evidenceを要求する契約だけを提供す�
 | authorization denied | Security audit / `REQUIRES_NEW` | 必要Permissionやresource ownershipを外部へ露出しない |
 | external identity link / unlink | Business audit / same transaction | audit不能ならlink変更をrollback |
 | Role / Permission変更 | Business audit / same transaction | audit不能なら権限変更をrollback |
-| administrator password / account操作 | Business audit / same transaction | audit不能なら管理操作をrollback |
-| self-service reset request / completion | Security audit / `REQUIRES_NEW` | account存在有無を外部responseへ反映しない |
+| administrator password設定 / email変更 | Business audit / same transaction | audit不能なら管理操作をrollback |
+| account disable / management unlock | Security audit / `REQUIRES_NEW` | disableは監査失敗でも防御的失効を継続。unlockはfail closed |
+| future self-service reset request / completion | Security audit / `REQUIRES_NEW` | 初期SSO scopeでは未実装。将来activation時もaccount存在有無を外部responseへ反映しない |
 
 ### 10.2 Actor and sensitive data
 
@@ -241,7 +242,8 @@ threat / negative-path matrixは`phase2-security-test-design.md`を正本とす�
 4. raw edge header、誤署名、誤edge識別子、許可外到達経路ではPre-Authenticationが成立しない。
 5. external group / scopeのunknown値がPermissionを付与しない。
 6. URL / Method Securityの双方で401 / 403とdirect request拒否を確認する。
-7. logout / disable / password reset / Permission変更のsession失効範囲を実証する。
+7. logout / disable / password変更 / Permission変更のsession失効範囲を実証する。local password resetは将来activation時に
+   同じ失効条件を適用し、初期SSO scopeではIdP所有のresetをKOIKIへ複製しない。
 8. browser / APIで秘密値、PII、内部failure reasonがresponse、log、metric、artifactへ出ない。
 9. business / security auditのrollback差とaudit failure semanticsを実PostgreSQLで確認する。
 10. Session、Bearer、Edge pathが相互fallbackせず、unmatched pathをdenyする。

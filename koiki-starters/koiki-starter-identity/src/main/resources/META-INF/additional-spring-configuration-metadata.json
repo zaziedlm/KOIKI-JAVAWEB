@@ -1,0 +1,89 @@
+{
+  "properties": [
+    {
+      "name": "koiki.identity.local-authentication.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enables KOIKI local password authentication. SSO-only applications leave this disabled.",
+      "defaultValue": false
+    },
+    {
+      "name": "koiki.identity.password.maximum-length",
+      "type": "java.lang.Integer",
+      "description": "Maximum accepted local password length in Unicode code points.",
+      "defaultValue": 128
+    },
+    {
+      "name": "koiki.identity.login-attempt.account-threshold",
+      "type": "java.lang.Integer",
+      "description": "Consecutive failures before locking a local credential.",
+      "defaultValue": 5
+    },
+    {
+      "name": "koiki.identity.login-attempt.account-window",
+      "type": "java.time.Duration",
+      "description": "Window for local account failures.",
+      "defaultValue": "15m"
+    },
+    {
+      "name": "koiki.identity.login-attempt.account-lock-duration",
+      "type": "java.time.Duration",
+      "description": "Duration of a local credential lock.",
+      "defaultValue": "30m"
+    },
+    {
+      "name": "koiki.identity.login-attempt.source-protection",
+      "type": "java.lang.String",
+      "description": "Places source protection in the application or an approved external ingress.",
+      "defaultValue": "APPLICATION"
+    },
+    {
+      "name": "koiki.identity.login-attempt.source-threshold",
+      "type": "java.lang.Integer",
+      "description": "Failures before blocking a source fingerprint.",
+      "defaultValue": 100
+    },
+    {
+      "name": "koiki.identity.login-attempt.source-window",
+      "type": "java.time.Duration",
+      "description": "Window for source failures.",
+      "defaultValue": "15m"
+    },
+    {
+      "name": "koiki.identity.login-attempt.source-block-duration",
+      "type": "java.time.Duration",
+      "description": "Duration of a source block.",
+      "defaultValue": "15m"
+    },
+    {
+      "name": "koiki.identity.login-attempt.retention",
+      "type": "java.time.Duration",
+      "description": "Retention target for expired attempt rows.",
+      "defaultValue": "24h"
+    },
+    {
+      "name": "koiki.identity.login-attempt.source-hmac-key-id",
+      "type": "java.lang.String",
+      "description": "Identifier of the deployment HMAC key; required for APPLICATION source protection."
+    },
+    {
+      "name": "koiki.identity.login-attempt.source-hmac-key",
+      "type": "java.lang.String",
+      "description": "Base64 deployment secret of at least 32 bytes; required for APPLICATION source protection."
+    }
+  ],
+  "hints": [
+    {
+      "name": "koiki.identity.login-attempt.source-protection",
+      "values": [
+        {
+          "value": "APPLICATION",
+          "description": "KOIKI applies HMAC-based source attempt protection."
+        },
+        {
+          "value": "EXTERNAL",
+          "description": "An approved public ingress applies equivalent source protection."
+        }
+      ]
+    }
+  ]
+}

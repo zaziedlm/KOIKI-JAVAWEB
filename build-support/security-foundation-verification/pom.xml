@@ -21,6 +21,30 @@
   <dependencies>
     <dependency>
       <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-session-jdbc</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-identity</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-data</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-audit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.koikifw</groupId>
       <artifactId>koiki-starter-security</artifactId>
       <scope>test</scope>
     </dependency>
@@ -52,6 +76,18 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webmvc</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

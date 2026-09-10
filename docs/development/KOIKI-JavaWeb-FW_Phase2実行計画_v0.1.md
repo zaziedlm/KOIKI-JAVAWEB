@@ -54,6 +54,8 @@ Architecture Ownerへ次を一括して承認依頼する。
 | Choice | Recommended / accepted decision | Alternative / impact | Status |
 |---|---|---|---|
 | OIDC test provider | required CIはcredential不要のlocal ephemeral issuer。Amazon Cognito User Poolは標準OIDC Providerの任意hosted acceptance候補 | hosted acceptanceは実環境に近いがsecret、可用性、redirect URI管理が必要 | **APPROVED GATE F F-3** |
+| Application / Audit log classification | ログ種別はApplication logとDBを正本とするAudit logの2つとし、Securityを第3のログ種別にしない。Security関連事象は目的に応じてApplication log、Audit logまたは双方へ安全な別表現で記録する | Security専用ログ種別を追加すると、運用監視と監査証跡の責務、保存先、failure semanticsが重複する | **APPROVED OWNER 2026-09-02** |
+| Audit contract / transaction | 単一Audit Starter、Business / Security別recorder、immutable value、safe unchecked failure、recorder façade + internal `MANDATORY` / `REQUIRES_NEW` executor、JPA `persist + flush`、DB正本を採用する | Security Starter混在、単一classification引数、result返却、JDBC例外化、外部log backend依存は誤分類・監査欠損・scope拡大を招く | **APPROVED OWNER B1-C1〜C7 2026-09-02** |
 | Security audit failure | login成功、reset token発行、管理解除はfail closed。logout / disable / invalidationは処理継続 + alert | 全best-effortは監査欠損、全fail-closedは防御的失効を妨げる | **APPROVED P2-F2 O-4** |
 | Session store failure | 全Session失効を伴うmutationは永続失効不能ならrollback + safe failure / alert。logoutはlocal context / Cookieを消去するが永続削除失敗を成功扱いしない | 全best-effortはstale Sessionを残し、logout自体のfail-closedはlocal防御操作を妨げる | **APPROVED GATE F F-4** |
 | Session table | `koiki_session` / `koiki_session_attributes`をFramework Flywayで管理し、Spring Session schema自動初期化を無効化。列型、index、save mode、PostgreSQL DDLはP2-B3 / C1で実測 | Spring既定名を使う場合はFramework管理例外表へ記録 | **APPROVED OWNER 2026-08-31** |
@@ -70,7 +72,10 @@ Architecture Ownerへ次を一括して承認依頼する。
 #### 2.2.1 Remaining-choice Owner approval record
 
 2026年8月31日、Architecture OwnerはSession table、Single execution、Oracleに関するphase allocationの3件を承認した。
-これにより§2.2は`0 OPEN / 13 APPROVED`とする。同日に先行して承認されたOracle Free image案は、後続のOwner判断により
+2026年9月2日、Application / Audit logの2分類とSecurityを横断的性質として扱う境界を承認した。
+同日、P2-B1のAudit contract / transactionに関するB1-C1〜C7を推奨案どおり承認した。
+2026年9月3日、実PostgreSQLのT4 Evidenceを確認してP2-B1をacceptし、同判断をADR-047として確定した。
+これにより§2.2は`0 OPEN / 15 APPROVED`とする。8月31日に先行して承認されたOracle Free image案は、後続のOwner判断により
 supersedeされた履歴として保持する。save modeとPostgreSQL内部排他方式は、承認済みのstop conditionに従ってP2-B3で
 実測・記録するimplementation decisionである。Oracleの具体的patch / digestはPhase 2の未決事項ではなく、選定対象外である。
 
@@ -151,13 +156,91 @@ Milestone Aは1 PRを上限とする。OIDC providerまたはprofile matcherが�
 | CP | Scope | Exit criteria |
 |---:|---|---|
 | P2-B1 | Audit contractとtransaction fixture | 実PostgreSQLで2-6 / 2-7のrollback対比、failure semantics |
-| P2-B2 | User / Role / Permission、Password / Lock / Reset、attempt制御、migration | email / immutable ID分離、raw secret非保存、enumeration防止、並行失敗閾値、optimistic lock、所有権完全一致 |
+| P2-B2 | User / Role / Permission、Password / Lock、attempt制御、Reset設計境界、migration | email / immutable ID分離、raw secret非保存、enumeration防止、並行失敗閾値、optimistic lock、所有権完全一致 |
 | P2-B3 | Spring Session JDBC、2 instance、logout、cleanup / single execution | DoD 2-5、2-8。`koiki_session*`、Web cleanup競合なし、片instance停止後も継続。vendor-neutral結果とPostgreSQL internal adapterを実証 |
 | P2-B4 | Reference `identity` | DoD 2-10。Tier 1、Framework contract経由、管理操作のMethod Security / audit |
 | Gate B | aggregate / PR | DoD 2-5〜2-8、2-10、packaged journey、Public API inventory / japicmp方針 |
 
 P2-B1でPublic API候補を型単位reviewする。P2-B2以降を先行して契約を既成事実化しない。P2-B3ではPhase 1b Consumerの
 lock codeをcopyせず、EvidenceからFramework production contractを再実装する。
+
+2026年9月3日、P2-B1をacceptしてADR-047を確定し、`phase2-p2-b2-start-handoff-20260903.md`でP2-B2の
+contract / table review、実装・検証順、Gate BおよびMilestone Cまでのtask mapを開始した。
+同日、`../architecture/validation/phase2-p2-b2-contract-review.md`でB2-C1〜C10の具体的比較・推奨案を作成し、
+Architecture Ownerが全項目を推奨案どおり承認した。B2-1を完了し、B2-2 Identity core / migrationを開始可能とする。
+初期適用projectはSSO認証を想定するため、B2-C7ではlocal resetの安全条件を設計に保持しつつ、reset専用Public API、
+token / mail delivery、table、property、endpointのproduction実装を将来要件成立時の別CPへdeferする案とした。
+2026年9月7日、`../architecture/validation/phase2-p2-b2-b2-2-verification.md`のIdentity core / migration、Public API 10型、
+8 table、実PostgreSQL T4および配布境界をArchitecture Ownerがreviewし、B2-2を承認した。次はB2-3
+Authentication / attempt / lockへ進む。
+同日、B2-3 Authentication / attempt / lockとB2-4 Identity administrationをArchitecture Ownerが承認した。
+`../architecture/validation/phase2-p2-b2-b2-5-verification.md`ではT0〜T4 56 / 56、root回帰、NullAway正負、
+Public API / property / error / table inventory、secret / PIIおよびcleanupを再検証し、B2-5のOwner review対象とした。
+同日、失敗時reportのSecret / PII境界をToolingで補強し、負例と56 / 56正常回帰を確認した。Architecture Ownerは
+B2-5の5項目を最終承認し、P2-B2を`COMPLETE / ARCHITECTURE OWNER APPROVED`としてcloseした。次はP2-B3へ進む。
+同日、`phase2-p2-b3-start-handoff-20260907.md`でSpring Session JDBC、全Session失効、2 process継続、
+cleanup / single executionの実装・検証順とB3-C1〜C10の事前review境界を整理し、B3-1を開始した。
+`phase2-p2-b3-contract-review.md`にartifact、Public API、schema、serialization、失敗時挙動、cleanup、
+single execution、設定、T5 / T6およびCI境界の比較・推奨案を作成し、Architecture Owner review対象とした。
+Architecture Ownerは同日B3-C1〜C10を推奨案どおり承認し、B3-1を`COMPLETE`としてB3-2 Session core / migrationを開始可能とした。
+2026年9月8日、B3-2ではoptional `koiki-starter-session-jdbc`、Framework所有のSession 2 table migration、
+initializer / table / Web cleanupのFail Fast境界を実装した。実PostgreSQLで`ON_SAVE` / `ON_SET_ATTRIBUTE`のwrite境界と
+immutable principal ID / credential非永続化を確認し、T0〜T5 15 suite / 62 testsが成功した。
+`../architecture/validation/phase2-p2-b3-b3-2-verification.md`をArchitecture Owner review対象とし、
+全Session失効 / logout、2 process、maintenance cleanupはB3-3〜B3-5へ残す。
+同日、Architecture OwnerはB3-2の5 review pointsと外部TLS終端 / Secure Cookieの補足を確認し、B3-2を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はB3-3 Invalidation / logoutへ進む。
+同日、B3-3では既存`UserSessionInvalidator`をSpring Session JDBCのimmutable principal indexへ接続し、対象userだけの
+全Session同期失効とSpring Security標準chain上の永続local logoutを実装した。実PostgreSQLとMockMvcによるServlet filter chain上の
+HTTP動作でSession row削除、Cookie失効、同一processでの旧Cookie拒否を確認し、注入したSession invalidate障害ではlocal context / credential / Cookieを
+消去しつつ成功redirectを止めることを確認した。T0〜T5 15 suite / 66 testsが成功し、
+`../architecture/validation/phase2-p2-b3-b3-3-verification.md`をArchitecture Owner review対象とした。
+package済み2 processでの継続 / 旧Cookie拒否と実store障害のHTTP結果はB3-4、cleanup / single executionはB3-5へ残す。
+同日、Architecture OwnerはB3-3の5 review pointsを確認し、MockMvcによるServlet filter chain上のHTTP動作と
+package済みprocessへのnetwork越しHTTP試験の証拠境界を明確化したうえで、B3-3を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はB3-4 Two-process continuityへ進む。
+同日、B3-4ではpackage済み同一JARの2 process継続、5種のIdentity mutation、Session DELETE権限障害、
+logout safe failure / recoveryおよびproxy下Cookie属性をHTTP / DB / process状態で確認した。
+B3-5では公開`SessionCleanup` 3型、Spring標準cleanup、PostgreSQL advisory lock、non-web lifecycleを実装し、
+期限切れだけの削除、winner / contender、OS kill後のlock解放とretryを確認した。
+`001e619`のcleanな同一HEADでT0〜T6 aggregateを3回連続実行し、各回のT0〜T5 72 / 72、B3-4 / B3-5 T6、
+inventory / sensitive-output scanおよびresource cleanupが成功した。root Reactor 14 / 14とNullAway正負 / restoreも成功し、
+`../architecture/validation/phase2-p2-b3-b3-6-closeout.md`をP2-B3最終Architecture Owner review対象とする。
+Milestone B integration jobの候補化条件は満たすが、workflow接続 / required化はP2-B4完了後のGate B reviewへ留保する。
+同日、Architecture OwnerはB3-4 / B3-5の個別EvidenceとB3-6の5 review pointsを承認し、P2-B3を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。Session Foundation以外の汎用non-web Worker / Batch基盤は
+本承認に含めず、次のCPをP2-B4 Reference `identity`とする。判断と実装EvidenceはADR-048へ接続する。
+2026年9月9日、B4-C1〜C8、B4-2、B4-3およびB4-4を順次承認し、`1ec1fae`のcleanな同一HEADで
+B1 Audit、B2 Identity、B3 core / two-process / cleanupおよびB4 package済みReference journeyの6工程を
+3回連続実行した。Root Reactor 15 / 15、104 tests、NullAway正負 / restore、inventory、sensitive-output、
+所有resource cleanupも成功し、`../architecture/validation/phase2-p2-b4-b4-5-closeout.md`の5 review pointsを
+Architecture Ownerが承認した。P2-B4を`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次をGate B reviewとする。
+workflow追加、remote実行およびrequired check変更はGate Bの個別Owner承認前に行わない。
+2026年9月10日、Architecture OwnerはGate B契約GB-C1〜C7を承認した。B4-5 closeoutをlocal / CI aggregateの正本とし、
+独立`Local Identity Session Audit Integration` job、同一final HEADのremote 3回連続成功、Phase 2 Public API inventoryの
+baseline候補化、途中失敗時を含むcleanup検査およびrequired化の別Owner判断を固定した。GB-1を完了し、次をGB-2
+CI候補実装とする。push / PR / remote実行およびruleset変更は引き続き個別Owner承認まで行わない。
+同日、Architecture OwnerはGB-2 CI候補実装の5 review pointsを承認した。既存B4-5 closeoutの正本利用、独立CI job、
+失敗後の最終inspection、一次失敗を保持するcleanup failure集約およびGB-2〜GB-4の検証境界を確定し、GB-2を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はGB-3 local final verificationとし、remote push / PR、
+remote CI実行およびrequired check変更は引き続き個別Owner承認まで行わない。
+同日、CI候補を含む`e048529`のcleanな同一HEADでGB-3 local final verificationを実行した。B1〜B4の6工程を
+3ラウンド連続成功し、Root Reactor 15 / 15、104 tests、Null Safety正負 / restoreおよび終了後の独立cleanup検査も
+成功した。Architecture OwnerはGB-3の5 review pointsを承認し、GB-3を`COMPLETE / ARCHITECTURE OWNER APPROVED`
+とした。次はGB-4とし、remote push / PR、remote CI実行およびrequired check変更は個別Owner承認まで行わない。
+同日、個別承認に基づきDraft PR #29でGB-4 remote verificationを実行した。初回Linux runで判明したJAR entry順序依存と
+Phase 1b CP10 SQL検査範囲を補正し、final HEAD `f30a340`でlocal B4-5 closeout、既存remote check回帰および
+`Local Identity Session Audit Integration`の39分11秒、32分20秒、34分31秒の3回連続成功を確認した。
+全3回でaggregateと最終cleanup inspectionが成功し、Architecture Ownerは5 review pointsを承認した。GB-4を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次を候補jobのrequired check化reviewとする。main ruleset変更、
+PR mergeおよびmerge後main CIは本承認に含めず、引き続き個別判断とする。
+同日、Architecture OwnerはGB-5の6 review pointsと選択肢Aを承認した。現行rulesetの事前再取得後、既存6 check、
+strict policy、bypassなしおよび他のruleを保持し、`Local Identity Session Audit Integration` 1件だけを
+GitHub Actions integration ID `15368`でmain rulesetへ追加した。更新後の独立再取得とPR #29で、required check 7件、
+対象checkの`COMPLETED / SUCCESS`、Draft維持およびmerge state `CLEAN`を確認し、GB-5を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。本required化はFramework Repository固有とし、Customer業務アプリの
+CIは利用Starter、業務リスク、構成およびデプロイ形態に応じて別途軽量化・段階化する。Draft解除、PR mergeおよび
+merge後main CIは引き続き個別Owner判断へ残す。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
@@ -245,7 +328,7 @@ Testcontainers、実DBおよび複数processの安定性を扱うMilestone Bの3
 | SPA Session / BFF / direct Token profile | P2-F2。Grand Design §13.5 / §14.2、ADR-006〜008の進展をEvidenceへ接続 |
 | Security profile / artifact ADR | P2-A1 |
 | Identity / Audit / transaction ADR | P2-B1 |
-| Session / cleanup / single execution ADR | P2-B3 |
+| ADR-048 Session JDBC / cleanup / single execution境界 | P2-B3（2026年9月8日 ACCEPTED） |
 | MFA decision record | P2-A1 |
 | ADR-010 / ADR-044 Oracle optional scope update | Gate P2-2前。本計画とGrand Designへ反映 |
 | Security Agent Skill | P2-A1。判断、secret境界、検証順だけを記述 |

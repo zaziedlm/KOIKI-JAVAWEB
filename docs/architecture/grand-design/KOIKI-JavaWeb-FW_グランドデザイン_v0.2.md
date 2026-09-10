@@ -1,7 +1,7 @@
 # KOIKI-JavaWeb-FW グランドデザイン v0.2
 
 **文書版:** v0.2（構想確定・基本設計準備版）
-**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）
+**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）／2026年9月3日（Phase 2 Audit contract / transaction境界をADR-047として反映）／2026年9月8日（Phase 2 Session JDBC / cleanup / single execution境界をADR-048として反映）
 **文書状態:** ACCEPTED（Phase 0 Architecture Baseline）
 **承認日:** 2026年8月19日
 **Architecture Owner:** Shuichi Kataoka
@@ -1524,6 +1524,15 @@ ALB スティッキーセッションは DB 負荷軽減のために併用して
 - セッションテーブルの Flyway 定義（Framework が所有する。§16.7）
 - **期限切れセッションの清掃ジョブ。**§19.2 の単一実行制約に従う
 - 保存モード・フラッシュモードのチューニング（最終アクセス時刻の更新でリクエストごとに DB 書き込みが発生するため）
+
+Phase 2の実装ではSession利用Applicationだけがoptional Session JDBC Starterを導入する。Framework Flywayが
+`koiki_session`と`koiki_session_attributes`を所有し、Spring Sessionのschema自動初期化とWeb process内cleanupを無効化する。
+全Session失効はimmutable Framework user IDのprincipal indexを使用し、Identity mutationで永続失効できない場合はrollbackする。
+logoutでは永続削除失敗を成功扱いしない一方、local SecurityContextとCookieの消去を継続する。
+
+期限切れcleanupはSpring Session標準処理をSession固有use caseから呼び、PostgreSQL session advisory lockをinternal adapterに限定する。
+Application assemblyがnon-web processの起動、終了およびexit codeを所有する。任意task、scheduler、restart、skip / retry、File I/Oを扱う
+汎用WorkerまたはBatch Public APIへ昇格せず、将来DB adapterも明示要件とoptional Gateが成立した時点で再判断する。
 
 ### 14.4 認可
 
@@ -3299,6 +3308,8 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | ADR-020 | セッションストア | **Spring Session JDBC**（既存 PostgreSQL を利用、Redis 差し替え可） |
 | ADR-036 | レート制御 | インフラ層へ委ね、**認証試行制御のみアプリケーション内に持つ** |
 | ADR-046 | Security artifact / profile境界 | `koiki-starter-security`を単一artifactとし、internal Auto Configurationの最下位fallback chainで未一致requestをdenyする。Customer profileは高優先順位chainを合成し、公開Java型・property・error codeはEvidenceが必要になるまで追加しない |
+| ADR-047 | Audit contract / transaction境界 | 単一`koiki-starter-audit`にBusiness / Security別recorderとimmutable valueを置く。internal executorでBusinessは`MANDATORY`、Securityは`REQUIRES_NEW`、JPAは`persist + flush`とし、安全な固定categoryのunchecked failureだけを公開する。DB rowをAudit正本としApplication log／外部backendへ依存させない。production MigrationはP2-C1、複数DataSourceや外部完全配送は明示要件成立時に再判断する |
+| ADR-048 | Session JDBC / cleanup / single execution境界 | optional `koiki-starter-session-jdbc`がFramework Session schema、全Session失効、Session固有cleanup契約を所有する。Spring標準cleanupをPostgreSQL session advisory lockのinternal adapterで単一実行し、non-web lifecycleはApplication assemblyが所有する。汎用Worker / Batch API、将来DB adapter、CI required化は先行しない |
 
 ### データ
 

@@ -62,7 +62,7 @@ OAuth2 Clientがproviderからtokenを取得・refreshすることはAuthorizati
 | Phase / work package | Scope | Required result | Explicit non-scope |
 |---|---|---|---|
 | Phase 2 P2-A3 | external JWT Resource Server、OIDC Client共存 | issuer / audience / time / scope、ID Token / Cookie fallback拒否、Cognito-compatible local Evidence | token発行、refresh、revocation endpoint、Authorization Server table |
-| Phase 2 P2-B2 / B3 | local credential、HTTP Session、logout / disable / reset | KOIKI Session失効、identity / audit semantics | issuer-owned tokenの即時失効を偽装しない |
+| Phase 2 P2-B2 / B3 | local credential、HTTP Session、logout / disable / password変更。resetは設計境界のみ | KOIKI Session失効、identity / audit semantics。初期SSOではIdP resetを利用 | issuer-owned tokenの即時失効を偽装しない。local reset token / deliveryは将来CP |
 | Phase 3 | Reference REST APIがPhase 2 Resource Server contractを利用 | API / Permission / error contractの利用実証 | Authorization Server追加なし |
 | Phase 4 current baseline | SPA最小参照、MVC / SPA併用、Enterprise Integration | 必須DoDはProfile SのCookie Session / CSRF実証。B / Tは承認済み境界を維持 | KOIKI-hosted issuer、BFF / direct Token production実装を必須DoDにしない |
 | **Phase 4 optional `P4-AS`候補** | KOIKI-hosted Authorization Serverとtoken lifecycle | 下記P4-AS0〜AS4を別Gateで完了 | 現行Phase 4へ無承認で混入しない |
