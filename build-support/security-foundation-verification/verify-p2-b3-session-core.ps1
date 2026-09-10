@@ -171,7 +171,8 @@ function Assert-SessionContract {
             'org/koikifw/session/SessionCleanupException.class',
             'org/koikifw/session/SessionCleanupResult.class')
         if (@(Compare-Object -ReferenceObject $expectedPublicClasses `
-                    -DifferenceObject @($publicClasses.FullName) -SyncWindow 0).Count -ne 0) {
+                    -DifferenceObject @($publicClasses.FullName | Sort-Object) `
+                    -SyncWindow 0).Count -ne 0) {
             throw "Session JDBC public types differ from the approved contract: $($publicClasses.FullName -join ', ')"
         }
 
