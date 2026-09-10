@@ -234,6 +234,13 @@ Phase 1b CP10 SQL検査範囲を補正し、final HEAD `f30a340`でlocal B4-5 cl
 全3回でaggregateと最終cleanup inspectionが成功し、Architecture Ownerは5 review pointsを承認した。GB-4を
 `COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次を候補jobのrequired check化reviewとする。main ruleset変更、
 PR mergeおよびmerge後main CIは本承認に含めず、引き続き個別判断とする。
+同日、Architecture OwnerはGB-5の6 review pointsと選択肢Aを承認した。現行rulesetの事前再取得後、既存6 check、
+strict policy、bypassなしおよび他のruleを保持し、`Local Identity Session Audit Integration` 1件だけを
+GitHub Actions integration ID `15368`でmain rulesetへ追加した。更新後の独立再取得とPR #29で、required check 7件、
+対象checkの`COMPLETED / SUCCESS`、Draft維持およびmerge state `CLEAN`を確認し、GB-5を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。本required化はFramework Repository固有とし、Customer業務アプリの
+CIは利用Starter、業務リスク、構成およびデプロイ形態に応じて別途軽量化・段階化する。Draft解除、PR mergeおよび
+merge後main CIは引き続き個別Owner判断へ残す。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 

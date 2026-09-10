@@ -183,4 +183,6 @@ pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b
 ```
 
 CI job timeoutは60分、aggregate stepは52分、最終inspectionは5分とする。timeout / cancelにより最終inspection自体を
-完了できなかった場合はcleanup成功とみなさない。remote実行、required check化、push / PRは個別Owner承認後に行う。
+完了できなかった場合はcleanup成功とみなさない。同一final HEADでremote 3回連続成功と全回cleanup成功を確認し、
+2026年9月10日のArchitecture Owner承認後、main rulesetのrequired checkへ追加した。Customer業務アプリのCIは、
+利用Starter、業務リスク、構成およびデプロイ形態に応じて別途軽量化・段階化する。
