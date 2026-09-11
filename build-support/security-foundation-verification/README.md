@@ -241,3 +241,17 @@ pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c
 staged coordinates、POM / JAR packaging、Reference / Tooling / Customer migration / source template非混入を検査する。
 隔離repositoryは成功・失敗のどちらでも終了時にcleanupする。C2-2ではConsumer、Public API baseline、snapshot publish、
 OpenRewrite prototypeまたはCIを追加・実行しない。
+
+P2-C2 C2-3のRoot Reactor外Consumerは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c2-consumer.ps1
+```
+
+既存Gate A Consumerのbaselineを変更せず、その配下の独立PostgreSQL Consumerを空の隔離Maven repositoryから
+build / test / packageする。ConsumerはPublic APIだけでIdentity作成 / 照会、Business AuditおよびSession cleanupを利用し、
+同一package済みJARをJava 21 / 25とPostgreSQL 17で実行し、別Web processでpublic / authenticated / unmatched routeと
+Security Headerも確認する。Framework migration 3件 / 11 table、Customer history分離、
+Customer側のbaseline 1行＋migration 1行、Java 25再起動no-op、Session initializer強制有効化のstartup failure、
+正式release unit非混入、sensitive-outputおよび
+container / temporary repository / fixture target cleanupを外部観測する。

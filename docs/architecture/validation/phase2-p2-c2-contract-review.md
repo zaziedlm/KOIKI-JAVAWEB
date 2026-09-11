@@ -23,7 +23,7 @@ Public API、Consumer fixture、OpenRewrite recipe、CI、remote packageまた�
 | formal Framework release unit | Referenceを除く14 reactor projects | P2-C2で増減させない |
 | distributed JAR | Architecture Contract、ArchUnit Rules、Starter 8件、`koiki-testing`の計11件 | 全artifact inventory候補とする |
 | Reference | Root参加、BOM / formal release unit非収載 | ConsumerやFramework artifactへ昇格させない |
-| existing external Consumer | `build-support/runtime-foundation-consumer` | Phase 1b regression正本として変更しない |
+| existing external Consumer | Phase 1b `build-support/runtime-foundation-consumer`、Gate A `build-support/security-foundation-consumer` | 両baselineを変更しない |
 | existing published API baseline | Architecture Contract / ArchUnit Rulesの2 artifact | 現行比較を維持する |
 | Phase 2 API | Security 0型、Audit 6型、Identity 10型、Session 3型 | 過去baselineなし。現inventoryはbaseline候補 |
 | OpenRewrite | 方針はADR-029で承認、正式artifact / CIはPhase 5 | P2-C2は非配布の試作と境界Evidenceだけ |
@@ -60,9 +60,10 @@ P2-C1のmigration検査とGate Bのartifact検査を再利用し、同じasserti
 
 ### Proposed placement
 
-`build-support/security-foundation-consumer`を候補とする。これはCustomer-likeな非配布fixtureであり、正式Reference、
-Project Template、Customer成果物またはFramework moduleではない。Phase 1bの
-`build-support/runtime-foundation-consumer`は承認済み回帰資産として変更しない。
+`build-support/security-foundation-consumer`はGate Aで採用済みのCustomer-likeな非配布fixtureである。C2-3ではこのPOM / source /
+testを置換せず、同directory配下の独立`postgresql` Consumerとして分離する。いずれも正式Reference、Project Template、
+Customer成果物またはFramework moduleではない。Phase 1bの`build-support/runtime-foundation-consumer`も承認済み回帰資産として
+変更しない。この記述はC2-3着手時に既存Gate A Consumerを再確認して明確化したもので、承認済みOwnership判断を変更しない。
 
 ### Proposed Consumer contract
 

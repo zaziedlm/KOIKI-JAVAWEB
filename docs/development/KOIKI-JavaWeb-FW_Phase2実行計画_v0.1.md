@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `P2-C2 C2-2 COMPLETE / ARCHITECTURE OWNER APPROVED — C2-3 READY`
+**状態:** `P2-C2 C2-3 COMPLETE / ARCHITECTURE OWNER APPROVED — C2-4 READY`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月11日
 **開始branch:** `feature/phase2-security-foundation`
@@ -295,6 +295,18 @@ BOMの11 JARおよびpackage種別をmanifestと照合し、Referenceを除く14
 一時repository残留0を確認した。production artifact / Public API変更は0であり、C2-2を`COMPLETE / LOCAL VERIFIED`として
 Architecture Owner reviewへ提示した。Architecture OwnerはC2-2の4 review pointsをすべて承認し、次をC2-3
 Root Reactor外Consumerとした。
+
+同日、既存Gate A Consumerを変更せず、その配下にC2-3専用の独立PostgreSQL Consumerを追加した。formal release unit
+14 projectsを空の隔離Maven repositoryへstageし、Consumerを別invocationでbuild / test / packageした。Public APIだけで
+Identity作成 / 照会、Business Audit、Session cleanupを利用し、Java 21 buildの同一JARをJava 21 / 25とPostgreSQL 17で実行した。
+Framework history 3行 / 11 table、Customer history 2行（baseline 1＋V1 SQL 1）/ marker 1 table、2回目no-op、
+同JARのWeb processによるpublic / authenticated / unmatched routeとSecurity Header、initializer強制有効化の起動失敗と
+`SPRING_SESSION`非生成、sensitive-outputおよびcleanupを確認した。C2-3を
+`COMPLETE / LOCAL VERIFIED`としてArchitecture Owner reviewへ提示し、次候補をC2-4 Public API inventory / compatibility fixtureとする。
+
+同日、Architecture OwnerはC2-3の5 review pointsをすべて承認した。review指摘に基づき、default denyはConsumer matcher外の
+`/framework-fallback-probe`へ修正してFramework fallback 401を再確認し、Consumer Web child processをcleanup対象へ明記した。
+C2-3を`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はC2-4 Public API inventory / compatibility fixtureとする。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
