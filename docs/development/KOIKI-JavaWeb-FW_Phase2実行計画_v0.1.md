@@ -1,8 +1,8 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `P2-C2 C2-5 WORKFLOW IMPLEMENTATION APPROVED / LOCAL VERIFIED / REMOTE PUBLISH NOT APPROVED`
+**状態:** `P2-C2 C2-6 COMPLETE / ARCHITECTURE OWNER APPROVED`
 **作成日:** 2026年8月31日
-**最終更新日:** 2026年9月11日
+**最終更新日:** 2026年9月12日
 **開始branch:** `feature/phase2-security-foundation`
 **開始基準main:** `b2e2123605e4d971c3ed5ccc729f668d91189d83`
 
@@ -354,6 +354,19 @@ formal 14-project release unitからRoot aggregatorだけを除いた集合と�
 修正した。修正後のlocal dry runで13座標、24 payload SHA-256、aggregate signatureおよび11 JARのsame-source `japicmp`が
 再度成功したため、C2-5 workflow実装を`APPROVED / LOCAL VERIFIED`とする。protected environment、push、PR、main反映、
 workflow dispatchおよびremote publishは承認範囲外であり、引き続き`NO-GO`とする。
+
+2026年9月12日、C2-6 OpenRewrite feasibilityを`build-support`配下のRoot Reactor外・非配布Toolingとして実装した。
+syntheticなKOIKI所有型変更1件に限定し、recipe正例 / 非変更例、固定before / after、旧API定義非変更、2回目適用の冪等性、
+変換前後のConsumer compile / test、手動残件report、formal release unit非混入および一時成果物cleanupを隔離Maven repositoryで
+検証した。正式recipe artifact、実Customer / 過去KOIKI version、Spring Boot recipe再実装、required CIおよびremote操作は含めない。
+C2-6を`COMPLETE / LOCAL VERIFIED`としてArchitecture Owner reviewへ提示し、承認後の次候補をC2-7 closeoutとする。
+C2-5 remote snapshot publishは引き続き`NOT APPROVED / NO-GO`である。
+
+同日、Architecture OwnerはC2-6の6判断を提案どおり承認した。OpenRewrite prototypeは初期フレームワーク運用、正式release unit、
+Starter / BOM、Customer配布、runtime、required CIおよびsnapshot publishへ含めず、`build-support`配下の非配布Tooling Evidenceとして
+のみ保持する。syntheticな型変更の成立を実Customer完全移行、意味的同値性、過去version互換性または正式recipe提供とは扱わない。
+正式artifactとrelease CIへの昇格はPhase 5の個別Owner reviewへ残す。C2-6を`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、
+成果物のcommit後、clean HEADでC2-7 local closeoutへ進む。C2-5 remote publishとその他のremote変更は引き続き`NO-GO`である。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 

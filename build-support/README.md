@@ -103,6 +103,16 @@ Maven Toolchains例は開発環境の再現用に保持します。Walking Skele
 Java 25 runtime scriptは、C4のmanifest・hash・class major・Java 21 / 25検証へ置き換えたため除去しました。
 Maven Wrapper bootstrap scriptは公式`bin`型を再生成する保守手段として保持します。
 
+## OpenRewrite Feasibility
+
+`openrewrite-feasibility/`はPhase 2 P2-C2 C2-6のTooling所有・Root外・非配布prototypeです。syntheticなKOIKI所有API型変更について、
+before / after、冪等性、変換後testおよび手動残件を検証します。正式な`koiki-migration-recipes`、実Customer移行保証、
+Spring Boot移行recipeまたはrequired CIではありません。
+
+```powershell
+pwsh -NoProfile -File build-support/openrewrite-feasibility/verify-p2-c2-openrewrite.ps1
+```
+
 ## 社内SSLインスペクションProxy環境でのMavenビルドエラー対応
 
 社内ネットワーク(Netskope等のSSLインスペクションProxy配下)でMavenを実行すると、
