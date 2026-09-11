@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `P2-C1 C1-3 COMPLETE / LOCAL VERIFIED — C1-4 READY`
+**状態:** `P2-C1 COMPLETE / ARCHITECTURE OWNER APPROVED — P2-C2 CONTRACT REVIEW READY`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月11日
 **開始branch:** `feature/phase2-security-foundation`
@@ -269,6 +269,15 @@ version、checksum、owner history、列 / constraint / index、再起動no-op�
 保持して現行Framework migrationを追加し、再起動no-opを確認した。Framework / Customer migration失敗、Customer checksum不一致、
 initializer上書き拒否の失敗系も成功し、既存P2-B1 Audit contractを回帰確認した。C1-3を
 `COMPLETE / LOCAL VERIFIED`とし、次はC1-4 aggregate回帰へ進める。
+
+同日、commit `f7a3d906`のcleanな同一HEADでC1-4 closeoutを実行した。C1 static inventory 3 migration / 11 table、
+PostgreSQL 17.11上のclean install 4 profile、Phase 1b supported upgradeおよびfailure contractsを再確認した。
+Gate Bの6工程は3ラウンド連続成功し、B1 31 / 31、B2 56 / 56、B3 core 72 / 72、two-process、non-web cleanup、
+package済みReference journeyを各roundで完了した。Root Reactor 15 projects / 104 tests、Null Safety正負 / restore、
+Public API inventory、sensitive-outputおよび終了後の独立cleanup inspectionも成功した。C1-4を
+`COMPLETE / LOCAL VERIFIED`とした。Architecture OwnerはC1-4の5 review pointsをすべて承認し、P2-C1を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はP2-C2 package / Consumer contract reviewとし、
+契約承認前にproduction artifact、Public API、Consumer fixture、OpenRewrite recipeまたはCIを追加しない。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 

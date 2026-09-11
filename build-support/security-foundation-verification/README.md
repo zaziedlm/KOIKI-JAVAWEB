@@ -215,3 +215,17 @@ supported upgradeでは承認済みPhase 1b baseline `40d16f9dbf26a7ba88ac13b2e3
 startup failure、Session initializer強制有効化の拒否と`SPRING_SESSION`非生成を確認する。
 Harness、fixture SQL / Javaおよび一時credentialは非配布Toolingに限定し、container、process、一時repository、
 fixture / Reference targetを終了時にcleanupする。
+
+P2-C1 C1-4 closeoutは、cleanな同一HEADで次を順に実行する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c1-migration-static.ps1
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c1-postgresql.ps1
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b4-closeout.ps1 `
+  -ExpectedHead <commit-sha>
+```
+
+C1 static inventoryとPostgreSQL aggregateに加え、既存Gate B closeoutを再利用してB1〜B4を3ラウンド連続実行し、
+Root Reactor、Null Safety positive / expected negative / restore、Public API / artifact / dependency inventory、
+sensitive-outputおよびcleanupを確認する。最終的なrepository / residual-resource検査だけを独立再実行する場合は、
+同じ`<commit-sha>`を指定して`verify-p2-b4-closeout.ps1 -InspectOnly`を使用する。
