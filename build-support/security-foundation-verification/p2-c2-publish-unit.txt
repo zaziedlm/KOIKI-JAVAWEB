@@ -1,0 +1,15 @@
+# P2-C2 remote publish unit v1
+# PACKAGING ARTIFACT_ID MODULE_PATH
+POM koiki-dependencies-bom koiki-dependencies-bom
+POM koiki-parent koiki-parent
+JAR koiki-architecture-contract koiki-architecture-contract
+JAR koiki-archunit-rules koiki-archunit-rules
+JAR koiki-starter-api koiki-starters/koiki-starter-api
+JAR koiki-starter-data koiki-starters/koiki-starter-data
+JAR koiki-starter-data-jpa koiki-starters/koiki-starter-data-jpa
+JAR koiki-starter-observability koiki-starters/koiki-starter-observability
+JAR koiki-starter-audit koiki-starters/koiki-starter-audit
+JAR koiki-starter-security koiki-starters/koiki-starter-security
+JAR koiki-starter-identity koiki-starters/koiki-starter-identity
+JAR koiki-starter-session-jdbc koiki-starters/koiki-starter-session-jdbc
+JAR koiki-testing koiki-testing

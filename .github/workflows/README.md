@@ -90,3 +90,17 @@ Phase 1a C1の4-artifact公開実績はvalidation文書とGit履歴で保持し�
 統合する。package済みConsumerのweb／maintenance journeyは同じ承認SHAのpreflightで既に外部processとして検証するため、
 publish後は配布境界に固有な9座標のremote resolveとConsumer build／testを必須とし、同じjourneyの重複実行は必須にしない。
 packaging、配布設定または正式Application Templateが変わる場合は、remote artifactからの起動journeyを再び必須化する。
+
+## `publish-phase2-snapshot.yml`
+
+- Phase 1bの9-artifact workflowを変更せず、Phase 2 C2-5専用の`workflow_dispatch`入口とする。
+- main refとOwner承認済み40文字commitをauthorizeし、C2-2 package、C2-4 aggregate signatureおよびC2-5 local publish dry runを
+  read-only preflightで検証する。
+- Root aggregatorを除くPOM 2 / JAR 11の13座標を明示し、publish jobだけが`phase2-internal-snapshot` environmentと
+  `packages: write`を使用する。
+- publish jobとlocal dry runは同じ13座標manifestからMaven project listを生成し、formal 14-project unitからRoot aggregatorだけを
+  除いた集合との完全一致をpublish / Capture / Verify前に機械検査する。
+- publish sessionのhash-only manifestをretention 1日で受け渡し、fresh jobが座標ごとのresolved snapshot value、13 POM / 11 JARの
+  SHA-256、aggregate signatureおよび11 JARの同一source `japicmp`変更0を検査する。
+- 座標ごとに既存snapshot公開回数が異なるため、共通build numberをrelease unit identityにしない。
+- environment作成、push、PR、main merge、dispatchおよびremote publishは、それぞれのOwner承認前に実施しない。

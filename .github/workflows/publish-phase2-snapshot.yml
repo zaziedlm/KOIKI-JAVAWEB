@@ -1,0 +1,164 @@
+name: Publish Phase 2 internal snapshot
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_commit:
+        description: Full 40-character main commit SHA approved for Phase 2 publication
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: koiki-phase2-internal-snapshot
+  cancel-in-progress: false
+
+jobs:
+  authorize:
+    name: Confirm approved Phase 2 source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Confirm approved main commit
+        shell: bash
+        env:
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: |
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "Phase 2 snapshots may only be published from refs/heads/main." >&2
+            exit 1
+          fi
+          if [[ ! "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "expected_commit must be a lowercase 40-character Git commit SHA." >&2
+            exit 1
+          fi
+          if [[ "$EXPECTED_COMMIT" != "$GITHUB_SHA" ]]; then
+            echo "Approved commit does not match the workflow commit." >&2
+            exit 1
+          fi
+
+  preflight:
+    name: Phase 2 C2-5 publish preflight
+    needs: authorize
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Set up Temurin 21
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Verify formal package boundary
+        shell: pwsh
+        run: pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c2-package-static.ps1
+      - name: Verify aggregate Public API signature
+        shell: pwsh
+        run: pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c2-public-api.ps1
+      - name: Verify local publish and acquisition path
+        shell: pwsh
+        env:
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: >-
+          pwsh -NoProfile -File
+          build-support/security-foundation-verification/verify-p2-c2-publish-dry-run.ps1
+          -ExpectedCommit $env:EXPECTED_COMMIT
+
+  publish:
+    name: Publish approved Phase 2 release unit
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: phase2-internal-snapshot
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Set up Temurin 21 and Maven authentication
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+      - name: Publish the approved thirteen-coordinate unit
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: >-
+          pwsh -NoProfile -File
+          build-support/security-foundation-verification/invoke-p2-c2-publish.ps1
+          -RepositoryUrl https://maven.pkg.github.com/zaziedlm/KOIKI-JAVAWEB
+          -RepositoryId github
+          -ExpectedCommit $env:EXPECTED_COMMIT
+      - name: Capture exact remote snapshot identity
+        shell: pwsh
+        env:
+          KOIKI_PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: >-
+          pwsh -NoProfile -File
+          build-support/security-foundation-verification/verify-p2-c2-publish-state.ps1
+          -Mode Capture
+          -RepositoryUrl https://maven.pkg.github.com/zaziedlm/KOIKI-JAVAWEB
+          -ManifestPath $env:RUNNER_TEMP/p2-c2-publish-manifest.json
+          -ExpectedCommit $env:EXPECTED_COMMIT
+      - name: Upload hash-only publish manifest
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p2-c2-publish-manifest-${{ github.run_id }}
+          path: ${{ runner.temp }}/p2-c2-publish-manifest.json
+          if-no-files-found: error
+          retention-days: 1
+
+  verify-remote:
+    name: Verify Phase 2 remote snapshot
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Set up Temurin 21 and Maven authentication
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+      - name: Download hash-only publish manifest
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: p2-c2-publish-manifest-${{ github.run_id }}
+          path: ${{ runner.temp }}/p2-c2-publish-evidence
+      - name: Verify exact remote payloads and same-source API
+        shell: pwsh
+        env:
+          KOIKI_PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: >-
+          pwsh -NoProfile -File
+          build-support/security-foundation-verification/verify-p2-c2-publish-state.ps1
+          -Mode Verify
+          -RepositoryUrl https://maven.pkg.github.com/zaziedlm/KOIKI-JAVAWEB
+          -ManifestPath $env:RUNNER_TEMP/p2-c2-publish-evidence/p2-c2-publish-manifest.json
+          -ExpectedCommit $env:EXPECTED_COMMIT

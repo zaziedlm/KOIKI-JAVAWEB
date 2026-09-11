@@ -267,3 +267,20 @@ generic型、例外、enum値、annotation metadata / default値およびJSpecif
 artifact sectionとして固定し、internal packageを外部APIから除外する。synthetic fixtureではinternal追加の許容、
 nullness-only変更の検出、および既存japicmp fixtureによるpublic戻り値破壊 / 未承認追加の期待failureを確認する。
 既存Phase 1a published baseline、required jobおよびremote stateは変更しない。
+
+P2-C2 C2-5のremote publish方式は、実公開前に次のlocal dry runで検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c2-publish-dry-run.ps1
+```
+
+`p2-c2-publish-unit.txt`はRoot aggregatorを除くPOM 2 / JAR 11の13座標を明示する。共有loaderはこれを
+`p2-c2-formal-release-unit.txt`からRoot aggregatorだけを除いた集合と完全照合し、workflowとdry runは同じ
+`invoke-p2-c2-publish.ps1`からMaven project listを生成する。空の一時file repositoryへ
+`deployAtEnd=true`でdeployし、座標ごとのresolved snapshot value、13 POM / 11 JARのSHA-256、C2-4 aggregate signatureおよび
+11 JARの同一source `japicmp`変更0を検査する。remoteでは座標ごとに公開履歴が異なるため、共通build numberを要求しない。
+一時repository、payload、hash manifestおよびjapicmp reportは成功・失敗のどちらでもcleanupする。
+
+実publish用の`.github/workflows/publish-phase2-snapshot.yml`は既存Phase 1b workflowを変更せず、mainとOwner承認commitの一致、
+read-only preflight、publish jobだけの`packages: write`、`phase2-internal-snapshot` environment、hash-only manifestおよびfresh jobの
+remote検証を分離する。environment作成、workflow dispatchおよびremote publishは個別Owner承認前に実施しない。

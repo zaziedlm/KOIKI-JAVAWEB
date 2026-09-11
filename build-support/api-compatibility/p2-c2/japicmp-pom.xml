@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.koikifw.validation</groupId>
+  <artifactId>p2-c2-japicmp-verification</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <japicmp.version>0.26.1</japicmp.version>
+    <koiki.version>0.1.0-SNAPSHOT</koiki.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.koikifw</groupId>
+        <artifactId>koiki-dependencies-bom</artifactId>
+        <version>${koiki.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-architecture-contract</artifactId><version>${koiki.version}</version></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-archunit-rules</artifactId><version>${koiki.version}</version></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-api</artifactId><version>${koiki.version}</version></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-data</artifactId><version>${koiki.version}</version></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-data-jpa</artifactId><version>${koiki.version}</version></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-observability</artifactId><version>${koiki.version}</version></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-audit</artifactId><version>${koiki.version}</version></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-security</artifactId><version>${koiki.version}</version></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-identity</artifactId><version>${koiki.version}</version></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-session-jdbc</artifactId><version>${koiki.version}</version></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-testing</artifactId><version>${koiki.version}</version></dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.siom79.japicmp</groupId>
+        <artifactId>japicmp-maven-plugin</artifactId>
+        <version>${japicmp.version}</version>
+        <configuration>
+          <oldVersion><file><path>${japicmp.oldJar}</path></file></oldVersion>
+          <newVersion><file><path>${japicmp.newJar}</path></file></newVersion>
+          <outputDirectory>${japicmp.outputDirectory}</outputDirectory>
+          <parameter>
+            <accessModifier>public</accessModifier>
+            <onlyModified>true</onlyModified>
+            <breakBuildOnModifications>true</breakBuildOnModifications>
+            <breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
+            <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>
+            <breakBuildBasedOnSemanticVersioning>false</breakBuildBasedOnSemanticVersioning>
+            <breakBuildBasedOnSemanticVersioningForMajorVersionZero>false</breakBuildBasedOnSemanticVersioningForMajorVersionZero>
+            <ignoreMissingClasses>false</ignoreMissingClasses>
+            <ignoreNonResolvableArtifacts>false</ignoreNonResolvableArtifacts>
+            <skipPomModules>false</skipPomModules>
+            <reportOnlyFilename>true</reportOnlyFilename>
+            <skipHtmlReport>true</skipHtmlReport>
+            <skipMarkdownReport>true</skipMarkdownReport>
+          </parameter>
+        </configuration>
+        <executions>
+          <execution>
+            <id>p2-c2-same-source</id>
+            <phase>verify</phase>
+            <goals><goal>cmp</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

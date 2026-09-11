@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `P2-C2 C2-4 COMPLETE / ARCHITECTURE OWNER APPROVED — C2-5 PUBLISH REVIEW READY`
+**状態:** `P2-C2 C2-5 WORKFLOW IMPLEMENTATION APPROVED / LOCAL VERIFIED / REMOTE PUBLISH NOT APPROVED`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月11日
 **開始branch:** `feature/phase2-security-foundation`
@@ -321,6 +321,39 @@ Architecture Owner reviewへ提示する。
 Phase 1a公開済み5型とPhase 2 candidate 19型に分け、Public型0件の6 JARを正式artifact名で明記した。既存inventoryとの
 照合は過去versionとのsignature互換性証明ではなく、型集合の継続一致確認であることも明確化した。C2-4を
 `COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はC2-5 baseline publish / remote operationの実施可否reviewとする。
+
+同日、C2-5 publish reviewを準備した。Root aggregatorを除くPOM 2 / JAR 11の13 coordinatesを候補とし、GitHubへ接続しない
+一時file repositoryへ単一Maven sessionでdeployした。13 / 13 projectsが成功し、全coordinateが同一timestampとなり、
+13 POM / 11 JARのlocal SHA-256とC2-4 signature SHA-256を採取した。既存Phase 1b workflowを変更せず、Phase 2専用manual
+workflow、protected environment、publish sessionとfresh remote取得のhash一致および同一source`japicmp`をreview案とした。
+再開環境のGitHub CLI認証が失効しており、package既存状態、environmentおよびActions accessを確認できないため、remote publishは
+`NOT APPROVED / NO-GO`のまま保持し、Architecture Ownerへ6点のreviewを提示する。
+
+同日、Architecture OwnerがGitHub CLIを再認証した後、read-only remote readiness確認を完了した。Repositoryはpublic、既存9 Maven
+packageは`0.1.0-SNAPSHOT`を保持し、Phase 2のAudit / Security / Identity / Session JDBC 4 packageは未作成だった。
+Phase 1a / 1b environmentはいずれもrequired reviewer、main限定およびadmin bypass無効を維持し、既存Phase 1b workflowは
+`origin/main`との差分0だった。main run `34475233082`のPublic API Compatibility成功によりPhase 1a固定baseline取得経路も確認した。
+remote readinessを`VERIFIED`とするが、専用workflow / environment、PR / main、最終source commitおよびpublishは未承認のため、
+remote publishは引き続き`NO-GO`とする。
+
+同日、Architecture OwnerはC2-5 review 6点を修正条件付きで承認した。Rootを除く13座標、Phase 2専用workflow分離および
+remote publish `NO-GO`を提案どおり承認した。24型は現行release unitのaggregate signatureとし、Phase 2初回published baselineを
+Audit 6型、Identity 10型、Session 3型、Security 0型としてPhase 1a固定baselineから分離した。remoteでは共通build numberを
+要求せず、同一workflow run / source commit、座標ごとのresolved snapshot value、24 payload SHA-256、signatureおよび同一source
+`japicmp`でrelease unitを固定する。修正後の専用workflow実装とlocal reviewを開始し、remote publishは未承認のまま保持する。
+
+同日、Phase 2専用manual workflow、13座標manifest、publish-state Capture / Verify toolおよびlocal file repository dry-run toolを
+実装した。local reviewでMaven metadataのclassifier欠落処理と検証用POMに対する`japicmp` skipを検出・修正した後、
+13座標、24 payload SHA-256、24型aggregate signatureおよび11 JARのsame-source `japicmp`実比較がすべて成功した。
+既存Phase 1b workflowは変更していない。protected environment、push、PR、main CI、manual dispatchおよびremote publishは
+未実施とし、C2-5 workflow実装をArchitecture Owner reviewへ提示する。
+
+同日、Architecture Ownerは承認条件の反映を確認し、13座標のpublish指定と検証manifestの乖離防止をworkflow実装承認の
+修正条件とした。workflow / dry runのMaven project listを13座標manifestから生成する共通publish helperへ統一し、共有loaderで
+formal 14-project release unitからRoot aggregatorだけを除いた集合との完全一致をpublish / Capture / Verify前に機械検査するよう
+修正した。修正後のlocal dry runで13座標、24 payload SHA-256、aggregate signatureおよび11 JARのsame-source `japicmp`が
+再度成功したため、C2-5 workflow実装を`APPROVED / LOCAL VERIFIED`とする。protected environment、push、PR、main反映、
+workflow dispatchおよびremote publishは承認範囲外であり、引き続き`NO-GO`とする。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
