@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `P2-C1 COMPLETE / ARCHITECTURE OWNER APPROVED — P2-C2 CONTRACT REVIEW READY`
+**状態:** `P2-C2 C2-2 COMPLETE / ARCHITECTURE OWNER APPROVED — C2-3 READY`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月11日
 **開始branch:** `feature/phase2-security-foundation`
@@ -278,6 +278,23 @@ Public API inventory、sensitive-outputおよび終了後の独立cleanup inspec
 `COMPLETE / LOCAL VERIFIED`とした。Architecture OwnerはC1-4の5 review pointsをすべて承認し、P2-C1を
 `COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はP2-C2 package / Consumer contract reviewとし、
 契約承認前にproduction artifact、Public API、Consumer fixture、OpenRewrite recipeまたはCIを追加しない。
+
+同日、P2-C2のread-only inventoryを実施し、package / Root Reactor外Consumer / Public API baseline / OpenRewrite試作の
+contract review案と再開handoffを準備した。formal Framework release unit 14 projects、11 JAR、Reference分離、
+Phase 1b Consumer、既存2 artifact published baseline、Phase 2 Public API 19型およびADR-029のPhase 5正式提供境界を確認した。
+準備段階のproduction changeは0であり、次はC2-C1〜C7のArchitecture Owner reviewとする。
+
+同日、Architecture OwnerはP2-C2契約C2-C1〜C7を推奨案どおり承認した。正式release unit 14 projects / 11 JAR、
+Root外Security Consumer、初回Public API baselineの過大claim禁止、snapshot publishの個別承認、OpenRewrite非配布試作、
+C1 / Gate B回帰とcleanupのcloseout条件を確定した。C2-C5のremote publishは本承認に含めず、次はC2-2
+formal package manifest / isolated stagingとする。
+
+同日、C2-2でformal release unit manifestと非配布static Harnessを追加した。Root Reactorのformal 13 modulesとReference、
+BOMの11 JARおよびpackage種別をmanifestと照合し、Referenceを除く14 projectsを空の隔離Maven repositoryへstageした。
+14 / 14 `BUILD SUCCESS`、staged coordinates完全一致、Reference / Tooling / Customer migration / source template非混入、
+一時repository残留0を確認した。production artifact / Public API変更は0であり、C2-2を`COMPLETE / LOCAL VERIFIED`として
+Architecture Owner reviewへ提示した。Architecture OwnerはC2-2の4 review pointsをすべて承認し、次をC2-3
+Root Reactor外Consumerとした。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 

@@ -229,3 +229,15 @@ C1 static inventoryとPostgreSQL aggregateに加え、既存Gate B closeoutを�
 Root Reactor、Null Safety positive / expected negative / restore、Public API / artifact / dependency inventory、
 sensitive-outputおよびcleanupを確認する。最終的なrepository / residual-resource検査だけを独立再実行する場合は、
 同じ`<commit-sha>`を指定して`verify-p2-b4-closeout.ps1 -InspectOnly`を使用する。
+
+P2-C2 C2-2のformal package manifest / isolated stagingは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c2-package-static.ps1
+```
+
+`p2-c2-formal-release-unit.txt`を正本として、Referenceを除くformal Framework release unit 14 projectsを
+空の隔離Maven repositoryへstageする。Root ReactorはReferenceを含む15 projectsのまま、BOM管理対象は11 JARのまま維持し、
+staged coordinates、POM / JAR packaging、Reference / Tooling / Customer migration / source template非混入を検査する。
+隔離repositoryは成功・失敗のどちらでも終了時にcleanupする。C2-2ではConsumer、Public API baseline、snapshot publish、
+OpenRewrite prototypeまたはCIを追加・実行しない。
