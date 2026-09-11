@@ -196,4 +196,22 @@ pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c
 scriptはAudit Starterの`V2026090300`を含むpackage済みAudit / Identity / Session JDBC Starter JARを直接検査し、
 Framework migration 3件の一意性と依存順、owner artifactごとの配置、合計11 table、Audit Entityと一致する列契約、
 fixture table / failure constraint / 未使用indexの非混入を確認する。focused Audit reactorだけを実行し、実PostgreSQL上の
-clean install 4 profileとPhase 1b supported upgradeはC1-3へ残す。
+clean install 4 profileとPhase 1b supported upgradeは次のC1-3 Harnessが所有する。
+
+P2-C1 C1-3のPostgreSQL clean install / supported upgrade aggregateは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c1-postgresql.ps1
+```
+
+scriptは正式Framework release unitを隔離Maven repositoryへstageし、package済みStarter resourceと
+PostgreSQL 17を使ってAudit only、Identity、Session JDBC、package済みReferenceの4 profileを検証する。
+各profileではFramework table、Flyway version / checksum / history分離、列 / constraint / index、再起動no-opを確認し、
+Referenceがmigrationを所有せずSession依存closureを利用することもpackage済みJARから検査する。
+
+supported upgradeでは承認済みPhase 1b baseline `40d16f9dbf26a7ba88ac13b2e3728075e0eff2a7`のCustomer migrationを
+変更せずに適用し、既存history、checksum、tableおよびseed rowを保持したまま現行Framework migration 3件を追加する。
+失敗系ではFramework失敗時のCustomer非実行、Customer失敗後のFramework history保持、Customer checksum不一致時の
+startup failure、Session initializer強制有効化の拒否と`SPRING_SESSION`非生成を確認する。
+Harness、fixture SQL / Javaおよび一時credentialは非配布Toolingに限定し、container、process、一時repository、
+fixture / Reference targetを終了時にcleanupする。

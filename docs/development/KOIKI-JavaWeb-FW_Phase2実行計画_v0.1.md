@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `P2-C1 C1-2 COMPLETE / LOCAL VERIFIED — C1-3 READY`
+**状態:** `P2-C1 C1-3 COMPLETE / LOCAL VERIFIED — C1-4 READY`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月11日
 **開始branch:** `feature/phase2-security-foundation`
@@ -261,6 +261,14 @@ table ownership、clean install matrix、Phase 1b supported upgrade起点およ�
 非配布static inventory Harnessを追加した。focused Audit reactor 3 modulesとSession依存closure 7 modulesはbuild成功し、
 Framework migration 3件の一意性、`0300`→`0301`→`0701`の依存順、owner artifact配置、合計11 table、Audit Entity列契約、
 fixture固有DDL / 未使用index非混入を確認した。実PostgreSQL clean install 4 profileとPhase 1b supported upgradeはC1-3へ進める。
+
+同日、C1-3の非配布PostgreSQL Harnessを追加し、package済みStarter resourceを使うAudit only、Identity、Session JDBC、
+package済みReferenceのclean install 4 profileをPostgreSQL 17上で実証した。Framework migration 3件 / 11 tableの
+version、checksum、owner history、列 / constraint / index、再起動no-op、Reference migration 0件、Spring Session initializer
+無効を確認した。承認済みPhase 1b baseline `40d16f9`からのsupported upgradeではCustomer history / checksum / table / seed rowを
+保持して現行Framework migrationを追加し、再起動no-opを確認した。Framework / Customer migration失敗、Customer checksum不一致、
+initializer上書き拒否の失敗系も成功し、既存P2-B1 Audit contractを回帰確認した。C1-3を
+`COMPLETE / LOCAL VERIFIED`とし、次はC1-4 aggregate回帰へ進める。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
