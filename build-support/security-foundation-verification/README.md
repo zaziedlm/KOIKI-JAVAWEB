@@ -255,3 +255,15 @@ Security Headerも確認する。Framework migration 3件 / 11 table、Customer 
 Customer側のbaseline 1行＋migration 1行、Java 25再起動no-op、Session initializer強制有効化のstartup failure、
 正式release unit非混入、sensitive-outputおよび
 container / temporary repository / fixture target cleanupを外部観測する。
+
+P2-C2 C2-4の全JAR Public API baseline candidateは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c2-public-api.ps1
+```
+
+C2-2 manifestの11 JARをpackage済みartifactから走査し、24 Public Java型の型種別、継承、constructor、field、method、
+generic型、例外、enum値、annotation metadata / default値およびJSpecify nullnessを正規化する。Public型0件のJARも
+artifact sectionとして固定し、internal packageを外部APIから除外する。synthetic fixtureではinternal追加の許容、
+nullness-only変更の検出、および既存japicmp fixtureによるpublic戻り値破壊 / 未承認追加の期待failureを確認する。
+既存Phase 1a published baseline、required jobおよびremote stateは変更しない。

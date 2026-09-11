@@ -1,0 +1,152 @@
+# KOIKI Phase 2 P2-C2 Public API baseline candidate v1
+ARTIFACT koiki-architecture-contract
+PUBLIC_TYPES 4
+PACKAGE org.koikifw.architecture NULL_MARKED true
+TYPE annotation org.koikifw.architecture.KoikiModule
+META retention RUNTIME
+META target PACKAGE
+META documented true
+IMPLEMENTS org.koikifw.architecture.KoikiModule java.lang.annotation.Annotation
+METHOD abstract java.lang.String org.koikifw.architecture.KoikiModule#name()
+METHOD abstract org.koikifw.architecture.ModuleTier org.koikifw.architecture.KoikiModule#tier()
+METHOD abstract org.koikifw.architecture.PersistenceModel org.koikifw.architecture.KoikiModule#persistenceModel()
+METHOD abstract org.koikifw.architecture.PersistenceTechnology org.koikifw.architecture.KoikiModule#persistence()
+TYPE enum org.koikifw.architecture.ModuleTier
+ENUM org.koikifw.architecture.ModuleTier SIMPLE
+ENUM org.koikifw.architecture.ModuleTier RICH
+TYPE enum org.koikifw.architecture.PersistenceModel
+ENUM org.koikifw.architecture.PersistenceModel SHARED
+TYPE enum org.koikifw.architecture.PersistenceTechnology
+ENUM org.koikifw.architecture.PersistenceTechnology JPA
+ENUM org.koikifw.architecture.PersistenceTechnology MYBATIS
+ARTIFACT koiki-archunit-rules
+PUBLIC_TYPES 1
+PACKAGE org.koikifw.archunit NULL_MARKED true
+TYPE final class org.koikifw.archunit.KoikiArchitectureRules
+METHOD static com.tngtech.archunit.lang.ArchRule org.koikifw.archunit.KoikiArchitectureRules#businessModuleRules(java.lang.String)
+METHOD static com.tngtech.archunit.lang.ArchRule org.koikifw.archunit.KoikiArchitectureRules#frameworkOwnershipRules(java.lang.String,java.lang.String...)
+ARTIFACT koiki-starter-api
+PUBLIC_TYPES 0
+ARTIFACT koiki-starter-data
+PUBLIC_TYPES 0
+ARTIFACT koiki-starter-data-jpa
+PUBLIC_TYPES 0
+ARTIFACT koiki-starter-observability
+PUBLIC_TYPES 0
+ARTIFACT koiki-starter-audit
+PUBLIC_TYPES 6
+PACKAGE org.koikifw.audit NULL_MARKED true
+TYPE final class org.koikifw.audit.AuditActor
+METHOD boolean org.koikifw.audit.AuditActor#equals(java.lang.Object)
+METHOD int org.koikifw.audit.AuditActor#hashCode()
+METHOD java.lang.String org.koikifw.audit.AuditActor#toString()
+METHOD java.lang.String org.koikifw.audit.AuditActor#type()
+METHOD java.util.Optional<java.lang.String> org.koikifw.audit.AuditActor#id()
+METHOD static org.koikifw.audit.AuditActor org.koikifw.audit.AuditActor#anonymous()
+METHOD static org.koikifw.audit.AuditActor org.koikifw.audit.AuditActor#system(java.lang.String)
+METHOD static org.koikifw.audit.AuditActor org.koikifw.audit.AuditActor#user(java.lang.String)
+TYPE final class org.koikifw.audit.AuditEvent
+METHOD boolean org.koikifw.audit.AuditEvent#equals(java.lang.Object)
+METHOD int org.koikifw.audit.AuditEvent#hashCode()
+METHOD java.lang.String org.koikifw.audit.AuditEvent#action()
+METHOD java.lang.String org.koikifw.audit.AuditEvent#eventType()
+METHOD java.lang.String org.koikifw.audit.AuditEvent#toString()
+METHOD java.util.Optional<java.lang.String> org.koikifw.audit.AuditEvent#reasonCode()
+METHOD java.util.Optional<java.lang.String> org.koikifw.audit.AuditEvent#resourceId()
+METHOD java.util.Optional<java.lang.String> org.koikifw.audit.AuditEvent#resourceType()
+METHOD java.util.Optional<java.lang.String> org.koikifw.audit.AuditEvent#subjectId()
+METHOD org.koikifw.audit.AuditActor org.koikifw.audit.AuditEvent#actor()
+METHOD org.koikifw.audit.AuditEvent org.koikifw.audit.AuditEvent#withReason(java.lang.String)
+METHOD org.koikifw.audit.AuditEvent org.koikifw.audit.AuditEvent#withResource(java.lang.String,java.lang.String)
+METHOD org.koikifw.audit.AuditEvent org.koikifw.audit.AuditEvent#withSubject(java.lang.String)
+METHOD org.koikifw.audit.AuditResult org.koikifw.audit.AuditEvent#result()
+METHOD static org.koikifw.audit.AuditEvent org.koikifw.audit.AuditEvent#of(java.lang.String,org.koikifw.audit.AuditActor,java.lang.String,org.koikifw.audit.AuditResult)
+TYPE final class org.koikifw.audit.AuditRecordingException
+EXTENDS org.koikifw.audit.AuditRecordingException java.lang.RuntimeException
+CONSTRUCTOR org.koikifw.audit.AuditRecordingException()
+TYPE enum org.koikifw.audit.AuditResult
+ENUM org.koikifw.audit.AuditResult SUCCESS
+ENUM org.koikifw.audit.AuditResult FAILURE
+TYPE interface org.koikifw.audit.BusinessAuditRecorder
+METHOD abstract void org.koikifw.audit.BusinessAuditRecorder#record(org.koikifw.audit.AuditEvent)
+TYPE interface org.koikifw.audit.SecurityAuditRecorder
+METHOD abstract void org.koikifw.audit.SecurityAuditRecorder#record(org.koikifw.audit.AuditEvent)
+ARTIFACT koiki-starter-security
+PUBLIC_TYPES 0
+ARTIFACT koiki-starter-identity
+PUBLIC_TYPES 10
+PACKAGE org.koikifw.identity NULL_MARKED true
+TYPE enum org.koikifw.identity.AuthenticationSource
+ENUM org.koikifw.identity.AuthenticationSource LOCAL
+ENUM org.koikifw.identity.AuthenticationSource OIDC
+ENUM org.koikifw.identity.AuthenticationSource BEARER
+ENUM org.koikifw.identity.AuthenticationSource EDGE
+TYPE interface org.koikifw.identity.FrameworkPrincipal
+METHOD abstract java.util.Set<java.lang.String> org.koikifw.identity.FrameworkPrincipal#permissions()
+METHOD abstract org.koikifw.identity.AuthenticationSource org.koikifw.identity.FrameworkPrincipal#authenticationSource()
+METHOD abstract org.koikifw.identity.FrameworkUserId org.koikifw.identity.FrameworkPrincipal#userId()
+TYPE final class org.koikifw.identity.FrameworkUserId
+IMPLEMENTS org.koikifw.identity.FrameworkUserId java.io.Serializable
+METHOD boolean org.koikifw.identity.FrameworkUserId#equals(java.lang.Object)
+METHOD int org.koikifw.identity.FrameworkUserId#hashCode()
+METHOD java.lang.String org.koikifw.identity.FrameworkUserId#toString()
+METHOD java.util.UUID org.koikifw.identity.FrameworkUserId#value()
+METHOD static org.koikifw.identity.FrameworkUserId org.koikifw.identity.FrameworkUserId#parse(java.lang.String)
+TYPE interface org.koikifw.identity.IdentityAdministration
+METHOD abstract org.koikifw.identity.FrameworkUserId org.koikifw.identity.IdentityAdministration#createUser(java.lang.String)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#assignRole(org.koikifw.identity.FrameworkUserId,java.lang.String,long)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#changeEmail(org.koikifw.identity.FrameworkUserId,java.lang.String,long)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#createRole(java.lang.String)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#deletePermission(java.lang.String)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#deleteRole(java.lang.String,long)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#disable(org.koikifw.identity.FrameworkUserId,long)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#enable(org.koikifw.identity.FrameworkUserId,long)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#grantPermission(java.lang.String,java.lang.String,long)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#linkExternalIdentity(org.koikifw.identity.FrameworkUserId,java.lang.String,java.lang.String,long)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#registerPermission(java.lang.String)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#revokePermission(java.lang.String,java.lang.String,long)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#revokeRole(org.koikifw.identity.FrameworkUserId,java.lang.String,long)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#setLocalPassword(org.koikifw.identity.FrameworkUserId,char[],long)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#unlinkExternalIdentity(org.koikifw.identity.FrameworkUserId,java.lang.String,long)
+METHOD abstract void org.koikifw.identity.IdentityAdministration#unlockLocalCredential(org.koikifw.identity.FrameworkUserId)
+TYPE enum org.koikifw.identity.IdentityFailure
+ENUM org.koikifw.identity.IdentityFailure INVALID_INPUT
+ENUM org.koikifw.identity.IdentityFailure NOT_FOUND
+ENUM org.koikifw.identity.IdentityFailure CONFLICT
+ENUM org.koikifw.identity.IdentityFailure CONCURRENT_MODIFICATION
+ENUM org.koikifw.identity.IdentityFailure DEPENDENCY_FAILURE
+TYPE final class org.koikifw.identity.IdentityOperationException
+EXTENDS org.koikifw.identity.IdentityOperationException java.lang.RuntimeException
+CONSTRUCTOR org.koikifw.identity.IdentityOperationException(org.koikifw.identity.IdentityFailure)
+METHOD org.koikifw.identity.IdentityFailure org.koikifw.identity.IdentityOperationException#failure()
+TYPE interface org.koikifw.identity.IdentityQuery
+METHOD abstract java.util.Optional<org.koikifw.identity.IdentityUser> org.koikifw.identity.IdentityQuery#findById(org.koikifw.identity.FrameworkUserId)
+TYPE record org.koikifw.identity.IdentityUser
+CONSTRUCTOR org.koikifw.identity.IdentityUser(org.koikifw.identity.FrameworkUserId,java.lang.String,org.koikifw.identity.UserStatus,java.util.Set<java.lang.String>,java.util.Set<java.lang.String>,long)
+METHOD final boolean org.koikifw.identity.IdentityUser#equals(java.lang.Object)
+METHOD final int org.koikifw.identity.IdentityUser#hashCode()
+METHOD final java.lang.String org.koikifw.identity.IdentityUser#toString()
+METHOD java.lang.String org.koikifw.identity.IdentityUser#email()
+METHOD java.util.Set<java.lang.String> org.koikifw.identity.IdentityUser#permissionCodes()
+METHOD java.util.Set<java.lang.String> org.koikifw.identity.IdentityUser#roleCodes()
+METHOD long org.koikifw.identity.IdentityUser#version()
+METHOD org.koikifw.identity.FrameworkUserId org.koikifw.identity.IdentityUser#userId()
+METHOD org.koikifw.identity.UserStatus org.koikifw.identity.IdentityUser#status()
+TYPE interface org.koikifw.identity.UserSessionInvalidator
+METHOD abstract void org.koikifw.identity.UserSessionInvalidator#invalidateAll(org.koikifw.identity.FrameworkUserId)
+TYPE enum org.koikifw.identity.UserStatus
+ENUM org.koikifw.identity.UserStatus ACTIVE
+ENUM org.koikifw.identity.UserStatus DISABLED
+ARTIFACT koiki-starter-session-jdbc
+PUBLIC_TYPES 3
+PACKAGE org.koikifw.session NULL_MARKED true
+TYPE interface org.koikifw.session.SessionCleanup
+METHOD abstract org.koikifw.session.SessionCleanupResult org.koikifw.session.SessionCleanup#cleanUpExpiredSessions()
+TYPE final class org.koikifw.session.SessionCleanupException
+EXTENDS org.koikifw.session.SessionCleanupException java.lang.RuntimeException
+CONSTRUCTOR org.koikifw.session.SessionCleanupException()
+TYPE enum org.koikifw.session.SessionCleanupResult
+ENUM org.koikifw.session.SessionCleanupResult COMPLETED
+ENUM org.koikifw.session.SessionCleanupResult CONTENDED
+ARTIFACT koiki-testing
+PUBLIC_TYPES 0

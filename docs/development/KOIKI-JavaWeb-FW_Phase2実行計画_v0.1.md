@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `P2-C2 C2-3 COMPLETE / ARCHITECTURE OWNER APPROVED — C2-4 READY`
+**状態:** `P2-C2 C2-4 COMPLETE / ARCHITECTURE OWNER APPROVED — C2-5 PUBLISH REVIEW READY`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月11日
 **開始branch:** `feature/phase2-security-foundation`
@@ -307,6 +307,20 @@ Framework history 3行 / 11 table、Customer history 2行（baseline 1＋V1 SQL 
 同日、Architecture OwnerはC2-3の5 review pointsをすべて承認した。review指摘に基づき、default denyはConsumer matcher外の
 `/framework-fallback-probe`へ修正してFramework fallback 401を再確認し、Consumer Web child processをcleanup対象へ明記した。
 C2-3を`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はC2-4 Public API inventory / compatibility fixtureとする。
+
+同日、C2-2 manifestの正式11 JARを隔離repositoryへstageし、package済みartifactからPublic API baseline candidateを
+生成した。全11 artifact sectionとPublic Java型24件（Architecture 4、ArchUnit rules 1、Audit 6、Identity 10、
+Session 3、残る6 JARは0件）を既存の承認済みtype inventoryと照合し、型種別、修飾子、継承、constructor、field、method、
+generic型、例外、enum値、annotation metadata / default値およびJSpecify nullnessを正規化した。internal package追加を
+inventory対象外とし、nullness-only変更、public戻り値破壊および未承認public追加をnegative fixtureで検出した。
+既存Phase 1a published baseline script / required jobは変更せず、Phase 2 artifactに過去公開baselineとの互換性を主張しない。
+remote publish、hash確定およびCI変更はC2-5の個別Owner判断へ残し、C2-4を`COMPLETE / LOCAL VERIFIED`として
+Architecture Owner reviewへ提示する。
+
+同日、Architecture OwnerはC2-4の5 review pointsをすべて承認した。review指摘に基づき、formal release unit全体24型を
+Phase 1a公開済み5型とPhase 2 candidate 19型に分け、Public型0件の6 JARを正式artifact名で明記した。既存inventoryとの
+照合は過去versionとのsignature互換性証明ではなく、型集合の継続一致確認であることも明確化した。C2-4を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はC2-5 baseline publish / remote operationの実施可否reviewとする。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
