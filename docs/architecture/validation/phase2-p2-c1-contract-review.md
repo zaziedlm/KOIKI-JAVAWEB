@@ -4,7 +4,8 @@
 
 - 作成日: 2026年9月10日
 - 作業パッケージ: `P2-C1 / C1-1`
-- 状態: `PROPOSED — ARCHITECTURE OWNER REVIEW REQUIRED`
+- 状態: `COMPLETE / ARCHITECTURE OWNER APPROVED — C1-2 READY`
+- 承認者: Shuichi Kataoka、2026年9月11日
 - baseline: main merge commit `8873942b3c8b9c83f08b607f9fd03ebbad928324`
 - branch: `feature/phase2-p2-c1-postgresql-migration`
 - Ownership: Framework Migration / Tooling Evidence
@@ -207,3 +208,15 @@ P2-C1単独でworkflow、required check、secret、environmentまたはsnapshot 
 7. package済みStarter resourceを使う非配布Tooling fixtureを正本とし、CI変更をGate Cへ残すか。
 
 推奨結論はC1-C1〜C7を上記案で承認し、C1-2 Audit migration / static inventoryへ進むことである。
+
+## 13. Architecture Owner承認
+
+2026年9月11日、Architecture OwnerはC1-C1〜C7を再確認し、すべて推奨案どおり承認した。
+特に、共有Framework history上の依存順を維持するAudit migration `V2026090300`、Phase 1b承認済みDB状態だけを
+supported upgrade起点とする境界、DDL責任とruntime管理主体を分けるtable ownership、package済みStarter resourceを
+直接使う非配布Tooling fixtureを承認した。
+
+Phase 2 B1〜B4途中commitのDB状態はproduction support baselineへ昇格せず、`outOfOrder`、既存Identity / Session migrationの
+改名、Starter別history、Spring Session initializer、JPA schema generation、Customer / Reference migration、Oracleまたは
+CI変更をC1-2へ追加しない。これによりC1-1を`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、C1-2 Audit migration /
+static inventoryへ進む。
