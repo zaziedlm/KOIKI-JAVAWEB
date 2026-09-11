@@ -186,3 +186,14 @@ CI job timeoutは60分、aggregate stepは52分、最終inspectionは5分とす�
 完了できなかった場合はcleanup成功とみなさない。同一final HEADでremote 3回連続成功と全回cleanup成功を確認し、
 2026年9月10日のArchitecture Owner承認後、main rulesetのrequired checkへ追加した。Customer業務アプリのCIは、
 利用Starter、業務リスク、構成およびデプロイ形態に応じて別途軽量化・段階化する。
+
+P2-C1 C1-2のAudit production migration / static inventoryは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c1-migration-static.ps1
+```
+
+scriptはAudit Starterの`V2026090300`を含むpackage済みAudit / Identity / Session JDBC Starter JARを直接検査し、
+Framework migration 3件の一意性と依存順、owner artifactごとの配置、合計11 table、Audit Entityと一致する列契約、
+fixture table / failure constraint / 未使用indexの非混入を確認する。focused Audit reactorだけを実行し、実PostgreSQL上の
+clean install 4 profileとPhase 1b supported upgradeはC1-3へ残す。

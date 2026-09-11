@@ -1,8 +1,8 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `GATE B COMPLETE / ARCHITECTURE OWNER APPROVED — P2-C1 CONTRACT REVIEW PREPARED`
+**状態:** `P2-C1 C1-2 COMPLETE / LOCAL VERIFIED — C1-3 READY`
 **作成日:** 2026年8月31日
-**最終更新日:** 2026年9月10日
+**最終更新日:** 2026年9月11日
 **開始branch:** `feature/phase2-security-foundation`
 **開始基準main:** `b2e2123605e4d971c3ed5ccc729f668d91189d83`
 
@@ -255,6 +255,12 @@ P2-C1へ残す統合検証境界を明確化した。Gate Bを`COMPLETE / ARCHIT
 inventory、contract review案および翌日再開用handoffを準備した。Audit migration version、Starter依存順、
 table ownership、clean install matrix、Phase 1b supported upgrade起点およびTooling境界はArchitecture Owner review前の
 提案であり、production SQL、Java、POM、test、scriptまたはCIは変更していない。
+
+2026年9月11日、Architecture OwnerはP2-C1契約C1-C1〜C7をすべて推奨案どおり承認した。C1-2でAudit Starterへ
+`V2026090300__create_koiki_audit.sql`を追加し、package済みAudit / Identity / Session JDBC Starter JARを直接検査する
+非配布static inventory Harnessを追加した。focused Audit reactor 3 modulesとSession依存closure 7 modulesはbuild成功し、
+Framework migration 3件の一意性、`0300`→`0301`→`0701`の依存順、owner artifact配置、合計11 table、Audit Entity列契約、
+fixture固有DDL / 未使用index非混入を確認した。実PostgreSQL clean install 4 profileとPhase 1b supported upgradeはC1-3へ進める。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
