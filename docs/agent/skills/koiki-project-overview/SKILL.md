@@ -11,7 +11,7 @@ KOIKIでの作業位置を最初に確定し、所有権やPhaseを越えた実�
 
 1. リポジトリルートの`AGENTS.md`を読む。
 2. ユーザー要求が属するPhaseと、検証・正式実装のどちらかを確認する。
-3. 変更の所有者をFramework、Reference、Customer、Walking Skeletonから1つ選ぶ。
+3. 変更の所有者をFramework、Reference、Customer、Tooling、Walking Skeletonから1つ選ぶ。
 4. 対象となる業務モジュールまたはMavenモジュールを特定する。
 5. 適用するSkill、設計文書、検証手段を決めてから編集する。
 
@@ -26,6 +26,11 @@ KOIKIでの作業位置を最初に確定し、所有権やPhaseを越えた実�
 | 個別の設計判断 | `docs/architecture/adr/` |
 | Phase 0の完了済み実行履歴 | `docs/development/KOIKI-JavaWeb-FW_WalkingSkeleton実装計画_v1.0.md` |
 | Phase 1aへの引継ぎ境界 | `docs/development/KOIKI-JavaWeb-FW_Phase1a_WalkingSkeleton_Transition_Inventory_v0.1.md` |
+| Phase 1a Build Foundation | `docs/development/KOIKI-JavaWeb-FW_Phase1a実行計画_v0.1.md` |
+| Phase 1b Runtime Foundation | `docs/development/KOIKI-JavaWeb-FW_Phase1b実行計画_v0.1.md` |
+| Phase 2 Security Foundation | `docs/development/KOIKI-JavaWeb-FW_Phase2実行計画_v0.1.md` |
+| Securityを伴う業務アプリ開発の入口 | `docs/development/phase2-developer-journey.md` |
+| KOIKI / Spring Boot / Java baselineとsupport状態 | `docs/architecture/KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md` |
 | 実装で得た証拠 | `docs/architecture/validation/` |
 | change固有の要求と計画 | Repositoryに存在する場合の`openspec/` |
 | 実効バージョンとビルド設定 | 対象の`pom.xml`、Maven Wrapper、CI設定 |
@@ -37,6 +42,7 @@ KOIKIでの作業位置を最初に確定し、所有権やPhaseを越えた実�
 - **Framework**: 業務語彙を含まない安定した共通契約だけを置く。Spring標準で代替できる機能を独自実装しない。
 - **Reference**: Frameworkの利用方法を実証する。Framework内部として扱わない。
 - **Customer**: 顧客固有の業務、画面、外部連携、migrationを所有する。
+- **Tooling**: Consumer、verification fixture、検証script、性能harness、移行試作等を置く。正式release unitやCustomer配布物へ含めない。
 - **Walking Skeleton**: 設計の実装可能性を調べる使い捨てコードとする。設定、規約実装、検証記録だけを正式工程へ引き継ぐ。
 
 共通化できそうという理由だけでFrameworkへ移さない。Framework昇格はグランドデザイン§9.2の全条件を満たし、ADRで承認された場合に限る。
@@ -79,15 +85,34 @@ Inbound Adapter -> Application Use Case -> Domain
 
 ## 現在の確定範囲を守る
 
-Phase 0のV1〜V7で、ビルド基盤、ArchUnit配布、Flyway二階層、Tier 2実用性、OSIV境界、同期イベントを検証済みとして扱う。Phase 1aではSpring Modulith 2.1.0のLevel 0をtest scopeで使用し、runtime依存を追加しない。一方、次は後続Phaseの正式判断として固定しない。
+Phase 0、Phase 1a Build Foundation、Phase 1b Runtime FoundationおよびPhase 2 Security Foundationは
+`COMPLETE / ACCEPTED`である。次を承認済みbaselineとして扱う。
 
-- Spring Modulith Named Interface、Level 1 / 2の採用方式とruntime依存
-- Flyway Starterの所属と三階層への一般化
-- 非同期イベントのLevel 2運用
-- MyBatisの詳細実装規約
-- REST API、Security、SPAの具体的実装パターン
+- Phase 1a: Root Reactor、Parent / BOM、Architecture Contract、ArchUnit Rules、Tier 1 / 2 Feature Template、
+  JSpecify / NullAway、Public API / japicmp、Java 21 build・Java 21 / 25 runtimeおよび内部snapshot配布
+- Phase 1b: API、Data、Data JPA、Observabilityのruntime Starter、PostgreSQL / Flyway二階層、OSIV無効、
+  同期Domain Event、non-web maintenance processおよびCustomer-like Consumer
+- Phase 2: default deny、CSRF / Security Header既定、local Session、OIDC Client、Bearer Resource Server、
+  Business / Security Audit、Identity、Spring Session JDBC、Framework migrationおよびReference `identity`
+- Spring Modulith 2.1.1のLevel 0はtest scopeだけで使用し、runtime依存を追加しない。
+- formal Framework release unitは14 projects / 11 JAR、Phase 2 publish unitはRoot aggregatorを除く13座標である。
+  Reference、Customer-like Consumer、fixture、性能harnessおよびOpenRewrite prototypeは配布しない。
+- Phase 2内部snapshotはaccepted manifestで固定済みだが、正式release、一般公開repositoryまたは
+  Customer向けsupport付き配布ではない。
 
-未確定事項が必要になった場合は、該当Phaseの設計・実装検証として扱い、既定規約を先行生成しない。
+Securityを伴う業務アプリの依存選択、profile、Ownership、診断および検証入口は
+`docs/development/phase2-developer-journey.md`を使う。一方、次は後続Phaseまたはoptional Gateの正式判断として固定しない。
+
+- Phase 3の正式Reference `master` / `expense`、MVC / HTMX、最小REST API、業務Vertical Slice、
+  Spring Modulith Level 1
+- Project Template、正式Upgrade / Migration Guideおよび正式OpenRewrite recipe
+- Spring Modulith Level 2、非同期Domain Eventおよびruntime依存
+- Authorization Server、SAML、Redis、WebFlux、SPA production実装
+- MyBatisの詳細実装規約、Oracle、AWS固有Adapterおよびcloud固有実装
+
+Phase 3は候補scopeだけが上位設計にあり、承認済み実行計画と開始Gateはまだない。未確定事項が必要になった場合は、
+該当Phaseまたはoptional Gateの設計・実装検証として扱い、実行計画とOwner承認前にproduction code、Public API、
+module、Starter、migration、workflowまたは既定規約を先行生成しない。
 
 ## 作業開始時の結論を示す
 
