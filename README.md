@@ -23,7 +23,7 @@ Architecture Owner承認済みで、現在はP2-C3 Developer Journey / DoD close
 - Phase 1b Runtime Foundation: COMPLETE / GATE 2 ACCEPTED
 - Phase 2 Milestone A / B: COMPLETE / ACCEPTED
 - Phase 2 P2-C1 / P2-C2: COMPLETE / ARCHITECTURE OWNER APPROVED
-- Phase 2 P2-C3: C3-1 / C3-2 COMPLETE / ARCHITECTURE OWNER APPROVED
+- Phase 2 P2-C3: COMPLETE / ARCHITECTURE OWNER APPROVED / GATE C READY
 - 正式groupId / Java base package: `org.koikifw`
 - Build JDK / target bytecode: Java 21
 - Runtime compatibility target: Java 21 / Java 25

@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `P2-C3 C3-2 COMPLETE / ARCHITECTURE OWNER APPROVED / COMMIT PENDING`
+**状態:** `P2-C3 COMPLETE / ARCHITECTURE OWNER APPROVED / GATE C READY`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月12日
 **開始branch:** `feature/phase2-security-foundation`
@@ -416,6 +416,22 @@ Reference / Consumerの非Template境界を受け入れ、C3-2を`COMPLETE / ARC
 commitし、そのclean HEADでC3-3 local aggregate / human-operable journey verificationへ進む。production artifact、Public API、
 migration、workflowおよびremote操作は承認に含めず、`NOT APPROVED / NO-GO`を維持する。
 
+同日、C3-2承認差分をcommitしたclean HEAD `28b0220bc6bfbee1b7b9c01721717e9d5017ec7e`でC3-3 local aggregateを
+実行した。Gate A、P2-C2 package / Consumer / Public API / local publish dry run / OpenRewrite、P2-C1 static / PostgreSQL、
+Gate B 6工程3ラウンド、Root Reactor、Null Safety、sensitive-output、inventoryおよびcleanupはすべて成功した。
+formal 14 / Root 15 / publish 13 / JAR 11 / Public API 24 / migration 3 / table 11の固定inventoryを確認し、
+`../architecture/validation/phase2-p2-c3-c3-3-closeout.md`へ記録した。C3-3を`COMPLETE / LOCAL VERIFIED`として
+Architecture Owner reviewへ提示する。承認候補はP2-C3 `COMPLETE / LOCAL VERIFIED / GATE C READY`であるが、Gate C remote
+Evidence前にPhase 2を完了扱いしない。protected environment、push、PR、main、ruleset、dispatchおよびsnapshot publishは
+引き続き`NOT APPROVED / NO-GO`である。
+
+同日、Architecture OwnerはC3-3のreview points 1〜7を提案どおり承認し、C3-3を
+`COMPLETE / LOCAL VERIFIED / ARCHITECTURE OWNER APPROVED`、P2-C3を
+`COMPLETE / LOCAL VERIFIED / GATE C READY`としてlocal closeoutした。snapshot publishはfinal main CI成功後に一度実施し、
+remote取得、24 payload SHA-256、aggregate signatureおよび11 same-source `japicmp`を確認するPhase 2最終受入れ条件とする。
+次はGate C-1 remote plan reviewであり、protected environment、push、PR、main、ruleset、dispatchおよびsnapshot publishは
+実行前の個別Owner承認まで`NOT APPROVED / NO-GO`を維持する。
+
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
 | CP | Scope | Exit criteria |
@@ -423,7 +439,7 @@ migration、workflowおよびremote操作は承認に含めず、`NOT APPROVED /
 | P2-C1 | PostgreSQL Migration、第三者table一覧、upgrade / clean fixture | Framework Flyway正本、所有権完全一致、Spring initializer無効、clean install / supported upgradeを実証 |
 | P2-C2 | package / Consumer / OpenRewrite試作 | 配布単位、Root Reactor外Consumer、Public API互換性、Migration Support境界を実証 |
 | P2-C3 | Developer Journey / DoD closeout | 全DoD trace、Skill / ADR、release unit、remote evidence、deferred一覧 |
-| Gate C | final PR / main | required checks、PostgreSQL integration evidence、Owner approval、merge後main CI |
+| Gate C | final PR / main / snapshot | required checks、PostgreSQL integration evidence、Owner approval、merge後main CI、snapshot remote Evidence |
 
 Oracle対応はMilestone Cの完了条件ではない。optional `P4-ORACLE`が将来承認された場合は、新しいDoD、見積、対象環境、
 依存、MigrationおよびCI境界をそのwork package内で定義する。

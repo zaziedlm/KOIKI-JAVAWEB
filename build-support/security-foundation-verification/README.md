@@ -310,3 +310,9 @@ assertionを複製するaggregate scriptを追加しない。実行command、順
 記録する。
 
 P2-C3 local承認前にworkflow、required check、environment、push、PR、mainまたはsnapshot publishを変更しない。
+
+C3-3のclean-HEAD local aggregate、所要時間、friction、DoD / inventoryおよびcleanup結果は
+[`phase2-p2-c3-c3-3-closeout.md`](../../docs/architecture/validation/phase2-p2-c3-c3-3-closeout.md)に記録する。
+Architecture OwnerはC3-3 local Evidenceを承認し、P2-C3を`COMPLETE / LOCAL VERIFIED / GATE C READY`としてcloseした。
+snapshot publishはfinal main CI成功後に一度実施するPhase 2最終受入れ条件である。Gate C-1の実行計画と個別Owner承認前は、
+remote操作を引き続き`NOT APPROVED / NO-GO`とする。

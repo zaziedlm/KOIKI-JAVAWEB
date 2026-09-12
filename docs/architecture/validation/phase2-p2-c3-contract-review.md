@@ -162,9 +162,14 @@ P2-C3 local closeoutとGate C remote操作を分離する。
 2. Gate C開始時に、final source commit、PR required checks、merge、main CIの順序を個別に承認する。
 3. Gate A / Gate Bの過去remote成功を回帰実績として保持するが、final P2-C3 commitのremote成功とは表現しない。
 4. Phase 2 snapshotはC2-5承認条件を維持し、protected environmentとfinal main commitに対する別Owner承認後だけ一度実行する。
-5. snapshot publishをPhase 2最終完了の必須条件とするか、post-closeoutの内部baseline作成とするかはGate C開始前にOwnerが判断する。
+5. （C3-1時点）snapshot publishをPhase 2最終完了の必須条件とするか、post-closeoutの内部baseline作成とするかの判断を
+   Gate C開始前へ保留する。
 6. remote publishを実施する場合は、同一workflow run / source commit、座標別resolved snapshot value、24 payload SHA-256、
    aggregate signatureおよび11 same-source `japicmp`をEvidenceにする。
+
+2026年9月12日のC3-3 Architecture Owner reviewで、5の保留事項を解決した。snapshot publishはpost-closeoutの任意作業ではなく、
+final main CI成功後に一度実施するPhase 2最終受入れ条件とする。Gate C-1で実行計画と権限を個別承認し、Gate C-2で
+PR / main Evidenceに続いてremote publish / verify Evidenceを取得し、Gate C-3で最終判定する。
 
 ## 8. Proposed work breakdown
 
@@ -174,7 +179,7 @@ P2-C3 local closeoutとGate C remote操作を分離する。
 | C3-2 | Engineer-facing Developer Journey / documentation / index | README、導入・診断経路、DoD ledger、必要最小限のaggregate接続 |
 | C3-3 | clean-HEAD local aggregate / cleanup | local EvidenceとOwner review |
 | Gate C-1 | final remote plan | push / PR / required check / main / snapshotの個別承認 |
-| Gate C-2 | PR / main evidence | approved remote操作を順に実行して記録 |
+| Gate C-2 | PR / main / snapshot evidence | approved remote操作を順に実行し、final main CI後のremote publish / verifyを記録 |
 | Gate C-3 | Phase 2 final decision | DoD、remote、deferredをOwnerが最終判定 |
 
 P2-C3のlocal完了状態は`COMPLETE / LOCAL VERIFIED / GATE C READY`とし、Gate C remote Evidence前に
