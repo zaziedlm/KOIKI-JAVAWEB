@@ -17,6 +17,30 @@
 C1〜C5およびGate 1〜4を完了し、Architecture Ownerが最終CIを含むcloseoutを承認しています。
 Phase 1b Runtime FoundationはMilestone A〜C、CP1〜CP10、Gate 1〜2、main最終CIおよび
 9成果物のsnapshot remote Consumer検証を完了し、Architecture Ownerがcloseoutを承認しています。
+Phase 2 Security FoundationはMilestone A / B、P2-C1 / C2を完了し、現在はP2-C3 Developer Journey / DoD
+closeoutを進めています。Phase 2 remote snapshot、final PR / mainおよびGate Cは未完了です。
+
+### Phase 2 Security Foundation
+
+| Work Package / Gate | 状態 | 検証記録 |
+|---|---|---|
+| Start / Gate P2-2 | COMPLETE / APPROVED | `validation/phase2-start-preflight.md` |
+| Security fitting / Gate F | COMPLETE / OWNER APPROVED | `validation/phase2-security-test-design.md` |
+| P2-A1 Security defaults | COMPLETE / OWNER APPROVED | `validation/phase2-p2-a1-closeout.md` |
+| P2-A2 Local Session / Authorization | COMPLETE / OWNER APPROVED | `validation/phase2-p2-a2-t2-verification.md` |
+| P2-A3 OIDC / Bearer | COMPLETE / OWNER APPROVED | `validation/phase2-p2-a3-t3-verification.md` |
+| Gate A | COMPLETE / ACCEPTED | `validation/phase2-gate-a-security-foundation.md` |
+| P2-B1 Audit | COMPLETE / OWNER APPROVED | `validation/phase2-p2-b1-t4-verification.md` |
+| P2-B2 Identity | COMPLETE / OWNER APPROVED | `validation/phase2-p2-b2-b2-5-verification.md` |
+| P2-B3 Session JDBC | COMPLETE / OWNER APPROVED | `validation/phase2-p2-b3-b3-6-closeout.md` |
+| P2-B4 Reference identity | COMPLETE / OWNER APPROVED | `validation/phase2-p2-b4-b4-5-closeout.md` |
+| Gate B | COMPLETE / OWNER APPROVED | `validation/phase2-gate-b-closeout.md` |
+| P2-C1 PostgreSQL Migration | COMPLETE / OWNER APPROVED | `validation/phase2-p2-c1-c1-4-closeout.md` |
+| P2-C2 Package / Consumer | COMPLETE / OWNER APPROVED | `validation/phase2-p2-c2-c2-7-closeout.md` |
+| P2-C3 Developer Journey / DoD | C3-1 / C3-2 COMPLETE / OWNER APPROVED | `validation/phase2-p2-c3-contract-review.md`、`validation/phase2-p2-c3-c3-2-developer-journey.md` |
+
+業務アプリケーション開発者向けの入口は
+[`Phase 2 Security Foundation Developer Journey`](../development/phase2-developer-journey.md)とする。
 
 ### Phase 1b Runtime Foundation
 

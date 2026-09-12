@@ -284,3 +284,29 @@ pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c
 実publish用の`.github/workflows/publish-phase2-snapshot.yml`は既存Phase 1b workflowを変更せず、mainとOwner承認commitの一致、
 read-only preflight、publish jobだけの`packages: write`、`phase2-internal-snapshot` environment、hash-only manifestおよびfresh jobの
 remote検証を分離する。environment作成、workflow dispatchおよびremote publishは個別Owner承認前に実施しない。
+
+P2-C2 C2-6の非配布OpenRewrite feasibilityは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/openrewrite-feasibility/verify-p2-c2-openrewrite.ps1
+```
+
+syntheticなKOIKI所有型変更1件についてbefore / after、旧定義非変更、冪等性、変換後compile / test、手動残件および
+formal release unit非混入を確認する。これはCustomer完全移行、過去version互換性または正式recipeの証明ではない。
+
+P2-C2 C2-7では、C2-2〜C2-6、P2-C1、Gate B、Root Reactor、Null Safety、sensitive-outputおよびcleanupを同じclean HEADで
+再検証した。command setと結果の正本は
+[C2-7 closeout](../../docs/architecture/validation/phase2-p2-c2-c2-7-closeout.md)である。
+
+## P2-C3 Developer Journey / DoD closeout
+
+業務アプリエンジニア向けの依存選択、Security profile、Ownership、公開契約、secure defaults、診断と通常の検証loopは
+[Phase 2 Developer Journey](../../docs/development/phase2-developer-journey.md)を入口とする。このREADMEはFramework保守者向けのHarness正本であり、
+全aggregateをCustomer CIへそのまま要求するものではない。
+
+C3-3ではC3-2文書をcommitしたclean HEADに対し、Gate A、P2-C1、P2-C2、Gate B 3ラウンド、Root Reactor、Null Safety、
+sensitive-output、最終inventoryおよびcleanupを既存scriptの合成で実行する。C2-7で同じ組合せが成立しているため、C3-2では
+assertionを複製するaggregate scriptを追加しない。実行command、順序、所要時間、手戻りと最終結果はP2-C3 closeout Evidenceへ
+記録する。
+
+P2-C3 local承認前にworkflow、required check、environment、push、PR、mainまたはsnapshot publishを変更しない。

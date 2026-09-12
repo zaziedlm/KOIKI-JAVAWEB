@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `P2-C3 C3-1 COMPLETE / ARCHITECTURE OWNER APPROVED / C3-2 READY`
+**状態:** `P2-C3 C3-2 COMPLETE / ARCHITECTURE OWNER APPROVED / COMMIT PENDING`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月12日
 **開始branch:** `feature/phase2-security-foundation`
@@ -401,6 +401,20 @@ DoD 2-1〜2-10 trace、文書対象およびclean-HEAD local aggregateを承認�
 `COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はC3-2のEngineer-facing文書・Developer Journey接続へ進む。
 production artifact、Public API、migration、workflowおよびremote操作は本承認に含めず、C2-5 remote publishも
 `NOT APPROVED / NO-GO`を維持する。
+
+同日、C3-2としてroot / Architecture / Development / Starter / Consumer / verification / ReferenceのREADMEを
+`phase2-developer-journey.md`へ接続した。Parent / BOM、Starter、local Session / OIDC / Bearer profile、Customer Ownership、
+public seam、secure defaults、diagnostics、Application verification、Framework aggregateおよびdeferred scopeを、
+エンジニアが順に辿れる形へ整理した。Referenceを正規利用例、ConsumerをTooling EvidenceとしてProject Templateから分離し、
+Customerの日常CIへRepository固有の全aggregateを要求しない。production artifact、Public API、migration、workflowの変更は0である。
+`../architecture/validation/phase2-p2-c3-c3-2-developer-journey.md`をC3-2 Owner reviewへ提示し、承認・commit後のclean HEADで
+C3-3 local aggregate / human-operable journey verificationへ進む。remote操作は引き続き`NOT APPROVED / NO-GO`である。
+
+同日、Architecture OwnerはC3-2の6判断を提案どおり承認した。Repositoryからの入口、依存・profile・Ownership選択、
+Framework Public contractの利用境界、secure defaults、diagnostics、Application verificationとFramework aggregateの分離、
+Reference / Consumerの非Template境界を受け入れ、C3-2を`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次は本差分を
+commitし、そのclean HEADでC3-3 local aggregate / human-operable journey verificationへ進む。production artifact、Public API、
+migration、workflowおよびremote操作は承認に含めず、`NOT APPROVED / NO-GO`を維持する。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
