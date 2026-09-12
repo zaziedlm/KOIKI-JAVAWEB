@@ -26,7 +26,10 @@ function Assert-SafeTemporaryPath {
 Assert-SafeTemporaryPath -Path $workingRoot
 New-Item -ItemType Directory -Path $builderRepository,$fileRepository -Force | Out-Null
 try {
-    $repositoryUri = ([uri]$fileRepository).AbsoluteUri
+    $repositoryUri = [UriBuilder]::new('file', '', -1, $fileRepository).Uri.AbsoluteUri
+    if ([string]::IsNullOrWhiteSpace($repositoryUri) -or -not ([uri]$repositoryUri).IsFile) {
+        throw "Unable to create a file repository URI: $fileRepository"
+    }
     & $publishInvoker -RepositoryUrl $repositoryUri -RepositoryId 'p2-c2-local' `
         -ExpectedCommit $ExpectedCommit -LocalRepository $builderRepository
 

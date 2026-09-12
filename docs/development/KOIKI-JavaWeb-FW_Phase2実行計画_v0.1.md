@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `GATE C-1 ARCHITECTURE OWNER APPROVED / COMMIT PENDING`
+**状態:** `GATE C-2 PUBLISH PREFLIGHT CORRECTION OWNER APPROVED / COMMIT PENDING`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月12日
 **開始branch:** `feature/phase2-security-foundation`
@@ -442,6 +442,21 @@ pushその他のremote mutationはまだ実施せず、`NOT APPROVED / NO-GO`を
 branch push、final PR、required checks 7件、merge commit、merge後main CI、Phase 2 protected environment、final main SHAの
 一回限りpublish / remote verifyへ進めてよい。ruleset緩和、bypass、追加secret、無断retry、package削除または別SHA publishは
 承認せず、順序またはidentity変更時は再reviewする。Gate C-3最終Owner review前はPhase 2を完了扱いしない。
+
+同日、Gate C-1承認commit `712595e`をpushし、final PR #31のrequired checks 7件成功後、merge commit `31724b6`としてmainへ
+反映した。merge後CI / runtime全8 jobは成功し、`phase2-internal-snapshot` environmentをmain限定・required reviewer・
+admin bypass禁止・secret / variable 0で作成した。final main SHAを指定したsnapshot run `34686248900`はauthorize、formal package、
+aggregate Public APIまで成功したが、Ubuntuで一時pathの`AbsoluteUri`が空になるTooling defectによりlocal publish dry runで停止した。
+publish / verify jobはskipされ、remote Maven packageは既存9件のままでmutation 0である。
+
+`UriBuilder`でfile schemeを明示しfail-fastする最小修正を行い、localで13座標 / 24 payload / aggregate signature /
+11 same-source `japicmp`のdry runを再確認した。修正、失敗Evidenceおよび新しいPR / main / workflow run順序を
+`../architecture/validation/phase2-gate-c-c2-publish-preflight-correction.md`へ記録し、identity変更のOwner再reviewへ提示する。
+
+同日、Architecture OwnerはC-2 corrective sliceの7 review pointsを提案どおり承認した。初回runのremote mutation 0、
+cross-platform file URI Tooling defectへの最小修正、local再検証結果および新しいPR / main CI / new main SHA / new workflow runの
+順序を受け入れた。本修正と承認記録のcommit後、corrective branch pushとfollow-up PR作成へ進める。failed runのrerun、
+旧SHA dispatch、無断retry、package削除またはenvironment / ruleset / required checks / publish unitの変更は行わない。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
