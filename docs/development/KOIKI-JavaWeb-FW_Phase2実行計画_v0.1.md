@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `GATE C-2 PUBLISH PREFLIGHT CORRECTION OWNER APPROVED / COMMIT PENDING`
+**状態:** `GATE C-2 PUBLISH CAPTURE CORRECTION OWNER APPROVED / COMMIT PENDING`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月12日
 **開始branch:** `feature/phase2-security-foundation`
@@ -457,6 +457,22 @@ publish / verify jobはskipされ、remote Maven packageは既存9件のまま�
 cross-platform file URI Tooling defectへの最小修正、local再検証結果および新しいPR / main CI / new main SHA / new workflow runの
 順序を受け入れた。本修正と承認記録のcommit後、corrective branch pushとfollow-up PR作成へ進める。failed runのrerun、
 旧SHA dispatch、無断retry、package削除またはenvironment / ruleset / required checks / publish unitの変更は行わない。
+
+同日、PR #32をmerge commit `e10f88c`としてmainへ反映し、merge後CI / runtime全8 jobと設定read-back成功後、同SHAで
+snapshot run `34693368000`を新規dispatchした。authorize、preflightおよびprotected environment承認後の13座標publishは
+成功したが、CaptureはGitHub Maven metadataに過去snapshotVersionが累積することを考慮せず、POMを1件と仮定したため失敗した。
+manifest uploadとfresh remote Verifyはskipされ、本runをaccepted baselineとしない。公開物は削除せず、rerunもしない。
+
+Architecture Ownerは同一workflow run / source commit内でpublish、Capture、fresh Verifyを完結する要件を厳格維持し、修正後に
+改めてpublishする方針を選択した。今回だけのtimestamp固定ではなく、publish前後の座標 / extension別metadata差分を一意に選び、
+pre-publish inventoryを先に保存する恒久修正を実装した。履歴累積の正負fixtureとfull local dry runで13座標、24 hash、signature、
+11 same-source `japicmp`が成功した。`../architecture/validation/phase2-gate-c-c2-publish-capture-correction.md`を実装Owner reviewへ提示する。
+
+同日、Architecture Ownerはpublish capture correctionの9 review pointsを提案どおり承認した。run `34693368000`を
+historical unaccepted publishとして保持し、同一run要件を厳格維持した新しいpublishを正式な回復方法とする。
+publish前後metadata差分、retention 7日のpre-publish inventory、POM / JAR一致、run / attempt固定およびfail-closedを
+恒久契約として受け入れた。本修正と承認記録のcommit後、新しいPR / main CI / main SHA / workflow run順序へ進める。
+failed runのrerun、package削除、自動retryまたは承認外の追加publishは行わない。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 

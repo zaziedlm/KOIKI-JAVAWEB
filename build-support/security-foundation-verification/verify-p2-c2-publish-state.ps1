@@ -1,12 +1,13 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)]
-    [ValidateSet('Capture', 'Verify')]
+    [ValidateSet('Inventory', 'Capture', 'Verify')]
     [string]$Mode,
     [Parameter(Mandatory)]
     [string]$RepositoryUrl,
     [Parameter(Mandatory)]
     [string]$ManifestPath,
+    [string]$BeforeStatePath,
     [string]$ExpectedCommit,
     [string]$GitHubUser = 'zaziedlm'
 )
@@ -32,6 +33,7 @@ $utf8WithoutBom = [Text.UTF8Encoding]::new($false)
 $token = $null
 $authorization = $null
 . (Join-Path $PSScriptRoot 'p2-c2-publish-unit.ps1')
+. (Join-Path $PSScriptRoot 'p2-c2-snapshot-metadata.ps1')
 
 function Assert-SafeTemporaryPath {
     param([Parameter(Mandatory)][string]$Path)
@@ -74,15 +76,51 @@ function Copy-RepositoryPayload {
     }
 }
 
-function Get-ResolvedValue {
-    param([xml]$Metadata, [Parameter(Mandatory)][string]$Extension)
-    $matches = @($Metadata.metadata.versioning.snapshotVersions.snapshotVersion | Where-Object {
-        $classifierProperty = $_.PSObject.Properties['classifier']
-        $classifier = if ($null -eq $classifierProperty) { '' } else { [string]$classifierProperty.Value }
-        [string]$_.extension -ceq $Extension -and $classifier -ceq ''
-    })
-    if ($matches.Count -ne 1) { throw "Expected one $Extension snapshotVersion; found $($matches.Count)." }
-    return [string]$matches[0].value
+function Read-RepositoryMetadata {
+    param([Parameter(Mandatory)][string]$RelativePath)
+
+    $uri = [uri](Get-RepositoryUri -RelativePath $RelativePath)
+    if ($uri.IsFile) {
+        if (-not (Test-Path -LiteralPath $uri.LocalPath -PathType Leaf)) { return $null }
+        return [xml](Get-Content -Raw -LiteralPath $uri.LocalPath)
+    }
+
+    try {
+        return [xml](Invoke-WebRequest -UseBasicParsing -Uri $uri.AbsoluteUri -Headers @{
+            Authorization = $authorization
+        }).Content
+    } catch {
+        $responseProperty = $_.Exception.PSObject.Properties['Response']
+        $response = if ($null -eq $responseProperty) { $null } else { $responseProperty.Value }
+        $statusCode = if ($null -eq $response) { $null } else { $response.StatusCode }
+        if ($null -ne $statusCode -and [int]$statusCode -eq 404) { return $null }
+        throw
+    }
+}
+
+function Get-ExpectedExtensions {
+    param([Parameter(Mandatory)][object]$Entry)
+    if ($Entry.Packaging -eq 'JAR') { return @('pom', 'jar') }
+    return @('pom')
+}
+
+function Get-SnapshotInventoryArtifacts {
+    $artifacts = foreach ($entry in $entries) {
+        $metadataRelative = "org/koikifw/$($entry.ArtifactId)/$version/maven-metadata.xml"
+        $metadata = Read-RepositoryMetadata -RelativePath $metadataRelative
+        $payloads = foreach ($extension in @(Get-ExpectedExtensions -Entry $entry)) {
+            [pscustomobject]@{
+                extension = $extension
+                values = @(Get-P2C2SnapshotValues -Metadata $metadata -Extension $extension)
+            }
+        }
+        [pscustomobject]@{
+            artifactId = $entry.ArtifactId
+            packaging = $entry.Packaging
+            payloads = @($payloads)
+        }
+    }
+    return @($artifacts)
 }
 
 function Get-LocalPayload {
@@ -129,16 +167,60 @@ Assert-SafeTemporaryPath -Path $workingRoot
 New-Item -ItemType Directory -Path $downloadRoot,$localRepository,$reportRoot -Force | Out-Null
 
 try {
+    if ($Mode -eq 'Inventory') {
+        $inventory = [ordered]@{
+            schemaVersion = 1
+            kind = 'prePublishSnapshotInventory'
+            sourceCommit = $head
+            workflowRunId = [string]$env:GITHUB_RUN_ID
+            workflowRunAttempt = [string]$env:GITHUB_RUN_ATTEMPT
+            repositoryUrl = $RepositoryUrl
+            capturedAtUtc = [DateTime]::UtcNow.ToString('o')
+            artifacts = @(Get-SnapshotInventoryArtifacts)
+        }
+        $outputDirectory = Split-Path -Parent ([IO.Path]::GetFullPath($ManifestPath))
+        if ($outputDirectory) { New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null }
+        [IO.File]::WriteAllText($ManifestPath, (($inventory | ConvertTo-Json -Depth 8) + "`n"), $utf8WithoutBom)
+        Write-Output 'P2-C2 pre-publish snapshot inventory captured (13 coordinates).'
+        return
+    }
+
     if ($Mode -eq 'Capture') {
+        if ([string]::IsNullOrWhiteSpace($BeforeStatePath) -or
+            -not (Test-Path -LiteralPath $BeforeStatePath -PathType Leaf)) {
+            throw 'Pre-publish snapshot inventory is required for Capture.'
+        }
+        $beforeState = Get-Content -Raw -LiteralPath $BeforeStatePath | ConvertFrom-Json
+        if ($beforeState.schemaVersion -ne 1 -or [string]$beforeState.kind -cne 'prePublishSnapshotInventory' -or
+            [string]$beforeState.sourceCommit -cne $head -or [string]$beforeState.repositoryUrl -cne $RepositoryUrl) {
+            throw 'Pre-publish snapshot inventory identity mismatch.'
+        }
+        if ($env:GITHUB_RUN_ID -and
+            ([string]$beforeState.workflowRunId -cne [string]$env:GITHUB_RUN_ID -or
+             [string]$beforeState.workflowRunAttempt -cne [string]$env:GITHUB_RUN_ATTEMPT)) {
+            throw 'Pre-publish snapshot inventory belongs to a different workflow run or attempt.'
+        }
+        if (@($beforeState.artifacts).Count -ne 13) {
+            throw 'Pre-publish snapshot inventory must contain 13 coordinates.'
+        }
+
         $artifacts = foreach ($entry in $entries) {
             $metadataRelative = "org/koikifw/$($entry.ArtifactId)/$version/maven-metadata.xml"
-            $metadataPath = Join-Path $downloadRoot "$($entry.ArtifactId)-metadata.xml"
-            Copy-RepositoryPayload -RelativePath $metadataRelative -Destination $metadataPath
-            [xml]$metadata = Get-Content -Raw -LiteralPath $metadataPath
+            $metadata = Read-RepositoryMetadata -RelativePath $metadataRelative
+            if ($null -eq $metadata) { throw "Published metadata is missing: $($entry.ArtifactId)" }
+            $beforeArtifact = @($beforeState.artifacts | Where-Object artifactId -CEQ $entry.ArtifactId)
+            if ($beforeArtifact.Count -ne 1 -or [string]$beforeArtifact[0].packaging -cne $entry.Packaging) {
+                throw "Pre-publish snapshot inventory coordinate mismatch: $($entry.ArtifactId)"
+            }
 
-            $payloads = foreach ($extension in @('pom', 'jar')) {
-                if ($extension -eq 'jar' -and $entry.Packaging -ne 'JAR') { continue }
-                $resolved = Get-ResolvedValue -Metadata $metadata -Extension $extension
+            $payloads = foreach ($extension in @(Get-ExpectedExtensions -Entry $entry)) {
+                $beforePayload = @($beforeArtifact[0].payloads | Where-Object extension -CEQ $extension)
+                if ($beforePayload.Count -ne 1) {
+                    throw "Pre-publish snapshot inventory payload mismatch: $($entry.ArtifactId) $extension"
+                }
+                $afterValues = @(Get-P2C2SnapshotValues -Metadata $metadata -Extension $extension)
+                $resolved = Resolve-P2C2PublishedValue -BeforeValues @($beforePayload[0].values) `
+                    -AfterValues $afterValues -ArtifactId $entry.ArtifactId -Extension $extension
                 $fileName = "$($entry.ArtifactId)-$resolved.$extension"
                 $relative = "org/koikifw/$($entry.ArtifactId)/$version/$fileName"
                 $remotePath = Join-Path $downloadRoot "$($entry.ArtifactId)-$extension"
@@ -149,10 +231,16 @@ try {
                 [void](Assert-Hash -Path $remotePath -Expected $localHash -Label "$($entry.ArtifactId) $extension remote payload")
                 [pscustomobject]@{ extension = $extension; resolvedVersion = $resolved; sha256 = $localHash }
             }
+            $pomValue = [string]@($payloads | Where-Object extension -CEQ 'pom')[0].resolvedVersion
+            $jarPayload = @($payloads | Where-Object extension -CEQ 'jar')
+            $jarValue = if ($jarPayload.Count -eq 1) { [string]$jarPayload[0].resolvedVersion } else { $null }
+            Assert-P2C2CoordinateResolvedValue -ArtifactId $entry.ArtifactId -Packaging $entry.Packaging `
+                -PomValue $pomValue -JarValue $jarValue
             [pscustomobject]@{ artifactId = $entry.ArtifactId; packaging = $entry.Packaging; payloads = @($payloads) }
         }
         $manifest = [ordered]@{
-            schemaVersion = 1
+            schemaVersion = 2
+            kind = 'publishManifest'
             sourceCommit = $head
             workflowRunId = [string]$env:GITHUB_RUN_ID
             workflowRunAttempt = [string]$env:GITHUB_RUN_ATTEMPT
@@ -160,6 +248,7 @@ try {
             actor = [string]$env:GITHUB_ACTOR
             capturedAtUtc = [DateTime]::UtcNow.ToString('o')
             repositoryUrl = $RepositoryUrl
+            prePublishInventorySha256 = (Get-FileHash -LiteralPath $BeforeStatePath -Algorithm SHA256).Hash
             signatureSha256 = (Get-FileHash -LiteralPath $signaturePath -Algorithm SHA256).Hash
             artifacts = @($artifacts)
         }
@@ -172,14 +261,20 @@ try {
 
     if (-not (Test-Path -LiteralPath $ManifestPath -PathType Leaf)) { throw "Publish manifest is missing: $ManifestPath" }
     $manifest = Get-Content -Raw -LiteralPath $ManifestPath | ConvertFrom-Json
-    if ($manifest.schemaVersion -ne 1 -or [string]$manifest.sourceCommit -cne $head) {
+    if ($manifest.schemaVersion -ne 2 -or [string]$manifest.kind -cne 'publishManifest' -or
+        [string]$manifest.sourceCommit -cne $head) {
         throw 'Publish manifest schema or source commit mismatch.'
     }
     if ([string]$manifest.repositoryUrl -cne $RepositoryUrl) {
         throw 'Publish manifest repository URL mismatch.'
     }
-    if ($env:GITHUB_RUN_ID -and [string]$manifest.workflowRunId -cne [string]$env:GITHUB_RUN_ID) {
-        throw 'Publish manifest belongs to a different workflow run.'
+    if ([string]$manifest.prePublishInventorySha256 -cnotmatch '^[0-9A-F]{64}$') {
+        throw 'Publish manifest pre-publish inventory identity is invalid.'
+    }
+    if ($env:GITHUB_RUN_ID -and
+        ([string]$manifest.workflowRunId -cne [string]$env:GITHUB_RUN_ID -or
+         [string]$manifest.workflowRunAttempt -cne [string]$env:GITHUB_RUN_ATTEMPT)) {
+        throw 'Publish manifest belongs to a different workflow run or attempt.'
     }
     [void](Assert-Hash -Path $signaturePath -Expected ([string]$manifest.signatureSha256) -Label 'C2-4 signature')
     if (@($manifest.artifacts).Count -ne 13) { throw 'Publish manifest must contain 13 coordinates.' }
@@ -201,6 +296,11 @@ try {
                 throw "Manifest payload extension mismatch: $($entry.ArtifactId) $expectedExtension"
             }
         }
+        $pomValue = [string]@($payloads | Where-Object extension -CEQ 'pom')[0].resolvedVersion
+        $jarPayload = @($payloads | Where-Object extension -CEQ 'jar')
+        $jarValue = if ($jarPayload.Count -eq 1) { [string]$jarPayload[0].resolvedVersion } else { $null }
+        Assert-P2C2CoordinateResolvedValue -ArtifactId $entry.ArtifactId -Packaging $entry.Packaging `
+            -PomValue $pomValue -JarValue $jarValue
         foreach ($payload in $payloads) {
             $extension = [string]$payload.extension
             $resolved = [string]$payload.resolvedVersion

@@ -7,10 +7,12 @@ Set-StrictMode -Version Latest
 $repositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $publishInvoker = Join-Path $PSScriptRoot 'invoke-p2-c2-publish.ps1'
 $stateVerifier = Join-Path $PSScriptRoot 'verify-p2-c2-publish-state.ps1'
+$metadataVerifier = Join-Path $PSScriptRoot 'verify-p2-c2-snapshot-metadata.ps1'
 $temporaryRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
 $workingRoot = Join-Path $temporaryRoot ('koiki-p2-c2-publish-dry-run-' + [guid]::NewGuid().ToString('N'))
 $builderRepository = Join-Path $workingRoot 'builder'
 $fileRepository = Join-Path $workingRoot 'remote'
+$beforeStatePath = Join-Path $workingRoot 'p2-c2-pre-publish-inventory.json'
 $manifestPath = Join-Path $workingRoot 'p2-c2-publish-manifest.json'
 
 function Assert-SafeTemporaryPath {
@@ -30,10 +32,17 @@ try {
     if ([string]::IsNullOrWhiteSpace($repositoryUri) -or -not ([uri]$repositoryUri).IsFile) {
         throw "Unable to create a file repository URI: $fileRepository"
     }
+    & $metadataVerifier
+    if (-not $?) { throw 'P2-C2 accumulated snapshot metadata verification failed.' }
+    & $stateVerifier -Mode Inventory -RepositoryUrl $repositoryUri -ManifestPath $beforeStatePath `
+        -ExpectedCommit $ExpectedCommit
+    if (-not $?) { throw 'P2-C2 pre-publish snapshot inventory failed.' }
+
     & $publishInvoker -RepositoryUrl $repositoryUri -RepositoryId 'p2-c2-local' `
         -ExpectedCommit $ExpectedCommit -LocalRepository $builderRepository
 
-    & $stateVerifier -Mode Capture -RepositoryUrl $repositoryUri -ManifestPath $manifestPath -ExpectedCommit $ExpectedCommit
+    & $stateVerifier -Mode Capture -RepositoryUrl $repositoryUri -ManifestPath $manifestPath `
+        -BeforeStatePath $beforeStatePath -ExpectedCommit $ExpectedCommit
     if (-not $?) { throw 'P2-C2 local publish-state capture failed.' }
     & $stateVerifier -Mode Verify -RepositoryUrl $repositoryUri -ManifestPath $manifestPath -ExpectedCommit $ExpectedCommit
     if (-not $?) { throw 'P2-C2 local publish-state verification failed.' }
