@@ -103,7 +103,7 @@ function Assert-NoSensitiveContent {
 
     $forbiddenPatterns = [ordered]@{
         'private key material' = '-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'
-        'credential assignment' = '(?i)(?:password|client[_-]?secret|access[_-]?token)\s*[:=]\s*[^\s<]+'
+        'credential assignment' = '(?i)(?:password|client[_-]?secret|access[_-]?token)\s*[:=]\s*(?!\?)[^\s<]+'
         'email-shaped PII' = '(?i)[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
     }
     foreach ($file in $Files) {

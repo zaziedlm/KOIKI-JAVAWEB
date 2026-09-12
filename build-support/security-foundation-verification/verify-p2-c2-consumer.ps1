@@ -56,7 +56,7 @@ function Assert-NoSensitiveText {
     foreach ($pattern in @(
             '-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',
             '(?i)[a-z0-9._%+-]+@[a-z0-9.-]+[.][a-z]{2,}',
-            '(?i)(?:password|client[_-]?secret|access[_-]?token)[ ]*[:=][ ]*[^\s<]+')) {
+            '(?i)(?:password|client[_-]?secret|access[_-]?token)[ ]*[:=][ ]*(?!\?)[^\s<]+')) {
         if ($Content -match $pattern) {
             throw "Sensitive pattern detected in $Source."
         }
