@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `P2-C3 COMPLETE / ARCHITECTURE OWNER APPROVED / GATE C READY`
+**状態:** `GATE C-1 ARCHITECTURE OWNER APPROVED / COMMIT PENDING`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月12日
 **開始branch:** `feature/phase2-security-foundation`
@@ -431,6 +431,17 @@ Evidence前にPhase 2を完了扱いしない。protected environment、push、P
 remote取得、24 payload SHA-256、aggregate signatureおよび11 same-source `japicmp`を確認するPhase 2最終受入れ条件とする。
 次はGate C-1 remote plan reviewであり、protected environment、push、PR、main、ruleset、dispatchおよびsnapshot publishは
 実行前の個別Owner承認まで`NOT APPROVED / NO-GO`を維持する。
+
+同日、Gate C-1のread-only remote inventoryを実施した。`origin/main`はC3-3 Owner承認commitのancestor、対象branchの既存PRは0、
+main rulesetはactive / strict / bypass 0かつrequired checks 7件、Phase 2 workflow / environmentは未反映、Phase 2新規4 packagesは
+未公開であることを確認した。PR、main CI、protected environment、一回限りのsnapshot publish / verifyおよび失敗時境界を
+`../architecture/validation/phase2-gate-c-c1-remote-plan-review.md`へ記録し、Architecture Owner reviewへ提示する。
+pushその他のremote mutationはまだ実施せず、`NOT APPROVED / NO-GO`を維持する。
+
+同日、Architecture OwnerはGate C-1の10 review pointsを提案どおり承認した。本承認記録のcommit後、承認済み順序に従う
+branch push、final PR、required checks 7件、merge commit、merge後main CI、Phase 2 protected environment、final main SHAの
+一回限りpublish / remote verifyへ進めてよい。ruleset緩和、bypass、追加secret、無断retry、package削除または別SHA publishは
+承認せず、順序またはidentity変更時は再reviewする。Gate C-3最終Owner review前はPhase 2を完了扱いしない。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
