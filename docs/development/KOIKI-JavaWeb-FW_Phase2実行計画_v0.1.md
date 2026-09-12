@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `P2-C2 C2-7 COMPLETE / LOCAL VERIFIED / ARCHITECTURE OWNER REVIEW PENDING`
+**状態:** `P2-C3 C3-1 COMPLETE / ARCHITECTURE OWNER APPROVED / C3-2 READY`
 **作成日:** 2026年8月31日
 **最終更新日:** 2026年9月12日
 **開始branch:** `feature/phase2-security-foundation`
@@ -375,6 +375,32 @@ formal 14 projects / 11 JAR、publish候補13座標、Public API 24型、Referen
 process / container / temporary repository / fixture target cleanupを最終確認した。C2-7を`COMPLETE / LOCAL VERIFIED`として
 Architecture Owner reviewへ提示し、承認後の次候補をP2-C3 Developer Journey / DoD closeoutとする。
 C2-5 remote snapshot publishとその他のremote変更は引き続き`NOT APPROVED / NO-GO`である。
+
+同日、Architecture OwnerはC2-7の6判断を提案どおり承認した。C2-2〜C2-6のfocused検証、P2-C1回帰、Gate B 6工程の
+3ラウンド、Root Reactor、Null Safety、最終inventory、sensitive-output検査およびcleanupをP2-C2 closeout Evidenceとして
+受け入れ、P2-C2を`COMPLETE / ARCHITECTURE OWNER APPROVED`としてcloseした。次はP2-C3 Developer Journey / DoD closeoutの
+contract / inventory reviewへ進む。C2-5 remote snapshot publish、protected environment作成、push、PR、main反映、
+workflow dispatch、required check変更およびその他のremote操作は引き続き`NOT APPROVED / NO-GO`である。
+
+同日、P2-C3 C3-1のread-only inventoryを実施し、DoD 2-1〜2-10、Developer Journey、Architecture / verification index、
+ADR / Skill、release / Public API / migration、remote Evidenceおよびdeferred scopeのcloseout契約案を
+`../architecture/validation/phase2-p2-c3-contract-review.md`へ記録した。P2-C3は新機能を追加せず、既存Consumer、Referenceおよび
+verification scriptの合成で成立させる案とする。Architecture Ownerの指摘を受け、機構の成立と同格で、エンジニアによる
+入口の発見、dependency / profile / Ownershipの選択、公開契約からの実装、secure default、失敗時診断、正負検証、cleanupおよび
+留保範囲の理解をEngineer-facing acceptanceへ追加した。次はC3-1の10判断に対するArchitecture Owner reviewであり、承認前に
+production code、Public API、migration、workflowまたはremote stateを変更しない。
+
+同日、Architecture OwnerはC3-1契約案の§4.1 `Engineer-facing acceptance`を内容承認した。機構の成立と同格で、
+entry / discoverability、dependency / profile selection、Ownership、公開契約、secure defaults、diagnostics、verification、
+runtime / packagingおよびlimits / next actionを評価する。§4.2 / §4.3を含む10判断全体とC3-2開始は未承認のため、
+C3-1を`CONTRACT REVIEW PENDING`のまま維持する。
+
+同日、Architecture Ownerは§4.1の部分承認を前提としてC3-1の10判断を提案どおり承認した。P2-C3を新機能追加なしの
+Developer Journey / DoD / governance closeoutとし、Engineer-facing acceptance、human-operable journey、friction triage、
+DoD 2-1〜2-10 trace、文書対象およびclean-HEAD local aggregateを承認した。C3-1を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はC3-2のEngineer-facing文書・Developer Journey接続へ進む。
+production artifact、Public API、migration、workflowおよびremote操作は本承認に含めず、C2-5 remote publishも
+`NOT APPROVED / NO-GO`を維持する。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 

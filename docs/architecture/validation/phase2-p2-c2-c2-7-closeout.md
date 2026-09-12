@@ -127,3 +127,11 @@ workflow dispatch、GitHub Packages、remote hash / signature / japicmp Evidence
 
 推奨結論は上記6点を承認し、P2-C2 local work packageをcloseしてP2-C3へ引き渡すことである。remote操作の権限は
 本承認に含めない。
+
+2026年9月12日、Architecture Ownerは上記承認文案を確認し、6判断を提案どおり承認した。C2-2〜C2-6のfocused検証、
+P2-C1回帰、Gate B 6工程の3ラウンド、Root Reactor、Null Safety、最終inventory、sensitive-output検査およびcleanupを
+P2-C2 closeout Evidenceとして受け入れる。P2-C2を`COMPLETE / ARCHITECTURE OWNER APPROVED`としてcloseし、次は
+P2-C3 Developer Journey / DoD closeoutへ進む。
+
+C2-5 remote snapshot publish、protected environment作成、push、PR、main反映、workflow dispatch、required check変更および
+その他のremote操作は本承認に含めず、引き続き`NOT APPROVED / NO-GO`とする。
