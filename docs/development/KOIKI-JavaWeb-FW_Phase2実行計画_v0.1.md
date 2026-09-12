@@ -1,8 +1,8 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `GATE C-2 PUBLISH CAPTURE CORRECTION OWNER APPROVED / COMMIT PENDING`
+**状態:** `PHASE 2 COMPLETE / ACCEPTED`
 **作成日:** 2026年8月31日
-**最終更新日:** 2026年9月12日
+**最終更新日:** 2026年9月13日
 **開始branch:** `feature/phase2-security-foundation`
 **開始基準main:** `b2e2123605e4d971c3ed5ccc729f668d91189d83`
 
@@ -473,6 +473,27 @@ historical unaccepted publishとして保持し、同一run要件を厳格維持
 publish前後metadata差分、retention 7日のpre-publish inventory、POM / JAR一致、run / attempt固定およびfail-closedを
 恒久契約として受け入れた。本修正と承認記録のcommit後、新しいPR / main CI / main SHA / workflow run順序へ進める。
 failed runのrerun、package削除、自動retryまたは承認外の追加publishは行わない。
+
+2026年9月13日、capture correction commit `4f58cfb`をPR #33のrequired checks成功後、merge commit `af7b4f7`として
+mainへ反映した。同commitのCI / runtime全8 jobとenvironment / ruleset read-back成功後、40文字main SHA
+`af7b4f71d885fe4991e5fcf85fcf8888aec6a539`を指定してsnapshot run `34701933485`を一度dispatchした。
+protected environment承認後、同run / attempt 1内でpre-publish inventory保存、13座標publish、exact Capture、
+hash-only manifest uploadおよびfresh remote Verifyがすべて成功した。
+
+remote Verifyは13座標、24 payload SHA-256、aggregate signatureおよび11 same-source `japicmp`をSUCCESSとした。
+成功runのmanifest identityと全payload hashは
+`../architecture/validation/phase2-gate-c-c2-remote-evidence.md`へ永続記録した。Gate C-2 remote Evidenceを
+`COMPLETE`とし、次はGate C-3 Architecture Owner最終reviewである。Owner承認前はGate CおよびPhase 2全体を
+`COMPLETE / ACCEPTED`へ変更しない。
+
+同日、Architecture OwnerはGate C-3の9 review pointsについて、source identityを40文字の完全SHAで記録し、
+Phase 2最終状態を既存Phaseと同じ`COMPLETE / ACCEPTED`表記へ統一することを条件に、全体を承認した。
+`../architecture/validation/phase2-gate-c-c2-remote-evidence.md`へ両条件と承認記録を反映し、run `34701933485`の
+manifestをPhase 2初回published baseline identityとして確定した。Gate CおよびPhase 2 Security Foundationを
+`COMPLETE / ACCEPTED`として最終closeoutする。
+
+正式release、Customer配布、追加snapshot publish、OpenRewrite prototypeの正式運用・配布、Oracle対応および
+その他のdeferred scopeは本承認に含めず、各後続Phase / Gateの個別Owner reviewへ残す。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 

@@ -6,9 +6,11 @@
 Phase 2の正式なProject TemplateやCustomer Applicationを提供するものではなく、承認済みFramework contract、
 Referenceおよび非配布Consumerから、依存選択、Ownership、実装境界、診断と検証の順序を示す。
 
-現時点のPhase 2 artifactはlocal package / isolated repositoryまで検証済みである。Phase 2 remote snapshot publishは
-`NOT APPROVED / NO-GO`であり、Repository外からの一般取得可能性はまだ保証しない。Repository内での成立確認には
-§8のTooling-owned Harnessを使用する。
+Phase 2の内部snapshotは、source commit `af7b4f71d885fe4991e5fcf85fcf8888aec6a539`、workflow run
+`34701933485`でpublishとfresh remote acquisitionを検証済みである。これは認証を要する内部snapshotであり、正式releaseや
+一般公開を意味しない。Repository外から利用するには承認済みGitHub Packages repositoryの設定と認証が必要である。
+受入証拠は[Gate C remote Evidence](../architecture/validation/phase2-gate-c-c2-remote-evidence.md)、Repository内での成立確認は
+§8のTooling-owned Harnessを参照する。
 
 ## 2. Start with ownership and business structure
 
@@ -53,7 +55,8 @@ Bearer-only APIはSession Starterを導入せず、Security StarterとApplicatio
 各Starterの正確な責務は[Starter index](../../koiki-starters/README.md)から確認する。未使用Starterや将来用moduleを追加しない。
 
 Session / Identityを利用するApplicationの最小依存選択は次の形になる。これは完成POMやProject Templateではない。
-`0.1.0-SNAPSHOT`をRepository外から解決するには、Gate Cで別途承認されるartifact repositoryが必要である。
+`0.1.0-SNAPSHOT`はGate Cで承認された内部GitHub Packages repositoryから解決できるが、この例にはrepository設定や
+credential設定を含めない。
 
 ```xml
 <parent>
@@ -193,7 +196,7 @@ pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b
 
 ## 9. Know what is not yet promised
 
-- Phase 2 snapshotのremote公開とRepository外一般取得
+- 正式release、一般公開repositoryおよびCustomer向けsupport付き配布
 - Project Template、code generator、正式Upgrade / Migration Guide
 - 実Customer applicationの完全移行と正式OpenRewrite recipe
 - Authorization Server、refresh token lifecycle、SAML、Redis Session、WebFlux

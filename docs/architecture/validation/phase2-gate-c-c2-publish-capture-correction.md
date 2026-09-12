@@ -7,7 +7,7 @@
 - failed run: `34693368000`
 - published source: `e10f88c82824b9c4b34215480730fa52b8c19e0d`
 - corrective branch: `fix/phase2-publish-metadata-history`
-- status: `RECOVERY DIRECTION AND TOOLING CORRECTION OWNER APPROVED / COMMIT PENDING`
+- status: `CORRECTION COMPLETE / SUCCESSFUL REPUBLISH VERIFIED`
 - Ownership: Tooling / Workflow / Architecture Evidence
 - production artifact / Framework Public API / migration change: 0
 
@@ -103,3 +103,14 @@ package / version削除またはfailed runのrerunを行わない。
 production artifact、Framework Public API、migration、13座標publish unit、environment、rulesetおよびrequired checksは変更しない。
 本修正と承認記録をcommitした後、§6のbranch push、PR、main CI、設定read-back、新しいworkflow runの順序へ進めてよい。
 新runが失敗した場合も、自動retry、package削除または追加publishは行わず、Evidenceを保全して再reviewする。
+
+## 9. Correction completion
+
+2026年9月13日、corrective commit `4f58cfb`をPR #33経由でmerge commit `af7b4f7`としてmainへ反映した。
+PR checksとmerge後main CI / runtime 8 / 8、environment / ruleset read-backの成功後、main SHA
+`af7b4f71d885fe4991e5fcf85fcf8888aec6a539`を指定してrun `34701933485`を一度dispatchした。
+
+同run / attempt 1内でpre-publish inventory、13座標publish、exact Capture、manifest uploadおよびfresh remote Verifyが
+すべて成功した。結果、13座標 / 24 payload SHA-256 / aggregate signature / 11 same-source `japicmp`を
+同一sourceへ固定でき、本correctionを完了とする。詳細EvidenceとGate C-3 review pointsは
+`phase2-gate-c-c2-remote-evidence.md`を正本とする。

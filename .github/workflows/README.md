@@ -29,7 +29,7 @@ KOIKIでは、CIとartifact公開を別の権限境界として扱います。
 - 通常の`Verify` jobは`contents: read`だけで、secretやpackage権限を使用しません。
 - `Security Foundation Integration`は、final HEADのremote PRで1回成功し、cleanupと実行時間をOwner Reviewしたうえで、
   main rulesetのrequired checkへ追加済みです。同一commitの意図的な複数rerunは条件にしません。
-- `Local Identity Session Audit Integration`はPhase 2 Milestone BのCI候補です。B1 Audit、B2 Identity、B3 Session、
+- `Local Identity Session Audit Integration`はPhase 2 Milestone Bの累積CI jobです。B1 Audit、B2 Identity、B3 Session、
   B4 package済みReference journeyを3ラウンド連続実行し、Root Reactor、Null Safety、Public API / dependency / migration
   inventory、sensitive-outputおよび所有resource cleanupを累積検証します。
 - このjobは`ubuntu-24.04`、Temurin 21、`contents: read`だけを使用し、secret、Packages、environment権限または
@@ -109,3 +109,5 @@ packaging、配布設定または正式Application Templateが変わる場合は
 - pre-publish inventoryはpublish前にretention 7日のworkflow artifactとして保存する。Capture / Verifyはmetadata上の最新値を
   推測せず、同一runの差分で確定したtimestamped valueとhash-only manifestを使用する。
 - environment作成、push、PR、main merge、dispatchおよびremote publishは、それぞれのOwner承認前に実施しない。
+- Phase 2初回accepted baselineはsource commit `af7b4f71d885fe4991e5fcf85fcf8888aec6a539`、workflow run
+  `34701933485`でpublish / Verify済みである。詳細は[Gate C remote Evidence](../../docs/architecture/validation/phase2-gate-c-c2-remote-evidence.md)に記録する。

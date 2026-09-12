@@ -2,12 +2,14 @@
 
 **版:** v0.1<br>
 **作成日:** 2026年8月19日<br>
-**最終更新日:** 2026年8月27日<br>
-**状態:** PHASE 0 ACCEPTED / PHASE 1A CLOSEOUT ACCEPTED<br>
+**最終更新日:** 2026年9月13日<br>
+**状態:** PHASE 0 / PHASE 1A / PHASE 1B / PHASE 2 CLOSEOUT ACCEPTED<br>
 **Architecture Owner:** Shuichi Kataoka<br>
 **対象:** KOIKI / Spring Boot / Java baselineとsupport管理<br>
 **Phase 0基準Commit:** `8d90ea1`<br>
-**Phase 1a基準Commit:** `8894d97e2d1d93e3bcd29304763a31a2ffed5e3c`
+**Phase 1a基準Commit:** `8894d97e2d1d93e3bcd29304763a31a2ffed5e3c`<br>
+**Phase 1b基準Commit:** `40d16f9dbf26a7ba88ac13b2e3728075e0eff2a7`<br>
+**Phase 2基準Commit:** `af7b4f71d885fe4991e5fcf85fcf8888aec6a539`
 
 ## 1. 目的
 
@@ -38,20 +40,26 @@ Repositoryから一意に確認できるようにする。本書をグランド�
 
 | Baseline | KOIKI line | Spring Boot | Java target bytecode | Build JDK | 対応runtime | 推奨runtime | 状態 |
 |---|---|---|---:|---|---|---|---|
-| Phase 0 development | 未公開（`0.0.1-SNAPSHOT`） | 4.1.0 | 21 | 21 | Java 21 | Java 25（互換確認対象） | DEVELOPMENT |
-| Phase 1a Build Foundation | 内部snapshot（`0.1.0-SNAPSHOT`） | 4.1.1 | 21 | 21 | Java 21 / 25 | Java 25（互換確認済み） | DEVELOPMENT |
+| Phase 0 development | 0.0.x development（`0.0.1-SNAPSHOT`、未公開） | 4.1.0 | 21 | 21 | Java 21 | Java 25（互換確認対象） | DEVELOPMENT |
+| Phase 1a Build Foundation | 0.1.x development（`0.1.0-SNAPSHOT`、内部公開） | 4.1.1 | 21 | 21 | Java 21 / 25 | Java 25（互換確認済み） | DEVELOPMENT |
+| Phase 1b Runtime Foundation | 0.1.x development（`0.1.0-SNAPSHOT`、内部公開） | 4.1.1 | 21 | 21 | Java 21 / 25 | Java 25（互換確認済み） | DEVELOPMENT |
+| Phase 2 Security Foundation | 0.1.x development（`0.1.0-SNAPSHOT`、内部公開） | 4.1.1 | 21 | 21 | Java 21 / 25 | Java 25（互換確認済み） | DEVELOPMENT |
 
 `0.0.1-SNAPSHOT`はWalking Skeletonの候補Parent / BOMを識別する開発versionであり、
 固定branchとGit履歴に保持する。Phase 1aは正式な`org.koikifw`座標で4成果物の内部snapshotを
 公開したが、正式releaseまたは顧客向けsupport対象lineではない。正式release versionとsupport条件は
 Phase 5で確定する。
 
+Phase 1a、Phase 1bおよびPhase 2は同じ`0.1.0-SNAPSHOT` development lineを累積更新したものであり、独立した
+support lineではない。mutableなsnapshot座標だけをbaseline identityとせず、Phase 1bは基準Commitとworkflow run、
+Phase 2は基準Commitとaccepted publish manifestを正本として識別する。
+
 ### 3.2 再現用Component Snapshot
 
 | Component | Version / 条件 | 根拠 |
 |---|---|---|
 | Spring Boot | 4.1.1 | `koiki-dependencies-bom/pom.xml` |
-| Spring Modulith | 2.1.0 | `koiki-dependencies-bom/pom.xml` |
+| Spring Modulith | 2.1.1 | `koiki-dependencies-bom/pom.xml` |
 | Maven | 3.9.16 | Maven Wrapper |
 | Maven Compiler Plugin | 3.15.0 | `koiki-parent/pom.xml` |
 | Maven Enforcer Plugin | 3.6.3 | `koiki-parent/pom.xml` |
@@ -66,9 +74,8 @@ Component Snapshotはbaselineを再現するための補助情報であり、す
 KOIKI major更新を要求するものではない。Spring Boot minorの変更はKOIKI major更新として扱い、
 build pluginや検査toolは互換性と検証結果を確認したうえで同一KOIKI line内でも更新できる。
 
-Spring Modulith 2.1.0はPhase 1aでLevel 0 test scopeを実証した実効dependencyである。2026年8月27日時点で
-2.1.1が公開済みだが、closeout中の更新はC1 snapshot、C2 ConsumerおよびB5 integration Evidenceを
-再判定させるため、Phase 1aでは2.1.0を維持し、Phase 1b開始時のbaseline gateで更新を判断する。
+Spring Modulith 2.1.0はPhase 1aでLevel 0 test scopeを実証した。Phase 1b開始時に2.1.1へ更新し、CP1で
+Level 0、Feature Templateおよびruntime非依存を回帰検証した。Phase 2完了時点の実効dependencyは2.1.1である。
 versionの記載だけを根拠として、Level 1 / 2、runtime依存または運用方式を正式採用したとは扱わない。
 
 ### 3.3 検証証拠
@@ -82,21 +89,27 @@ versionの記載だけを根拠として、Level 1 / 2、runtime依存または�
 | Internal distribution | 正式4成果物の同一timestamp snapshotと外部Consumer成功 | `validation/phase1a-internal-snapshot.md`、`validation/phase1a-external-consumer.md` |
 | Public API | inventory一致、japicmp正常・破壊・追加・internal fixture成功 | `validation/phase1a-public-api-compatibility.md` |
 | CI | main `8894d97`のCIとJava Runtime Compatibility成功 | GitHub Actions run `33045138678`、`33045138675` |
+| Phase 1b distribution | 基準Commitから9成果物をpublishし、fresh repositoryから9座標のConsumer成功 | `validation/phase1b-closeout.md`、workflow run `33311794583` |
+| Phase 2 distribution / Public API | 同一runで13座標、24 payload SHA-256、24型aggregate signature、11 same-source japicmp成功 | `validation/phase2-gate-c-c2-remote-evidence.md`、workflow run `34701933485` |
+| Phase 2 final CI / runtime | 基準Commitのmain CI 6 jobとJava 21 build／Java 21・25 runtime 2 jobが成功 | GitHub Actions run `34700027409`、`34700027420` |
 
 Java 25は推奨runtimeの互換確認対象であり、build JDKではない。
 Java 21で生成したbytecodeがJava 21とJava 25の双方で動作する契約を維持する。
 
 **Phase 0 Owner Review（§1〜§3）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）<br>
-**Phase 1a Closeout Review:** ACCEPTED（2026年8月27日、Shuichi Kataoka）
+**Phase 1a Closeout Review:** ACCEPTED（2026年8月27日、Shuichi Kataoka）<br>
+**Phase 1b / Phase 2 Refresh Review:** ACCEPTED（2026年9月13日、Shuichi Kataoka）
 
 ## 4. Support対応表
 
 | KOIKI line | Release日 | 対応Spring Boot line | Spring Boot OSS support終了日 | KOIKI OSS support終了日 | 商用延長 | 状態 | 確認日・根拠 |
 |---|---|---|---|---|---|---|---|
-| Phase 0 development | 未release | 4.1.x development baseline | 対象外 | 対象外 | 対象外 | DEVELOPMENT | Phase 0実装証拠（2026年8月14日） |
-| Phase 1a Build Foundation | 未release | 4.1.x development baseline | 対象外 | 対象外 | 対象外 | DEVELOPMENT | Spring Boot公式project page、実効BOM、C5 read-only調査（2026年8月27日） |
+| 0.0.x development（Phase 0時点） | 未release | 4.1.x development baseline | 対象外 | 対象外 | 対象外 | DEVELOPMENT | Phase 0実装証拠（2026年8月14日） |
+| 0.1.x development（Phase 1a時点） | 未release | 4.1.x development baseline | 対象外 | 対象外 | 対象外 | DEVELOPMENT | Spring Boot公式project page、実効BOM、C5 read-only調査（2026年8月27日） |
+| 0.1.x development（Phase 1b時点） | 未release | 4.1.x development baseline | 対象外 | 対象外 | 対象外 | DEVELOPMENT | 実効BOM、Gate 2 closeout Evidence（2026年8月30日） |
+| 0.1.x development（Phase 2時点） | 未release | 4.1.x development baseline | 対象外 | 対象外 | 対象外 | DEVELOPMENT | Spring Boot 4.1.1公式資料、実効BOM、Gate C remote Evidence（2026年9月13日確認） |
 
-Phase 0 / Phase 1a development baselineには顧客向けsupport期間を設定しない。Phase 5 DoD 5-3で、
+Phase 0からPhase 2までのdevelopment baselineには顧客向けsupport期間を設定しない。Phase 5 DoD 5-3で、
 正式releaseごとにSpring公式情報を確認し、具体的な終了日、確認日、参照元を記録する。
 「LTS」という包括的表現は使用せず、OSS supportと商用延長supportを分ける。
 
@@ -110,7 +123,8 @@ KOIKIがそのrepositoryからBOM・Starterのdependency解決とbuildを検証�
 
 最新lineと直前line以外も対応履歴として削除せず、support終了後は`EOL`へ更新して表に残す。
 
-**Owner Review（§4）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）
+**Prior Owner Review（§4）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）<br>
+**Phase 1b / Phase 2 Refresh Review（§4）:** ACCEPTED（2026年9月13日、Shuichi Kataoka）
 
 ## 5. 更新契機
 
@@ -149,7 +163,7 @@ support運用、および顧客通知経路を見直す。
 
 | 状態 | 意味 |
 |---|---|
-| DEVELOPMENT | 未公開の開発baseline。顧客support対象外 |
+| DEVELOPMENT | 正式release前の開発baseline。内部snapshotの有無によらず顧客support対象外 |
 | PLANNED | release候補。検証または承認が未完了 |
 | SUPPORTED | 公開済みで、明示したOSS support期間内 |
 | EXTENDED | 商用artifact構成でKOIKIのbuild検証を継続するline。一般公開supportではなく、契約とrepository利用権を持つ顧客だけが対象 |
@@ -163,7 +177,7 @@ DEVELOPMENT -> PLANNED -> SUPPORTED -> EOL
                               +-> EXTENDED -> EOL
 ```
 
-商用延長を適用しないlineは`SUPPORTED`から`EOL`へ移行する。公開済みlineを`DEVELOPMENT`または
+商用延長を適用しないlineは`SUPPORTED`から`EOL`へ移行する。正式release済みlineを`DEVELOPMENT`または
 `PLANNED`へ戻さない。終了済みlineを再提供する必要がある場合は、新しいKOIKI lineとして評価する。
 
 ### 7.1 変更履歴
@@ -172,8 +186,11 @@ DEVELOPMENT -> PLANNED -> SUPPORTED -> EOL
 |---|---|---|---|---|---|---|---|
 | 2026年8月19日 | Phase 0 development | New → DEVELOPMENT | ACCEPTED | `validation/walking-skeleton-build-foundation.md`、`validation/walking-skeleton-phase0-completion.md` | POM・Wrapperの実効versionとJava 21 / 25検証結果を未公開baselineとして記録する | Shuichi Kataoka | Phase完了、Spring Boot / Java方針変更、support条件変更 |
 | 2026年8月27日 | Phase 1a Build Foundation | New → DEVELOPMENT | ACCEPTED | Phase 1a Validation一式、`BUILD-BASELINE.json`、実効POM、Wrapper、main runs `33045138678` / `33045138675` | 正式座標、Boot 4.1.1、Java 21 build / 21・25 runtime、内部snapshotとCIをcloseout baselineへ同期した。未releaseのため状態は`DEVELOPMENT`を維持する | Shuichi Kataoka | Phase 1b開始、baseline変更、正式release準備 |
+| 2026年9月13日 | Phase 1b Runtime Foundation | DEVELOPMENT継続 | ACCEPTED | `validation/phase1b-closeout.md`、基準Commit `40d16f9`、snapshot run `33311794583` | 同じ0.1.x development lineへ9成果物、Modulith 2.1.1回帰、Java 21 / 25およびfresh remote Consumerの実績を累積する | Shuichi Kataoka | baseline変更、正式release準備 |
+| 2026年9月13日 | Phase 2 Security Foundation | DEVELOPMENT継続 | ACCEPTED | `validation/phase2-gate-c-c2-remote-evidence.md`、基準Commit `af7b4f7`、snapshot run `34701933485` | 同じ0.1.x development lineへ13座標、24 payload、Public API signatureおよび同一run remote Verifyの実績を累積する | Shuichi Kataoka | baseline変更、正式release準備 |
 
-**Owner Review（§5〜§7）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）
+**Prior Owner Review（§5〜§7）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）<br>
+**Phase 1b / Phase 2 Refresh Review（§5〜§7）:** ACCEPTED（2026年9月13日、Shuichi Kataoka）
 
 ## 8. Owner Review観点
 
@@ -189,6 +206,9 @@ DEVELOPMENT -> PLANNED -> SUPPORTED -> EOL
 - 緊急更新でも互換性検証とArchitecture Ownerの承認を省略していないか。
 - 本書、BOM、Parent、Wrapper、ADRまたはGrand Designを同じ変更候補で整合させる設計か。
 - `EOL`のlineを削除せず、対応履歴として保持する設計か。
+- Phase 1aからPhase 2までを別release lineと誤認せず、同じ`0.1.0-SNAPSHOT` development lineの累積baselineとして扱っているか。
+- mutableなsnapshot versionではなく、基準Commit、workflow runおよびaccepted manifestで各Phaseの再現対象を識別できるか。
+- Phase 2内部snapshotの公開実績を、正式release、一般公開repositoryまたは顧客support開始と誤認しないか。
 
 ## 9. 参照
 
@@ -203,6 +223,9 @@ DEVELOPMENT -> PLANNED -> SUPPORTED -> EOL
 - `validation/phase1a-external-consumer.md`
 - `validation/phase1a-public-api-compatibility.md`
 - `validation/phase1a-java-runtime-matrix.md`
+- `validation/phase1b-cp1-modulith-2.1.1-regression.md`
+- `validation/phase1b-closeout.md`
+- `validation/phase2-gate-c-c2-remote-evidence.md`
 - `../../koiki-dependencies-bom/pom.xml`
 - `../../koiki-parent/pom.xml`
 - `../../.mvn/wrapper/maven-wrapper.properties`
@@ -217,16 +240,49 @@ Phase 1a C5で確認した一次情報:
 - https://maven.apache.org/docs/history.html
 - https://www.oracle.com/java/technologies/java-se-support-roadmap.html
 
-**Owner Review（§8〜§9）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）
+Phase 2 baseline refreshで2026年9月13日に再確認した一次情報:
 
-## 10. Owner Review Result
+- https://spring.io/blog/2026/08/20/spring-boot-4-1-1-available-now/
+- https://docs.spring.io/spring-boot/system-requirements.html
+- https://docs.spring.io/spring-modulith/reference/
+
+**Prior Owner Review（§8〜§9）:** ACCEPTED（2026年8月19日、Shuichi Kataoka）<br>
+**Phase 1b / Phase 2 Refresh Review（§8〜§9）:** ACCEPTED（2026年9月13日、Shuichi Kataoka）
+
+## 10. Prior Owner Review Result
 
 | 項目 | 判定 |
 |---|---|
-| 対象 | `KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md`全体 |
+| 対象 | 2026年8月19日時点の`KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md` §1〜§9 |
 | Decision | ACCEPTED |
 | Evidence | 本書§1〜§9のOwner Review、`koiki-dependencies-bom/pom.xml`、`koiki-parent/pom.xml`、Maven Wrapper、`validation/walking-skeleton-build-foundation.md`、`validation/walking-skeleton-phase0-completion.md` |
 | Rationale | Phase 0の未公開development baselineと実効設定が一致し、正式releaseと誤認しない境界、support状態、更新契機、承認手順、およびPhase 5へ保留する具体的support終了日の範囲が明確である |
 | Decided by | Shuichi Kataoka |
 | Date | 2026年8月19日 |
 | Revisit trigger | Phase完了、正式release準備、Spring BootまたはJava方針変更、support条件変更、重大脆弱性・利用不能・artifact取得不能、四半期Architecture Review |
+
+## 11. Phase 1b / Phase 2 refresh Owner Review
+
+Architecture Ownerは次を判断する。
+
+1. Phase 1bとPhase 2を、独立したsupport lineではなく同じ`0.1.0-SNAPSHOT` development lineの累積baselineとして追加してよいか。
+2. Phase 1b baseline identityを基準Commit `40d16f9dbf26a7ba88ac13b2e3728075e0eff2a7`とsnapshot run `33311794583`で固定してよいか。
+3. Phase 2 baseline identityを基準Commit `af7b4f71d885fe4991e5fcf85fcf8888aec6a539`とaccepted manifestを持つrun `34701933485`で固定してよいか。
+4. Spring Boot 4.1.1、Spring Modulith 2.1.1、Java 21 target / buildおよびJava 21 / 25 runtimeを現行baselineとして受け入れるか。
+5. Phase 2内部snapshotは正式release、一般公開repositoryまたは顧客support開始ではなく、状態を`DEVELOPMENT`のまま維持してよいか。
+6. §3、§4、§7および§9のEvidenceと一次情報をPhase 1b / Phase 2 closeoutに対するBaseline Compatibility更新として承認するか。
+
+推奨結論は上記6点を承認し、§7.1の2件を`ACCEPTED`、本書の状態を
+`PHASE 0 / PHASE 1A / PHASE 1B / PHASE 2 CLOSEOUT ACCEPTED`へ更新することである。
+
+### 11.1 Owner Review Result
+
+| 項目 | 判定 |
+|---|---|
+| 対象 | §11の6判断とPhase 1b / Phase 2 Baseline Compatibility refresh全体 |
+| Decision | ACCEPTED |
+| Evidence | §3、§4、§7、§9、Phase 1b基準Commit／snapshot run、Phase 2基準Commit／accepted manifest |
+| Rationale | 同じ0.1.x development lineの累積baselineとして再現identityと検証証拠を固定し、正式release・一般公開・顧客supportへ昇格させない境界が明確である |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年9月13日 |
+| Revisit trigger | baseline version変更、正式release準備、Spring Boot／Java方針変更、support条件変更、重大脆弱性・artifact取得不能、四半期Architecture Review |
