@@ -9,8 +9,8 @@ Phase 1a Build Foundationでは、検証済みの知見を正式なMaven成果�
 Phase 1b Runtime Foundationでは、Spring標準を優先したAPI、Data、JPA、Observabilityの
 runtime Starterと、Customer-like Consumerによる運用経路を実装・検証し、2026年8月30日に完了しました。
 Phase 2 Security Foundationでは、default deny、local / OIDC / Bearer認証、Identity、Audit、Spring Session JDBC、
-PostgreSQL migrationおよびReference `identity`を実装・検証しました。Milestone A / B、P2-C1 / C2は
-Architecture Owner承認済みで、現在はP2-C3 Developer Journey / DoD closeoutを進めています。
+PostgreSQL migrationおよびReference `identity`を実装・検証しました。P2-C3、final main CI、同一runでの
+内部snapshot publish / Verifyまで完了し、Gate CとPhase 2はArchitecture Owner承認済みです。
 
 業務アプリケーション開発の開始点は
 [Phase 2 Security Foundation Developer Journey](docs/development/phase2-developer-journey.md)です。
@@ -23,7 +23,8 @@ Architecture Owner承認済みで、現在はP2-C3 Developer Journey / DoD close
 - Phase 1b Runtime Foundation: COMPLETE / GATE 2 ACCEPTED
 - Phase 2 Milestone A / B: COMPLETE / ACCEPTED
 - Phase 2 P2-C1 / P2-C2: COMPLETE / ARCHITECTURE OWNER APPROVED
-- Phase 2 P2-C3: COMPLETE / ARCHITECTURE OWNER APPROVED / GATE C READY
+- Phase 2 P2-C3: COMPLETE / ARCHITECTURE OWNER APPROVED
+- Phase 2 Gate C / Security Foundation: COMPLETE / ACCEPTED
 - 正式groupId / Java base package: `org.koikifw`
 - Build JDK / target bytecode: Java 21
 - Runtime compatibility target: Java 21 / Java 25
@@ -53,6 +54,7 @@ Phase 1bでは9成果物の内部snapshotを公開し、fresh remote repository�
 - [Phase 1b実行計画](docs/development/KOIKI-JavaWeb-FW_Phase1b実行計画_v0.1.md)
 - [Phase 2実行計画](docs/development/KOIKI-JavaWeb-FW_Phase2実行計画_v0.1.md)
 - [Phase 2 Developer Journey](docs/development/phase2-developer-journey.md)
+- [Phase 2 Gate C remote Evidence](docs/architecture/validation/phase2-gate-c-c2-remote-evidence.md)
 - [Phase 1a Walking Skeleton引継ぎ台帳](docs/development/KOIKI-JavaWeb-FW_Phase1a_WalkingSkeleton_Transition_Inventory_v0.1.md)
 - [Architecture / Validation index](docs/architecture/README.md)
 
@@ -70,7 +72,7 @@ Walking SkeletonのJava、Template、SQL、一時artifactを正式Frameworkま�
 
 - Root Reactor / Parent / BOM / Maven Wrapper
 - Architecture ContractとArchUnit rules
-- Spring Modulith Level 0（2.1.0、test scope、runtime依存なし）
+- Spring Modulith Level 0（2.1.1、test scope、runtime依存なし）
 - Tier 1 / Tier 2 Feature Template
 - JSpecify / NullAway
 - Public API inventoryとjapicmp
@@ -86,8 +88,9 @@ Walking SkeletonのJava、Template、SQL、一時artifactを正式Frameworkま�
 - Framework Identity、Role／Permission、認証試行／lock
 - Spring Session JDBC、2 process共有、全Session失効、non-web cleanup
 - Framework Flyway migration 3件／11 tableとReference `identity`
+- Phase 2内部snapshot 13座標／24 payload SHA-256／aggregate signature／同一source japicmp 11件
 
-Phase 2 remote snapshot、Project Template、正式Upgrade / Migration Guide、正式OpenRewrite recipe、Authorization Server、
+Project Template、正式Upgrade / Migration Guide、正式OpenRewrite recipe、Authorization Server、
 SAML、Redis、WebFlux、Spring Modulith Level 2、非同期Domain Event、Oracle、SPA production実装、cloud固有実装および
 正式releaseは所定のGateまたは後続Phaseで扱います。未使用の将来ModuleやStarterは先行生成しません。
 

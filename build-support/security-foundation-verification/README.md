@@ -305,14 +305,15 @@ P2-C2 C2-7では、C2-2〜C2-6、P2-C1、Gate B、Root Reactor、Null Safety、s
 全aggregateをCustomer CIへそのまま要求するものではない。
 
 C3-3ではC3-2文書をcommitしたclean HEADに対し、Gate A、P2-C1、P2-C2、Gate B 3ラウンド、Root Reactor、Null Safety、
-sensitive-output、最終inventoryおよびcleanupを既存scriptの合成で実行する。C2-7で同じ組合せが成立しているため、C3-2では
-assertionを複製するaggregate scriptを追加しない。実行command、順序、所要時間、手戻りと最終結果はP2-C3 closeout Evidenceへ
-記録する。
+sensitive-output、最終inventoryおよびcleanupを既存scriptの合成で実行した。C2-7で同じ組合せが成立していたため、assertionを
+複製するaggregate scriptは追加していない。実行command、順序、所要時間、手戻りと最終結果はP2-C3 closeout Evidenceへ記録した。
 
-P2-C3 local承認前にworkflow、required check、environment、push、PR、mainまたはsnapshot publishを変更しない。
+P2-C3 local承認まではworkflow、required check、environment、push、PR、mainまたはsnapshot publishを変更しなかった。
 
 C3-3のclean-HEAD local aggregate、所要時間、friction、DoD / inventoryおよびcleanup結果は
-[`phase2-p2-c3-c3-3-closeout.md`](../../docs/architecture/validation/phase2-p2-c3-c3-3-closeout.md)に記録する。
-Architecture OwnerはC3-3 local Evidenceを承認し、P2-C3を`COMPLETE / LOCAL VERIFIED / GATE C READY`としてcloseした。
-snapshot publishはfinal main CI成功後に一度実施するPhase 2最終受入れ条件である。Gate C-1の実行計画と個別Owner承認前は、
-remote操作を引き続き`NOT APPROVED / NO-GO`とする。
+[`phase2-p2-c3-c3-3-closeout.md`](../../docs/architecture/validation/phase2-p2-c3-c3-3-closeout.md)に記録した。
+Architecture OwnerはC3-3 local Evidenceを承認した。その後、final main CIとsource commit
+`af7b4f71d885fe4991e5fcf85fcf8888aec6a539`のworkflow run `34701933485`による同一run publish / Verifyが成功し、
+Gate CとPhase 2は`COMPLETE / ACCEPTED`としてcloseした。24 payload SHA-256、aggregate signature、同一source japicmpを含む
+受入証拠は[`phase2-gate-c-c2-remote-evidence.md`](../../docs/architecture/validation/phase2-gate-c-c2-remote-evidence.md)に記録する。
+将来の追加publishは都度Owner承認を必要とし、Tooling-owned Harnessは引き続き配布しない。
