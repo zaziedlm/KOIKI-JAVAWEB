@@ -38,7 +38,7 @@ P2-C3を承認しています。Phase 2 remote snapshot、final PR / mainおよ�
 | P2-C1 PostgreSQL Migration | COMPLETE / OWNER APPROVED | `validation/phase2-p2-c1-c1-4-closeout.md` |
 | P2-C2 Package / Consumer | COMPLETE / OWNER APPROVED | `validation/phase2-p2-c2-c2-7-closeout.md` |
 | P2-C3 Developer Journey / DoD | COMPLETE / OWNER APPROVED / GATE C READY | `validation/phase2-p2-c3-contract-review.md`、`validation/phase2-p2-c3-c3-2-developer-journey.md`、`validation/phase2-p2-c3-c3-3-closeout.md` |
-| Gate C final remote closeout | C-2 PREFLIGHT CORRECTION OWNER APPROVED / COMMIT PENDING | `validation/phase2-gate-c-c1-remote-plan-review.md`、`validation/phase2-gate-c-c2-publish-preflight-correction.md` |
+| Gate C final remote closeout | C-2 PUBLISH CAPTURE CORRECTION OWNER APPROVED / COMMIT PENDING | `validation/phase2-gate-c-c1-remote-plan-review.md`、`validation/phase2-gate-c-c2-publish-preflight-correction.md`、`validation/phase2-gate-c-c2-publish-capture-correction.md` |
 
 業務アプリケーション開発者向けの入口は
 [`Phase 2 Security Foundation Developer Journey`](../development/phase2-developer-journey.md)とする。

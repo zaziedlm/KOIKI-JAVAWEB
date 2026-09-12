@@ -7,7 +7,7 @@
 - failed main identity: `31724b60477157432706a1b5ffe8a5d6d0dc85df`
 - corrective branch: `fix/phase2-publish-file-uri`
 - corrective base: `origin/main` / `31724b60477157432706a1b5ffe8a5d6d0dc85df`
-- status: `TOOLING CORRECTION LOCAL VERIFIED / ARCHITECTURE OWNER APPROVED / COMMIT PENDING`
+- status: `TOOLING CORRECTION MERGED / REPLACEMENT RUN PUBLISH SUCCEEDED / CAPTURE FAILED`
 - Ownership: Tooling / Architecture Evidence / CI Policy
 - production artifact / Framework Public API / migration change: 0
 - remote package mutation: 0
@@ -116,3 +116,13 @@ Owner承認前はcommit、push、PR、workflow dispatchまたはpublishを行わ
 新規workflow runとする。environment、ruleset、required checksおよびpublish unitは変更せず、failed runのrerun、旧SHAでの
 dispatch、無断retryまたはpackage削除を行わない。本修正と承認記録をcommitした後、corrective branchのpushとfollow-up PR作成へ
 進めてよい。Gate C-3 final Architecture Owner review前はPhase 2を完了扱いしない。
+
+## 9. Replacement run result
+
+本修正はPR #32でrequired checks 7 / 7成功後、merge commit `e10f88c82824b9c4b34215480730fa52b8c19e0d`としてmainへ
+反映された。同SHAのmerge後CI / runtime全8 job、environment / ruleset read-back成功後、snapshot run
+`34693368000`を新規dispatchした。authorizeとpreflightは成功し、protected environment承認後の13座標publishも成功した。
+
+一方、CaptureはGitHub Maven metadataに同一extensionの過去snapshotVersionが累積することを考慮せず、POMを1件だけと
+仮定していたため`Expected one pom snapshotVersion; found 3.`で失敗した。hash-only manifest uploadとfresh remote Verifyはskipされた。
+公開済みpayloadは削除、rerunまたは再publishせず、次のcorrective reviewへ引き継ぐ。

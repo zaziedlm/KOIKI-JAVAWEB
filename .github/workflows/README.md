@@ -103,4 +103,9 @@ packaging、配布設定または正式Application Templateが変わる場合は
 - publish sessionのhash-only manifestをretention 1日で受け渡し、fresh jobが座標ごとのresolved snapshot value、13 POM / 11 JARの
   SHA-256、aggregate signatureおよび11 JARの同一source `japicmp`変更0を検査する。
 - 座標ごとに既存snapshot公開回数が異なるため、共通build numberをrelease unit identityにしない。
+- publish直前に各座標のunclassified POM / JAR snapshotVersion集合を保存し、publish後に増えた値が各payloadでちょうど1件で
+  あることを要求する。POM / JAR座標では両者のresolved value一致も要求し、過去履歴、checksum entryまたは別classifierを
+  今回のpublish identityへ混入させない。
+- pre-publish inventoryはpublish前にretention 7日のworkflow artifactとして保存する。Capture / Verifyはmetadata上の最新値を
+  推測せず、同一runの差分で確定したtimestamped valueとhash-only manifestを使用する。
 - environment作成、push、PR、main merge、dispatchおよびremote publishは、それぞれのOwner承認前に実施しない。

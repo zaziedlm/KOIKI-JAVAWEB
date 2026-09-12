@@ -93,6 +93,25 @@ jobs:
           server-id: github
           server-username: GITHUB_ACTOR
           server-password: GITHUB_TOKEN
+      - name: Capture pre-publish snapshot inventory
+        shell: pwsh
+        env:
+          KOIKI_PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: >-
+          pwsh -NoProfile -File
+          build-support/security-foundation-verification/verify-p2-c2-publish-state.ps1
+          -Mode Inventory
+          -RepositoryUrl https://maven.pkg.github.com/zaziedlm/KOIKI-JAVAWEB
+          -ManifestPath $env:RUNNER_TEMP/p2-c2-pre-publish-inventory.json
+          -ExpectedCommit $env:EXPECTED_COMMIT
+      - name: Preserve pre-publish snapshot inventory
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p2-c2-pre-publish-inventory-${{ github.run_id }}
+          path: ${{ runner.temp }}/p2-c2-pre-publish-inventory.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Publish the approved thirteen-coordinate unit
         shell: pwsh
         env:
@@ -115,6 +134,7 @@ jobs:
           -Mode Capture
           -RepositoryUrl https://maven.pkg.github.com/zaziedlm/KOIKI-JAVAWEB
           -ManifestPath $env:RUNNER_TEMP/p2-c2-publish-manifest.json
+          -BeforeStatePath $env:RUNNER_TEMP/p2-c2-pre-publish-inventory.json
           -ExpectedCommit $env:EXPECTED_COMMIT
       - name: Upload hash-only publish manifest
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
