@@ -1,8 +1,8 @@
 # KOIKI-JavaWeb-FW Phase 2 Security Foundation 実行計画
 
-**状態:** `GATE B COMPLETE / ARCHITECTURE OWNER APPROVED — P2-C1 REVIEW READY`
+**状態:** `GATE C-1 ARCHITECTURE OWNER APPROVED / COMMIT PENDING`
 **作成日:** 2026年8月31日
-**最終更新日:** 2026年9月10日
+**最終更新日:** 2026年9月12日
 **開始branch:** `feature/phase2-security-foundation`
 **開始基準main:** `b2e2123605e4d971c3ed5ccc729f668d91189d83`
 
@@ -251,6 +251,197 @@ merge commit `97d8ff2`に対するpush eventのCI run `34466016255`とJava Runti
 「Framework Flyway正本の全体集約」と正確化し、P2-B2 / P2-B3の個別Framework migration検証済みという事実と、
 P2-C1へ残す統合検証境界を明確化した。Gate Bを`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はP2-C1の
 契約レビューとする。
+同日、main merge commit `8873942`から`feature/phase2-p2-c1-postgresql-migration`を作成し、P2-C1のread-only
+inventory、contract review案および翌日再開用handoffを準備した。Audit migration version、Starter依存順、
+table ownership、clean install matrix、Phase 1b supported upgrade起点およびTooling境界はArchitecture Owner review前の
+提案であり、production SQL、Java、POM、test、scriptまたはCIは変更していない。
+
+2026年9月11日、Architecture OwnerはP2-C1契約C1-C1〜C7をすべて推奨案どおり承認した。C1-2でAudit Starterへ
+`V2026090300__create_koiki_audit.sql`を追加し、package済みAudit / Identity / Session JDBC Starter JARを直接検査する
+非配布static inventory Harnessを追加した。focused Audit reactor 3 modulesとSession依存closure 7 modulesはbuild成功し、
+Framework migration 3件の一意性、`0300`→`0301`→`0701`の依存順、owner artifact配置、合計11 table、Audit Entity列契約、
+fixture固有DDL / 未使用index非混入を確認した。実PostgreSQL clean install 4 profileとPhase 1b supported upgradeはC1-3へ進める。
+
+同日、C1-3の非配布PostgreSQL Harnessを追加し、package済みStarter resourceを使うAudit only、Identity、Session JDBC、
+package済みReferenceのclean install 4 profileをPostgreSQL 17上で実証した。Framework migration 3件 / 11 tableの
+version、checksum、owner history、列 / constraint / index、再起動no-op、Reference migration 0件、Spring Session initializer
+無効を確認した。承認済みPhase 1b baseline `40d16f9`からのsupported upgradeではCustomer history / checksum / table / seed rowを
+保持して現行Framework migrationを追加し、再起動no-opを確認した。Framework / Customer migration失敗、Customer checksum不一致、
+initializer上書き拒否の失敗系も成功し、既存P2-B1 Audit contractを回帰確認した。C1-3を
+`COMPLETE / LOCAL VERIFIED`とし、次はC1-4 aggregate回帰へ進める。
+
+同日、commit `f7a3d906`のcleanな同一HEADでC1-4 closeoutを実行した。C1 static inventory 3 migration / 11 table、
+PostgreSQL 17.11上のclean install 4 profile、Phase 1b supported upgradeおよびfailure contractsを再確認した。
+Gate Bの6工程は3ラウンド連続成功し、B1 31 / 31、B2 56 / 56、B3 core 72 / 72、two-process、non-web cleanup、
+package済みReference journeyを各roundで完了した。Root Reactor 15 projects / 104 tests、Null Safety正負 / restore、
+Public API inventory、sensitive-outputおよび終了後の独立cleanup inspectionも成功した。C1-4を
+`COMPLETE / LOCAL VERIFIED`とした。Architecture OwnerはC1-4の5 review pointsをすべて承認し、P2-C1を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次はP2-C2 package / Consumer contract reviewとし、
+契約承認前にproduction artifact、Public API、Consumer fixture、OpenRewrite recipeまたはCIを追加しない。
+
+同日、P2-C2のread-only inventoryを実施し、package / Root Reactor外Consumer / Public API baseline / OpenRewrite試作の
+contract review案と再開handoffを準備した。formal Framework release unit 14 projects、11 JAR、Reference分離、
+Phase 1b Consumer、既存2 artifact published baseline、Phase 2 Public API 19型およびADR-029のPhase 5正式提供境界を確認した。
+準備段階のproduction changeは0であり、次はC2-C1〜C7のArchitecture Owner reviewとする。
+
+同日、Architecture OwnerはP2-C2契約C2-C1〜C7を推奨案どおり承認した。正式release unit 14 projects / 11 JAR、
+Root外Security Consumer、初回Public API baselineの過大claim禁止、snapshot publishの個別承認、OpenRewrite非配布試作、
+C1 / Gate B回帰とcleanupのcloseout条件を確定した。C2-C5のremote publishは本承認に含めず、次はC2-2
+formal package manifest / isolated stagingとする。
+
+同日、C2-2でformal release unit manifestと非配布static Harnessを追加した。Root Reactorのformal 13 modulesとReference、
+BOMの11 JARおよびpackage種別をmanifestと照合し、Referenceを除く14 projectsを空の隔離Maven repositoryへstageした。
+14 / 14 `BUILD SUCCESS`、staged coordinates完全一致、Reference / Tooling / Customer migration / source template非混入、
+一時repository残留0を確認した。production artifact / Public API変更は0であり、C2-2を`COMPLETE / LOCAL VERIFIED`として
+Architecture Owner reviewへ提示した。Architecture OwnerはC2-2の4 review pointsをすべて承認し、次をC2-3
+Root Reactor外Consumerとした。
+
+同日、既存Gate A Consumerを変更せず、その配下にC2-3専用の独立PostgreSQL Consumerを追加した。formal release unit
+14 projectsを空の隔離Maven repositoryへstageし、Consumerを別invocationでbuild / test / packageした。Public APIだけで
+Identity作成 / 照会、Business Audit、Session cleanupを利用し、Java 21 buildの同一JARをJava 21 / 25とPostgreSQL 17で実行した。
+Framework history 3行 / 11 table、Customer history 2行（baseline 1＋V1 SQL 1）/ marker 1 table、2回目no-op、
+同JARのWeb processによるpublic / authenticated / unmatched routeとSecurity Header、initializer強制有効化の起動失敗と
+`SPRING_SESSION`非生成、sensitive-outputおよびcleanupを確認した。C2-3を
+`COMPLETE / LOCAL VERIFIED`としてArchitecture Owner reviewへ提示し、次候補をC2-4 Public API inventory / compatibility fixtureとする。
+
+同日、Architecture OwnerはC2-3の5 review pointsをすべて承認した。review指摘に基づき、default denyはConsumer matcher外の
+`/framework-fallback-probe`へ修正してFramework fallback 401を再確認し、Consumer Web child processをcleanup対象へ明記した。
+C2-3を`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はC2-4 Public API inventory / compatibility fixtureとする。
+
+同日、C2-2 manifestの正式11 JARを隔離repositoryへstageし、package済みartifactからPublic API baseline candidateを
+生成した。全11 artifact sectionとPublic Java型24件（Architecture 4、ArchUnit rules 1、Audit 6、Identity 10、
+Session 3、残る6 JARは0件）を既存の承認済みtype inventoryと照合し、型種別、修飾子、継承、constructor、field、method、
+generic型、例外、enum値、annotation metadata / default値およびJSpecify nullnessを正規化した。internal package追加を
+inventory対象外とし、nullness-only変更、public戻り値破壊および未承認public追加をnegative fixtureで検出した。
+既存Phase 1a published baseline script / required jobは変更せず、Phase 2 artifactに過去公開baselineとの互換性を主張しない。
+remote publish、hash確定およびCI変更はC2-5の個別Owner判断へ残し、C2-4を`COMPLETE / LOCAL VERIFIED`として
+Architecture Owner reviewへ提示する。
+
+同日、Architecture OwnerはC2-4の5 review pointsをすべて承認した。review指摘に基づき、formal release unit全体24型を
+Phase 1a公開済み5型とPhase 2 candidate 19型に分け、Public型0件の6 JARを正式artifact名で明記した。既存inventoryとの
+照合は過去versionとのsignature互換性証明ではなく、型集合の継続一致確認であることも明確化した。C2-4を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はC2-5 baseline publish / remote operationの実施可否reviewとする。
+
+同日、C2-5 publish reviewを準備した。Root aggregatorを除くPOM 2 / JAR 11の13 coordinatesを候補とし、GitHubへ接続しない
+一時file repositoryへ単一Maven sessionでdeployした。13 / 13 projectsが成功し、全coordinateが同一timestampとなり、
+13 POM / 11 JARのlocal SHA-256とC2-4 signature SHA-256を採取した。既存Phase 1b workflowを変更せず、Phase 2専用manual
+workflow、protected environment、publish sessionとfresh remote取得のhash一致および同一source`japicmp`をreview案とした。
+再開環境のGitHub CLI認証が失効しており、package既存状態、environmentおよびActions accessを確認できないため、remote publishは
+`NOT APPROVED / NO-GO`のまま保持し、Architecture Ownerへ6点のreviewを提示する。
+
+同日、Architecture OwnerがGitHub CLIを再認証した後、read-only remote readiness確認を完了した。Repositoryはpublic、既存9 Maven
+packageは`0.1.0-SNAPSHOT`を保持し、Phase 2のAudit / Security / Identity / Session JDBC 4 packageは未作成だった。
+Phase 1a / 1b environmentはいずれもrequired reviewer、main限定およびadmin bypass無効を維持し、既存Phase 1b workflowは
+`origin/main`との差分0だった。main run `34475233082`のPublic API Compatibility成功によりPhase 1a固定baseline取得経路も確認した。
+remote readinessを`VERIFIED`とするが、専用workflow / environment、PR / main、最終source commitおよびpublishは未承認のため、
+remote publishは引き続き`NO-GO`とする。
+
+同日、Architecture OwnerはC2-5 review 6点を修正条件付きで承認した。Rootを除く13座標、Phase 2専用workflow分離および
+remote publish `NO-GO`を提案どおり承認した。24型は現行release unitのaggregate signatureとし、Phase 2初回published baselineを
+Audit 6型、Identity 10型、Session 3型、Security 0型としてPhase 1a固定baselineから分離した。remoteでは共通build numberを
+要求せず、同一workflow run / source commit、座標ごとのresolved snapshot value、24 payload SHA-256、signatureおよび同一source
+`japicmp`でrelease unitを固定する。修正後の専用workflow実装とlocal reviewを開始し、remote publishは未承認のまま保持する。
+
+同日、Phase 2専用manual workflow、13座標manifest、publish-state Capture / Verify toolおよびlocal file repository dry-run toolを
+実装した。local reviewでMaven metadataのclassifier欠落処理と検証用POMに対する`japicmp` skipを検出・修正した後、
+13座標、24 payload SHA-256、24型aggregate signatureおよび11 JARのsame-source `japicmp`実比較がすべて成功した。
+既存Phase 1b workflowは変更していない。protected environment、push、PR、main CI、manual dispatchおよびremote publishは
+未実施とし、C2-5 workflow実装をArchitecture Owner reviewへ提示する。
+
+同日、Architecture Ownerは承認条件の反映を確認し、13座標のpublish指定と検証manifestの乖離防止をworkflow実装承認の
+修正条件とした。workflow / dry runのMaven project listを13座標manifestから生成する共通publish helperへ統一し、共有loaderで
+formal 14-project release unitからRoot aggregatorだけを除いた集合との完全一致をpublish / Capture / Verify前に機械検査するよう
+修正した。修正後のlocal dry runで13座標、24 payload SHA-256、aggregate signatureおよび11 JARのsame-source `japicmp`が
+再度成功したため、C2-5 workflow実装を`APPROVED / LOCAL VERIFIED`とする。protected environment、push、PR、main反映、
+workflow dispatchおよびremote publishは承認範囲外であり、引き続き`NO-GO`とする。
+
+2026年9月12日、C2-6 OpenRewrite feasibilityを`build-support`配下のRoot Reactor外・非配布Toolingとして実装した。
+syntheticなKOIKI所有型変更1件に限定し、recipe正例 / 非変更例、固定before / after、旧API定義非変更、2回目適用の冪等性、
+変換前後のConsumer compile / test、手動残件report、formal release unit非混入および一時成果物cleanupを隔離Maven repositoryで
+検証した。正式recipe artifact、実Customer / 過去KOIKI version、Spring Boot recipe再実装、required CIおよびremote操作は含めない。
+C2-6を`COMPLETE / LOCAL VERIFIED`としてArchitecture Owner reviewへ提示し、承認後の次候補をC2-7 closeoutとする。
+C2-5 remote snapshot publishは引き続き`NOT APPROVED / NO-GO`である。
+
+同日、Architecture OwnerはC2-6の6判断を提案どおり承認した。OpenRewrite prototypeは初期フレームワーク運用、正式release unit、
+Starter / BOM、Customer配布、runtime、required CIおよびsnapshot publishへ含めず、`build-support`配下の非配布Tooling Evidenceとして
+のみ保持する。syntheticな型変更の成立を実Customer完全移行、意味的同値性、過去version互換性または正式recipe提供とは扱わない。
+正式artifactとrelease CIへの昇格はPhase 5の個別Owner reviewへ残す。C2-6を`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、
+成果物のcommit後、clean HEADでC2-7 local closeoutへ進む。C2-5 remote publishとその他のremote変更は引き続き`NO-GO`である。
+
+同日、commit `5704cdd5dbe407e33c8eba6b8367fc6bf98f544e`のcleanな同一HEADでC2-7 local closeoutを実行した。
+C2-2 package、C2-3 Consumer、C2-4 Public API、C2-5 local publish dry run、C2-6 OpenRewriteのfocused 5工程、
+C1 static / PostgreSQL回帰、Gate B 6工程の3ラウンド、Root 15 projects / 104 testsおよびNull Safety正負 / restoreが成功した。
+formal 14 projects / 11 JAR、publish候補13座標、Public API 24型、Reference分離、Tooling非配布、sensitive-outputおよび
+process / container / temporary repository / fixture target cleanupを最終確認した。C2-7を`COMPLETE / LOCAL VERIFIED`として
+Architecture Owner reviewへ提示し、承認後の次候補をP2-C3 Developer Journey / DoD closeoutとする。
+C2-5 remote snapshot publishとその他のremote変更は引き続き`NOT APPROVED / NO-GO`である。
+
+同日、Architecture OwnerはC2-7の6判断を提案どおり承認した。C2-2〜C2-6のfocused検証、P2-C1回帰、Gate B 6工程の
+3ラウンド、Root Reactor、Null Safety、最終inventory、sensitive-output検査およびcleanupをP2-C2 closeout Evidenceとして
+受け入れ、P2-C2を`COMPLETE / ARCHITECTURE OWNER APPROVED`としてcloseした。次はP2-C3 Developer Journey / DoD closeoutの
+contract / inventory reviewへ進む。C2-5 remote snapshot publish、protected environment作成、push、PR、main反映、
+workflow dispatch、required check変更およびその他のremote操作は引き続き`NOT APPROVED / NO-GO`である。
+
+同日、P2-C3 C3-1のread-only inventoryを実施し、DoD 2-1〜2-10、Developer Journey、Architecture / verification index、
+ADR / Skill、release / Public API / migration、remote Evidenceおよびdeferred scopeのcloseout契約案を
+`../architecture/validation/phase2-p2-c3-contract-review.md`へ記録した。P2-C3は新機能を追加せず、既存Consumer、Referenceおよび
+verification scriptの合成で成立させる案とする。Architecture Ownerの指摘を受け、機構の成立と同格で、エンジニアによる
+入口の発見、dependency / profile / Ownershipの選択、公開契約からの実装、secure default、失敗時診断、正負検証、cleanupおよび
+留保範囲の理解をEngineer-facing acceptanceへ追加した。次はC3-1の10判断に対するArchitecture Owner reviewであり、承認前に
+production code、Public API、migration、workflowまたはremote stateを変更しない。
+
+同日、Architecture OwnerはC3-1契約案の§4.1 `Engineer-facing acceptance`を内容承認した。機構の成立と同格で、
+entry / discoverability、dependency / profile selection、Ownership、公開契約、secure defaults、diagnostics、verification、
+runtime / packagingおよびlimits / next actionを評価する。§4.2 / §4.3を含む10判断全体とC3-2開始は未承認のため、
+C3-1を`CONTRACT REVIEW PENDING`のまま維持する。
+
+同日、Architecture Ownerは§4.1の部分承認を前提としてC3-1の10判断を提案どおり承認した。P2-C3を新機能追加なしの
+Developer Journey / DoD / governance closeoutとし、Engineer-facing acceptance、human-operable journey、friction triage、
+DoD 2-1〜2-10 trace、文書対象およびclean-HEAD local aggregateを承認した。C3-1を
+`COMPLETE / ARCHITECTURE OWNER APPROVED`とし、次はC3-2のEngineer-facing文書・Developer Journey接続へ進む。
+production artifact、Public API、migration、workflowおよびremote操作は本承認に含めず、C2-5 remote publishも
+`NOT APPROVED / NO-GO`を維持する。
+
+同日、C3-2としてroot / Architecture / Development / Starter / Consumer / verification / ReferenceのREADMEを
+`phase2-developer-journey.md`へ接続した。Parent / BOM、Starter、local Session / OIDC / Bearer profile、Customer Ownership、
+public seam、secure defaults、diagnostics、Application verification、Framework aggregateおよびdeferred scopeを、
+エンジニアが順に辿れる形へ整理した。Referenceを正規利用例、ConsumerをTooling EvidenceとしてProject Templateから分離し、
+Customerの日常CIへRepository固有の全aggregateを要求しない。production artifact、Public API、migration、workflowの変更は0である。
+`../architecture/validation/phase2-p2-c3-c3-2-developer-journey.md`をC3-2 Owner reviewへ提示し、承認・commit後のclean HEADで
+C3-3 local aggregate / human-operable journey verificationへ進む。remote操作は引き続き`NOT APPROVED / NO-GO`である。
+
+同日、Architecture OwnerはC3-2の6判断を提案どおり承認した。Repositoryからの入口、依存・profile・Ownership選択、
+Framework Public contractの利用境界、secure defaults、diagnostics、Application verificationとFramework aggregateの分離、
+Reference / Consumerの非Template境界を受け入れ、C3-2を`COMPLETE / ARCHITECTURE OWNER APPROVED`とした。次は本差分を
+commitし、そのclean HEADでC3-3 local aggregate / human-operable journey verificationへ進む。production artifact、Public API、
+migration、workflowおよびremote操作は承認に含めず、`NOT APPROVED / NO-GO`を維持する。
+
+同日、C3-2承認差分をcommitしたclean HEAD `28b0220bc6bfbee1b7b9c01721717e9d5017ec7e`でC3-3 local aggregateを
+実行した。Gate A、P2-C2 package / Consumer / Public API / local publish dry run / OpenRewrite、P2-C1 static / PostgreSQL、
+Gate B 6工程3ラウンド、Root Reactor、Null Safety、sensitive-output、inventoryおよびcleanupはすべて成功した。
+formal 14 / Root 15 / publish 13 / JAR 11 / Public API 24 / migration 3 / table 11の固定inventoryを確認し、
+`../architecture/validation/phase2-p2-c3-c3-3-closeout.md`へ記録した。C3-3を`COMPLETE / LOCAL VERIFIED`として
+Architecture Owner reviewへ提示する。承認候補はP2-C3 `COMPLETE / LOCAL VERIFIED / GATE C READY`であるが、Gate C remote
+Evidence前にPhase 2を完了扱いしない。protected environment、push、PR、main、ruleset、dispatchおよびsnapshot publishは
+引き続き`NOT APPROVED / NO-GO`である。
+
+同日、Architecture OwnerはC3-3のreview points 1〜7を提案どおり承認し、C3-3を
+`COMPLETE / LOCAL VERIFIED / ARCHITECTURE OWNER APPROVED`、P2-C3を
+`COMPLETE / LOCAL VERIFIED / GATE C READY`としてlocal closeoutした。snapshot publishはfinal main CI成功後に一度実施し、
+remote取得、24 payload SHA-256、aggregate signatureおよび11 same-source `japicmp`を確認するPhase 2最終受入れ条件とする。
+次はGate C-1 remote plan reviewであり、protected environment、push、PR、main、ruleset、dispatchおよびsnapshot publishは
+実行前の個別Owner承認まで`NOT APPROVED / NO-GO`を維持する。
+
+同日、Gate C-1のread-only remote inventoryを実施した。`origin/main`はC3-3 Owner承認commitのancestor、対象branchの既存PRは0、
+main rulesetはactive / strict / bypass 0かつrequired checks 7件、Phase 2 workflow / environmentは未反映、Phase 2新規4 packagesは
+未公開であることを確認した。PR、main CI、protected environment、一回限りのsnapshot publish / verifyおよび失敗時境界を
+`../architecture/validation/phase2-gate-c-c1-remote-plan-review.md`へ記録し、Architecture Owner reviewへ提示する。
+pushその他のremote mutationはまだ実施せず、`NOT APPROVED / NO-GO`を維持する。
+
+同日、Architecture OwnerはGate C-1の10 review pointsを提案どおり承認した。本承認記録のcommit後、承認済み順序に従う
+branch push、final PR、required checks 7件、merge commit、merge後main CI、Phase 2 protected environment、final main SHAの
+一回限りpublish / remote verifyへ進めてよい。ruleset緩和、bypass、追加secret、無断retry、package削除または別SHA publishは
+承認せず、順序またはidentity変更時は再reviewする。Gate C-3最終Owner review前はPhase 2を完了扱いしない。
 
 ### Milestone C — PostgreSQL Migration / packaging / closeout
 
@@ -259,7 +450,7 @@ P2-C1へ残す統合検証境界を明確化した。Gate Bを`COMPLETE / ARCHIT
 | P2-C1 | PostgreSQL Migration、第三者table一覧、upgrade / clean fixture | Framework Flyway正本、所有権完全一致、Spring initializer無効、clean install / supported upgradeを実証 |
 | P2-C2 | package / Consumer / OpenRewrite試作 | 配布単位、Root Reactor外Consumer、Public API互換性、Migration Support境界を実証 |
 | P2-C3 | Developer Journey / DoD closeout | 全DoD trace、Skill / ADR、release unit、remote evidence、deferred一覧 |
-| Gate C | final PR / main | required checks、PostgreSQL integration evidence、Owner approval、merge後main CI |
+| Gate C | final PR / main / snapshot | required checks、PostgreSQL integration evidence、Owner approval、merge後main CI、snapshot remote Evidence |
 
 Oracle対応はMilestone Cの完了条件ではない。optional `P4-ORACLE`が将来承認された場合は、新しいDoD、見積、対象環境、
 依存、MigrationおよびCI境界をそのwork package内で定義する。

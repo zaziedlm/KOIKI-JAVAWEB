@@ -5,8 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.koikifw.audit.AuditActor;
 import org.koikifw.audit.AuditEvent;
 import org.koikifw.audit.AuditRecordingException;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.jpa.open-in-view=false",
             "spring.main.web-application-type=none"
         })
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AuditTransactionFixtureTest {
 
     private static final UUID BUSINESS_ID =
@@ -47,6 +50,17 @@ class AuditTransactionFixtureTest {
 
     @Autowired
     private SecurityFailurePaths securityFailurePaths;
+
+    @BeforeAll
+    void installFixtureOnlyFailureConstraint() {
+        jdbcClient.sql(
+                        """
+                        ALTER TABLE koiki_audit_event
+                        ADD CONSTRAINT fixture_audit_failure
+                        CHECK (event_type <> 'FORCE_AUDIT_FAILURE')
+                        """)
+                .update();
+    }
 
     @BeforeEach
     void clearFixtureState() {

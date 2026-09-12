@@ -537,9 +537,9 @@ function Assert-ReferenceArtifactBoundary {
               throw "The Reference POM contains deferred dependency $forbiddenDependency."
           }
       }
-      $inventory = Get-Content -Raw -LiteralPath $identityInventory
-    if ($inventory -notmatch '(?m)^PUBLIC_JAVA_TYPES 10$' -or
-        @($inventory -split "`r?`n" | Where-Object { $_ -match '^TYPE ' }).Count -ne 10) {
+      $inventory = @(Get-Content -LiteralPath $identityInventory)
+    if ($inventory -notcontains 'PUBLIC_JAVA_TYPES 10' -or
+        @($inventory | Where-Object { $_ -match '^TYPE ' }).Count -ne 10) {
         throw 'The Identity Public API type inventory changed during B4-4.'
     }
     $referenceSource = Get-ChildItem -LiteralPath (
@@ -628,31 +628,13 @@ try {
     }
     $databasePort = $Matches.port
 
-    $auditSchema = @'
-CREATE TABLE koiki_audit_event (
-    event_id uuid PRIMARY KEY,
-    audit_type varchar(16) NOT NULL,
-    event_type varchar(128) NOT NULL,
-    actor_type varchar(16) NOT NULL,
-    actor_id varchar(255),
-    subject_id varchar(255),
-    resource_type varchar(128),
-    resource_id varchar(255),
-    action varchar(128) NOT NULL,
-    result varchar(16) NOT NULL,
-    reason_code varchar(128),
-    occurred_at timestamp with time zone NOT NULL,
-    request_id varchar(128),
-    trace_id varchar(128)
-);
-'@
     $setupDeadline = [DateTimeOffset]::UtcNow.AddSeconds(30)
     while ($true) {
         try {
-            Invoke-Postgres -Label 'Application role and Tooling Audit schema setup' -Sql (
+            Invoke-Postgres -Label 'Application role setup' -Sql (
                 "CREATE ROLE $appRole LOGIN PASSWORD '$appPassword'; " +
                 "GRANT CONNECT ON DATABASE $databaseName TO $appRole; " +
-                "GRANT USAGE, CREATE ON SCHEMA public TO $appRole; " + $auditSchema) | Out-Null
+                "GRANT USAGE, CREATE ON SCHEMA public TO $appRole;") | Out-Null
             break
         } catch {
             if ([DateTimeOffset]::UtcNow -ge $setupDeadline) {

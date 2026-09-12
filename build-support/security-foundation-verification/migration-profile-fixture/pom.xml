@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.koikifw</groupId>
+    <artifactId>koiki-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>org.koikifw.buildsupport</groupId>
+  <artifactId>p2-c1-migration-profile-fixture</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+
+  <name>KOIKI P2-C1 Migration Profile Fixture</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-data</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>audit</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.koikifw</groupId>
+          <artifactId>koiki-starter-audit</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>identity</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.koikifw</groupId>
+          <artifactId>koiki-starter-identity</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>session</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.koikifw</groupId>
+          <artifactId>koiki-starter-session-jdbc</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>reference</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.koikifw</groupId>
+          <artifactId>koiki-starter-session-jdbc</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>upgrade</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.koikifw</groupId>
+          <artifactId>koiki-starter-session-jdbc</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+      <build>
+        <testResources>
+          <testResource>
+            <directory>src/test/resources</directory>
+          </testResource>
+          <testResource>
+            <directory>../../runtime-foundation-consumer/application/src/main/resources</directory>
+          </testResource>
+        </testResources>
+      </build>
+    </profile>
+    <profile>
+      <id>failure</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.koikifw</groupId>
+          <artifactId>koiki-starter-session-jdbc</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
+</project>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.koikifw</groupId>
+    <artifactId>koiki-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>org.koikifw.buildsupport</groupId>
+  <artifactId>openrewrite-feasibility-fixture</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>KOIKI OpenRewrite Feasibility Fixture</name>
+
+  <properties>
+    <rewrite-maven-plugin.version>6.46.1</rewrite-maven-plugin.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-identity</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.openrewrite.maven</groupId>
+        <artifactId>rewrite-maven-plugin</artifactId>
+        <version>${rewrite-maven-plugin.version}</version>
+        <configuration>
+          <activeRecipes>
+            <recipe>org.koikifw.buildsupport.openrewrite.ChangeLegacyFrameworkUserId</recipe>
+          </activeRecipes>
+          <exportDatatables>false</exportDatatables>
+          <failOnInvalidActiveRecipes>true</failOnInvalidActiveRecipes>
+          <pomCacheEnabled>false</pomCacheEnabled>
+          <exclusions>
+            <exclusion>**/LegacyFrameworkUserId.java</exclusion>
+          </exclusions>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.koikifw.buildsupport</groupId>
+            <artifactId>openrewrite-feasibility-recipe</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+</project>

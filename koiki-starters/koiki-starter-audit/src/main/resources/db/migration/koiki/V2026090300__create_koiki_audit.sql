@@ -10,8 +10,7 @@ CREATE TABLE koiki_audit_event (
     action varchar(128) NOT NULL,
     result varchar(16) NOT NULL,
     reason_code varchar(128),
-    occurred_at timestamp with time zone NOT NULL,
+    occurred_at timestamp(6) with time zone NOT NULL,
     request_id varchar(128),
-    trace_id varchar(128),
-    CONSTRAINT fixture_audit_failure CHECK (event_type <> 'FORCE_AUDIT_FAILURE')
+    trace_id varchar(128)
 );

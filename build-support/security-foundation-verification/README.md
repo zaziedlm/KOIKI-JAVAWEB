@@ -186,3 +186,133 @@ CI job timeoutは60分、aggregate stepは52分、最終inspectionは5分とす�
 完了できなかった場合はcleanup成功とみなさない。同一final HEADでremote 3回連続成功と全回cleanup成功を確認し、
 2026年9月10日のArchitecture Owner承認後、main rulesetのrequired checkへ追加した。Customer業務アプリのCIは、
 利用Starter、業務リスク、構成およびデプロイ形態に応じて別途軽量化・段階化する。
+
+P2-C1 C1-2のAudit production migration / static inventoryは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c1-migration-static.ps1
+```
+
+scriptはAudit Starterの`V2026090300`を含むpackage済みAudit / Identity / Session JDBC Starter JARを直接検査し、
+Framework migration 3件の一意性と依存順、owner artifactごとの配置、合計11 table、Audit Entityと一致する列契約、
+fixture table / failure constraint / 未使用indexの非混入を確認する。focused Audit reactorだけを実行し、実PostgreSQL上の
+clean install 4 profileとPhase 1b supported upgradeは次のC1-3 Harnessが所有する。
+
+P2-C1 C1-3のPostgreSQL clean install / supported upgrade aggregateは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c1-postgresql.ps1
+```
+
+scriptは正式Framework release unitを隔離Maven repositoryへstageし、package済みStarter resourceと
+PostgreSQL 17を使ってAudit only、Identity、Session JDBC、package済みReferenceの4 profileを検証する。
+各profileではFramework table、Flyway version / checksum / history分離、列 / constraint / index、再起動no-opを確認し、
+Referenceがmigrationを所有せずSession依存closureを利用することもpackage済みJARから検査する。
+
+supported upgradeでは承認済みPhase 1b baseline `40d16f9dbf26a7ba88ac13b2e3728075e0eff2a7`のCustomer migrationを
+変更せずに適用し、既存history、checksum、tableおよびseed rowを保持したまま現行Framework migration 3件を追加する。
+失敗系ではFramework失敗時のCustomer非実行、Customer失敗後のFramework history保持、Customer checksum不一致時の
+startup failure、Session initializer強制有効化の拒否と`SPRING_SESSION`非生成を確認する。
+Harness、fixture SQL / Javaおよび一時credentialは非配布Toolingに限定し、container、process、一時repository、
+fixture / Reference targetを終了時にcleanupする。
+
+P2-C1 C1-4 closeoutは、cleanな同一HEADで次を順に実行する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c1-migration-static.ps1
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c1-postgresql.ps1
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-b4-closeout.ps1 `
+  -ExpectedHead <commit-sha>
+```
+
+C1 static inventoryとPostgreSQL aggregateに加え、既存Gate B closeoutを再利用してB1〜B4を3ラウンド連続実行し、
+Root Reactor、Null Safety positive / expected negative / restore、Public API / artifact / dependency inventory、
+sensitive-outputおよびcleanupを確認する。最終的なrepository / residual-resource検査だけを独立再実行する場合は、
+同じ`<commit-sha>`を指定して`verify-p2-b4-closeout.ps1 -InspectOnly`を使用する。
+
+P2-C2 C2-2のformal package manifest / isolated stagingは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c2-package-static.ps1
+```
+
+`p2-c2-formal-release-unit.txt`を正本として、Referenceを除くformal Framework release unit 14 projectsを
+空の隔離Maven repositoryへstageする。Root ReactorはReferenceを含む15 projectsのまま、BOM管理対象は11 JARのまま維持し、
+staged coordinates、POM / JAR packaging、Reference / Tooling / Customer migration / source template非混入を検査する。
+隔離repositoryは成功・失敗のどちらでも終了時にcleanupする。C2-2ではConsumer、Public API baseline、snapshot publish、
+OpenRewrite prototypeまたはCIを追加・実行しない。
+
+P2-C2 C2-3のRoot Reactor外Consumerは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c2-consumer.ps1
+```
+
+既存Gate A Consumerのbaselineを変更せず、その配下の独立PostgreSQL Consumerを空の隔離Maven repositoryから
+build / test / packageする。ConsumerはPublic APIだけでIdentity作成 / 照会、Business AuditおよびSession cleanupを利用し、
+同一package済みJARをJava 21 / 25とPostgreSQL 17で実行し、別Web processでpublic / authenticated / unmatched routeと
+Security Headerも確認する。Framework migration 3件 / 11 table、Customer history分離、
+Customer側のbaseline 1行＋migration 1行、Java 25再起動no-op、Session initializer強制有効化のstartup failure、
+正式release unit非混入、sensitive-outputおよび
+container / temporary repository / fixture target cleanupを外部観測する。
+
+P2-C2 C2-4の全JAR Public API baseline candidateは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c2-public-api.ps1
+```
+
+C2-2 manifestの11 JARをpackage済みartifactから走査し、24 Public Java型の型種別、継承、constructor、field、method、
+generic型、例外、enum値、annotation metadata / default値およびJSpecify nullnessを正規化する。Public型0件のJARも
+artifact sectionとして固定し、internal packageを外部APIから除外する。synthetic fixtureではinternal追加の許容、
+nullness-only変更の検出、および既存japicmp fixtureによるpublic戻り値破壊 / 未承認追加の期待failureを確認する。
+既存Phase 1a published baseline、required jobおよびremote stateは変更しない。
+
+P2-C2 C2-5のremote publish方式は、実公開前に次のlocal dry runで検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c2-publish-dry-run.ps1
+```
+
+`p2-c2-publish-unit.txt`はRoot aggregatorを除くPOM 2 / JAR 11の13座標を明示する。共有loaderはこれを
+`p2-c2-formal-release-unit.txt`からRoot aggregatorだけを除いた集合と完全照合し、workflowとdry runは同じ
+`invoke-p2-c2-publish.ps1`からMaven project listを生成する。空の一時file repositoryへ
+`deployAtEnd=true`でdeployし、座標ごとのresolved snapshot value、13 POM / 11 JARのSHA-256、C2-4 aggregate signatureおよび
+11 JARの同一source `japicmp`変更0を検査する。remoteでは座標ごとに公開履歴が異なるため、共通build numberを要求しない。
+一時repository、payload、hash manifestおよびjapicmp reportは成功・失敗のどちらでもcleanupする。
+
+実publish用の`.github/workflows/publish-phase2-snapshot.yml`は既存Phase 1b workflowを変更せず、mainとOwner承認commitの一致、
+read-only preflight、publish jobだけの`packages: write`、`phase2-internal-snapshot` environment、hash-only manifestおよびfresh jobの
+remote検証を分離する。environment作成、workflow dispatchおよびremote publishは個別Owner承認前に実施しない。
+
+P2-C2 C2-6の非配布OpenRewrite feasibilityは次で検証する。
+
+```powershell
+pwsh -NoProfile -File build-support/openrewrite-feasibility/verify-p2-c2-openrewrite.ps1
+```
+
+syntheticなKOIKI所有型変更1件についてbefore / after、旧定義非変更、冪等性、変換後compile / test、手動残件および
+formal release unit非混入を確認する。これはCustomer完全移行、過去version互換性または正式recipeの証明ではない。
+
+P2-C2 C2-7では、C2-2〜C2-6、P2-C1、Gate B、Root Reactor、Null Safety、sensitive-outputおよびcleanupを同じclean HEADで
+再検証した。command setと結果の正本は
+[C2-7 closeout](../../docs/architecture/validation/phase2-p2-c2-c2-7-closeout.md)である。
+
+## P2-C3 Developer Journey / DoD closeout
+
+業務アプリエンジニア向けの依存選択、Security profile、Ownership、公開契約、secure defaults、診断と通常の検証loopは
+[Phase 2 Developer Journey](../../docs/development/phase2-developer-journey.md)を入口とする。このREADMEはFramework保守者向けのHarness正本であり、
+全aggregateをCustomer CIへそのまま要求するものではない。
+
+C3-3ではC3-2文書をcommitしたclean HEADに対し、Gate A、P2-C1、P2-C2、Gate B 3ラウンド、Root Reactor、Null Safety、
+sensitive-output、最終inventoryおよびcleanupを既存scriptの合成で実行する。C2-7で同じ組合せが成立しているため、C3-2では
+assertionを複製するaggregate scriptを追加しない。実行command、順序、所要時間、手戻りと最終結果はP2-C3 closeout Evidenceへ
+記録する。
+
+P2-C3 local承認前にworkflow、required check、environment、push、PR、mainまたはsnapshot publishを変更しない。
+
+C3-3のclean-HEAD local aggregate、所要時間、friction、DoD / inventoryおよびcleanup結果は
+[`phase2-p2-c3-c3-3-closeout.md`](../../docs/architecture/validation/phase2-p2-c3-c3-3-closeout.md)に記録する。
+Architecture OwnerはC3-3 local Evidenceを承認し、P2-C3を`COMPLETE / LOCAL VERIFIED / GATE C READY`としてcloseした。
+snapshot publishはfinal main CI成功後に一度実施するPhase 2最終受入れ条件である。Gate C-1の実行計画と個別Owner承認前は、
+remote操作を引き続き`NOT APPROVED / NO-GO`とする。

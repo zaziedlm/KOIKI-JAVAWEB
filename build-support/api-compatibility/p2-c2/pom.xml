@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.koikifw.validation</groupId>
+  <artifactId>p2-c2-public-api-classpath</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.koikifw</groupId>
+        <artifactId>koiki-dependencies-bom</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-architecture-contract</artifactId></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-archunit-rules</artifactId></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-api</artifactId></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-data</artifactId></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-data-jpa</artifactId></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-observability</artifactId></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-audit</artifactId></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-security</artifactId></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-identity</artifactId></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-starter-session-jdbc</artifactId></dependency>
+    <dependency><groupId>org.koikifw</groupId><artifactId>koiki-testing</artifactId></dependency>
+  </dependencies>
+</project>

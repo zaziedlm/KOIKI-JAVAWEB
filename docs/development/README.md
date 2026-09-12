@@ -12,6 +12,9 @@
 - `phase1b-cp6-start-handoff-20260828.md`: CP5 local完了後、新規AIセッションでCP6 Actuator DB health／OSIV無効化を開始するためのbaseline、Ownership、設計確認事項、検証案、stop conditionの引継ぎ
 - `phase1b-cp8-start-handoff-20260829.md`: Milestone B closeout後、新規AI対話セッションでCP8のcloud非依存な単一実行contract、dedicated process、複数process排他、crash／retryの設計確認から開始するための引継ぎ
 - `KOIKI-JavaWeb-FW_Phase1b実行計画_v0.1.md`: Phase 1bのCP0開始baseline、Gate 1承認結果、artifact Ownership、Customer-like Runtime Consumer、Milestone / commit point、DoD traceability、停止条件
+- `KOIKI-JavaWeb-FW_Phase2実行計画_v0.1.md`: Phase 2 Security FoundationのGate、Milestone、DoD、remote境界
+- `phase2-developer-journey.md`: 業務アプリエンジニア向けのPhase 2依存選択、Security profile、Ownership、診断、検証入口
+- `phase2-p2-c3-start-handoff-20260912.md`: P2-C3 Developer Journey / DoD closeoutの開始境界と再開点
 
 Walking Skeletonの再実行方法と固定Commit上の証拠は、Repository rootの履歴と
 `../architecture/validation/`を参照してください。
