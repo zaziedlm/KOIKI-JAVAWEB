@@ -17,8 +17,9 @@
 C1〜C5およびGate 1〜4を完了し、Architecture Ownerが最終CIを含むcloseoutを承認しています。
 Phase 1b Runtime FoundationはMilestone A〜C、CP1〜CP10、Gate 1〜2、main最終CIおよび
 9成果物のsnapshot remote Consumer検証を完了し、Architecture Ownerがcloseoutを承認しています。
-Phase 2 Security FoundationはMilestone A / B、P2-C1 / C2およびP2-C3 local closeoutを完了し、Architecture Ownerが
-P2-C3を承認しています。Phase 2 remote snapshot、final PR / mainおよびGate Cは未完了です。
+Phase 2 Security FoundationはMilestone A / B、P2-C1 / C2、P2-C3 local closeout、final PR / mainおよび
+同一runのremote snapshot publish / Verifyを完了し、Architecture OwnerがGate CとPhase 2全体を
+`COMPLETE / ACCEPTED`として最終承認しています。
 
 ### Phase 2 Security Foundation
 
@@ -37,8 +38,8 @@ P2-C3を承認しています。Phase 2 remote snapshot、final PR / mainおよ�
 | Gate B | COMPLETE / OWNER APPROVED | `validation/phase2-gate-b-closeout.md` |
 | P2-C1 PostgreSQL Migration | COMPLETE / OWNER APPROVED | `validation/phase2-p2-c1-c1-4-closeout.md` |
 | P2-C2 Package / Consumer | COMPLETE / OWNER APPROVED | `validation/phase2-p2-c2-c2-7-closeout.md` |
-| P2-C3 Developer Journey / DoD | COMPLETE / OWNER APPROVED / GATE C READY | `validation/phase2-p2-c3-contract-review.md`、`validation/phase2-p2-c3-c3-2-developer-journey.md`、`validation/phase2-p2-c3-c3-3-closeout.md` |
-| Gate C final remote closeout | C-2 PUBLISH CAPTURE CORRECTION OWNER APPROVED / COMMIT PENDING | `validation/phase2-gate-c-c1-remote-plan-review.md`、`validation/phase2-gate-c-c2-publish-preflight-correction.md`、`validation/phase2-gate-c-c2-publish-capture-correction.md` |
+| P2-C3 Developer Journey / DoD | COMPLETE / OWNER APPROVED | `validation/phase2-p2-c3-contract-review.md`、`validation/phase2-p2-c3-c3-2-developer-journey.md`、`validation/phase2-p2-c3-c3-3-closeout.md` |
+| Gate C final remote closeout | COMPLETE / ACCEPTED | `validation/phase2-gate-c-c1-remote-plan-review.md`、`validation/phase2-gate-c-c2-publish-preflight-correction.md`、`validation/phase2-gate-c-c2-publish-capture-correction.md`、`validation/phase2-gate-c-c2-remote-evidence.md` |
 
 業務アプリケーション開発者向けの入口は
 [`Phase 2 Security Foundation Developer Journey`](../development/phase2-developer-journey.md)とする。
