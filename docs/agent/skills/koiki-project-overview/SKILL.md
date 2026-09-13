@@ -110,9 +110,15 @@ Securityを伴う業務アプリの依存選択、profile、Ownership、診断�
 - Authorization Server、SAML、Redis、WebFlux、SPA production実装
 - MyBatisの詳細実装規約、Oracle、AWS固有Adapterおよびcloud固有実装
 
-Phase 3は候補scopeだけが上位設計にあり、承認済み実行計画と開始Gateはまだない。未確定事項が必要になった場合は、
-該当Phaseまたはoptional Gateの設計・実装検証として扱い、実行計画とOwner承認前にproduction code、Public API、
-module、Starter、migration、workflowまたは既定規約を先行生成しない。
+Phase 3 Reference Vertical Sliceは
+`docs/development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md`のGate P3-1が承認済みであり、
+P3-CP0を完了してP3-A0を開始可能とする。master / expenseのproduction実装前に、P3-A0で
+有効master検証のmodule間契約、承認者部門scopeのReference Ownership、Reference migration / FK方針を
+Owner reviewし、以降も同計画のCP、blocking reviewおよびGateを順守する。
+
+個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
+Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは
+Remote Gateの個別承認を必要とする。
 
 ## 作業開始時の結論を示す
 
