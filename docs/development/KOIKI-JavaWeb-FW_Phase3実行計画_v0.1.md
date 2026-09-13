@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 READY
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 READY
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -86,8 +86,8 @@ Owner reviewで確定する停止点として承認する。
 | 5 | 有効な部門・経費科目をexpenseが確認するmodule間契約を定義する | APPROVED | P3-A0-D1 COMPLETE。master-ownedの狭い同期read-only contractとexpense Port / Adapterを使用する |
 | 6 | 承認者の部門scope割当はReferenceが所有し、Framework Identityへ混入させない | APPROVED | P3-A0-D2 COMPLETE。`expense`所有tableと完全一致scopeを使用する |
 | 7 | DepartmentDeactivatingは同期Eventとし、Level 1期間はtransactional / async eventを禁止する | APPROVED | Level変更時はGate再審査 |
-| 8 | koiki-starter-web-mvcを正式Framework artifactにするか、Reference実証に留めるかを判断する | STAGED DECISION APPROVED | P3-B0。module / dependency変更より前に確定する |
-| 9 | HTMX連携library、依存範囲、asset配布方式とJavaScript無効時のfallbackを判断する | STAGED DECISION APPROVED | P3-B0。dependency追加より前に確定する |
+| 8 | koiki-starter-web-mvcを正式Framework artifactにするか、Reference実証に留めるかを判断する | APPROVED | P3-B0-D1 COMPLETE。P3-B2で実責務と同時に正式artifactを新設する |
+| 9 | HTMX連携library、依存範囲、asset配布方式とJavaScript無効時のfallbackを判断する | APPROVED | P3-B0-D3〜D5 COMPLETE。2.0.10 WebJarとSpring標準＋内部fallbackを選択し、効果が明確な操作だけに適用する |
 | 10 | 最小REST APIのendpoint、DTO、Permission、status、error code、optimistic lock契約を確定する | STAGED DECISION APPROVED | P3-C0。REST production codeより前に確定する |
 | 11 | Reference migration version、history table、table / index / constraint、module間FKを確定する | APPROVED | P3-A0-D3 / D4 COMPLETE。V1〜V3、module内FKのみ、module間 / Framework FKなし |
 | 12 | masterのJPA class-based射影はTier 1のApplication DTOとして扱う | APPROVED | P3-B1でpackage / namingをEvidence化する |
@@ -109,7 +109,7 @@ Owner reviewで確定する停止点として承認する。
 | Identity | Framework / Reference | Framework Public contractとReference-owned UI。業務属性をFramework tableへ追加しない |
 | Audit | Framework | Business Auditを業務transaction内で使用。Reference独自audit tableを作らない |
 | Session | Framework | Spring Session JDBC、logout、失効、cleanup契約を再利用 |
-| MVC / HTMX共通契約 | Framework候補 | Starter追加はP3-B0の個別contract review後に限る |
+| MVC / HTMX共通契約 | Framework | P3-B0承認済み。StarterはP3-B2で実責務と同時に追加する |
 | Browser / E2E harness | Tooling | 非配布。Reference、Project Template、koiki-testingへ自動昇格しない |
 | Customer route / policy / migration | Customer | 本PhaseではCustomer実装を作成しない |
 
@@ -152,7 +152,13 @@ resource所有権、部門scopeと処理順序はApplication Use Caseが所有�
 
 ### 6.2 HTMX
 
-HTMXはJavaScript有効を前提とし、次の11契約を実証する。
+server-side UIの主軸はSpring MVC / Thymeleafが生成するHTMLとする。HTMXはその土台を置換せず、
+全画面遷移を避ける効果、更新DOM、history / focus / error挙動、同一Use Caseの再利用およびbrowserでの
+検証可能性を説明できる箇所だけに採用する。Phase 3ではmaster一覧の検索・paging・部分更新を必須採用箇所とし、
+他の画面を契約実証のためだけにHTMX化しない。
+
+HTMXを採用したinteractionはJavaScript有効を前提とし、次の11契約を実証する。11項目は共通契約の
+coverageであり、全画面または各操作へすべてのHTMX機能を適用することを意味しない。
 
 1. 全画面とfragmentの描画分離
 2. CSRF header自動付与
@@ -326,11 +332,11 @@ critical journeyだけを実行し、全画面・全権限・全拒否組合せ�
 
 - Spring Boot 4.1.1 baselineとBoot BOM管理を維持する。
 - Spring MVC / Thymeleafは現行Reference dependencyを出発点とする。
-- HTMX libraryとJavaScript assetは第三者library review後に固定する。
+- P3-B0承認によりHTMX 2.0.10 WebJar、Spring標準＋KOIKI内部fallback、Thymeleaf HTML主軸の選択適用を固定した。
 - Spring Cache / CaffeineはP3-B4で対象とTTLを実証する範囲だけ追加する。
 - Spring Modulith runtime dependencyをLevel 1の理由だけで追加しない。
 - master、expense、Reference migration、Templateをformal Framework release unitへ含めない。
-- web-mvc Starterを追加する場合はartifact、dependency、Public API、release / publish unitを同じCPでreviewする。
+- web-mvc StarterはP3-B2でartifact、dependency、Public API、release / publish unitを同時に検証する。
 - browser / E2E harnessは非配布Toolingとし、Customer CIへ無条件で必須化しない。
 
 ## 13. Deferred scope
@@ -378,7 +384,7 @@ Phase 0のFeasibility見積は直接120〜194標準人日、contingency込み156
 AI支援Owner稼働78〜164日である。これを納期commitmentとして扱わない。
 
 Gate P3-1ではこのrangeを初期planning rangeとして承認する。P3-CP0 / A0でPhase 2実績と
-master / expenseのmodule契約を反映し、P3-B0でHTMX libraryとbrowser runnerを、P3-C2で
+master / expenseのmodule契約を反映し、P3-B0でHTMX libraryとbrowser runnerを固定した。P3-C2で
 CI実行時間を反映して再見積する。Gate A / B / Cごとに残range、flakinessと
 手動checkpoint負担を再評価する。
 
@@ -413,7 +419,7 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 8. §4の16判断点と、P3-A0 / B0 / C0 / C3 / Remote Gateへ配置したblocking review
 
 **Decision:** APPROVED — GATE P3-1 PASSED
-**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 READY
+**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 READY
 **Approved scope:** §1〜17、§4の確定判断、staged decisionの停止点、P3-CP0からGate Cまでの順序、Hybrid Verification方針
 **Evidence:** 上位設計とReference仕様、Phase 2 COMPLETE / ACCEPTED baseline、開始main c88b335efdd556613c9ef7f4c5267214fdb8254b、§3のread-only棚卸し、本計画のDoD / AC trace
 **Decided by:** Shuichi Kataoka, Architecture Owner
@@ -423,8 +429,8 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 Gate P3-1はP3-CP0以降を本計画の順序で進めることを承認する。ただし、各blocking reviewを
 越える実装、Gate未達での次Milestone開始、remote push / PR / merge、workflow / ruleset変更、
 workflow dispatchまたはsnapshot publishを許可するものではない。P3-CP0とproduction変更0の
-P3-A0 contract reviewからP3-A4 Level 1同期eventおよびGate Aまで完了した。次はP3-B0 MVC / HTMX
-contract reviewであり、その個別承認前にMilestone Bのproduction変更またはdependency追加を開始しない。
+P3-A0 contract reviewからP3-A4 Level 1同期eventおよびGate A、P3-B0 MVC / HTMX contract reviewまで
+完了した。次に開始できるproduction CPはP3-B1 read modelだけであり、P3-B2以降を先行しない。
 P3-A1からP3-A4の実装・検証Evidenceは、それぞれ
 `docs/architecture/validation/phase3-p3-a1-master-vertical-slice.md`と
 `docs/architecture/validation/phase3-p3-a2-expense-vertical-slice.md`、
@@ -447,3 +453,20 @@ Architecture Ownerは、P3-A1〜P3-A4の横断的なOwnership、Domain、transac
 
 Gate Aの承認はP3-B0 contract reviewの開始だけを許可する。MVC / HTMXに関するproduction変更、Maven module、
 Public API、Starter、外部library、dependencyまたはbrowser runnerは、P3-B0の個別Owner承認より前に追加しない。
+
+## 20. P3-B0 Architecture Owner decision record
+
+Architecture Ownerは`docs/architecture/validation/phase3-p3-b0-mvc-htmx-contract-review.md`の
+P3-B0-D1〜D8を一体として承認した。
+
+**Decision:** APPROVED — P3-B0 COMPLETE / P3-B1 READY
+**Approved boundary:** 正式`koiki-starter-web-mvc`、初期Java Public API 0型、限定dependency、
+Spring標準＋KOIKI内部HTMX fallback、Thymeleaf HTML主軸とHTMX選択適用、Phase 2 Security再利用、
+非配布Playwright Tooling、Hybrid Verification
+**Evidence:** `docs/architecture/validation/phase3-p3-b0-mvc-htmx-contract-review.md`
+**Decided by:** Shuichi Kataoka, Architecture Owner
+**Date:** 2026年9月13日
+**Next CP:** P3-B1 read model
+
+P3-B0の承認はP3-B1の開始だけを許可する。P3-B2のMaven module / Starter / dependency変更、P3-B3の
+HTMX / browser runner実装、workflow、required checkまたはremote操作を先行しない。

@@ -1,7 +1,7 @@
 # KOIKI-JavaWeb-FW グランドデザイン v0.2
 
 **文書版:** v0.2（構想確定・基本設計準備版）
-**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）／2026年9月3日（Phase 2 Audit contract / transaction境界をADR-047として反映）／2026年9月8日（Phase 2 Session JDBC / cleanup / single execution境界をADR-048として反映）／2026年9月13日（Phase 3 Reference module collaboration / table Ownership境界をADR-049として反映）
+**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）／2026年9月3日（Phase 2 Audit contract / transaction境界をADR-047として反映）／2026年9月8日（Phase 2 Session JDBC / cleanup / single execution境界をADR-048として反映）／2026年9月13日（Phase 3 Reference module collaboration / table Ownership境界をADR-049として反映、ADR-027のHTMX Phase 3 fittingを反映）
 **文書状態:** ACCEPTED（Phase 0 Architecture Baseline）
 **承認日:** 2026年8月19日
 **Architecture Owner:** Shuichi Kataoka
@@ -1378,6 +1378,10 @@ ArchUnit は Java コードを検査できてもテンプレートは見えな�
 ### 13.4 HTMX
 
 **HTMX を Thymeleaf プロファイルの構成要素として同梱する。**後続の拡張プロファイルとしない。
+ただしserver-side UIの主軸はSpring MVC / Thymeleafが生成するHTMLであり、HTMXはその土台を置換しない。
+検索・paging・部分validation等で操作継続性が明確に改善し、更新DOM、history、focus、errorおよび
+同じUse Caseの再利用を説明・検証できる箇所だけに選択適用する。同梱または契約標準化を理由として
+全link、全Formまたは全CRUD操作へ適用しない。
 
 #### 同梱とする理由
 
@@ -1407,13 +1411,15 @@ HTMX を伴わない Thymeleaf では、検索、絞り込み、ページング�
 
 #### 依存ライブラリ
 
-HTMX と Spring Security の統合には `wimdeblauwe/htmx-spring-boot` を用いる。Spring Security の CSRF 保護は Thymeleaf の `th:action` によるフォーム送信には自動で効くが、**HTMX が発行するリクエストには効かない。**当該ライブラリは HTMX 要素の `hx-headers` へ CSRF トークンを自動注入し、`@HxRequest` 等のアノテーション、引数リゾルバ、Thymeleaf ダイアレクトを提供する。
+Phase 3 P3-B0で`wimdeblauwe/htmx-spring-boot`を再評価した。同libraryのcompatibility表および
+Spring Initializrの管理範囲から、KOIKI baselineのSpring Boot 4.1.1を明示的に含む対応情報を確認できないため、
+互換性を推測して採用しない。
 
-**これは Spring 公式ポートフォリオ外のコミュニティライブラリである。**§8.7 の第三者ライブラリ採用基準を適用する。
-
-**依存範囲の限定** — 利用する機能を「HTMX リクエスト判定アノテーション、CSRF ヘッダー自動注入、リダイレクト／OOB 用ビュー、Thymeleaf ダイアレクト」に限定し、`koiki-starter-web-mvc` 内に閉じる。
-
-**代替手段** — 当該ライブラリが Spring Boot の新版へ追従しない場合、CSRF ヘッダー注入は `htmx:configRequest` イベントを捕捉する JavaScript で代替可能である。アノテーションと引数リゾルバは自前実装が可能であり、**KOIKI 側で1〜2人週規模の代替実装で置換できる範囲に依存を留める。**
+HTMX本体は`org.webjars.npm:htmx.org:2.0.10`をMaven Centralからclasspath配布し、CDNをproduction前提に
+しない。HTMX requestは標準HTTP headerで判定し、CSRF token / header名をThymeleafでmetaへmaterializeして、
+外部scriptの`htmx:configRequest` eventからSpring Securityのtokenを自動注入する。redirect、OOB、history等も
+HTMX標準header / attribute / eventで表現し、独自public annotation、argument resolverまたは第三者dialectを
+初期実装へ追加しない。このfallbackは`koiki-starter-web-mvc`のinternal実装へ閉じる。
 
 ### 13.5 SPA プロファイル
 
@@ -3175,7 +3181,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | リスク | 内容 | 対策 |
 |---|---|---|
 | Thymeleaf 成果物の不採用 | UI コンポーネント群を作っても案件で使われない | **HTMX 同梱により実用性を確保**（§13.4）。Phase 3 の Reference で検証 |
-| 第三者ライブラリの追従遅延 | `htmx-spring-boot` が Spring Boot 新版へ追従しない | 依存範囲の限定、代替実装コストの事前見積（§13.4） |
+| 第三者ライブラリの追従遅延 | `htmx-spring-boot` が Spring Boot 新版へ追従しない | P3-B0で採用を見送り、Spring標準＋KOIKI内部fallbackへ切替（§13.4） |
 | Thymeleaf の型安全性欠如 | テンプレートの誤りが実行時まで検出されない | Reference による網羅、スライステスト、Review Checklist |
 | UI プロファイル間の設定衝突 | Thymeleaf と SPA 併用時に CSRF・セッション設定が競合 | Phase 4 で併用構成を検証（§13.6） |
 
@@ -3305,7 +3311,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 |---|---|---|
 | ADR-006 | UI プロファイル方針 | **API 指向を正本とし、Thymeleaf＋HTMX と SPA を対等の公式プロファイルとする** |
 | ADR-026 | UI プロファイルの提供順序 | Phase 3 で Thymeleaf＋HTMX、Phase 4 で SPA 参照実装 |
-| ADR-027 | HTMX の同梱と第三者ライブラリ | HTMX を Thymeleaf プロファイルへ同梱。`htmx-spring-boot` を採用 |
+| ADR-027 | HTMX の同梱と第三者ライブラリ | HTMX 2.0.10をThymeleafプロファイルへ同梱して選択適用。`htmx-spring-boot`はBoot 4.1.1明示対応を確認できないため採用せず、Spring標準＋KOIKI内部fallbackを使用 |
 
 ### セキュリティと監査
 

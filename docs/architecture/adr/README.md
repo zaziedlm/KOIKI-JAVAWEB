@@ -4,7 +4,7 @@
 
 **状態:** Accepted
 
-**承認日:** Phase 0 Baseline 2026年8月15日 / ADR-046 2026年9月1日 / ADR-047 2026年9月3日 / ADR-048 2026年9月8日 / ADR-049 2026年9月13日
+**承認日:** Phase 0 Baseline 2026年8月15日 / ADR-046 2026年9月1日 / ADR-047 2026年9月3日 / ADR-048 2026年9月8日 / ADR-049 2026年9月13日 / ADR-027 Phase 3 fitting 2026年9月13日
 
 **Decided by:** Shuichi Kataoka
 
@@ -23,6 +23,7 @@
 | P2-B1で検証 | P2-B1の実PostgreSQL証拠によりAudit contract / transaction境界を確認した判断 |
 | P2-B3で検証 | P2-B3の実PostgreSQL、複数processおよびnon-web実行証拠によりSession JDBC / cleanup / single execution境界を確認した判断 |
 | P3-A0で承認 | P3-A0のproduction変更前contract reviewによりReference module collaboration / table Ownership境界を確定した判断。実装成立はP3-A1〜A4で検証する |
+| P3-B0で再確認 | P3-B0のproduction変更前contract reviewによりMVC / HTMX artifact、dependency、選択的適用、Securityおよびbrowser Tooling境界を確定した判断。実装成立はP3-B1〜B4で検証する |
 
 「Phase 0で検証」はADR全体の将来実装を完了したという意味ではない。たとえばSpring Modulithの
 Level 2以降、Flyway三階層、非同期event等は、registerで示すPhase 0検証scopeの外である。
@@ -57,7 +58,7 @@ ADR-001〜ADR-045は、Architecture Ownerによるreviewを2026年8月15日に�
 | ADR-024 | Tier 2のRepository方針 | Phase 0で検証 | `../validation/walking-skeleton-tier2-practicality.md`（`domain.repository`とSpring Data） | ACCEPTED |
 | ADR-025 | Domain Event | Phase 0で検証 | `../validation/walking-skeleton-tier2-practicality.md`（同期eventとrollback。非同期は対象外） | ACCEPTED |
 | ADR-026 | UIプロファイルの提供順序 | 確定 | —（Phase配置による実装順序であり、公式profileとしての優劣を意味しない） | ACCEPTED |
-| ADR-027 | HTMXの同梱と第三者library | 確定 | —（HTMX同梱を確定。`htmx-spring-boot`の実採用はPhase 3開始時に§8.7で再確認し、不適合時は代替実装へ切り替える） | ACCEPTED |
+| ADR-027 | HTMXの同梱と第三者library | P3-B0で再確認 | `../validation/phase3-p3-b0-mvc-htmx-contract-review.md`（Thymeleaf HTMLを主軸としHTMX 2.0.10を選択適用。Boot 4.1.1明示対応を確認できない`htmx-spring-boot`は採用せず、Spring標準＋KOIKI内部fallbackへ切替） | ACCEPTED |
 | ADR-028 | Open Session in View | Phase 0で検証 | `../validation/walking-skeleton-tier2-practicality.md`（OSIV無効とEntity露出失敗） | ACCEPTED |
 | ADR-029 | Migration Support | 確定 | —（方針の承認。OpenRewrite recipeの正式提供とCI検証はPhase 5） | ACCEPTED |
 | ADR-030 | JSON Processing | 確定 | — | ACCEPTED |
@@ -102,6 +103,7 @@ ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
 | 2026年9月3日 | ADR-047 | ACCEPTED（P2-B1の実PostgreSQL fixtureによりAudit Public API、Business／Security transaction差、failure semantics、DB正本とApplication logの分離を確認） | Shuichi Kataoka |
 | 2026年9月8日 | ADR-048 | ACCEPTED（P2-B3の実PostgreSQL、package済み複数processおよびnon-web fixtureによりSession JDBC、全Session失効、cleanup / single execution、failure semanticsと配布境界を確認） | Shuichi Kataoka |
 | 2026年9月13日 | ADR-049 | ACCEPTED（P3-A0 contract reviewによりcommand eventとcurrent-value queryを分離し、Reference table Ownership、V1〜V3、module内FKだけとする境界をproduction変更前に確定） | Shuichi Kataoka |
+| 2026年9月13日 | ADR-027 Phase 3 fitting | ACCEPTED（Thymeleaf HTMLを主軸としてHTMXを効果が明確な操作だけに適用し、`htmx-spring-boot`からSpring標準＋KOIKI内部fallbackへ切り替える） | Shuichi Kataoka |
 
 ## 集計
 

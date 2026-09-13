@@ -103,8 +103,7 @@ Phase 0、Phase 1a Build Foundation、Phase 1b Runtime FoundationおよびPhase 
 Securityを伴う業務アプリの依存選択、profile、Ownership、診断および検証入口は
 `docs/development/phase2-developer-journey.md`を使う。一方、次は後続Phaseまたはoptional Gateの正式判断として固定しない。
 
-- Phase 3の正式Reference `master` / `expense`、MVC / HTMX、最小REST API、業務Vertical Slice、
-  Spring Modulith Level 1
+- Phase 3 P3-B1以降のread model、MVC / HTMX実装、最小REST APIおよびbrowser / E2E実装
 - Project Template、正式Upgrade / Migration Guideおよび正式OpenRewrite recipe
 - Spring Modulith Level 2、非同期Domain Eventおよびruntime依存
 - Authorization Server、SAML、Redis、WebFlux、SPA production実装
@@ -112,11 +111,13 @@ Securityを伴う業務アプリの依存選択、profile、Ownership、診断�
 
 Phase 3 Reference Vertical Sliceは
 `docs/development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md`のGate P3-1が承認済みであり、
-P3-CP0とP3-A0を完了し、P3-A1〜P3-A4およびGate Aを`COMPLETE / ACCEPTED`とした。P3-A0で
-承認された有効master確認の狭い同期read-only contract、command整合の同期Event、承認者部門scopeの
-Reference Ownership、V1〜V3 migration、module内FKのみの方針を維持する。次はP3-B0 MVC / HTMX
-contract reviewであり、その個別承認前にMilestone Bのproduction変更、Maven module、Public API、Starter、
-外部library、dependencyまたはbrowser runnerを追加しない。以降も同計画のCP、blocking reviewおよびGateを順守する。
+P3-CP0とP3-A0を完了し、P3-A1〜P3-A4およびGate Aを`COMPLETE / ACCEPTED`、P3-B0を
+`COMPLETE / OWNER APPROVED`とした。P3-A0で承認された有効master確認の狭い同期read-only contract、
+command整合の同期Event、承認者部門scopeのReference Ownership、V1〜V3 migration、module内FKのみの
+方針を維持する。P3-B0で正式`koiki-starter-web-mvc`、初期Java Public API 0型、Spring標準＋KOIKI内部
+HTMX fallback、Thymeleaf HTML主軸の選択適用、Phase 2 Security再利用および非配布browser Tooling境界を
+承認した。次はP3-B1 read modelであり、P3-B2のMaven module / Starter / dependency変更またはP3-B3の
+browser runnerを先行しない。以降も同計画のCP、blocking reviewおよびGateを順守する。
 
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
 Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは
