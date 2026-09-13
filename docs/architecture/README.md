@@ -21,7 +21,7 @@ Phase 2 Security FoundationはMilestone A / B、P2-C1 / C2、P2-C3 local closeou
 同一runのremote snapshot publish / Verifyを完了し、Architecture OwnerがGate CとPhase 2全体を
 `COMPLETE / ACCEPTED`として最終承認しています。Phase 3 Reference Vertical SliceはGate P3-1、
 P3-CP0、P3-A0 contract review、P3-A1 master、P3-A2 expense、P3-A3 authorization / Auditおよび
-P3-A4 Level 1同期eventを完了し、Gate A reviewを開始可能としています。
+P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`とし、次はP3-B0 MVC / HTMX contract reviewです。
 
 ### Phase 3 Reference Vertical Slice
 
@@ -29,11 +29,11 @@ P3-A4 Level 1同期eventを完了し、Gate A reviewを開始可能としてい�
 |---|---|---|
 | Gate P3-1 / P3-CP0 | COMPLETE / OWNER APPROVED | `../development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md` |
 | P3-A0 Contract Review | COMPLETE / OWNER APPROVED | `validation/phase3-p3-a0-contract-review.md` |
-| P3-A1 Master Vertical Slice | COMPLETE | `validation/phase3-p3-a1-master-vertical-slice.md` |
-| P3-A2 Expense Vertical Slice | COMPLETE | `validation/phase3-p3-a2-expense-vertical-slice.md` |
-| P3-A3 Authorization / Audit | COMPLETE | `validation/phase3-p3-a3-authorization-audit.md` |
-| P3-A4 Level 1 Synchronous Event | COMPLETE / GATE A READY | `validation/phase3-p3-a4-level1-synchronous-event.md` |
-| Gate A Domain / Transaction / Module Acceptance | OWNER DECISIONS APPROVED / CLEAN AGGREGATE PENDING | `validation/phase3-gate-a-milestone-a-acceptance.md` |
+| P3-A1 Master Vertical Slice | COMPLETE / ACCEPTED | `validation/phase3-p3-a1-master-vertical-slice.md` |
+| P3-A2 Expense Vertical Slice | COMPLETE / ACCEPTED | `validation/phase3-p3-a2-expense-vertical-slice.md` |
+| P3-A3 Authorization / Audit | COMPLETE / ACCEPTED | `validation/phase3-p3-a3-authorization-audit.md` |
+| P3-A4 Level 1 Synchronous Event | COMPLETE / ACCEPTED | `validation/phase3-p3-a4-level1-synchronous-event.md` |
+| Gate A Domain / Transaction / Module Acceptance | COMPLETE / ACCEPTED | `validation/phase3-gate-a-milestone-a-acceptance.md` |
 
 ### Phase 2 Security Foundation
 

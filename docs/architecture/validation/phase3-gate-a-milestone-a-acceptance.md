@@ -1,11 +1,11 @@
 # Phase 3 Gate A — Milestone A acceptance review
 
-**Status:** ARCHITECTURE OWNER DECISIONS APPROVED / CLEAN AGGREGATE PENDING  
+**Status:** COMPLETE / ACCEPTED — GATE A PASSED
 **Review date:** 2026年9月13日  
 **Branch:** `feature/phase3-reference-vertical-slice`  
-**Reviewed HEAD:** `a74526b`  
+**Reviewed / verified HEAD:** `85275d90139cbe8fb916ba1386288a393d189482`
 **Baseline main:** `c88b335efdd556613c9ef7f4c5267214fdb8254b`  
-**Next production CP:** Gate A承認後の`P3-B0`だけ
+**Next CP:** `P3-B0` MVC / HTMX contract review
 
 ## 1. Review objective
 
@@ -88,6 +88,7 @@ P3-A0-D1で認めた二種類のmodule間連携は、目的を混同せず実装
 | P3-A4 Level 1 | 不変event、production listener 1件、pending 4状態の拒否とrollback、terminal 2状態 / 申請なしの成功 | 57 tests、failure / error / skip 0 |
 | Current compilation / artifact | Error Prone / NullAwayを含むpackage、production / test class分離 | 55 production、17 test sourceをcompile。packaged JARにtest classなし |
 | Migration | PostgreSQL 17 / FlywayでV1〜V3適用、`kkref` history、module内FK | 各CPのDB観測で確認 |
+| Root Reactor clean aggregate | clean HEAD `85275d9`でMaven Wrapperから`clean verify` | 15 / 15 projects、128 tests、failure / error / skip 0 |
 
 最終57件のReference回帰はA1〜A4を含む現在形を通している。ただし、その件数だけを根拠に後続のUI、REST、
 実Sessionまたは同時実行まで検証済みとはしない。
@@ -108,7 +109,6 @@ P3-A0-D1で認めた二種類のmodule間連携は、目的を混同せず実装
 
 | Item | Reason / destination | Gate A treatment |
 |---|---|---|
-| Root Reactorのclean aggregate | P3-A1でWindows上の単一`-am test` fork出力不整合を記録し、二段階buildで各成果を検証した | Gate Aの未完了確認項目。既存testの再反復ではなく、一度のfocused clean aggregateでcloseするかOwner判断 |
 | 実Form Login、Spring Session JDBC、複数Roleの人系journey | Application method securityは検証したが業務画面が未実装 | P3-B2以降。Gate A browser条件にはしない |
 | MVC / Thymeleaf / HTMX、read model、query時scope | Milestone Bの責務 | AC-P3-08およびP3-B0〜B4へ保留 |
 | REST endpoint / DTO / error contract | Milestone Cの責務 | AC-P3-09 / 10およびP3-C0〜C2へ保留 |
@@ -129,7 +129,7 @@ P3-A0-D1で認めた二種類のmodule間連携は、目的を混同せず実装
 これは、未完成autosaveを行わない完成Draftと、RETURNED後も同じsnapshotで再提出する承認済みflowに対して
 一貫している。提出前に異動した場合は古い部門のまま提出せず拒否されるため、認可や廃止制約を弱めない。ただし、
 「初回提出時に初めてDBへ固定する」という厳密な意味ではなく、「作成時に候補を記録し、初回提出で再検証して確定」
-という実装である。Gate Aではこの解釈をPhase 3の単純化としてOwnerが確認する。
+という実装である。Gate Aでこの解釈をPhase 3の単純化としてOwnerが確認した。
 
 ### 4.2 Layered authorization
 
@@ -168,14 +168,14 @@ Permission、resource所有権、部門scope、Domain状態は同じ層へ集約
 | Module | master Query例外とcommand Event原則を用途別に維持し、直接参照 / cross-module FKなし | READY |
 | Security / Identity | Phase 2 contractを再利用し、業務属性はReference Ownership | READY WITH DEFERRED BROWSER INTEGRATION |
 | Migration / artifact | V1〜V3とpackage / JAR inventoryは整合 | READY |
-| Clean aggregate | 二段階buildのEvidenceはあるが、計画したRoot Reactor clean aggregateを未close | OWNER DECISION / VERIFICATION PENDING |
+| Clean aggregate | clean HEAD `85275d9`で正式Root Reactorの15 / 15 projectsと128 testsが成功 | PASS |
 | Human checkpoint | 操作面がないため計画上N/A | DEFERRED TO P3-B2 |
 
-**Recommendation:** `CONDITIONALLY READY FOR GATE A ACCEPTANCE`。
+**Decision:** `ACCEPTED — GATE A PASSED`。
 
 P3-A1〜A4が局所最適へ分裂して一貫性を損なった証拠はなく、Domain / transaction / module acceptanceの
-主要な設計主張は成立している。§7のOwner判断は承認済みであり、GA-D2に従ってGate Aを`PASSED`にする前に
-Root Reactor clean aggregateを一度実行する。P3-B0はGate A承認前に開始しない。
+主要な設計主張は成立している。§7のOwner判断は承認済みであり、GA-D2のRoot Reactor clean aggregateも
+成功した。Architecture Ownerの最終closeによりGate Aを`PASSED`、P3-A1〜A4を`COMPLETE / ACCEPTED`とする。
 
 ## 7. Architecture Owner decisions
 
@@ -204,10 +204,46 @@ log / Audit / DBの人系突合はP3-B2から開始する。master専用の重�
 **Decided by:** Shuichi Kataoka, Architecture Owner  
 **Decision date:** 2026年9月13日
 
-GA-D1〜D6のOwner reviewは完了した。Root Reactor clean aggregateが成功するまでは、本記録を条件付きの
-acceptance materialとし、Gate Aを`PASSED`、P3-A1〜A4を`ACCEPTED`、またはP3-B0を`READY`へ変更しない。
+GA-D1〜D6のOwner reviewは完了し、GA-D2の実行結果を§8で確認した。最終Owner closeは§9に記録する。
 
-## 8. Evidence sources
+## 8. GA-D2 clean aggregate result
+
+| Item | Result |
+|---|---|
+| Verification identity | `85275d90139cbe8fb916ba1386288a393d189482`、実行前tracked worktree clean |
+| Command | `.\mvnw.cmd --batch-mode --no-transfer-progress clean verify` |
+| Environment | Windows 11 amd64、Maven 3.9.16、Eclipse Adoptium Java 21.0.12.1 |
+| Docker | Rancher Desktop Docker Engine 29.5.3、Testcontainers 2.0.5 |
+| Reactor | 15 / 15 projects `SUCCESS` |
+| Tests | 27 Surefire report files、128 tests、failure 0、error 0、skip 0 |
+| Reference | 57 tests、failure 0、error 0、skip 0 |
+| Database | PostgreSQL 17.11。Framework migration 3件、Reference V1〜V3を適用 |
+| Duration | 1分14秒、終了コード0、`BUILD SUCCESS` |
+| Cleanup | 実行後tracked worktree clean。Testcontainers由来の稼働中・残存containerなし |
+
+P3-A1で観測したWindows単一Reactorの上流module `target/classes`欠落は再現せず、cleanからReferenceの
+55 production sourceと17 test sourceをcompileし、Reference testまで同一Reactor内で完走した。
+したがってGA-D2のclose条件は満たされた。
+
+非blocking observationとして、Mockito inline mock makerの将来JDKに関するdynamic agent warningと、
+ArchUnit test classpathのSLF4J NOP warningが出力された。いずれもtest failure、skip、production runtime変更、
+またはGate AのDomain / transaction / module境界不成立を示すものではない。
+
+## 9. Architecture Owner final close
+
+Architecture Ownerは、GA-D1〜D6の承認結果およびclean HEAD
+`85275d90139cbe8fb916ba1386288a393d189482`に対するRoot Reactor clean aggregateの成功を確認し、
+Phase 3 Gate Aを`PASSED`、P3-A1〜P3-A4を`COMPLETE / ACCEPTED`とする。
+
+Milestone Bの最初の作業はP3-B0 contract reviewとし、MVC / HTMXに関するproduction変更、Maven module、
+Public API、Starter、外部library、dependencyまたはbrowser runnerをP3-B0の個別Owner承認より前に追加しない。
+
+**Decision:** APPROVED — GATE A PASSED / MILESTONE A COMPLETE / ACCEPTED
+**Decided by:** Shuichi Kataoka, Architecture Owner
+**Decision date:** 2026年9月13日
+**Next CP:** P3-B0 MVC / HTMX contract review
+
+## 10. Evidence sources
 
 - `docs/architecture/validation/phase3-p3-a0-contract-review.md`
 - `docs/architecture/validation/phase3-p3-a1-master-vertical-slice.md`

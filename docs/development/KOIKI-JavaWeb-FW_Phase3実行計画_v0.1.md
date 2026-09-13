@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 COMPLETE / P3-A2 COMPLETE / P3-A3 COMPLETE / P3-A4 COMPLETE / GATE A READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 READY
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 COMPLETE / P3-A2 COMPLETE / P3-A3 COMPLETE / P3-A4 COMPLETE / GATE A READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 READY
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -413,7 +413,7 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 8. §4の16判断点と、P3-A0 / B0 / C0 / C3 / Remote Gateへ配置したblocking review
 
 **Decision:** APPROVED — GATE P3-1 PASSED
-**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 COMPLETE / P3-A2 COMPLETE / P3-A3 COMPLETE / P3-A4 COMPLETE / GATE A READY
+**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 READY
 **Approved scope:** §1〜17、§4の確定判断、staged decisionの停止点、P3-CP0からGate Cまでの順序、Hybrid Verification方針
 **Evidence:** 上位設計とReference仕様、Phase 2 COMPLETE / ACCEPTED baseline、開始main c88b335efdd556613c9ef7f4c5267214fdb8254b、§3のread-only棚卸し、本計画のDoD / AC trace
 **Decided by:** Shuichi Kataoka, Architecture Owner
@@ -423,10 +423,27 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 Gate P3-1はP3-CP0以降を本計画の順序で進めることを承認する。ただし、各blocking reviewを
 越える実装、Gate未達での次Milestone開始、remote push / PR / merge、workflow / ruleset変更、
 workflow dispatchまたはsnapshot publishを許可するものではない。P3-CP0とproduction変更0の
-P3-A0 contract reviewからP3-A4 Level 1同期eventまで完了した。次はGate A reviewであり、
-承認前にMilestone BまたはP3-B0を開始しない。
+P3-A0 contract reviewからP3-A4 Level 1同期eventおよびGate Aまで完了した。次はP3-B0 MVC / HTMX
+contract reviewであり、その個別承認前にMilestone Bのproduction変更またはdependency追加を開始しない。
 P3-A1からP3-A4の実装・検証Evidenceは、それぞれ
 `docs/architecture/validation/phase3-p3-a1-master-vertical-slice.md`と
 `docs/architecture/validation/phase3-p3-a2-expense-vertical-slice.md`、
 `docs/architecture/validation/phase3-p3-a3-authorization-audit.md`、
 `docs/architecture/validation/phase3-p3-a4-level1-synchronous-event.md`に記録する。
+
+## 19. Gate A Architecture Owner close record
+
+Architecture Ownerは、P3-A1〜P3-A4の横断的なOwnership、Domain、transaction、module境界、GA-D1〜D6の
+判断、およびclean HEAD `85275d90139cbe8fb916ba1386288a393d189482`に対するRoot Reactor
+`clean verify`の成功を確認した。
+
+**Decision:** APPROVED — GATE A PASSED / MILESTONE A COMPLETE / ACCEPTED
+**Accepted scope:** P3-A1 master、P3-A2 expense、P3-A3 authorization / Audit、P3-A4 Level 1同期event
+**Verification:** Windows 11、Maven 3.9.16、Java 21.0.12.1、15 / 15 projects、128 tests、failure / error / skip 0、PostgreSQL 17.11、Framework migration 3件、Reference V1〜V3
+**Evidence:** `docs/architecture/validation/phase3-gate-a-milestone-a-acceptance.md`
+**Decided by:** Shuichi Kataoka, Architecture Owner
+**Date:** 2026年9月13日
+**Next CP:** P3-B0 MVC / HTMX contract review
+
+Gate Aの承認はP3-B0 contract reviewの開始だけを許可する。MVC / HTMXに関するproduction変更、Maven module、
+Public API、Starter、外部library、dependencyまたはbrowser runnerは、P3-B0の個別Owner承認より前に追加しない。
