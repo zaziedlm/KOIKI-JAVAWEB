@@ -112,10 +112,10 @@ Securityを伴う業務アプリの依存選択、profile、Ownership、診断�
 
 Phase 3 Reference Vertical Sliceは
 `docs/development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md`のGate P3-1が承認済みであり、
-P3-CP0、P3-A0、P3-A1、P3-A2およびP3-A3を完了した。P3-A0で承認された有効master確認の
+P3-CP0、P3-A0、P3-A1、P3-A2、P3-A3およびP3-A4を完了した。P3-A0で承認された有効master確認の
 狭い同期read-only contract、command整合の同期Event、承認者部門scopeのReference Ownership、
-V1〜V3 migration、module内FKのみの方針を維持する。次はP3-A4だけを実施し、以降も同計画のCP、
-blocking reviewおよびGateを順守する。
+V1〜V3 migration、module内FKのみの方針を維持する。次はGate A reviewであり、承認前にMilestone B
+またはP3-B0を開始しない。以降も同計画のCP、blocking reviewおよびGateを順守する。
 
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
 Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは

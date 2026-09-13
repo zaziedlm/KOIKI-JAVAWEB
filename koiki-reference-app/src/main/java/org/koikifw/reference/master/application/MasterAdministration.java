@@ -17,8 +17,10 @@ import org.koikifw.reference.master.adapter.outbound.persistence.ExpenseCategory
 import org.koikifw.reference.master.adapter.outbound.persistence.ExpenseCategoryRepository;
 import org.koikifw.reference.master.adapter.outbound.persistence.UserDepartmentAssignmentEntity;
 import org.koikifw.reference.master.adapter.outbound.persistence.UserDepartmentAssignmentRepository;
+import org.koikifw.reference.master.domain.event.DepartmentDeactivating;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -42,6 +44,7 @@ public class MasterAdministration {
     private final ExpenseCategoryRepository expenseCategories;
     private final UserDepartmentAssignmentRepository assignments;
     private final BusinessAuditRecorder businessAuditRecorder;
+    private final ApplicationEventPublisher eventPublisher;
     private final Clock clock;
 
     @Autowired
@@ -49,8 +52,15 @@ public class MasterAdministration {
             DepartmentRepository departments,
             ExpenseCategoryRepository expenseCategories,
             UserDepartmentAssignmentRepository assignments,
-            BusinessAuditRecorder businessAuditRecorder) {
-        this(departments, expenseCategories, assignments, businessAuditRecorder, Clock.systemUTC());
+            BusinessAuditRecorder businessAuditRecorder,
+            ApplicationEventPublisher eventPublisher) {
+        this(
+                departments,
+                expenseCategories,
+                assignments,
+                businessAuditRecorder,
+                eventPublisher,
+                Clock.systemUTC());
     }
 
     MasterAdministration(
@@ -58,12 +68,14 @@ public class MasterAdministration {
             ExpenseCategoryRepository expenseCategories,
             UserDepartmentAssignmentRepository assignments,
             BusinessAuditRecorder businessAuditRecorder,
+            ApplicationEventPublisher eventPublisher,
             Clock clock) {
         this.departments = Objects.requireNonNull(departments, "departments");
         this.expenseCategories = Objects.requireNonNull(expenseCategories, "expenseCategories");
         this.assignments = Objects.requireNonNull(assignments, "assignments");
         this.businessAuditRecorder =
                 Objects.requireNonNull(businessAuditRecorder, "businessAuditRecorder");
+        this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher");
         this.clock = Objects.requireNonNull(clock, "clock");
     }
 
@@ -93,6 +105,22 @@ public class MasterAdministration {
             department.rename(validatedName, clock.instant());
             departments.flush();
             record("RENAME_DEPARTMENT", "DEPARTMENT", id);
+            return null;
+        });
+    }
+
+    @Transactional
+    public void deactivateDepartment(UUID departmentId, long expectedVersion) {
+        UUID id = requireId(departmentId);
+        requireVersion(expectedVersion);
+        execute(() -> {
+            DepartmentEntity department = departments.findById(id)
+                    .orElseThrow(() -> failure(MasterFailure.NOT_FOUND));
+            requireVersion(department.version(), expectedVersion);
+            publishDepartmentDeactivating(id);
+            department.deactivate(clock.instant());
+            departments.flush();
+            record("DEACTIVATE_DEPARTMENT", "DEPARTMENT", id);
             return null;
         });
     }
@@ -182,6 +210,14 @@ public class MasterAdministration {
     private void requireActiveDepartment(UUID departmentId) {
         if (!departments.existsByDepartmentIdAndActiveTrue(departmentId)) {
             throw failure(MasterFailure.NOT_FOUND);
+        }
+    }
+
+    private void publishDepartmentDeactivating(UUID departmentId) {
+        try {
+            eventPublisher.publishEvent(new DepartmentDeactivating(departmentId));
+        } catch (IllegalStateException exception) {
+            throw failure(MasterFailure.CONFLICT);
         }
     }
 

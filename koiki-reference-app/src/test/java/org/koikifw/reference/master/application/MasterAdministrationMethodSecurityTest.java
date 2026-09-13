@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -61,8 +62,10 @@ class MasterAdministrationMethodSecurityTest {
                 DepartmentRepository departments,
                 ExpenseCategoryRepository expenseCategories,
                 UserDepartmentAssignmentRepository assignments,
-                BusinessAuditRecorder audit) {
-            return new MasterAdministration(departments, expenseCategories, assignments, audit);
+                BusinessAuditRecorder audit,
+                ApplicationEventPublisher eventPublisher) {
+            return new MasterAdministration(
+                    departments, expenseCategories, assignments, audit, eventPublisher);
         }
     }
 }

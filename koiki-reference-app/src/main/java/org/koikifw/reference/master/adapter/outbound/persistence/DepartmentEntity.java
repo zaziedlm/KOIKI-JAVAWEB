@@ -61,6 +61,11 @@ public class DepartmentEntity {
         this.updatedAt = Objects.requireNonNull(now, "now");
     }
 
+    public void deactivate(Instant now) {
+        this.active = false;
+        this.updatedAt = Objects.requireNonNull(now, "now");
+    }
+
     public UUID departmentId() {
         return departmentId;
     }

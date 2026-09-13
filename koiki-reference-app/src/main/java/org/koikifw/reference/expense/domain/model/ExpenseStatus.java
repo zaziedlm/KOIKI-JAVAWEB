@@ -1,5 +1,7 @@
 package org.koikifw.reference.expense.domain.model;
 
+import java.util.Set;
+
 /** Lifecycle states accepted for a Phase 3 expense request. */
 public enum ExpenseStatus {
     DRAFT,
@@ -7,6 +9,12 @@ public enum ExpenseStatus {
     APPROVED,
     REJECTED,
     RETURNED,
-    SETTLED
-}
+    SETTLED;
 
+    private static final Set<ExpenseStatus> PENDING =
+            Set.of(DRAFT, SUBMITTED, RETURNED, APPROVED);
+
+    public static Set<ExpenseStatus> pendingStatuses() {
+        return PENDING;
+    }
+}

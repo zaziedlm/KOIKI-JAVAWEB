@@ -29,6 +29,7 @@ import org.koikifw.reference.master.adapter.outbound.persistence.UserDepartmentA
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -52,6 +53,9 @@ class MasterAdministrationTest {
     @Mock
     private BusinessAuditRecorder audit;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     private MasterAdministration administration;
 
     @BeforeEach
@@ -61,6 +65,7 @@ class MasterAdministrationTest {
                 expenseCategories,
                 assignments,
                 audit,
+                eventPublisher,
                 Clock.fixed(NOW, ZoneOffset.UTC));
         FrameworkPrincipal principal = new TestPrincipal(
                 FrameworkUserId.parse(ACTOR_ID.toString()), Set.of("MASTER:ADMIN"));
