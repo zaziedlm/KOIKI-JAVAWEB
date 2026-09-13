@@ -81,14 +81,16 @@ Deferred decisions: P3-A0 / B0 / C0 / C3 and Remote Gate
 | `main` / `origin/main` | HEADと一致 |
 | Java | Eclipse Temurin 21.0.12.1 |
 | Maven Wrapper | Apache Maven 3.9.16 |
-| Docker | Client 29.5.3-rd。daemon停止中 |
+| Docker | Client 29.5.3-rd。daemon応答あり。`docker ps -a`で16件、全件`Exited`、実行中0件 |
 | OpenSpec | absent |
 | Approval marker | execution planにstaleな`PENDING`なし |
 | Changed scope | execution plan、`AGENTS.md`、Project Overview Skillの状態記述、本Evidenceだけ |
 | Maven / browser / DB test | 文書CPのため未実施。P3-A0もcontract reviewに限定する |
 
-Docker daemon停止は、production実装もDB検証も行わないP3-CP0の完了を妨げない。
-必要な実DB検証を開始するCPで環境を再確認する。
+初回確認時のnamed pipeへの`permission denied`は実行環境の権限制限であり、daemon停止を示す証拠ではなかった。
+read-onlyで権限を付けて再確認するとdaemonは応答し、Rancher Desktopで確認できる16件のコンテナは
+すべて停止状態だった。この訂正によるP3-CP0の完了判断への影響はない。
+必要な実DB検証を開始するCPで、daemonと対象コンテナの状態を改めて確認する。
 
 ## 8. Exit decision
 
