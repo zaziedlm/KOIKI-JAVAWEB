@@ -13,10 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.koikifw.archunit.fixture.gate2.business.alpha.adapter.inbound.event.ListenerFixtures;
 import org.koikifw.archunit.fixture.gate2.business.alpha.adapter.inbound.web.InboundFixtures;
 import org.koikifw.archunit.fixture.gate2.business.alpha.adapter.outbound.persistence.OutboundFixtures;
+import org.koikifw.archunit.fixture.gate2.business.alpha.adapter.outbound.contract.AllowedContractAdapter;
 import org.koikifw.archunit.fixture.gate2.business.alpha.application.ApplicationFixtures;
 import org.koikifw.archunit.fixture.gate2.business.alpha.application.MisplacedListener;
 import org.koikifw.archunit.fixture.gate2.business.alpha.domain.repository.RepositoryFixtures;
 import org.koikifw.archunit.fixture.gate2.business.beta.application.BetaApplicationFixtures;
+import org.koikifw.archunit.fixture.gate2.business.beta.contract.BetaAvailabilityQuery;
 import org.koikifw.archunit.fixture.gate2.business.beta.domain.event.EventFixtures;
 import org.koikifw.archunit.fixture.gate2.business.beta.domain.model.DomainFixtures;
 
@@ -172,6 +174,21 @@ class BusinessModuleRuleSetTest {
                 .filter(dependency -> dependency.getTargetClass()
                         .isEquivalentTo(EventFixtures.AllowedEvent.class))
                 .anyMatch(dependency -> BusinessModuleRuleSet.isAllowedCrossModuleEvent(
+                        dependency,
+                        BUSINESS_BASE)));
+    }
+
+    @Test
+    void rule3AllowsOnlyOutboundAdapterToCrossModuleContract() {
+        JavaClasses classes = importClasses(
+                AllowedContractAdapter.class, BetaAvailabilityQuery.class);
+
+        assertNoViolation(BusinessModuleRuleSet.rule3(BUSINESS_BASE), classes);
+        assertTrue(classes.get(AllowedContractAdapter.class)
+                .getDirectDependenciesFromSelf().stream()
+                .filter(dependency -> dependency.getTargetClass()
+                        .isEquivalentTo(BetaAvailabilityQuery.class))
+                .anyMatch(dependency -> BusinessModuleRuleSet.isAllowedCrossModuleContract(
                         dependency,
                         BUSINESS_BASE)));
     }

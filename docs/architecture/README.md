@@ -20,14 +20,16 @@ Phase 1b Runtime FoundationはMilestone A〜C、CP1〜CP10、Gate 1〜2、main�
 Phase 2 Security FoundationはMilestone A / B、P2-C1 / C2、P2-C3 local closeout、final PR / mainおよび
 同一runのremote snapshot publish / Verifyを完了し、Architecture OwnerがGate CとPhase 2全体を
 `COMPLETE / ACCEPTED`として最終承認しています。Phase 3 Reference Vertical SliceはGate P3-1、
-P3-CP0およびproduction変更前のP3-A0 contract reviewを完了し、P3-A1を開始可能としています。
+P3-CP0、P3-A0 contract review、P3-A1 masterおよびP3-A2 expenseを完了し、P3-A3を開始可能としています。
 
 ### Phase 3 Reference Vertical Slice
 
 | Work Package / Gate | 状態 | 検証記録 |
 |---|---|---|
 | Gate P3-1 / P3-CP0 | COMPLETE / OWNER APPROVED | `../development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md` |
-| P3-A0 Contract Review | COMPLETE / OWNER APPROVED / P3-A1 READY | `validation/phase3-p3-a0-contract-review.md` |
+| P3-A0 Contract Review | COMPLETE / OWNER APPROVED | `validation/phase3-p3-a0-contract-review.md` |
+| P3-A1 Master Vertical Slice | COMPLETE | `validation/phase3-p3-a1-master-vertical-slice.md` |
+| P3-A2 Expense Vertical Slice | COMPLETE / P3-A3 READY | `validation/phase3-p3-a2-expense-vertical-slice.md` |
 
 ### Phase 2 Security Foundation
 

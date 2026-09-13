@@ -114,16 +114,17 @@ final class BusinessModuleRuleSet {
     static ArchRule rule3(PackageName basePackage) {
         RuleMessage message = RuleMessage.of(
                 3,
-                List.of("ADR-041"),
+                List.of("ADR-041", "ADR-049"),
                 "他moduleの非公開実装に結合し、内部変更が波及する",
-                "公開されたdomain.eventを利用するか所有moduleへ処理を戻す");
+                "domain.eventまたはoutbound Adapterから狭いread-only contractを利用する");
         return dependencyRule(
-                "only depend on another module through domain events",
+                "only depend on another module through domain events or outbound contract adapters",
                 message,
                 source -> moduleOf(source, basePackage) != null,
                 target -> moduleOf(target, basePackage) != null,
                 dependency -> isCrossModule(dependency, basePackage)
-                        && !isAllowedCrossModuleEvent(dependency, basePackage));
+                        && !isAllowedCrossModuleEvent(dependency, basePackage)
+                        && !isAllowedCrossModuleContract(dependency, basePackage));
     }
 
     static ArchRule rule4(PackageName basePackage) {
@@ -190,6 +191,16 @@ final class BusinessModuleRuleSet {
             PackageName basePackage) {
         return isCrossModule(dependency, basePackage)
                 && isInRole(dependency.getTargetClass(), basePackage, "domain.event");
+    }
+
+    static boolean isAllowedCrossModuleContract(
+            Dependency dependency,
+            PackageName basePackage) {
+        return isCrossModule(dependency, basePackage)
+                && isInRole(dependency.getOriginClass(), basePackage, "adapter.outbound")
+                && isInRole(dependency.getTargetClass(), basePackage, "contract")
+                && dependency.getTargetClass().isInterface()
+                && dependency.getTargetClass().getSimpleName().endsWith("Query");
     }
 
     static ArchRule rule11(PackageName basePackage) {
