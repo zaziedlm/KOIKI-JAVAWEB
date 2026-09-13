@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 COMPLETE / P3-A2 READY
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 COMPLETE / P3-A2 READY
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -413,7 +413,7 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 8. §4の16判断点と、P3-A0 / B0 / C0 / C3 / Remote Gateへ配置したblocking review
 
 **Decision:** APPROVED — GATE P3-1 PASSED
-**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 READY
+**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 COMPLETE / P3-A2 READY
 **Approved scope:** §1〜17、§4の確定判断、staged decisionの停止点、P3-CP0からGate Cまでの順序、Hybrid Verification方針
 **Evidence:** 上位設計とReference仕様、Phase 2 COMPLETE / ACCEPTED baseline、開始main c88b335efdd556613c9ef7f4c5267214fdb8254b、§3のread-only棚卸し、本計画のDoD / AC trace
 **Decided by:** Shuichi Kataoka, Architecture Owner
@@ -423,4 +423,6 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 Gate P3-1はP3-CP0以降を本計画の順序で進めることを承認する。ただし、各blocking reviewを
 越える実装、Gate未達での次Milestone開始、remote push / PR / merge、workflow / ruleset変更、
 workflow dispatchまたはsnapshot publishを許可するものではない。P3-CP0とproduction変更0の
-P3-A0 contract reviewは完了した。次に開始できるproduction CPはP3-A1だけであり、P3-A2以降を先行しない。
+P3-A0 contract reviewとP3-A1 master vertical sliceは完了した。次に開始できるproduction CPは
+P3-A2だけであり、P3-A3以降を先行しない。P3-A1の実装・検証Evidenceは
+`docs/architecture/validation/phase3-p3-a1-master-vertical-slice.md`に記録する。
