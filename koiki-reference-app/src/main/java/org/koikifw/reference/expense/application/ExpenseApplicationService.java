@@ -7,7 +7,14 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.jspecify.annotations.Nullable;
+import org.koikifw.audit.AuditActor;
+import org.koikifw.audit.AuditEvent;
+import org.koikifw.audit.AuditResult;
+import org.koikifw.audit.BusinessAuditRecorder;
+import org.koikifw.identity.FrameworkPrincipal;
 import org.koikifw.identity.FrameworkUserId;
+import org.koikifw.reference.expense.application.port.outbound.ApproverScopePort;
 import org.koikifw.reference.expense.application.port.outbound.MasterAvailabilityPort;
 import org.koikifw.reference.expense.domain.model.ExpenseDomainException;
 import org.koikifw.reference.expense.domain.model.ExpenseLine;
@@ -20,10 +27,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Coordinates the P3-A2 expense lifecycle without pre-empting P3-A3 authorization or audit. */
+/** Coordinates the authorized and audited expense lifecycle. */
 @Service
 public class ExpenseApplicationService {
 
@@ -31,38 +42,53 @@ public class ExpenseApplicationService {
 
     private final ExpenseRequestRepository requests;
     private final MasterAvailabilityPort masterAvailability;
+    private final ApproverScopePort approverScope;
+    private final BusinessAuditRecorder businessAuditRecorder;
     private final Clock clock;
 
     @Autowired
     public ExpenseApplicationService(
             ExpenseRequestRepository requests,
-            MasterAvailabilityPort masterAvailability) {
-        this(requests, masterAvailability, Clock.systemUTC());
+            MasterAvailabilityPort masterAvailability,
+            ApproverScopePort approverScope,
+            BusinessAuditRecorder businessAuditRecorder) {
+        this(
+                requests,
+                masterAvailability,
+                approverScope,
+                businessAuditRecorder,
+                Clock.systemUTC());
     }
 
     ExpenseApplicationService(
             ExpenseRequestRepository requests,
             MasterAvailabilityPort masterAvailability,
+            ApproverScopePort approverScope,
+            BusinessAuditRecorder businessAuditRecorder,
             Clock clock) {
         this.requests = Objects.requireNonNull(requests, "requests");
         this.masterAvailability = Objects.requireNonNull(masterAvailability, "masterAvailability");
+        this.approverScope = Objects.requireNonNull(approverScope, "approverScope");
+        this.businessAuditRecorder =
+                Objects.requireNonNull(businessAuditRecorder, "businessAuditRecorder");
         this.clock = Objects.requireNonNull(clock, "clock");
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('EXPENSE:APPLY')")
     public UUID createDraft(
-            FrameworkUserId applicantUserId,
             UUID departmentId,
             long claimedAmount,
             List<ExpenseLineInput> lines) {
         return execute(() -> {
-            requireActiveAssignment(applicantUserId, departmentId);
+            FrameworkUserId applicant = currentActor();
+            requireActiveAssignment(applicant, departmentId);
             List<ExpenseLine> domainLines = toDomainLines(lines);
             requireActiveCategories(domainLines);
             UUID requestId = UUID.randomUUID();
             ExpenseRequest request = ExpenseRequest.createDraft(
                     requestId,
-                    applicantUserId.value(),
+                    applicant.value(),
                     departmentId,
                     new Money(claimedAmount),
                     domainLines,
@@ -75,83 +101,167 @@ public class ExpenseApplicationService {
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('EXPENSE:APPLY')")
     public void editDraft(
             UUID expenseRequestId,
             long expectedVersion,
             long claimedAmount,
             List<ExpenseLineInput> lines) {
-        executeMutation(expenseRequestId, expectedVersion, request -> {
-            List<ExpenseLine> domainLines = toDomainLines(lines);
-            requireActiveCategories(domainLines);
-            request.edit(
-                    new Money(claimedAmount), domainLines, businessDate(), clock.instant());
-        });
+        FrameworkUserId actor = currentActor();
+        executeMutation(
+                expenseRequestId,
+                expectedVersion,
+                request -> requireOwner(request, actor),
+                request -> {
+                    List<ExpenseLine> domainLines = toDomainLines(lines);
+                    requireActiveCategories(domainLines);
+                    request.edit(
+                            new Money(claimedAmount),
+                            domainLines,
+                            businessDate(),
+                            clock.instant());
+                },
+                null,
+                actor);
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('EXPENSE:APPLY')")
     public void submit(UUID expenseRequestId, long expectedVersion) {
-        executeMutation(expenseRequestId, expectedVersion, request -> {
-            FrameworkUserId applicant = FrameworkUserId.parse(request.applicantUserId().toString());
-            requireActiveAssignment(applicant, request.departmentId());
-            requireActiveCategories(request.lines());
-            request.submit(businessDate(), clock.instant());
-        });
-    }
-
-    @Transactional
-    public void approve(UUID expenseRequestId, UUID actorUserId, long expectedVersion) {
+        FrameworkUserId actor = currentActor();
         executeMutation(
                 expenseRequestId,
                 expectedVersion,
-                request -> request.approve(actorUserId, clock.instant()));
+                request -> requireOwner(request, actor),
+                request -> {
+                    FrameworkUserId applicant =
+                            FrameworkUserId.parse(request.applicantUserId().toString());
+                    requireActiveAssignment(applicant, request.departmentId());
+                    requireActiveCategories(request.lines());
+                    request.submit(businessDate(), clock.instant());
+                },
+                "SUBMIT_EXPENSE",
+                actor);
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('EXPENSE:APPROVE')")
+    public void approve(UUID expenseRequestId, long expectedVersion) {
+        FrameworkUserId actor = currentActor();
+        executeMutation(
+                expenseRequestId,
+                expectedVersion,
+                request -> requireApproverScope(request, actor),
+                request -> request.approve(actor.value(), clock.instant()),
+                "APPROVE_EXPENSE",
+                actor);
+    }
+
+    @Transactional
+    @PreAuthorize("hasAuthority('EXPENSE:APPROVE')")
     public void reject(
-            UUID expenseRequestId, UUID actorUserId, String reason, long expectedVersion) {
+            UUID expenseRequestId, String reason, long expectedVersion) {
+        FrameworkUserId actor = currentActor();
         executeMutation(
                 expenseRequestId,
                 expectedVersion,
-                request -> request.reject(actorUserId, reason, clock.instant()));
+                request -> requireApproverScope(request, actor),
+                request -> request.reject(actor.value(), reason, clock.instant()),
+                "REJECT_EXPENSE",
+                actor);
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('EXPENSE:APPROVE')")
     public void returnForRework(
-            UUID expenseRequestId, UUID actorUserId, String reason, long expectedVersion) {
+            UUID expenseRequestId, String reason, long expectedVersion) {
+        FrameworkUserId actor = currentActor();
         executeMutation(
                 expenseRequestId,
                 expectedVersion,
-                request -> request.returnForRework(actorUserId, reason, clock.instant()));
+                request -> requireApproverScope(request, actor),
+                request -> request.returnForRework(actor.value(), reason, clock.instant()),
+                "RETURN_EXPENSE",
+                actor);
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('EXPENSE:APPLY')")
     public void beginReedit(UUID expenseRequestId, long expectedVersion) {
+        FrameworkUserId actor = currentActor();
         executeMutation(
                 expenseRequestId,
                 expectedVersion,
-                request -> request.beginReedit(clock.instant()));
+                request -> requireOwner(request, actor),
+                request -> request.beginReedit(clock.instant()),
+                "BEGIN_REEDIT_EXPENSE",
+                actor);
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('EXPENSE:SETTLE')")
     public void settle(UUID expenseRequestId, long expectedVersion) {
+        FrameworkUserId actor = currentActor();
         executeMutation(
                 expenseRequestId,
                 expectedVersion,
-                request -> request.completeSettlement(clock.instant()));
+                request -> {},
+                request -> request.completeSettlement(clock.instant()),
+                "SETTLE_EXPENSE",
+                actor);
     }
 
     private void executeMutation(
             UUID expenseRequestId,
             long expectedVersion,
-            Consumer<ExpenseRequest> mutation) {
+            Consumer<ExpenseRequest> authorization,
+            Consumer<ExpenseRequest> mutation,
+            @Nullable String auditAction,
+            FrameworkUserId actor) {
         execute(() -> {
             ExpenseRequest request = requests.findById(requireId(expenseRequestId))
                     .orElseThrow(() -> failure(ExpenseFailure.NOT_FOUND));
             requireVersion(request.version(), expectedVersion);
+            authorization.accept(request);
             mutation.accept(request);
             requests.flush();
+            if (auditAction != null) {
+                record(auditAction, request.expenseRequestId(), actor);
+            }
             return null;
         });
+    }
+
+    private void requireOwner(ExpenseRequest request, FrameworkUserId actor) {
+        if (!request.applicantUserId().equals(actor.value())) {
+            throw failure(ExpenseFailure.NOT_FOUND);
+        }
+    }
+
+    private void requireApproverScope(ExpenseRequest request, FrameworkUserId actor) {
+        if (!approverScope.includes(actor, request.departmentId())) {
+            throw failure(ExpenseFailure.NOT_FOUND);
+        }
+    }
+
+    private void record(String action, UUID expenseRequestId, FrameworkUserId actor) {
+        businessAuditRecorder.record(AuditEvent.of(
+                        "EXPENSE_WORKFLOW",
+                        AuditActor.user(actor.toString()),
+                        action,
+                        AuditResult.SUCCESS)
+                .withResource("EXPENSE_REQUEST", expenseRequestId.toString()));
+    }
+
+    private static FrameworkUserId currentActor() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken
+                || !(authentication.getPrincipal() instanceof FrameworkPrincipal principal)) {
+            throw failure(ExpenseFailure.DEPENDENCY_FAILURE);
+        }
+        return principal.userId();
     }
 
     private List<ExpenseLine> toDomainLines(List<ExpenseLineInput> lines) {
