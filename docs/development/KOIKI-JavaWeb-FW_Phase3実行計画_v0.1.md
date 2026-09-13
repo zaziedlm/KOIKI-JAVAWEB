@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 READY
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 READY
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -83,13 +83,13 @@ Owner reviewで確定する停止点として承認する。
 | 2 | DoD 3-1〜3-11とReference AC-P3-01〜10を必須受入範囲とする | APPROVED | scope変更時はGate再審査 |
 | 3 | masterはTier 1 SIMPLE / JPA、expenseはTier 2 RICH / JPA共有モデルとする | APPROVED | Tier変更時はGate再審査 |
 | 4 | masterとexpenseは単一koiki-reference-app内の業務packageとし、別artifactにしない | APPROVED | artifact分割時はGate再審査 |
-| 5 | 有効な部門・経費科目をexpenseが確認するmodule間契約を定義する | STAGED DECISION APPROVED | P3-A0。P3-A1 / A2より前に契約を確定する |
-| 6 | 承認者の部門scope割当はReferenceが所有し、Framework Identityへ混入させない | OWNERSHIP APPROVED | P3-A0。module / tableと照会契約をP3-A3より前に確定する |
+| 5 | 有効な部門・経費科目をexpenseが確認するmodule間契約を定義する | APPROVED | P3-A0-D1 COMPLETE。master-ownedの狭い同期read-only contractとexpense Port / Adapterを使用する |
+| 6 | 承認者の部門scope割当はReferenceが所有し、Framework Identityへ混入させない | APPROVED | P3-A0-D2 COMPLETE。`expense`所有tableと完全一致scopeを使用する |
 | 7 | DepartmentDeactivatingは同期Eventとし、Level 1期間はtransactional / async eventを禁止する | APPROVED | Level変更時はGate再審査 |
 | 8 | koiki-starter-web-mvcを正式Framework artifactにするか、Reference実証に留めるかを判断する | STAGED DECISION APPROVED | P3-B0。module / dependency変更より前に確定する |
 | 9 | HTMX連携library、依存範囲、asset配布方式とJavaScript無効時のfallbackを判断する | STAGED DECISION APPROVED | P3-B0。dependency追加より前に確定する |
 | 10 | 最小REST APIのendpoint、DTO、Permission、status、error code、optimistic lock契約を確定する | STAGED DECISION APPROVED | P3-C0。REST production codeより前に確定する |
-| 11 | Reference migration version、history table、table / index / constraint、module間FKを確定する | STAGED DECISION APPROVED | P3-A0。production migration作成より前に確定する |
+| 11 | Reference migration version、history table、table / index / constraint、module間FKを確定する | APPROVED | P3-A0-D3 / D4 COMPLETE。V1〜V3、module内FKのみ、module間 / Framework FKなし |
 | 12 | masterのJPA class-based射影はTier 1のApplication DTOとして扱う | APPROVED | P3-B1でpackage / namingをEvidence化する |
 | 13 | cache対象、TTL、複数instance間で許容するstalenessを確定する | STAGED DECISION APPROVED | P3-B4のcache実装より前に確定する |
 | 14 | API / 自動testを回帰の主軸とし、操作面が成立するP3-B2以降で実browser、人系checkpoint、log / Audit / DB突合を併用する | APPROVED | Gate Aのbrowser確認は操作面がある場合のみ。runnerとCI required化はP3-B0 / C2 / Remote Gateで確定する |
@@ -186,7 +186,8 @@ Gate P3-1でP3-C0への検討入力とした最小提案は次の3 endpointと�
 - ApplicationEventPublisherと同期EventListenerを使用する。
 - Listenerはadapter.inbound.eventに配置し、自moduleのApplication Use Caseへ委譲する。
 - masterはexpenseのApplication、Domain、Repository、Adapterを参照しない。
-- expenseはmasterの公開event契約以外を参照しない。
+- command整合は公開event契約を使う。current-valueの有効master確認だけは、master-ownedの狭い同期read-only module contractを明示例外として使う。
+- expenseは自module Portとoutbound Adapterを介してこのcontractへ接続し、masterのApplication、Domain、Repository、Adapterまたは所有tableを直接参照しない。
 - TransactionalEventListener、ApplicationModuleListenerと非同期処理は導入しない。
 - 未処理4状態で部門廃止を拒否し、終端2状態で許可する。
 - 同期listener件数を記録し、境界の形骸化をArchitecture Review対象とする。
@@ -313,13 +314,13 @@ critical journeyだけを実行し、全画面・全権限・全拒否組合せ�
 
 ## 11. Migration and data ownership
 
-1. Reference migrationはclasspath:db/migration/kkrefに配置し、kkref_flyway_historyで管理する。
-2. masterはkkref_departmentとkkref_expense_categoryを所有する。
-3. expenseはkkref_expense_requestとkkref_expense_lineを所有する。
+1. Reference migrationは`classpath:db/migration/kkref`に配置し、`kkref_flyway_history`で管理する。
+2. V1はmaster所有の`kkref_department`、`kkref_expense_category`、`kkref_user_department_assignment`を作る。
+3. V2はexpense所有の`kkref_expense_request`と`kkref_expense_line`を作り、V3はexpense所有の`kkref_expense_approver_scope`を作る。
 4. Frameworkのkoiki_ table / migrationを修正・copyしない。
 5. HibernateのDDL自動生成をproduction schemaの正本にしない。
 6. clean install、再起動no-op、Phase 2 baselineとの統合、checksum、失敗経路をPostgreSQLで検証する。
-7. module間FK、初期data、認可scope tableはP3-A0のcontract reviewで決定する。
+7. FKは同一module内だけとし、expenseからmaster、ReferenceからFramework IdentityへのFKを作らない。production seedを投入しない。
 
 ## 12. Dependency and artifact boundary
 
@@ -412,7 +413,7 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 8. §4の16判断点と、P3-A0 / B0 / C0 / C3 / Remote Gateへ配置したblocking review
 
 **Decision:** APPROVED — GATE P3-1 PASSED
-**Subsequent status:** P3-CP0 COMPLETE / P3-A0 READY
+**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1 READY
 **Approved scope:** §1〜17、§4の確定判断、staged decisionの停止点、P3-CP0からGate Cまでの順序、Hybrid Verification方針
 **Evidence:** 上位設計とReference仕様、Phase 2 COMPLETE / ACCEPTED baseline、開始main c88b335efdd556613c9ef7f4c5267214fdb8254b、§3のread-only棚卸し、本計画のDoD / AC trace
 **Decided by:** Shuichi Kataoka, Architecture Owner
@@ -421,5 +422,5 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 
 Gate P3-1はP3-CP0以降を本計画の順序で進めることを承認する。ただし、各blocking reviewを
 越える実装、Gate未達での次Milestone開始、remote push / PR / merge、workflow / ruleset変更、
-workflow dispatchまたはsnapshot publishを許可するものではない。P3-CP0は完了し、次の作業は
-production変更0のP3-A0 contract reviewに限定する。
+workflow dispatchまたはsnapshot publishを許可するものではない。P3-CP0とproduction変更0の
+P3-A0 contract reviewは完了した。次に開始できるproduction CPはP3-A1だけであり、P3-A2以降を先行しない。

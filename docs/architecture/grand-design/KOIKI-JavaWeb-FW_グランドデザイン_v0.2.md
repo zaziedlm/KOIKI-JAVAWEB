@@ -1,7 +1,7 @@
 # KOIKI-JavaWeb-FW グランドデザイン v0.2
 
 **文書版:** v0.2（構想確定・基本設計準備版）
-**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）／2026年9月3日（Phase 2 Audit contract / transaction境界をADR-047として反映）／2026年9月8日（Phase 2 Session JDBC / cleanup / single execution境界をADR-048として反映）
+**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）／2026年9月3日（Phase 2 Audit contract / transaction境界をADR-047として反映）／2026年9月8日（Phase 2 Session JDBC / cleanup / single execution境界をADR-048として反映）／2026年9月13日（Phase 3 Reference module collaboration / table Ownership境界をADR-049として反映）
 **文書状態:** ACCEPTED（Phase 0 Architecture Baseline）
 **承認日:** 2026年8月19日
 **Architecture Owner:** Shuichi Kataoka
@@ -776,9 +776,10 @@ Application
 | 参照可否 | パッケージ |
 |---|---|
 | **参照してよい** | `domain.event`（モジュールが外部へ公開する業務イベントの契約） |
+| **承認されたquery例外だけ参照してよい** | provider-ownedの狭いread-only module contract（Phase 3 ReferenceはADR-049） |
 | **参照してはならない** | `domain.model`、`domain.service`、`domain.repository`、`domain.gateway`、`application`、`adapter` |
 
-**モジュール間の連携は Domain Event を経由する。**他モジュールの Bean を直接呼び出さない（§17.3）。
+**command整合と業務通知はDomain Eventを経由する。**現在値queryの明示例外を除き、他モジュールのBeanを直接呼び出さない（§17.3）。
 
 Spring Modulith の Named Interface を用いてモジュール公開範囲を記述するかは Phase 1b で判断する。当面は ArchUnit による検査を主とする（§21.3）。
 
@@ -1894,7 +1895,12 @@ TestcontainersまたはCI系統を選定・実装しない。PostgreSQL向け設
 
 ### 17.3 モジュール間連携
 
-**モジュール間の直接 Bean 呼出を禁止する。**他モジュールの `application` および `domain.model` の型を直接参照しない。連携は必ず Domain Event を経由する（§21.3 で検査）。
+**モジュール間の直接 Bean 呼出を禁止する。**他モジュールの `application` および `domain.model` の型を直接参照しない。command整合と業務通知はDomain Eventを経由する（§21.3で検査）。
+
+現在値を必要とするqueryは、provider moduleが所有する狭い同期read-only contractを明示的に承認した場合だけ例外とする。
+contractは識別子と判定値等の不変な値だけを返し、consumer moduleのPort / outbound Adapterを介して利用する。
+providerのApplication Use Case、Domain Model、Repository、Adapterまたは所有tableを直接参照せず、Framework Public API、
+別artifactまたはshared-kernelへ自動昇格させない。Phase 3 Referenceの有効master確認に限る具体的境界はADR-049を正本とする。
 
 #### 同期を既定とする
 
@@ -2241,6 +2247,7 @@ Oracle Testcontainersは現行Phaseへ導入しない。optional `P4-ORACLE`が�
 | 11 | Domain Event 型は `record` であり、`domain.model` の型をフィールドに持たない |
 | 12 | `RestTemplate` を新規コードで使用しない |
 | 13 | Framework 外から `org.koikifw.<module>.internal.**` を参照しない |
+| 14 | ADR-049のcurrent-value queryはprovider-ownedの狭いread-only contractだけを公開し、consumerのPort / Adapter経由で参照する |
 
 ##### Tier 1 固有
 
@@ -2804,10 +2811,11 @@ expense.adapter.inbound.event   未処理申請を検査 → 存在すれば例�
 加えて次を同時に実証する。
 
 - `master` は `expense` を知らない（依存方向の維持）
-- モジュール間の直接 Bean 呼出を行わない
+- command整合でモジュール間の直接Bean呼出を行わない
 - `domain.event` が他モジュールから参照可能な明示例外である
 - Domain Event が識別子と値のみを持つ不変 `record` である
 - リスナーが `adapter/inbound/event` に配置され、Application Use Case を呼ぶのみである
+- 有効masterのcurrent-value queryだけはADR-049の狭いread-only contractをexpenseのPort / Adapter経由で参照し、master所有tableを直接読まない
 
 #### Phase 4 — `notification`（Tier 1, JPA）
 
@@ -3289,6 +3297,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | ADR-023 | Tier 2 のモデル方針 | **兼用を既定とし、分離をトリガ付きオプトインとする** |
 | ADR-024 | Tier 2 の Repository 方針 | `domain.repository` にインターフェースを置き Spring Data が実装。MyBatis 採用時は例外 |
 | ADR-025 | Domain Event | **同期を既定、非同期は明示選択。監査はイベント機構に乗せない** |
+| ADR-049 | Reference module collaboration / table Ownership境界 | command整合は同期Domain Event、current-valueの有効master確認はmaster-ownedの狭い同期read-only contractとする。expenseは自module Port / Adapter経由で利用し、module間table参照 / FKを行わない。所属部門はmaster、承認scopeはexpenseが所有する |
 
 ### UI
 

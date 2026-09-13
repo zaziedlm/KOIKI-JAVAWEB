@@ -4,7 +4,7 @@
 
 **状態:** Accepted
 
-**承認日:** Phase 0 Baseline 2026年8月15日 / ADR-046 2026年9月1日 / ADR-047 2026年9月3日 / ADR-048 2026年9月8日
+**承認日:** Phase 0 Baseline 2026年8月15日 / ADR-046 2026年9月1日 / ADR-047 2026年9月3日 / ADR-048 2026年9月8日 / ADR-049 2026年9月13日
 
 **Decided by:** Shuichi Kataoka
 
@@ -22,6 +22,7 @@
 | P2-A1で検証 | P2-A1の実装証拠によりSecurity artifact / profile境界を確認した判断 |
 | P2-B1で検証 | P2-B1の実PostgreSQL証拠によりAudit contract / transaction境界を確認した判断 |
 | P2-B3で検証 | P2-B3の実PostgreSQL、複数processおよびnon-web実行証拠によりSession JDBC / cleanup / single execution境界を確認した判断 |
+| P3-A0で承認 | P3-A0のproduction変更前contract reviewによりReference module collaboration / table Ownership境界を確定した判断。実装成立はP3-A1〜A4で検証する |
 
 「Phase 0で検証」はADR全体の将来実装を完了したという意味ではない。たとえばSpring Modulithの
 Level 2以降、Flyway三階層、非同期event等は、registerで示すPhase 0検証scopeの外である。
@@ -78,6 +79,7 @@ ADR-001〜ADR-045は、Architecture Ownerによるreviewを2026年8月15日に�
 | ADR-046 | Security artifact / profile境界 | P2-A1で検証 | `../validation/phase2-p2-a1-contract-review.md`（単一Starter、internal Auto Configuration、default deny、Customer chain合成／明示置換、Public API 0型／property 0件） | ACCEPTED |
 | ADR-047 | Audit contract / transaction境界 | P2-B1で検証 | `../validation/phase2-p2-b1-contract-review.md`、`../validation/phase2-p2-b1-t4-verification.md`（単一Audit Starter、Public API 6型、Business `MANDATORY`、Security `REQUIRES_NEW`、JPA `persist + flush`、DB正本） | ACCEPTED |
 | ADR-048 | Session JDBC / cleanup / single execution境界 | P2-B3で検証 | `../validation/phase2-p2-b3-contract-review.md`、`../validation/phase2-p2-b3-b3-6-closeout.md`（optional Starter、Session Public API 3型、Framework 2 table、全Session失効、Spring標準cleanup、PostgreSQL internal advisory lock、Web / non-web process Evidence） | ACCEPTED |
+| ADR-049 | Reference module collaboration / table Ownership境界 | P3-A0で承認 | `../validation/phase3-p3-a0-contract-review.md`（command event / current-value queryの分離、master-owned contract、Reference 6 tableのOwnership、V1〜V3、module内FKのみ） | ACCEPTED |
 
 ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
 
@@ -99,19 +101,21 @@ ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
 | 2026年9月1日 | ADR-046 | ACCEPTED（P2-A1 fixtureにより単一Security Starter、internal Auto Configuration、default deny、Customer chain合成／明示置換、Public API最小境界を確認） | Shuichi Kataoka |
 | 2026年9月3日 | ADR-047 | ACCEPTED（P2-B1の実PostgreSQL fixtureによりAudit Public API、Business／Security transaction差、failure semantics、DB正本とApplication logの分離を確認） | Shuichi Kataoka |
 | 2026年9月8日 | ADR-048 | ACCEPTED（P2-B3の実PostgreSQL、package済み複数processおよびnon-web fixtureによりSession JDBC、全Session失効、cleanup / single execution、failure semanticsと配布境界を確認） | Shuichi Kataoka |
+| 2026年9月13日 | ADR-049 | ACCEPTED（P3-A0 contract reviewによりcommand eventとcurrent-value queryを分離し、Reference table Ownership、V1〜V3、module内FKだけとする境界をproduction変更前に確定） | Shuichi Kataoka |
 
 ## 集計
 
 | 項目 | 件数 |
 |---|---:|
-| 有効ADR | 46 |
+| 有効ADR | 47 |
 | 確定 | 28 |
 | Phase 0で検証 | 15 |
 | P2-A1で検証 | 1 |
 | P2-B1で検証 | 1 |
 | P2-B3で検証 | 1 |
+| P3-A0で承認 | 1 |
 | PENDING | 0 |
-| ACCEPTED | 46 |
+| ACCEPTED | 47 |
 
 ## Owner Review Result
 
@@ -128,6 +132,7 @@ Architecture Ownerは次を確認し、ADR-001〜ADR-045をPhase 0 Architecture 
 ADR-046はP2-A1の実装Evidenceに基づき、2026年9月1日にArchitecture Ownerが承認した。
 ADR-047はP2-B1の実PostgreSQL Evidenceに基づき、2026年9月3日にArchitecture Ownerが承認した。
 ADR-048はP2-B3の実PostgreSQL、複数processおよびnon-web実行Evidenceに基づき、2026年9月8日にArchitecture Ownerが承認した。
+ADR-049はP3-A0 contract reviewに基づき、2026年9月13日にArchitecture Ownerが承認した。実装成立のEvidenceはP3-A1〜A4で追加する。
 
 今後、後から再判断し得る技術判断を追加・変更する場合も、手続きのためにADRを増やすのではなく、
 技術判断、理由、状態、再判断条件を残すために使用する。

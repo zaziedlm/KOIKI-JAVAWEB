@@ -65,7 +65,7 @@ application
     └── configuration
 ```
 
-他モジュールの`application`、`domain.model`、Repository、Adapterを直接参照しない。公開するモジュール間契約は原則として`domain.event`の値だけのイベントとする。`shared-kernel`は最小限に保ち、肥大化したらモジュール境界を見直す。
+他モジュールの`application`、`domain.model`、Repository、Adapterを直接参照しない。公開するモジュール間契約は原則として`domain.event`の値だけのイベントとする。Phase 3 Referenceのcurrent-value master確認だけはADR-049の狭い同期read-only contractを明示例外とし、consumer moduleのPort / Adapterを介して使う。`shared-kernel`は最小限に保ち、肥大化したらモジュール境界を見直す。
 
 ## モジュール内部の依存方向を保つ
 
@@ -112,9 +112,10 @@ Securityを伴う業務アプリの依存選択、profile、Ownership、診断�
 
 Phase 3 Reference Vertical Sliceは
 `docs/development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md`のGate P3-1が承認済みであり、
-P3-CP0を完了してP3-A0を開始可能とする。master / expenseのproduction実装前に、P3-A0で
-有効master検証のmodule間契約、承認者部門scopeのReference Ownership、Reference migration / FK方針を
-Owner reviewし、以降も同計画のCP、blocking reviewおよびGateを順守する。
+P3-CP0とP3-A0を完了し、P3-A1を開始可能とする。P3-A0では、有効master確認の狭い同期read-only
+contract、command整合の同期Event、承認者部門scopeのReference Ownership、V1〜V3 migration、
+module内FKのみとする方針をOwner承認済みとした。次はP3-A1だけを実施し、以降も同計画のCP、
+blocking reviewおよびGateを順守する。
 
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
 Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは

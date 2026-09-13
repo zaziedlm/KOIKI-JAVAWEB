@@ -92,7 +92,12 @@ Tier 1 SIMPLEを開始点とし、次のいずれかに該当する場合はTier
 
 ## 6. モジュール間連携を選ぶ
 
-直接Bean呼出ではなくDomain Eventを使う。
+command整合と業務通知には、直接Bean呼出ではなくDomain Eventを使う。
+
+Phase 3 Referenceで現在値を問い合わせる有効master確認だけは、ADR-049に従う狭い同期read-only
+module contractを明示例外とする。consumer moduleのApplicationは自module Portを参照し、Outbound
+Adapterがprovider-owned contractへ接続する。providerのApplication Use Case、Domain Model、Repository、
+Adapterまたは所有tableを直接参照せず、この例外をFramework Public API、別artifactまたはshared-kernelへ広げない。
 
 - 受け手の成功が送り手の業務成立条件なら同期`@EventListener`を使う。
 - 副作用または派生処理なら非同期候補とする。
