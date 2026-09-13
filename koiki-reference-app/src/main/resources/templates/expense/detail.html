@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{koiki/fragments :: head('経費申請詳細')}"></head>
+<body>
+<header th:replace="~{koiki/fragments :: header}"></header>
+<main>
+  <h1>経費申請詳細</h1>
+  <p class="notice" th:if="${notice}" th:text="${notice}" role="status"></p>
+  <dl>
+    <dt>申請ID</dt><dd th:text="${request.expenseRequestId}"></dd>
+    <dt>申請者</dt><dd th:text="${request.applicantEmail}"></dd>
+    <dt>部門</dt><dd th:text="|${request.departmentCode} ${request.departmentName}|"></dd>
+    <dt>申請額</dt><dd th:text="${request.claimedAmount}"></dd>
+    <dt>状態</dt><dd th:text="${request.status}"></dd>
+    <dt th:if="${request.decisionReason}">理由</dt><dd th:if="${request.decisionReason}" th:text="${request.decisionReason}"></dd>
+  </dl>
+  <table><caption>明細</caption><thead><tr><th>科目</th><th>利用日</th><th>内容</th><th>目的</th><th>金額</th></tr></thead>
+    <tbody><tr th:each="line : ${request.lines}">
+      <td data-label="科目" th:text="|${line.expenseCategoryCode} ${line.expenseCategoryName}|"></td>
+      <td data-label="利用日" th:text="${line.usageDate}"></td><td data-label="内容" th:text="${line.description}"></td>
+      <td data-label="目的" th:text="${line.purpose}"></td><td data-label="金額" th:text="${line.amount}"></td>
+    </tr></tbody></table>
+  <section th:if="${context == 'mine'}" aria-labelledby="applicant-actions"><h2 id="applicant-actions">申請者操作</h2>
+    <div class="actions" th:if="${request.status == 'DRAFT'}">
+      <a th:href="@{/expenses/{id}/edit(id=${request.expenseRequestId})}">編集</a>
+      <form method="post" th:action="@{/expenses/{id}/submit(id=${request.expenseRequestId})}"><input type="hidden" name="expectedVersion" th:value="${request.version}"><button type="submit">提出</button></form>
+    </div>
+    <form th:if="${request.status == 'RETURNED'}" method="post" th:action="@{/expenses/{id}/reedit(id=${request.expenseRequestId})}"><input type="hidden" name="expectedVersion" th:value="${request.version}"><button type="submit">再編集を開始</button></form>
+  </section>
+  <section th:if="${context == 'approvals' and request.status == 'SUBMITTED'}" aria-labelledby="approval-actions"><h2 id="approval-actions">承認操作</h2>
+    <form method="post" th:action="@{/expenses/approvals/{id}/approve(id=${request.expenseRequestId})}"><input type="hidden" name="expectedVersion" th:value="${request.version}"><button type="submit">承認</button></form>
+    <form method="post" th:action="@{/expenses/approvals/{id}/reject(id=${request.expenseRequestId})}"><input type="hidden" name="expectedVersion" th:value="${request.version}"><label for="reject-reason">却下理由</label><textarea id="reject-reason" name="reason" maxlength="500" required></textarea><button type="submit">却下</button></form>
+    <form method="post" th:action="@{/expenses/approvals/{id}/return(id=${request.expenseRequestId})}"><input type="hidden" name="expectedVersion" th:value="${request.version}"><label for="return-reason">差戻し理由</label><textarea id="return-reason" name="reason" maxlength="500" required></textarea><button type="submit">差戻し</button></form>
+  </section>
+  <section th:if="${context == 'accounting' and request.status == 'APPROVED'}"><h2>経理操作</h2><form method="post" th:action="@{/expenses/accounting/{id}/settle(id=${request.expenseRequestId})}"><input type="hidden" name="expectedVersion" th:value="${request.version}"><button type="submit">精算完了</button></form></section>
+  <a th:href="${context == 'mine'} ? @{/expenses} : @{|/expenses/${context}|}">一覧へ戻る</a>
+</main>
+</body>
+</html>

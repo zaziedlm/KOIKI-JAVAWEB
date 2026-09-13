@@ -32,15 +32,21 @@ public class ReferenceSecurityConfiguration {
     SecurityFilterChain referenceIdentitySecurityFilterChain(
             HttpSecurity http, Customizer<HttpSecurity> koikiSessionLogoutCustomizer)
             throws Exception {
-        http.securityMatcher("/login", "/logout", "/identity/**");
+        http.securityMatcher(
+                "/login", "/logout", "/", "/identity/**", "/master/**", "/expenses/**",
+                "/koiki-web/**", "/webjars/**");
         http.authorizeHttpRequests(requests -> requests
-                .requestMatchers("/login")
+                .requestMatchers("/login", "/koiki-web/**", "/webjars/**")
                 .permitAll()
                 .requestMatchers("/identity/**")
                 .hasAuthority("IDENTITY:ADMIN")
+                .requestMatchers("/master/**")
+                .hasAuthority("MASTER:ADMIN")
+                .requestMatchers("/expenses/**", "/")
+                .authenticated()
                 .anyRequest()
                 .authenticated());
-        http.formLogin(form -> form.defaultSuccessUrl("/identity/users", true));
+        http.formLogin(form -> form.defaultSuccessUrl("/", true));
         http.csrf(withDefaults());
         http.headers(withDefaults());
         koikiSessionLogoutCustomizer.customize(http);

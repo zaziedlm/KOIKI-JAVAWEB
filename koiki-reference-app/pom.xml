@@ -23,16 +23,12 @@
       <artifactId>koiki-architecture-contract</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-web-mvc</artifactId>
     </dependency>
     <dependency>
       <groupId>org.koikifw</groupId>
       <artifactId>koiki-starter-session-jdbc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
     </dependency>
     <dependency>
       <groupId>org.flywaydb</groupId>

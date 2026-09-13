@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -35,6 +36,8 @@ class ExpenseReadModelPostgreSqlIntegrationTest {
     private static final UUID ACCOUNTANT = id(4);
     private static final UUID DEPARTMENT_A = id(11);
     private static final UUID DEPARTMENT_B = id(12);
+    private static final UUID CATEGORY = id(13);
+    private static final UUID LINE = id(14);
     private static final UUID DRAFT_A = id(21);
     private static final UUID SUBMITTED_A = id(22);
     private static final UUID APPROVED_A = id(23);
@@ -56,11 +59,32 @@ class ExpenseReadModelPostgreSqlIntegrationTest {
         insertUser(ACCOUNTANT, "accountant@example.test");
         insertDepartment(DEPARTMENT_A, "FINANCE", "Finance");
         insertDepartment(DEPARTMENT_B, "SALES", "Sales");
+        insertCategory(CATEGORY, "TRAVEL", "Travel");
+        jdbc.sql("""
+                        insert into kkref_user_department_assignment
+                            (user_id, department_id, version, created_at, updated_at)
+                        values (:userId, :departmentId, 0, now(), now())
+                        """)
+                .param("userId", APPLICANT_A)
+                .param("departmentId", DEPARTMENT_A)
+                .update();
         insertRequest(DRAFT_A, APPLICANT_A, DEPARTMENT_A, "DRAFT", 100, 1);
         insertRequest(SUBMITTED_A, APPLICANT_A, DEPARTMENT_A, "SUBMITTED", 200, 2);
         insertRequest(APPROVED_A, APPLICANT_A, DEPARTMENT_A, "APPROVED", 300, 3);
         insertRequest(SUBMITTED_B, APPLICANT_B, DEPARTMENT_B, "SUBMITTED", 400, 4);
         insertRequest(APPROVED_B, APPLICANT_B, DEPARTMENT_B, "APPROVED", 500, 5);
+        jdbc.sql("""
+                        insert into kkref_expense_line
+                            (expense_line_id, expense_request_id, expense_category_id,
+                             usage_date, description, purpose, amount)
+                        values (:lineId, :requestId, :categoryId,
+                                :usageDate, 'Train', 'Customer visit', 200)
+                        """)
+                .param("lineId", LINE)
+                .param("requestId", SUBMITTED_A)
+                .param("categoryId", CATEGORY)
+                .param("usageDate", LocalDate.of(2026, 9, 12))
+                .update();
         jdbc.sql("""
                         insert into kkref_expense_approver_scope
                             (approver_user_id, department_id, created_at)
@@ -109,6 +133,35 @@ class ExpenseReadModelPostgreSqlIntegrationTest {
         assertThat(accountingQueue.content().getFirst().version()).isEqualTo(5);
     }
 
+    @Test
+    void materializesScopedDetailAndCurrentFormOptionsWithoutDomainEntities() {
+        authenticate(APPLICANT_A, "EXPENSE:APPLY");
+        var detail = reads.findOwnRequest(SUBMITTED_A).orElseThrow();
+        assertThat(detail.applicantEmail()).isEqualTo("applicant-a@example.test");
+        assertThat(detail.departmentName()).isEqualTo("Finance");
+        assertThat(detail.lines()).singleElement().satisfies(line -> {
+            assertThat(line.expenseLineId()).isEqualTo(LINE);
+            assertThat(line.expenseCategoryCode()).isEqualTo("TRAVEL");
+            assertThat(line.description()).isEqualTo("Train");
+        });
+        assertThat(reads.findOwnRequest(SUBMITTED_B)).isEmpty();
+        assertThat(reads.findAvailableDepartments())
+                .extracting(option -> option.id())
+                .containsExactly(DEPARTMENT_A);
+        assertThat(reads.findAvailableExpenseCategories())
+                .extracting(option -> option.id())
+                .containsExactly(CATEGORY);
+
+        authenticate(APPROVER, "EXPENSE:APPROVE");
+        assertThat(reads.findApprovalRequest(SUBMITTED_A)).isPresent();
+        assertThat(reads.findApprovalRequest(SUBMITTED_B)).isEmpty();
+        assertThat(reads.findApprovalRequest(DRAFT_A)).isEmpty();
+
+        authenticate(ACCOUNTANT, "EXPENSE:SETTLE");
+        assertThat(reads.findAccountingRequest(APPROVED_A)).isPresent();
+        assertThat(reads.findAccountingRequest(SUBMITTED_A)).isEmpty();
+    }
+
     private void insertUser(UUID userId, String email) {
         jdbc.sql("""
                         insert into koiki_user
@@ -128,6 +181,19 @@ class ExpenseReadModelPostgreSqlIntegrationTest {
                         values (:id, :code, :name, true, 0, now(), now())
                         """)
                 .param("id", departmentId)
+                .param("code", code)
+                .param("name", name)
+                .update();
+    }
+
+    private void insertCategory(UUID categoryId, String code, String name) {
+        jdbc.sql("""
+                        insert into kkref_expense_category
+                            (expense_category_id, expense_category_code, expense_category_name,
+                             active, version, created_at, updated_at)
+                        values (:id, :code, :name, true, 0, now(), now())
+                        """)
+                .param("id", categoryId)
                 .param("code", code)
                 .param("name", name)
                 .update();

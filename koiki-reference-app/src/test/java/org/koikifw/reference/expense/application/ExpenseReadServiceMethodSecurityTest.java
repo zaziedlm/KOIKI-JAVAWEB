@@ -30,6 +30,16 @@ class ExpenseReadServiceMethodSecurityTest {
                 .isInstanceOf(AccessDeniedException.class);
         assertThatThrownBy(() -> reads.findAccountingQueue(0, 20))
                 .isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> reads.findOwnRequest(java.util.UUID.randomUUID()))
+                .isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> reads.findApprovalRequest(java.util.UUID.randomUUID()))
+                .isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> reads.findAccountingRequest(java.util.UUID.randomUUID()))
+                .isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(reads::findAvailableDepartments)
+                .isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(reads::findAvailableExpenseCategories)
+                .isInstanceOf(AccessDeniedException.class);
     }
 
     @TestConfiguration(proxyBeanMethods = false)

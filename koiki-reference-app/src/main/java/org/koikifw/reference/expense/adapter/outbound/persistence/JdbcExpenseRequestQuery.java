@@ -4,11 +4,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.koikifw.identity.FrameworkUserId;
 import org.koikifw.reference.expense.application.query.ExpenseRequestListItem;
+import org.koikifw.reference.expense.application.query.ExpenseRequestDetail;
+import org.koikifw.reference.expense.application.query.ExpenseRequestLineView;
 import org.koikifw.reference.expense.application.query.ExpenseRequestPage;
 import org.koikifw.reference.expense.application.query.ExpenseRequestQuery;
+import org.koikifw.reference.expense.application.query.ExpenseSelectionOption;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -65,6 +70,26 @@ public class JdbcExpenseRequestQuery implements ExpenseRequestQuery {
              limit :limit offset :offset
             """;
 
+    private static final String DETAIL_SUFFIX = """
+               and request.expense_request_id = :expenseRequestId
+            """;
+
+    private static final String LINES = """
+            select line.expense_line_id,
+                   line.expense_category_id,
+                   category.expense_category_code,
+                   category.expense_category_name,
+                   line.usage_date,
+                   line.description,
+                   line.purpose,
+                   line.amount
+              from kkref_expense_line line
+              join kkref_expense_category category
+                on category.expense_category_id = line.expense_category_id
+             where line.expense_request_id = :expenseRequestId
+             order by line.usage_date, line.expense_line_id
+            """;
+
     private final JdbcClient jdbc;
 
     public JdbcExpenseRequestQuery(JdbcClient jdbc) {
@@ -86,6 +111,56 @@ public class JdbcExpenseRequestQuery implements ExpenseRequestQuery {
     @Override
     public ExpenseRequestPage findForAccounting(int page, int size) {
         return query(ACCOUNTING_SCOPE, null, page, size);
+    }
+
+    @Override
+    public Optional<ExpenseRequestDetail> findForApplicantById(
+            FrameworkUserId applicantUserId, UUID expenseRequestId) {
+        return detail(APPLICANT_SCOPE, applicantUserId, expenseRequestId);
+    }
+
+    @Override
+    public Optional<ExpenseRequestDetail> findForApproverById(
+            FrameworkUserId approverUserId, UUID expenseRequestId) {
+        return detail(APPROVER_SCOPE, approverUserId, expenseRequestId);
+    }
+
+    @Override
+    public Optional<ExpenseRequestDetail> findForAccountingById(UUID expenseRequestId) {
+        return detail(ACCOUNTING_SCOPE, null, expenseRequestId);
+    }
+
+    @Override
+    public List<ExpenseSelectionOption> findAvailableDepartments(
+            FrameworkUserId applicantUserId) {
+        return jdbc.sql("""
+                        select department.department_id as option_id,
+                               department.department_code as option_code,
+                               department.department_name as option_name
+                          from kkref_user_department_assignment assignment
+                          join kkref_department department
+                            on department.department_id = assignment.department_id
+                         where assignment.user_id = :actorUserId
+                           and department.active = true
+                         order by department.department_code
+                        """)
+                .param("actorUserId", applicantUserId.value())
+                .query(this::mapOption)
+                .list();
+    }
+
+    @Override
+    public List<ExpenseSelectionOption> findAvailableExpenseCategories() {
+        return jdbc.sql("""
+                        select category.expense_category_id as option_id,
+                               category.expense_category_code as option_code,
+                               category.expense_category_name as option_name
+                          from kkref_expense_category category
+                         where category.active = true
+                         order by category.expense_category_code
+                        """)
+                .query(this::mapOption)
+                .list();
     }
 
     private ExpenseRequestPage query(
@@ -116,5 +191,55 @@ public class JdbcExpenseRequestQuery implements ExpenseRequestQuery {
                 resultSet.getString("status"),
                 resultSet.getLong("version"),
                 resultSet.getTimestamp("updated_at").toInstant());
+    }
+
+    private Optional<ExpenseRequestDetail> detail(
+            String scope, @Nullable FrameworkUserId actorUserId, UUID expenseRequestId) {
+        JdbcClient.StatementSpec statement = jdbc.sql(SELECT + scope + DETAIL_SUFFIX)
+                .param("expenseRequestId", expenseRequestId);
+        if (actorUserId != null) {
+            statement = statement.param("actorUserId", actorUserId.value());
+        }
+        Optional<ExpenseRequestListItem> header = statement.query(this::map).optional();
+        if (header.isEmpty()) {
+            return Optional.empty();
+        }
+        List<ExpenseRequestLineView> lines = jdbc.sql(LINES)
+                .param("expenseRequestId", expenseRequestId)
+                .query(this::mapLine)
+                .list();
+        ExpenseRequestListItem item = header.orElseThrow();
+        String reason = jdbc.sql("""
+                        select decision_reason
+                          from kkref_expense_request
+                         where expense_request_id = :expenseRequestId
+                        """)
+                .param("expenseRequestId", expenseRequestId)
+                .query(String.class)
+                .optional()
+                .orElse(null);
+        return Optional.of(new ExpenseRequestDetail(
+                item.expenseRequestId(), item.applicantUserId(), item.applicantEmail(),
+                item.departmentId(), item.departmentCode(), item.departmentName(),
+                item.claimedAmount(), item.status(), reason, item.version(), item.updatedAt(), lines));
+    }
+
+    private ExpenseRequestLineView mapLine(ResultSet resultSet, int rowNumber) throws SQLException {
+        return new ExpenseRequestLineView(
+                resultSet.getObject("expense_line_id", UUID.class),
+                resultSet.getObject("expense_category_id", UUID.class),
+                resultSet.getString("expense_category_code"),
+                resultSet.getString("expense_category_name"),
+                resultSet.getObject("usage_date", java.time.LocalDate.class),
+                resultSet.getString("description"),
+                resultSet.getString("purpose"),
+                resultSet.getLong("amount"));
+    }
+
+    private ExpenseSelectionOption mapOption(ResultSet resultSet, int rowNumber) throws SQLException {
+        return new ExpenseSelectionOption(
+                resultSet.getObject("option_id", UUID.class),
+                resultSet.getString("option_code"),
+                resultSet.getString("option_name"));
     }
 }

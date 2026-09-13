@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2 READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2 COMPLETE / OWNER APPROVED / P3-B3 READY
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2 READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2 COMPLETE / OWNER APPROVED / P3-B3 READY
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -420,7 +420,7 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 8. §4の16判断点と、P3-A0 / B0 / C0 / C3 / Remote Gateへ配置したblocking review
 
 **Decision:** APPROVED — GATE P3-1 PASSED
-**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2 READY
+**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2 COMPLETE / OWNER APPROVED / P3-B3 READY
 **Approved scope:** §1〜17、§4の確定判断、staged decisionの停止点、P3-CP0からGate Cまでの順序、Hybrid Verification方針
 **Evidence:** 上位設計とReference仕様、Phase 2 COMPLETE / ACCEPTED baseline、開始main c88b335efdd556613c9ef7f4c5267214fdb8254b、§3のread-only棚卸し、本計画のDoD / AC trace
 **Decided by:** Shuichi Kataoka, Architecture Owner
@@ -485,3 +485,18 @@ PostgreSQL 17およびReference全回帰を検証し、P3-B1を`COMPLETE`とす�
 **Next CP:** P3-B2 MVC / Thymeleaf / Form / View DTO
 
 P3-B3のHTMX / browser runner、P3-B4のcache / lock画面、P3-C0以降、workflowまたはremote操作を先行しない。
+
+## 22. P3-B2 completion record
+
+Architecture Ownerは`docs/architecture/validation/phase3-p3-b2-mvc-thymeleaf.md`のP3-B2-D1〜D6を
+2026年9月14日に一体として承認した。full-page ThymeleafをUIの主軸とし、HTMX interactionと
+browser runnerをP3-B3へ分離する境界を維持する。
+
+正式`koiki-starter-web-mvc`、初期Java Public API 0型、resource contract、Reference master / expense MVC、
+Form / View境界、Phase 2 Security再利用、Root Reactor 189 tests、実browser、log / Audit / DB突合および
+consumerからの公開挙動testを検証し、P3-B2を`COMPLETE / OWNER APPROVED`とする。申請者email表示の
+不自然さは非blocking Evidenceとし、Identityまたは業務profileの属性Ownershipを別reviewへ送る。
+
+**Next CP:** P3-B3 HTMX 11契約 / CSRF / browser runner
+
+P3-B4、Gate B、P3-C0以降、workflow、required checkまたはremote操作を先行しない。
