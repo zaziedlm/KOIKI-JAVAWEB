@@ -33,6 +33,7 @@ P3-A4 Level 1同期eventを完了し、Gate A reviewを開始可能としてい�
 | P3-A2 Expense Vertical Slice | COMPLETE | `validation/phase3-p3-a2-expense-vertical-slice.md` |
 | P3-A3 Authorization / Audit | COMPLETE | `validation/phase3-p3-a3-authorization-audit.md` |
 | P3-A4 Level 1 Synchronous Event | COMPLETE / GATE A READY | `validation/phase3-p3-a4-level1-synchronous-event.md` |
+| Gate A Domain / Transaction / Module Acceptance | OWNER DECISIONS APPROVED / CLEAN AGGREGATE PENDING | `validation/phase3-gate-a-milestone-a-acceptance.md` |
 
 ### Phase 2 Security Foundation
 
