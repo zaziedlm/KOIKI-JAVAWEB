@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2 READY
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2 READY
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -194,6 +194,7 @@ Gate P3-1でP3-C0への検討入力とした最小提案は次の3 endpointと�
 - masterはexpenseのApplication、Domain、Repository、Adapterを参照しない。
 - command整合は公開event契約を使う。current-valueの有効master確認だけは、master-ownedの狭い同期read-only module contractを明示例外として使う。
 - expenseは自module Portとoutbound Adapterを介してこのcontractへ接続し、masterのApplication、Domain、Repository、Adapterまたは所有tableを直接参照しない。
+- ただしP3-B1の表示専用read modelは、ADR-038 P3-B1 fittingに従い、scopeをSQL内で先に強制したread-only JOINからApplication所有の最終recordを直接materializeできる。この例外を有効性判定、更新、認可判断またはDomain復元に流用しない。
 - TransactionalEventListener、ApplicationModuleListenerと非同期処理は導入しない。
 - 未処理4状態で部門廃止を拒否し、終端2状態で許可する。
 - 同期listener件数を記録し、境界の形骸化をArchitecture Review対象とする。
@@ -419,7 +420,7 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 8. §4の16判断点と、P3-A0 / B0 / C0 / C3 / Remote Gateへ配置したblocking review
 
 **Decision:** APPROVED — GATE P3-1 PASSED
-**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 READY
+**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2 READY
 **Approved scope:** §1〜17、§4の確定判断、staged decisionの停止点、P3-CP0からGate Cまでの順序、Hybrid Verification方針
 **Evidence:** 上位設計とReference仕様、Phase 2 COMPLETE / ACCEPTED baseline、開始main c88b335efdd556613c9ef7f4c5267214fdb8254b、§3のread-only棚卸し、本計画のDoD / AC trace
 **Decided by:** Shuichi Kataoka, Architecture Owner
@@ -470,3 +471,17 @@ Spring標準＋KOIKI内部HTMX fallback、Thymeleaf HTML主軸とHTMX選択適�
 
 P3-B0の承認はP3-B1の開始だけを許可する。P3-B2のMaven module / Starter / dependency変更、P3-B3の
 HTMX / browser runner実装、workflow、required checkまたはremote操作を先行しない。
+
+## 21. P3-B1 completion record
+
+Architecture OwnerはP3-B1開始時に、表示専用read modelについて、scopeをSQL内で先に強制し、
+更新・認可判断・業務不変条件・current-value検証へ流用しないread-only JOINからApplication所有の
+最終recordを直接materializeする狭い例外を承認した。判断と実装Evidenceは
+`docs/architecture/validation/phase3-p3-b1-read-model.md`を正本とする。
+
+master JPA class-based射影、expense JdbcClient query、申請者・承認者・経理scope、Permission、
+PostgreSQL 17およびReference全回帰を検証し、P3-B1を`COMPLETE`とする。
+
+**Next CP:** P3-B2 MVC / Thymeleaf / Form / View DTO
+
+P3-B3のHTMX / browser runner、P3-B4のcache / lock画面、P3-C0以降、workflowまたはremote操作を先行しない。

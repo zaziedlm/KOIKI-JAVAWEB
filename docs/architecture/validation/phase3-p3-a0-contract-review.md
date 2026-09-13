@@ -80,6 +80,10 @@ Architecture Ownerは2026年9月13日、Referenceとして実装の核を外さ�
 - Framework Public API、別Maven artifact、shared-kernelへ昇格させない。
 - ADR-049としてADR Registerとグランドデザイン§30へ記録する。
 
+この制約はcommandおよびcurrent-valueの有効性判断に適用する。後続P3-B1でArchitecture Ownerが承認した
+表示専用read modelのread-only JOINはADR-038 P3-B1 fittingの別例外であり、この判断を更新・認可・
+業務不変条件またはcurrent-value検証へ流用しない。
+
 ## 5. Approved Ownership and table decision
 
 ### P3-A0-D2 — Reference-owned business attributes

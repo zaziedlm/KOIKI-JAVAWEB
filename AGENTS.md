@@ -7,7 +7,7 @@ Phase 0、Phase 1a Build Foundation、Phase 1b Runtime Foundationおよび
 Phase 2 Security Foundationは`COMPLETE / ACCEPTED`である。Phase 3 Reference Vertical Sliceは、
 `docs/development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md`のGate P3-1承認とCP境界に従う。
 P3-CP0とP3-A0は`COMPLETE`、P3-A1〜P3-A4およびGate Aは`COMPLETE / ACCEPTED`、P3-B0は
-`COMPLETE / OWNER APPROVED`である。次はP3-B1 read modelであり、P3-B2以降を先行しない。
+`COMPLETE / OWNER APPROVED`、P3-B1は`COMPLETE`である。次はP3-B2 MVC / Thymeleafであり、P3-B3以降を先行しない。
 
 Phase 3では、承認済みbaselineを維持し、次を優先する。
 
@@ -18,7 +18,7 @@ Phase 3では、承認済みbaselineを維持し、次を優先する。
 5. P3-CP0は承認記録、Agent導線、start Evidenceに限定し、production code、Public API、Maven module、migration、dependencyまたはworkflowを変更しない。
 6. P3-A0で承認済みの有効master検証契約、承認者部門scopeのReference Ownership、Reference migration / FK方針とADR-049を維持する。
 7. masterはTier 1 SIMPLE / JPA、expenseはTier 2 RICH / JPA共有モデルとし、単一`koiki-reference-app`内の業務packageとして分離する。別Maven artifactへ分割しない。
-8. Spring Modulith Level 1ではcommand整合に同期Domain Eventを使用する。current-valueの有効master確認だけはADR-049の狭い同期read-only module contractをexpense Port / Adapter経由で利用し、他moduleのApplication、Domain、Repository、Adapterまたは所有tableを直接参照しない。Level 1のためのruntime依存、transactional / async eventを追加しない。
+8. Spring Modulith Level 1ではcommand整合に同期Domain Eventを使用する。current-valueの有効master確認はADR-049の狭い同期read-only module contractをexpense Port / Adapter経由で利用し、他moduleのApplication、Domain、RepositoryまたはAdapterを直接参照しない。表示専用read modelだけはADR-038 P3-B1 fittingに従い、scopeをSQL内で先に強制し、更新・認可判断・業務不変条件へ利用しないread-only JOINからApplication所有の最終recordを直接materializeしてよい。Level 1のためのruntime依存、transactional / async eventを追加しない。
 9. Phase 2のdefault deny、CSRF / Security Header、Identity、Business / Security Audit、Spring Session JDBCの承認済み契約を再利用し、弱めない。業務属性をFramework Identityへ追加しない。
 10. MVC / Thymeleaf / HTMXとRESTは同じApplication Use Caseを利用するが、Controller、Form、View DTO、REST DTOを共有しない。Domain Model / JPA Entityを外部へ露出しない。server-side UIはThymeleaf HTMLを主軸とし、HTMXは効果と検証可能性を説明できる操作だけに選択適用する。
 11. APIと自動testを回帰の主軸とし、操作面が成立するP3-B2以降は実browserでの目視・手動操作とlog / Audit / DB突合を組み合わせる。

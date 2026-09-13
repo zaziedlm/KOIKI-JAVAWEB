@@ -1,7 +1,7 @@
 # KOIKI-JavaWeb-FW グランドデザイン v0.2
 
 **文書版:** v0.2（構想確定・基本設計準備版）
-**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）／2026年9月3日（Phase 2 Audit contract / transaction境界をADR-047として反映）／2026年9月8日（Phase 2 Session JDBC / cleanup / single execution境界をADR-048として反映）／2026年9月13日（Phase 3 Reference module collaboration / table Ownership境界をADR-049として反映、ADR-027のHTMX Phase 3 fittingを反映）
+**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）／2026年9月3日（Phase 2 Audit contract / transaction境界をADR-047として反映）／2026年9月8日（Phase 2 Session JDBC / cleanup / single execution境界をADR-048として反映）／2026年9月13日（Phase 3 Reference module collaboration / table Ownership境界をADR-049として反映、ADR-027のHTMX Phase 3 fitting、ADR-038の表示read model fittingを反映）
 **文書状態:** ACCEPTED（Phase 0 Architecture Baseline）
 **承認日:** 2026年8月19日
 **Architecture Owner:** Shuichi Kataoka
@@ -1755,6 +1755,8 @@ MyBatis-Spring は MyBatis を Spring トランザクションへ参加させ、
 - Query Portは`application.query`が所有し、Outbound Adapterがその契約を実装してApplication所有のread modelをmaterializeする
 - **Tier 1ではread modelという専用概念を設けない。**Tier 1にはDomain層が存在しないため、`application.dto`で足りる。read modelを所有する`application.query`はTier 2でのみ使用する
 - 分離方式において、read model は `converter` を経由しない（既に最終形であるため）
+- 表示専用read modelは、複数moduleまたはFramework所有tableにまたがる現実的な参照が必要な場合、Architecture Ownerが承認した狭い範囲でread-only JOINを用いてよい。scopeはSQL内で先に強制し、Application所有の最終`record`を直接materializeする
+- この例外は更新、認可判断、業務不変条件、current-value検証またはDomain Model復元に使用しない。table / migration / FK / 更新責務のOwnershipは移動せず、providerのApplication、Domain、Repository、AdapterまたはEntityへ依存しない
 
 #### 将来のDB差し替えへの影響
 
@@ -1907,6 +1909,9 @@ TestcontainersまたはCI系統を選定・実装しない。PostgreSQL向け設
 contractは識別子と判定値等の不変な値だけを返し、consumer moduleのPort / outbound Adapterを介して利用する。
 providerのApplication Use Case、Domain Model、Repository、Adapterまたは所有tableを直接参照せず、Framework Public API、
 別artifactまたはshared-kernelへ自動昇格させない。Phase 3 Referenceの有効master確認に限る具体的境界はADR-049を正本とする。
+
+上記はcommandやcurrent-value判断の境界である。表示専用read modelにおける承認済みのread-only JOINは
+§16.3の別例外とし、その結果を更新、認可判断、業務不変条件またはcurrent-value検証へ流用しない。
 
 #### 同期を既定とする
 
@@ -2821,7 +2826,8 @@ expense.adapter.inbound.event   未処理申請を検査 → 存在すれば例�
 - `domain.event` が他モジュールから参照可能な明示例外である
 - Domain Event が識別子と値のみを持つ不変 `record` である
 - リスナーが `adapter/inbound/event` に配置され、Application Use Case を呼ぶのみである
-- 有効masterのcurrent-value queryだけはADR-049の狭いread-only contractをexpenseのPort / Adapter経由で参照し、master所有tableを直接読まない
+- 有効masterのcurrent-value queryはADR-049の狭いread-only contractをexpenseのPort / Adapter経由で参照し、master所有tableを直接読まない
+- 承認待ち表示専用read modelはADR-038 P3-B1 fittingに従い、scopeをSQL内で強制したread-only JOINから申請者emailと部門名を含む最終recordを直接materializeする。Identity v0.1に氏名属性はないためemailを表示識別子とし、氏名属性の追加は別の契約判断とする
 
 #### Phase 4 — `notification`（Tier 1, JPA）
 
@@ -3303,7 +3309,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | ADR-023 | Tier 2 のモデル方針 | **兼用を既定とし、分離をトリガ付きオプトインとする** |
 | ADR-024 | Tier 2 の Repository 方針 | `domain.repository` にインターフェースを置き Spring Data が実装。MyBatis 採用時は例外 |
 | ADR-025 | Domain Event | **同期を既定、非同期は明示選択。監査はイベント機構に乗せない** |
-| ADR-049 | Reference module collaboration / table Ownership境界 | command整合は同期Domain Event、current-valueの有効master確認はmaster-ownedの狭い同期read-only contractとする。expenseは自module Port / Adapter経由で利用し、module間table参照 / FKを行わない。所属部門はmaster、承認scopeはexpenseが所有する |
+| ADR-049 | Reference module collaboration / table Ownership境界 | command整合は同期Domain Event、current-valueの有効master確認はmaster-ownedの狭い同期read-only contractとする。expenseは自module Port / Adapter経由で利用し、command / current-value判断ではmodule間table参照を行わず、module間FKも作らない。表示専用read modelはADR-038 fittingの別例外とする。所属部門はmaster、承認scopeはexpenseが所有する |
 
 ### UI
 
@@ -3336,7 +3342,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | ADR-019 | マルチテナンシー | **単一テナントを前提とする**（v1.0 のスコープ外） |
 | ADR-028 | Open Session in View | **無効化する** |
 | ADR-037 | キャッシュ | Spring Cache ＋ Caffeine。対象限定と TTL 必須 |
-| ADR-038 | read model | Query契約と`record`は`application.query`が所有。単一集約はJPAのclass-based射影、複雑queryはJdbcClient |
+| ADR-038 | read model | Query契約と`record`は`application.query`が所有。単一集約はJPAのclass-based射影、複雑queryはJdbcClient。表示専用の複数owner queryは承認済み範囲でscope先行のread-only JOINと最終record直接materializeを許可する |
 | ADR-039 | MyBatis | 規約 ＋ BOM 管理（Level B）。モジュール単位で選択 |
 | ADR-042 | テーブル所有権と Flyway | 接頭辞規約 ＋ 所有者別の独立管理 |
 | ADR-044 | Oracle 検証戦略 | Phase 2 nightly判断をsupersede。Oracleはoptional `P4-ORACLE` Gate前に実装・依存・Image・CIを選定しない |

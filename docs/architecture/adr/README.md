@@ -4,7 +4,7 @@
 
 **状態:** Accepted
 
-**承認日:** Phase 0 Baseline 2026年8月15日 / ADR-046 2026年9月1日 / ADR-047 2026年9月3日 / ADR-048 2026年9月8日 / ADR-049 2026年9月13日 / ADR-027 Phase 3 fitting 2026年9月13日
+**承認日:** Phase 0 Baseline 2026年8月15日 / ADR-046 2026年9月1日 / ADR-047 2026年9月3日 / ADR-048 2026年9月8日 / ADR-049 2026年9月13日 / ADR-027・ADR-038 Phase 3 fitting 2026年9月13日
 
 **Decided by:** Shuichi Kataoka
 
@@ -69,7 +69,7 @@ ADR-001〜ADR-045は、Architecture Ownerによるreviewを2026年8月15日に�
 | ADR-035 | Virtual Threads | 確定 | —（既定無効、Java 25以上でopt-in。JEP 491後も残るpinningと依存ライブラリをPhase 4で検証） | ACCEPTED |
 | ADR-036 | レート制御 | 確定 | — | ACCEPTED |
 | ADR-037 | キャッシュ | 確定 | —（Caffeineの一時的不整合を許容できる対象とTTLに限定。認可関係は即時失効要件に応じて除外し、分散cacheへの変更時は再検証） | ACCEPTED |
-| ADR-038 | read model | 確定 | —（Query契約と`record`は`application.query`が所有し、Outbound Adapterがmaterialize。JPAはclass-based射影に限定） | ACCEPTED |
+| ADR-038 | read model | 確定 | `../validation/phase3-p3-b1-read-model.md`（P3-B1 fittingとして、表示専用の複数owner queryはscope先行、read-only、更新・認可・不変条件判断への非流用、最終record直接materializeを条件にJOIN可） | ACCEPTED |
 | ADR-039 | MyBatis | 確定 | —（Boot 4対応StarterをBOM管理するLevel B方針の承認。詳細規約と実装検証はPhase 3末尾～Phase 4。`MYBATIS`宣言は`SEPARATED`必須であり、同モデル未提供の間はKOIKI-ARCH-008で拒否する） | ACCEPTED |
 | ADR-040 | 昇格ポリシーの運用化 | 確定 | —（Reference／Customer／Walking Skeletonの候補をFrameworkへ昇格する場合に適用。Phase 1の定義済み基盤構築は「2案件の実績」の対象外） | ACCEPTED |
 | ADR-041 | Public API境界 | Phase 0で検証 | `../validation/walking-skeleton-archunit-distribution.md`（外部consumerを含む） | ACCEPTED |
@@ -104,6 +104,7 @@ ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
 | 2026年9月8日 | ADR-048 | ACCEPTED（P2-B3の実PostgreSQL、package済み複数processおよびnon-web fixtureによりSession JDBC、全Session失効、cleanup / single execution、failure semanticsと配布境界を確認） | Shuichi Kataoka |
 | 2026年9月13日 | ADR-049 | ACCEPTED（P3-A0 contract reviewによりcommand eventとcurrent-value queryを分離し、Reference table Ownership、V1〜V3、module内FKだけとする境界をproduction変更前に確定） | Shuichi Kataoka |
 | 2026年9月13日 | ADR-027 Phase 3 fitting | ACCEPTED（Thymeleaf HTMLを主軸としてHTMXを効果が明確な操作だけに適用し、`htmx-spring-boot`からSpring標準＋KOIKI内部fallbackへ切り替える） | Shuichi Kataoka |
+| 2026年9月13日 | ADR-038 Phase 3 fitting | ACCEPTED（表示専用read modelでは、scopeをSQL内で先に強制し、更新・認可・不変条件判断に流用しないread-only JOINからApplication所有の最終recordを直接materializeできる） | Shuichi Kataoka |
 
 ## 集計
 

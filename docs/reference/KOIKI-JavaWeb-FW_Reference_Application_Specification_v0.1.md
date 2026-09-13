@@ -362,8 +362,9 @@ UC-EXP-Q01は§10の閲覧scopeをquery条件として適用し、scope外のdat
 | 承認者 | 担当部門の`DRAFT`以外 |
 | 経理 | 全部門の`APPROVED`と`SETTLED` |
 
-承認待ち一覧は申請者名・部門名を含む複数集約queryであり、Tier 2のQuery Portとread modelを
-`application.query`が所有し、Outbound AdapterがJdbcClientでmaterializeする。
+承認待ち一覧は申請者表示識別子・部門名を含む複数集約queryであり、Tier 2のQuery Portとread modelを
+`application.query`が所有し、Outbound AdapterがJdbcClientでmaterializeする。Identity v0.1は氏名属性を
+持たないためPhase 3ではemailを申請者表示識別子とし、氏名属性の追加は別の契約判断とする。
 
 ### 11.6 Phase 4の派生処理
 

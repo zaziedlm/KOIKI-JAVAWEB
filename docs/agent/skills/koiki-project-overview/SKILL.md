@@ -116,8 +116,9 @@ P3-CP0とP3-A0を完了し、P3-A1〜P3-A4およびGate Aを`COMPLETE / ACCEPTED
 command整合の同期Event、承認者部門scopeのReference Ownership、V1〜V3 migration、module内FKのみの
 方針を維持する。P3-B0で正式`koiki-starter-web-mvc`、初期Java Public API 0型、Spring標準＋KOIKI内部
 HTMX fallback、Thymeleaf HTML主軸の選択適用、Phase 2 Security再利用および非配布browser Tooling境界を
-承認した。次はP3-B1 read modelであり、P3-B2のMaven module / Starter / dependency変更またはP3-B3の
-browser runnerを先行しない。以降も同計画のCP、blocking reviewおよびGateを順守する。
+承認した。P3-B1ではmaster JPA射影とexpense JdbcClient read modelを実装し、表示専用の複数owner queryに
+scope先行の狭いread-only JOINを許容するADR-038 fittingをArchitecture Ownerが承認した。P3-B1は`COMPLETE`であり、
+次はP3-B2 MVC / Thymeleafである。P3-B3のHTMX / browser runnerを先行しない。以降も同計画のCP、blocking reviewおよびGateを順守する。
 
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
 Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは

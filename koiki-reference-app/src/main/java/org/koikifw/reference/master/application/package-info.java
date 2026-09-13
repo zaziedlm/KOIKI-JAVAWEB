@@ -1,4 +1,4 @@
-/** Tier 1 master administration use cases and failure semantics. */
+/** Tier 1 master administration and catalog query use cases. */
 @NullMarked
 package org.koikifw.reference.master.application;
 
