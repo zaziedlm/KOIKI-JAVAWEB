@@ -23,7 +23,8 @@ Phase 2 Security FoundationはMilestone A / B、P2-C1 / C2、P2-C3 local closeou
 P3-CP0、P3-A0 contract review、P3-A1 master、P3-A2 expense、P3-A3 authorization / Auditおよび
 P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX contract reviewを
 `COMPLETE / OWNER APPROVED`、P3-B1 read modelを`COMPLETE`、P3-B2 MVC / Thymeleafを
-`COMPLETE / OWNER APPROVED`、P3-B3 HTMXを`COMPLETE / OWNER APPROVED`とし、次はP3-B4です。
+`COMPLETE / OWNER APPROVED`、P3-B3 HTMXを`COMPLETE / OWNER APPROVED`とし、P3-B4は
+`CONTRACT COMPLETE / OWNER APPROVED / IMPLEMENTATION READY`です。
 
 ### Phase 3 Reference Vertical Slice
 
@@ -40,6 +41,7 @@ P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX con
 | P3-B1 Read Model | COMPLETE | `validation/phase3-p3-b1-read-model.md` |
 | P3-B2 MVC / Thymeleaf | COMPLETE / OWNER APPROVED | `validation/phase3-p3-b2-mvc-thymeleaf.md` |
 | P3-B3 HTMX | COMPLETE / OWNER APPROVED | `validation/phase3-p3-b3-htmx.md` |
+| P3-B4 Optimistic Conflict / Cache | CONTRACT COMPLETE / OWNER APPROVED / IMPLEMENTATION READY | `validation/phase3-p3-b4-lock-cache-contract-review.md` |
 
 ### Phase 2 Security Foundation
 
