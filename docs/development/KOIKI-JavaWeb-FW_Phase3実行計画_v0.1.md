@@ -530,6 +530,7 @@ TTL前後のOwner目視、stale category command拒否とDB非更新、applicati
 以上によりP3-B4を`COMPLETE / OWNER APPROVED`とする。
 
 **Next Gate:** Gate B Web / query acceptance inventory
+**Start handoff:** `docs/development/phase3-gate-b-start-handoff-20260914.md`
 
 Gate BではP3-B1〜P3-B4の一貫性、accessibility、自動browser、Owner実演、log / Audit / DB Evidenceを
 横断評価する。Gate B承認前にP3-C0 REST contract review、workflow、required checkまたはremote操作を先行しない。
