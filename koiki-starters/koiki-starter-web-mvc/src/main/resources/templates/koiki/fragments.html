@@ -3,8 +3,12 @@
 <head th:fragment="head(title)">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}">
+  <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}">
   <title th:text="${title}">KOIKI</title>
   <link rel="stylesheet" th:href="@{/koiki-web/koiki.css}">
+  <script defer th:src="@{/webjars/htmx.org/2.0.10/dist/htmx.min.js}"></script>
+  <script defer th:src="@{/koiki-web/koiki-htmx.js}"></script>
 </head>
 <body>
 <header th:fragment="header">

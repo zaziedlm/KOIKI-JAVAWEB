@@ -25,6 +25,9 @@ th, td { padding: .6rem; border: 1px solid #d9e0e7; text-align: left; vertical-a
 .error { color: #a40000; }
 .notice { border-left: .3rem solid #167847; padding: .75rem; background: #edf8f1; }
 .muted { color: #52606d; }
+.htmx-indicator { display: none; }
+.htmx-request .htmx-indicator, .htmx-request.htmx-indicator { display: inline; }
+[aria-busy="true"] { cursor: progress; opacity: .7; }
 @media (max-width: 48rem) {
   table, thead, tbody, tr, th, td { display: block; }
   thead { position: absolute; left: -10000px; }

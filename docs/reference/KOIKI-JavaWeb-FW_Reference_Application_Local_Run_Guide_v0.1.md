@@ -153,10 +153,12 @@ scriptは次をすべて確認してからdataを登録する。
 成功すると、次のdemo dataと、実行ごとにランダム生成したlogin passwordをterminalへ表示する。
 
 - `p3-demo-user@example.test`と`P3_DEMO_REVIEWER`
-- Identity user ID `b2000000-0000-0000-0000-000000000001`
+- Identity user ID `b2000000-0000-4000-8000-000000000001`
 - `EXPENSE:APPLY`、`EXPENSE:APPROVE`、`EXPENSE:SETTLE`、`IDENTITY:ADMIN`、`MASTER:ADMIN`
 - demo部門、経費科目、所属、承認scope
 - DRAFT、SUBMITTED、APPROVEDの経費申請各1件
+
+seed内の固定UUIDは、ReferenceのWeb Formが検証するversion 4 / RFC variant形式に合わせている。
 
 passwordの固定値はRepositoryへ保存されず、そのterminalと使い捨てDBだけに存在する。terminal出力をlog、文書、
 screenshotまたは共有channelへ保存しない。scriptはToolingによる直接SQL fixtureであり、正式なIdentity provisioning、
@@ -171,7 +173,7 @@ production seed、migration、browser harnessまたはCustomer向け初期data�
 | 確認対象 | 入力またはURL |
 |---|---|
 | Login | `http://127.0.0.1:18080/login` / `p3-demo-user@example.test` |
-| Identity user lookup | User ID `b2000000-0000-0000-0000-000000000001` |
+| Identity user lookup | User ID `b2000000-0000-4000-8000-000000000001` |
 | Expense | `http://127.0.0.1:18080/expenses` |
 
 Identity user detailではRoleと5 Permissionを確認する。ExpenseではDRAFT、SUBMITTED、APPROVEDの3件を確認する。

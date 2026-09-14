@@ -6,23 +6,17 @@
 <main>
   <h1>経費科目管理</h1>
   <p class="notice" th:if="${notice}" th:text="${notice}" role="status"></p>
-  <form method="get" th:action="@{/master/expense-categories}">
+  <section id="category-query" th:fragment="query">
+  <form method="get" th:action="@{/master/expense-categories}"
+        th:attr="hx-get=@{/master/expense-categories}"
+        hx-target="#category-query" hx-swap="outerHTML" hx-push-url="true"
+        hx-trigger="input changed delay:350ms, submit" hx-indicator="#category-loading">
     <label for="search">コード・名称検索</label>
-    <input id="search" name="search" th:value="${search}">
+    <input id="search" name="search" th:value="${search}" data-koiki-focus>
     <button type="submit">検索</button>
+    <span id="category-loading" class="htmx-indicator" role="status">検索中</span>
   </form>
-  <section aria-labelledby="create-heading">
-    <h2 id="create-heading">経費科目登録</h2>
-    <form method="post" th:action="@{/master/expense-categories}" th:object="${createForm}">
-      <label for="code">科目コード</label>
-      <input id="code" th:field="*{code}" required maxlength="100" pattern="[A-Z][A-Z0-9_]{0,99}" aria-describedby="code-error">
-      <p id="code-error" class="error" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></p>
-      <label for="name">科目名</label>
-      <input id="name" th:field="*{name}" required maxlength="200" aria-describedby="name-error">
-      <p id="name-error" class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
-      <button type="submit">登録</button>
-    </form>
-  </section>
+  <section id="category-results" th:fragment="results" aria-live="polite" aria-atomic="true">
   <table>
     <caption th:text="|経費科目 ${result.totalElements} 件|">経費科目</caption>
     <thead><tr><th>コード</th><th>名称</th><th>状態</th><th>操作</th></tr></thead>
@@ -47,9 +41,30 @@
     </tbody>
   </table>
   <nav aria-label="ページ" class="actions">
-    <a th:if="${result.page > 0}" th:href="@{/master/expense-categories(search=${search},page=${result.page - 1})}">前へ</a>
-    <a th:if="${(result.page + 1) * result.size < result.totalElements}" th:href="@{/master/expense-categories(search=${search},page=${result.page + 1})}">次へ</a>
+    <a th:if="${result.page > 0}" th:href="@{/master/expense-categories(search=${search},page=${result.page - 1})}"
+       th:attr="hx-get=@{/master/expense-categories(search=${search},page=${result.page - 1})}"
+       hx-target="#category-query" hx-swap="outerHTML" hx-push-url="true">前へ</a>
+    <a th:if="${(result.page + 1) * result.size < result.totalElements}" th:href="@{/master/expense-categories(search=${search},page=${result.page + 1})}"
+       th:attr="hx-get=@{/master/expense-categories(search=${search},page=${result.page + 1})}"
+       hx-target="#category-query" hx-swap="outerHTML" hx-push-url="true">次へ</a>
   </nav>
+  </section>
+  </section>
+  <section id="category-create" aria-labelledby="create-heading" th:fragment="create">
+    <h2 id="create-heading">経費科目登録</h2>
+    <form method="post" th:action="@{/master/expense-categories}" th:object="${createForm}"
+          th:attr="hx-post=@{/master/expense-categories}"
+          hx-target="#category-create" hx-swap="outerHTML" hx-indicator="#category-create-loading">
+      <label for="code">科目コード</label>
+      <input id="code" th:field="*{code}" required maxlength="100" pattern="[A-Z][A-Z0-9_]{0,99}" aria-describedby="code-error">
+      <p id="code-error" class="error" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></p>
+      <label for="name">科目名</label>
+      <input id="name" th:field="*{name}" required maxlength="200" aria-describedby="name-error">
+      <p id="name-error" class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+      <button type="submit">登録</button>
+      <span id="category-create-loading" class="htmx-indicator" role="status">登録中</span>
+    </form>
+  </section>
 </main>
 </body>
 </html>

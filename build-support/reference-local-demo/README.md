@@ -25,8 +25,9 @@ seed用PowerShellにApplicationの環境変数は不要である。
 成功時はlogin emailと、その実行だけで有効なランダムpasswordをterminalへ表示する。demo userには
 `EXPENSE:APPLY`、`EXPENSE:APPROVE`、`EXPENSE:SETTLE`、`IDENTITY:ADMIN`、`MASTER:ADMIN`を付与し、
 部門、経費科目、所属、承認scopeおよびDRAFT / SUBMITTED / APPROVEDの申請を1件ずつ登録する。
-Identity user lookupにはUser ID `b2000000-0000-0000-0000-000000000001`を使用する。一度表示されたpasswordを失った
+Identity user lookupにはUser ID `b2000000-0000-4000-8000-000000000001`を使用する。一度表示されたpasswordを失った
 場合はdataを上書きせず、Applicationと`--rm` containerを停止してLocal Run Guideの§4から作り直す。
+seed内の固定UUIDは、ReferenceのWeb Formと同じversion 4 / RFC variant形式を使用する。
 
 既定以外のcontainer名、database名またはdatabase userを使う場合だけ明示指定する。
 

@@ -2,5 +2,5 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{koiki/fragments :: head('マスター操作エラー')}"></head>
 <body><header th:replace="~{koiki/fragments :: header}"></header>
-<main><h1>マスター操作を完了できませんでした</h1><p class="error" th:text="${message}"></p>
+<main th:fragment="error" role="alert" tabindex="-1" data-koiki-focus><h1>マスター操作を完了できませんでした</h1><p class="error" th:text="${message}"></p>
 <a th:href="@{/master/departments}">部門管理へ戻る</a></main></body></html>

@@ -99,6 +99,13 @@ pwsh -NoProfile -File build-support/runtime-foundation-verification/verify-cp3-r
 pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-a1-security-foundation.ps1
 ```
 
+## Reference Browser Verification
+
+`reference-browser-verification/`はPhase 3 Reference ApplicationのHTMX interactionをPlaywright Java / Chromiumで
+確認するTooling所有の非配布Harnessです。Root Reactor、Framework / Reference artifact、`koiki-testing`、
+Project TemplateおよびCustomer dependencyには含めません。browser binary setupと実行手順は
+`reference-browser-verification/README.md`を参照してください。
+
 Maven Toolchains例は開発環境の再現用に保持します。Walking Skeleton専用のclass version確認と
 Java 25 runtime scriptは、C4のmanifest・hash・class major・Java 21 / 25検証へ置き換えたため除去しました。
 Maven Wrapper bootstrap scriptは公式`bin`型を再生成する保守手段として保持します。
