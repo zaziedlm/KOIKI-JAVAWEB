@@ -1,10 +1,14 @@
 package org.koikifw.reference.expense;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.awaitility.Awaitility.await;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -15,17 +19,23 @@ import org.koikifw.identity.FrameworkPrincipal;
 import org.koikifw.identity.FrameworkUserId;
 import org.koikifw.reference.ReferencePostgreSqlTestConfiguration;
 import org.koikifw.reference.expense.application.ExpenseReadService;
+import org.koikifw.reference.expense.application.query.ExpenseSelectionOption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest(properties = {
     "koiki.identity.local-authentication.enabled=false",
-    "spring.session.jdbc.initialize-schema=never"
+    "spring.session.jdbc.initialize-schema=never",
+    "spring.cache.caffeine.spec=maximumSize=1,expireAfterWrite=1s"
 })
 @Import(ReferencePostgreSqlTestConfiguration.class)
 class ExpenseReadModelPostgreSqlIntegrationTest {
@@ -50,8 +60,16 @@ class ExpenseReadModelPostgreSqlIntegrationTest {
     @Autowired
     private JdbcClient jdbc;
 
+    @Autowired
+    private CacheManager cacheManager;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
     @BeforeEach
     void prepare() {
+        Objects.requireNonNull(cacheManager.getCache("koiki:reference:expense-category-options"))
+                .clear();
         cleanData();
         insertUser(APPLICANT_A, "applicant-a@example.test");
         insertUser(APPLICANT_B, "applicant-b@example.test");
@@ -160,6 +178,79 @@ class ExpenseReadModelPostgreSqlIntegrationTest {
         authenticate(ACCOUNTANT, "EXPENSE:SETTLE");
         assertThat(reads.findAccountingRequest(APPROVED_A)).isPresent();
         assertThat(reads.findAccountingRequest(SUBMITTED_A)).isEmpty();
+    }
+
+    @Test
+    void cachesImmutableExpenseCategoryOptionsAndReloadsAfterWriteTtl() {
+        authenticate(APPLICANT_A, "EXPENSE:APPLY");
+        var firstLoad = reads.findAvailableExpenseCategories();
+        assertThat(firstLoad)
+                .singleElement()
+                .satisfies(option -> assertThat(option.name()).isEqualTo("Travel"));
+        assertThatThrownBy(() -> firstLoad.add(
+                        new ExpenseSelectionOption(id(99), "OTHER", "Other")))
+                .isInstanceOf(UnsupportedOperationException.class);
+
+        jdbc.sql("""
+                        update kkref_expense_category
+                           set expense_category_name = 'Travel Updated', updated_at = now()
+                         where expense_category_id = :id
+                        """)
+                .param("id", CATEGORY)
+                .update();
+
+        assertThat(reads.findAvailableExpenseCategories())
+                .singleElement()
+                .satisfies(option -> assertThat(option.name()).isEqualTo("Travel"));
+
+        await().pollInSameThread()
+                .pollDelay(Duration.ofMillis(1100))
+                .atMost(Duration.ofSeconds(5))
+                .untilAsserted(() -> assertThat(reads.findAvailableExpenseCategories())
+                        .singleElement()
+                        .satisfies(option -> assertThat(option.name()).isEqualTo("Travel Updated")));
+    }
+
+    @Test
+    void cachesEmptyExpenseCategoryOptionsUntilWriteTtlExpires() {
+        authenticate(APPLICANT_A, "EXPENSE:APPLY");
+        jdbc.sql("""
+                        update kkref_expense_category
+                           set active = false, updated_at = now()
+                         where expense_category_id = :id
+                        """)
+                .param("id", CATEGORY)
+                .update();
+
+        assertThat(reads.findAvailableExpenseCategories()).isEmpty();
+
+        jdbc.sql("""
+                        update kkref_expense_category
+                           set active = true, updated_at = now()
+                         where expense_category_id = :id
+                        """)
+                .param("id", CATEGORY)
+                .update();
+
+        assertThat(reads.findAvailableExpenseCategories()).isEmpty();
+    }
+
+    @Test
+    void doesNotCacheExpenseCategoryLoaderFailure() {
+        authenticate(APPLICANT_A, "EXPENSE:APPLY");
+        TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+
+        transaction.executeWithoutResult(status -> {
+            jdbc.sql("alter table kkref_expense_category rename to kkref_expense_category_unavailable")
+                    .update();
+            assertThatThrownBy(reads::findAvailableExpenseCategories)
+                    .isInstanceOf(DataAccessException.class);
+            status.setRollbackOnly();
+        });
+
+        assertThat(reads.findAvailableExpenseCategories())
+                .extracting(option -> option.id())
+                .containsExactly(CATEGORY);
     }
 
     private void insertUser(UUID userId, String email) {

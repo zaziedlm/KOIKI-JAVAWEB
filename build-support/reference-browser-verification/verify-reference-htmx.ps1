@@ -27,7 +27,7 @@ try {
 
     & $mavenWrapper -f $toolPom test
     if ($LASTEXITCODE -ne 0) {
-        throw "Reference HTMX browser verification failed with exit code $LASTEXITCODE."
+        throw "Reference browser verification failed with exit code $LASTEXITCODE."
     }
 }
 finally {

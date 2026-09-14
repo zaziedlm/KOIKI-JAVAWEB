@@ -153,6 +153,7 @@ scriptは次をすべて確認してからdataを登録する。
 成功すると、次のdemo dataと、実行ごとにランダム生成したlogin passwordをterminalへ表示する。
 
 - `p3-demo-user@example.test`と`P3_DEMO_REVIEWER`
+- P3-B4の競合確認用に、credentialを持たない`p3-demo-applicant@example.test`所有のSUBMITTED申請
 - Identity user ID `b2000000-0000-4000-8000-000000000001`
 - `EXPENSE:APPLY`、`EXPENSE:APPROVE`、`EXPENSE:SETTLE`、`IDENTITY:ADMIN`、`MASTER:ADMIN`
 - demo部門、経費科目、所属、承認scope

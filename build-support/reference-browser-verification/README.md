@@ -11,7 +11,8 @@ Root Reactor、Framework / Reference artifact、`koiki-testing`、Project Templa
 - login credentialをsource、設定file、Maven command historyまたはEvidenceへ保存しない。
 - package済みReference Applicationと使い捨てPostgreSQLは、Local Run Guideに従って別途起動する。
 - P3-B3ではmaster検索、history、fragment swap、Validation、CSRF注入・拒否を初期journeyとする。
-- P3-B4の2 Session競合、cache / TTLおよびGate Bの横断journeyを先行しない。
+- P3-B4では同じapprover credentialを使う独立2 BrowserContextで、先行承認と後発409競合を検証する。
+- cache / TTLのDB操作を伴う確認およびGate Bの横断journeyは別checkpointとする。
 
 ## One-time browser setup
 

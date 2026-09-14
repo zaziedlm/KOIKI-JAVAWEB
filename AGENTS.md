@@ -7,9 +7,9 @@ Phase 0、Phase 1a Build Foundation、Phase 1b Runtime Foundationおよび
 Phase 2 Security Foundationは`COMPLETE / ACCEPTED`である。Phase 3 Reference Vertical Sliceは、
 `docs/development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md`のGate P3-1承認とCP境界に従う。
 P3-CP0とP3-A0は`COMPLETE`、P3-A1〜P3-A4およびGate Aは`COMPLETE / ACCEPTED`、P3-B0は
-`COMPLETE / OWNER APPROVED`、P3-B1は`COMPLETE`、P3-B2は`COMPLETE / OWNER APPROVED`である。
-P3-B3は`COMPLETE / OWNER APPROVED`である。次はP3-B4楽観lock競合画面、cache / TTLであり、
-Gate B以降を先行しない。
+`COMPLETE / OWNER APPROVED`、P3-B1は`COMPLETE`、P3-B2〜P3-B4は
+`COMPLETE / OWNER APPROVED`である。次はGate B Web / query acceptanceの棚卸しであり、
+Gate B承認前にP3-C0以降を先行しない。
 
 Phase 3では、承認済みbaselineを維持し、次を優先する。
 

@@ -1,10 +1,14 @@
 package org.koikifw.reference.expense.adapter.inbound.web;
 
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
+import java.util.UUID;
 import org.koikifw.reference.expense.application.ExpenseFailure;
 import org.koikifw.reference.expense.application.ExpenseOperationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -23,8 +27,11 @@ public class ExpenseWebExceptionHandler {
     }
 
     @ExceptionHandler(ExpenseOperationException.class)
-    ModelAndView handle(ExpenseOperationException exception) {
+    ModelAndView handle(ExpenseOperationException exception, HttpServletRequest request) {
         ExpenseFailure failure = exception.failure();
+        if (failure == ExpenseFailure.CONCURRENT_MODIFICATION) {
+            return concurrentModification(request);
+        }
         ModelAndView response = new ModelAndView("expense/error");
         response.setStatus(switch (failure) {
             case INVALID_INPUT -> HttpStatus.BAD_REQUEST;
@@ -44,5 +51,38 @@ public class ExpenseWebExceptionHandler {
             case DEPENDENCY_FAILURE -> "経費申請機能を一時的に利用できません。";
         });
         return response;
+    }
+
+    private static ModelAndView concurrentModification(HttpServletRequest request) {
+        ModelAndView response = new ModelAndView("expense/conflict");
+        response.setStatus(HttpStatus.CONFLICT);
+        response.addObject("latestDetailPath", latestDetailPath(request));
+        return response;
+    }
+
+    private static String latestDetailPath(HttpServletRequest request) {
+        Object attribute = request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        if (!(attribute instanceof Map<?, ?> variables)) {
+            return "/expenses";
+        }
+        Object rawId = variables.get("expenseRequestId");
+        if (rawId == null) {
+            return "/expenses";
+        }
+
+        UUID expenseRequestId;
+        try {
+            expenseRequestId = UUID.fromString(rawId.toString());
+        } catch (IllegalArgumentException exception) {
+            return "/expenses";
+        }
+
+        String requestPath = request.getRequestURI().substring(request.getContextPath().length());
+        String detailBase = requestPath.startsWith("/expenses/approvals/")
+                ? "/expenses/approvals/"
+                : requestPath.startsWith("/expenses/accounting/")
+                        ? "/expenses/accounting/"
+                        : "/expenses/";
+        return detailBase + expenseRequestId;
     }
 }

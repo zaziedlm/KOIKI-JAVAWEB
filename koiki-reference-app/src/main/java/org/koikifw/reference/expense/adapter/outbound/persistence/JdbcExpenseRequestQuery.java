@@ -14,6 +14,7 @@ import org.koikifw.reference.expense.application.query.ExpenseRequestLineView;
 import org.koikifw.reference.expense.application.query.ExpenseRequestPage;
 import org.koikifw.reference.expense.application.query.ExpenseRequestQuery;
 import org.koikifw.reference.expense.application.query.ExpenseSelectionOption;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -150,8 +151,12 @@ public class JdbcExpenseRequestQuery implements ExpenseRequestQuery {
     }
 
     @Override
+    @Cacheable(
+            cacheNames = "koiki:reference:expense-category-options",
+            key = "'active'",
+            sync = true)
     public List<ExpenseSelectionOption> findAvailableExpenseCategories() {
-        return jdbc.sql("""
+        List<ExpenseSelectionOption> options = jdbc.sql("""
                         select category.expense_category_id as option_id,
                                category.expense_category_code as option_code,
                                category.expense_category_name as option_name
@@ -161,6 +166,7 @@ public class JdbcExpenseRequestQuery implements ExpenseRequestQuery {
                         """)
                 .query(this::mapOption)
                 .list();
+        return List.copyOf(options);
     }
 
     private ExpenseRequestPage query(

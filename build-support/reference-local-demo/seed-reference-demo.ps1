@@ -98,6 +98,9 @@ INSERT INTO koiki_user
 VALUES
     ('b2000000-0000-4000-8000-000000000001',
      'p3-demo-user@example.test', 'p3-demo-user@example.test', 'ACTIVE', 0,
+     CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('b2000000-0000-4000-8000-000000000002',
+     'p3-demo-applicant@example.test', 'p3-demo-applicant@example.test', 'ACTIVE', 0,
      CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO koiki_password_credential
@@ -169,7 +172,7 @@ VALUES
      'b3000000-0000-4000-8000-000000000001',
      1200, 'DRAFT', NULL, 0, CURRENT_TIMESTAMP - INTERVAL '3 days', CURRENT_TIMESTAMP - INTERVAL '3 days'),
     ('b3000000-0000-4000-8000-000000000102',
-     'b2000000-0000-4000-8000-000000000001',
+     'b2000000-0000-4000-8000-000000000002',
      'b3000000-0000-4000-8000-000000000001',
      2400, 'SUBMITTED', NULL, 1, CURRENT_TIMESTAMP - INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '2 days'),
     ('b3000000-0000-4000-8000-000000000103',
@@ -206,7 +209,7 @@ SELECT 'DEMO_READY'
 
 $sql = $sqlTemplate.Replace('__DEMO_PASSWORD__', $demoPassword)
 $result = @(Invoke-Postgres -Sql $sql)
-if ($result.Count -ne 1 -or $result[0] -ne 'DEMO_READY|users=1|permissions=5|departments=1|categories=1|expenses=3') {
+if ($result.Count -ne 1 -or $result[0] -ne 'DEMO_READY|users=2|permissions=5|departments=1|categories=1|expenses=3') {
     throw "Demo data verification returned an unexpected result: $($result -join ', ')"
 }
 

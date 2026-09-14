@@ -17,6 +17,9 @@ import org.junit.jupiter.api.Test;
 
 class ReferenceHtmxJourneyTest {
 
+    private static final String CONFLICT_REQUEST_ID =
+            "b3000000-0000-4000-8000-000000000102";
+
     @Test
     void exercisesSelectedMasterHtmxInteractionsInARealBrowser() {
         String baseUrl = requiredSetting(
@@ -119,6 +122,73 @@ class ReferenceHtmxJourneyTest {
             assertTrue(((String) rejected.get("body")).contains("role=\"alert\""));
             assertFalse(((String) rejected.get("body")).contains("InvalidCsrfTokenException"));
         }
+    }
+
+    @Test
+    void rejectsTheLaterExpenseDecisionFromAnIndependentBrowserContext() {
+        String baseUrl = requiredSetting(
+                        "koiki.browser.base-url", "KOIKI_REFERENCE_BROWSER_BASE_URL")
+                .replaceAll("/+$", "");
+        String loginEmail = requiredSetting(
+                "koiki.browser.login-email", "KOIKI_REFERENCE_BROWSER_LOGIN_EMAIL");
+        String loginPassword = requiredSetting(
+                "koiki.browser.login-password", "KOIKI_REFERENCE_BROWSER_LOGIN_PASSWORD");
+        boolean headless = Boolean.parseBoolean(setting(
+                "koiki.browser.headless", "KOIKI_REFERENCE_BROWSER_HEADLESS", "true"));
+
+        try (Playwright playwright = Playwright.create();
+                Browser browser = playwright.chromium().launch(
+                        new BrowserType.LaunchOptions().setHeadless(headless));
+                BrowserContext firstContext = browser.newContext();
+                BrowserContext secondContext = browser.newContext()) {
+            Page first = login(firstContext, baseUrl, loginEmail, loginPassword);
+            Page second = login(secondContext, baseUrl, loginEmail, loginPassword);
+            String detailUrl = baseUrl + "/expenses/approvals/" + CONFLICT_REQUEST_ID;
+
+            first.navigate(detailUrl);
+            second.navigate(detailUrl);
+            assertEquals("1", first.locator("input[name='expectedVersion']").first().inputValue());
+            assertEquals("1", second.locator("input[name='expectedVersion']").first().inputValue());
+
+            Response firstResponse = first.waitForResponse(
+                    response -> response.url().endsWith("/approve")
+                            && "POST".equals(response.request().method()),
+                    () -> first.locator("form[action$='/approve'] button[type='submit']").click());
+            assertEquals(302, firstResponse.status());
+            first.waitForURL(baseUrl + "/expenses/approvals");
+
+            second.locator("form[action$='/reject'] textarea[name='reason']")
+                    .fill("stale browser decision");
+            Response secondResponse = second.waitForResponse(
+                    response -> response.url().endsWith("/reject")
+                            && "POST".equals(response.request().method()),
+                    () -> second.locator("form[action$='/reject'] button[type='submit']").click());
+            assertEquals(409, secondResponse.status());
+            assertEquals("経費申請が他の操作で更新されました", second.locator("h1").textContent());
+            assertTrue(second.locator("main").textContent().contains("申請を上書きしていません"));
+            assertEquals(
+                    "/expenses/approvals/" + CONFLICT_REQUEST_ID,
+                    second.locator("a:has-text('最新の申請内容を確認する')")
+                            .getAttribute("href"));
+
+            second.locator("a:has-text('最新の申請内容を確認する')").click();
+            second.waitForURL(detailUrl);
+            assertTrue(second.locator("main").textContent().contains("APPROVED"));
+            assertFalse(second.locator("main").textContent().contains("stale browser decision"));
+        }
+    }
+
+    private static Page login(
+            BrowserContext context, String baseUrl, String email, String password) {
+        Page page = context.newPage();
+        page.navigate(baseUrl + "/login");
+        page.locator("input[name='username']").fill(email);
+        page.locator("input[name='password']").fill(password);
+        page.locator("button[type='submit']").click();
+        assertEquals(baseUrl + "/", page.url(),
+                "Login did not succeed. Use the random Password printed by seed-reference-demo.ps1, "
+                        + "not the PostgreSQL password.");
+        return page;
     }
 
     private static String requiredSetting(String propertyName, String environmentName) {

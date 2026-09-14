@@ -3,6 +3,10 @@ package org.koikifw.reference.expense;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.OptimisticLockException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -19,8 +23,12 @@ import org.koikifw.reference.expense.application.ExpenseApplicationService;
 import org.koikifw.reference.expense.application.ExpenseFailure;
 import org.koikifw.reference.expense.application.ExpenseLineInput;
 import org.koikifw.reference.expense.application.ExpenseOperationException;
+import org.koikifw.reference.expense.application.ExpenseReadService;
+import org.koikifw.reference.expense.application.query.ExpenseSelectionOption;
+import org.koikifw.reference.expense.domain.model.ExpenseRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.access.AccessDeniedException;
@@ -52,8 +60,19 @@ class ExpensePostgreSqlIntegrationTest {
     @Autowired
     private JdbcClient jdbc;
 
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
+
+    @Autowired
+    private CacheManager cacheManager;
+
+    @Autowired
+    private ExpenseReadService reads;
+
     @BeforeEach
     void prepareMasterData() {
+        Objects.requireNonNull(cacheManager.getCache("koiki:reference:expense-category-options"))
+                .clear();
         cleanReferenceData();
         jdbc.sql("""
                         insert into kkref_department
@@ -121,6 +140,45 @@ class ExpensePostgreSqlIntegrationTest {
     }
 
     @Test
+    void jpaVersionRejectsStalePersistenceContextWithoutStateOrAuditSideEffects() {
+        UUID requestId = createDraft(100);
+        long draftVersion = currentVersion(requestId);
+        expenses.submit(requestId, draftVersion);
+        long submittedVersion = currentVersion(requestId);
+        authenticate(APPROVER_ID, "EXPENSE:APPROVE");
+
+        EntityManager staleEntityManager = entityManagerFactory.createEntityManager();
+        try {
+            staleEntityManager.getTransaction().begin();
+            ExpenseRequest staleRequest = staleEntityManager.find(ExpenseRequest.class, requestId);
+
+            expenses.approve(requestId, submittedVersion);
+            staleRequest.reject(
+                    APPROVER_ID, "stale rejection", Instant.parse("2026-09-14T00:00:00Z"));
+
+            assertThatThrownBy(staleEntityManager::flush)
+                    .isInstanceOf(OptimisticLockException.class);
+        } finally {
+            if (staleEntityManager.getTransaction().isActive()) {
+                staleEntityManager.getTransaction().rollback();
+            }
+            staleEntityManager.close();
+        }
+
+        assertState(requestId, "APPROVED", submittedVersion + 1, 1);
+        assertThat(jdbc.sql("""
+                        select decision_reason from kkref_expense_request
+                        where expense_request_id = :id
+                        """)
+                .param("id", requestId)
+                .query(String.class)
+                .optional())
+                .isEmpty();
+        assertThat(expenseAuditActions())
+                .containsExactlyInAnyOrder("SUBMIT_EXPENSE", "APPROVE_EXPENSE");
+    }
+
+    @Test
     void rollsBackRejectedOperationsAndRejectsUnavailableMaster() {
         assertThatThrownBy(() -> createDraft(101))
                 .isInstanceOf(ExpenseOperationException.class)
@@ -139,9 +197,15 @@ class ExpensePostgreSqlIntegrationTest {
         assertState(requestId, "SUBMITTED", version + 1, 1);
         assertThat(countExpenseAuditEvents()).isEqualTo(1);
 
+        assertThat(expenseCategoryOptions())
+                .extracting(option -> option.id())
+                .containsExactly(CATEGORY_ID);
         jdbc.sql("update kkref_expense_category set active = false where expense_category_id = :id")
                 .param("id", CATEGORY_ID)
                 .update();
+        assertThat(expenseCategoryOptions())
+                .extracting(option -> option.id())
+                .containsExactly(CATEGORY_ID);
         assertThatThrownBy(() -> createDraft(100))
                 .isInstanceOf(ExpenseOperationException.class)
                 .extracting(exception -> ((ExpenseOperationException) exception).failure())
@@ -330,6 +394,11 @@ class ExpensePostgreSqlIntegrationTest {
             throw new IllegalArgumentException("Unexpected table");
         }
         return jdbc.sql("select count(*) from " + table).query(Long.class).single();
+    }
+
+    private List<ExpenseSelectionOption> expenseCategoryOptions() {
+        authenticate(APPLICANT_ID, "EXPENSE:APPLY");
+        return reads.findAvailableExpenseCategories();
     }
 
     private record TestPrincipal(FrameworkUserId userId, Set<String> permissions)

@@ -119,8 +119,10 @@ HTMX fallback、Thymeleaf HTML主軸の選択適用、Phase 2 Security再利用�
 承認した。P3-B1ではmaster JPA射影とexpense JdbcClient read modelを実装し、表示専用の複数owner queryに
 scope先行の狭いread-only JOINを許容するADR-038 fittingをArchitecture Ownerが承認した。P3-B1は`COMPLETE`である。
 P3-B2では正式`koiki-starter-web-mvc`、full-page Thymeleaf、Reference MVC、Phase 2 Security再利用および
-実browser / log / Audit / DB checkpointを実装・検証し、`COMPLETE / OWNER APPROVED`とした。次はP3-B3の
-選択的HTMX / browser runnerであり、P3-B4以降を先行しない。以降も同計画のCP、blocking reviewおよびGateを順守する。
+実browser / log / Audit / DB checkpointを実装・検証し、`COMPLETE / OWNER APPROVED`とした。P3-B3の
+選択的HTMX / browser runnerとP3-B4の楽観lock競合画面、Reference限定cache / TTLも
+`COMPLETE / OWNER APPROVED`である。次はGate B Web / query acceptanceの棚卸しであり、Gate B承認前に
+P3-C0以降を先行しない。以降も同計画のCP、blocking reviewおよびGateを順守する。
 
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
 Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは

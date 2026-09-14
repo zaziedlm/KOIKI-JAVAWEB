@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,8 @@ import org.koikifw.reference.HomeController;
 import org.koikifw.reference.expense.adapter.inbound.web.ExpenseWebController;
 import org.koikifw.reference.expense.adapter.inbound.web.ExpenseWebExceptionHandler;
 import org.koikifw.reference.expense.application.ExpenseApplicationService;
+import org.koikifw.reference.expense.application.ExpenseFailure;
+import org.koikifw.reference.expense.application.ExpenseOperationException;
 import org.koikifw.reference.expense.application.ExpenseReadService;
 import org.koikifw.reference.expense.application.query.ExpenseRequestDetail;
 import org.koikifw.reference.expense.application.query.ExpenseRequestLineView;
@@ -366,6 +369,26 @@ class ReferenceBusinessUrlSecurityTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString("申請が存在しないか、閲覧・操作できません。")))
                 .andExpect(content().string(org.hamcrest.Matchers.not(containsString(requestId.toString()))));
+    }
+
+    @Test
+    void rendersDedicatedConflictPageWithLatestScopedDetailLink() throws Exception {
+        UUID requestId = UUID.randomUUID();
+        ExpenseOperationException conflict = mock(ExpenseOperationException.class);
+        when(conflict.failure()).thenReturn(ExpenseFailure.CONCURRENT_MODIFICATION);
+        doThrow(conflict).when(expenseCommands).approve(requestId, 3L);
+
+        mockMvc.perform(post("/expenses/approvals/{id}/approve", requestId)
+                        .with(user("approver").authorities(() -> "EXPENSE:APPROVE"))
+                        .with(csrf())
+                        .param("expectedVersion", "3"))
+                .andExpect(status().isConflict())
+                .andExpect(content().string(containsString("経費申請が他の操作で更新されました")))
+                .andExpect(content().string(containsString("今回の操作では申請を上書きしていません。")))
+                .andExpect(content().string(containsString(
+                        "href=\"/expenses/approvals/" + requestId + "\"")))
+                .andExpect(content().string(not(containsString("ExpenseOperationException"))))
+                .andExpect(content().string(not(containsString("SESSION"))));
     }
 
     @Test
