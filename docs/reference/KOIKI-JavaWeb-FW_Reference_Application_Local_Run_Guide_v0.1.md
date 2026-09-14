@@ -76,7 +76,8 @@ Get-Item .\koiki-reference-app\target\koiki-reference-app-0.1.0-SNAPSHOT.jar
 
 ## 6. 実行時設定を供給する
 
-secretやpasswordをcommand line引数へ直接載せず、現在のPowerShell processだけに環境変数として設定する。
+secretやpasswordをcommand line引数へ直接載せず、Applicationを起動するPowerShell processだけに環境変数として
+設定する。Identityのsource HMAC keyは、実行ごとに32 byteの乱数を生成し、Base64で設定する。
 
 ```powershell
 $env:SERVER_PORT = "18080"
@@ -84,10 +85,21 @@ $env:SPRING_DATASOURCE_URL = "jdbc:postgresql://127.0.0.1:55432/koiki_reference"
 $env:SPRING_DATASOURCE_USERNAME = "koiki"
 $env:SPRING_DATASOURCE_PASSWORD = "local-only-password"
 $env:KOIKI_REFERENCE_SOURCE_HMAC_KEY_ID = "local-reference-1"
-$env:KOIKI_REFERENCE_SOURCE_HMAC_KEY = "replace-with-a-local-secret-of-at-least-32-bytes"
+
+$sourceHmacKeyBytes = [byte[]]::new(32)
+$sourceHmacKeyGenerator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+try {
+  $sourceHmacKeyGenerator.GetBytes($sourceHmacKeyBytes)
+} finally {
+  $sourceHmacKeyGenerator.Dispose()
+}
+$env:KOIKI_REFERENCE_SOURCE_HMAC_KEY = [Convert]::ToBase64String($sourceHmacKeyBytes)
+Remove-Variable sourceHmacKeyBytes, sourceHmacKeyGenerator
 ```
 
-`KOIKI_REFERENCE_SOURCE_HMAC_KEY`には32 byte以上のlocal secretを使用し、Repositoryへcommitしない。
+`KOIKI_REFERENCE_SOURCE_HMAC_KEY`はBase64文字列であり、Base64復号後に32 byte以上でなければならない。
+生成値をterminalへ表示せず、Repository、command history、log、文書または共有channelへ保存しない。同じPowerShellで
+Applicationを再起動する場合は設定値をそのまま再利用できる。
 
 ## 7. Applicationを起動する
 
@@ -100,7 +112,9 @@ java -jar .\koiki-reference-app\target\koiki-reference-app-0.1.0-SNAPSHOT.jar
 - Framework: `classpath:db/migration/koiki` / `koiki_flyway_history`
 - Reference: `classpath:db/migration/kkref` / `kkref_flyway_history`
 
-起動完了後、`http://127.0.0.1:18080/login`へアクセスする。
+Framework / Reference migrationの成功だけでなく、最後に`Started ReferenceApplication`が表示されることを確認する。
+ApplicationContextがその後の設定検証で停止した場合は起動完了ではなく、demo data投入へ進まない。起動完了後、
+このPowerShellはApplication実行用として開いたままにし、`http://127.0.0.1:18080/login`へアクセスする。
 
 ## 8. 初期データの制約
 
@@ -115,7 +129,55 @@ provisioningしない限りログイン後の業務操作はできない。
 - Identity作成やRole / Permission準備は、承認済みPublic contractを利用するprovisioning経路が所有する。
 
 P3-B2の目視確認に使用したデータは、使い捨てDBだけへ準備した検証データであり、本書の正式な初期データとは
-しない。再現可能なローカルprovisioningやbrowser runnerはTooling OwnershipとしてP3-B3以降の判断対象にする。
+しない。再現用のlocal demo fixtureはTooling Ownershipとして次項へ分離し、正式provisioningやbrowser runnerの
+代わりにはしない。
+
+### 8.1 使い捨てdemo dataを準備する
+
+開発チームが画面を短時間で確認する場合は、非配布Tooling
+`build-support/reference-local-demo/seed-reference-demo.ps1`を明示実行できる。§7のApplicationが
+`Started ReferenceApplication`まで到達した後、Applicationは起動したまま、別のPowerShellをRepository rootで開いて
+次を一度だけ実行する。seed用PowerShellには§6の環境変数を設定しない。
+
+```powershell
+.\build-support\reference-local-demo\seed-reference-demo.ps1 -ConfirmDisposable
+```
+
+scriptは次をすべて確認してからdataを登録する。
+
+- container名が`koiki-reference-`で始まり、PostgreSQL 17 containerが稼働している。
+- Framework / Referenceの必須tableが存在する。
+- Identity user、Reference master、所属、承認scopeおよびexpense dataが0件である。
+- 実行者が`-ConfirmDisposable`を明示している。
+
+成功すると、次のdemo dataと、実行ごとにランダム生成したlogin passwordをterminalへ表示する。
+
+- `p3-demo-user@example.test`と`P3_DEMO_REVIEWER`
+- Identity user ID `b2000000-0000-0000-0000-000000000001`
+- `EXPENSE:APPLY`、`EXPENSE:APPROVE`、`EXPENSE:SETTLE`、`IDENTITY:ADMIN`、`MASTER:ADMIN`
+- demo部門、経費科目、所属、承認scope
+- DRAFT、SUBMITTED、APPROVEDの経費申請各1件
+
+passwordの固定値はRepositoryへ保存されず、そのterminalと使い捨てDBだけに存在する。terminal出力をlog、文書、
+screenshotまたは共有channelへ保存しない。scriptはToolingによる直接SQL fixtureであり、正式なIdentity provisioning、
+production seed、migration、browser harnessまたはCustomer向け初期dataとして扱わない。既存dataを検出した場合は
+追記・更新・削除せず停止する。一度表示されたpasswordを失った場合は、scriptを再実行してcredentialを上書きせず、
+§9でApplicationとcontainerを停止して§4から使い捨て環境を作り直す。利用後も§9どおりdataを破棄する。
+
+### 8.2 Browserで確認する
+
+成功時に表示されたpasswordを共有・保存せず、その場で次のloginに使用する。
+
+| 確認対象 | 入力またはURL |
+|---|---|
+| Login | `http://127.0.0.1:18080/login` / `p3-demo-user@example.test` |
+| Identity user lookup | User ID `b2000000-0000-0000-0000-000000000001` |
+| Expense | `http://127.0.0.1:18080/expenses` |
+
+Identity user detailではRoleと5 Permissionを確認する。ExpenseではDRAFT、SUBMITTED、APPROVEDの3件を確認する。
+Browser開発者toolでは、login後に`SESSION` Cookieが発行されることを確認できる。Cookieはsession識別子だけを持ち、
+認証状態はserver-sideの`koiki_session` / `koiki_session_attributes`へ保存される。本local HTTP経路では`Secure`属性を
+付けず、`HttpOnly` / `SameSite=Lax`を確認する。productionのHTTPS境界へこのlocal例外を持ち込まない。
 
 ## 9. 停止する
 
@@ -125,8 +187,9 @@ Applicationを実行しているPowerShellで`Ctrl+C`を入力した後、Postgr
 docker stop koiki-reference-postgres
 ```
 
-本手順は`--rm`かつvolumeなしのため、container停止時に検証データは破棄される。永続化volume、Application container、
-DB初期データ構成、および複数processを含む開発環境は、後続の開発環境整備で別途設計する。
+本手順は`--rm`かつ永続化volumeを明示指定しない。PostgreSQL imageが作る匿名volumeもcontainerの自動削除に伴って
+削除され、停止時に検証データは破棄される。named volume、Application container、DB初期データ構成、および
+複数processを含む開発環境は、後続の開発環境整備で別途設計する。
 
 必要に応じて、PowerShell processへ設定した値を削除する。
 
@@ -167,11 +230,19 @@ container内のPostgreSQL起動、hostへのport公開、および他processと�
 
 1. Java 21でJARを実行しているか。
 2. datasource URL、user、passwordがPostgreSQL containerと一致するか。
-3. `KOIKI_REFERENCE_SOURCE_HMAC_KEY_ID`と32 byte以上のsecretを設定したか。
-4. Framework / Reference Flyway migration、JPA schema validationのどこで失敗したか。
-5. `18080`を別processが使用していないか。
+3. `KOIKI_REFERENCE_SOURCE_HMAC_KEY_ID`を設定したか。
+4. `KOIKI_REFERENCE_SOURCE_HMAC_KEY`がBase64としてdecodeでき、decode後に32 byte以上になるか。
+5. Framework / Reference Flyway migration、JPA schema validation、その後の設定検証のどこで失敗したか。
+6. `18080`を別processが使用していないか。
 
 回避のためにCSRF、default deny、Identity source protection、migrationまたはJPA validationを無効化しない。
+
+### Demo seedが停止する
+
+- `Required Framework and Reference migrations have not been applied.`: §7のApplication初回起動より先に実行している。
+  migration成功だけでなく`Started ReferenceApplication`を確認してから再実行する。
+- `Demo seed requires a clean disposable database`: IdentityまたはReference dataがすでに存在する。正常投入後の再実行も
+  この条件で拒否される。passwordを保持していれば再投入せず利用し、失っていれば§9で破棄して§4から作り直す。
 
 ## 11. 将来の開発環境との関係
 
