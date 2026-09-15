@@ -571,6 +571,7 @@ React / Next.js・SSO・Access / Refresh Token継続事項
 **Decided by:** Shuichi Kataoka, Architecture Owner
 **Date:** 2026年9月15日
 **Next CP:** P3-C1 最小REST API / Jackson 3 / Problem Details
+**Start handoff:** `docs/development/phase3-p3-c1-start-handoff-20260915.md`
 
 P3-C0の承認はP3-C1のReference / Tooling限定実装と検証だけを許可する。P3-C2以降、Phase 4実装、
 Framework Public API、migration、workflow、required check、remote push / PR / merge、ruleset変更または
