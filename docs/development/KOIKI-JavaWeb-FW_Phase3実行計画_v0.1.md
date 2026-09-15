@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 COMPLETE / OWNER APPROVED / P3-C1 READY
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 COMPLETE / OWNER APPROVED / P3-C1 READY
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -88,7 +88,7 @@ Owner reviewで確定する停止点として承認する。
 | 7 | DepartmentDeactivatingは同期Eventとし、Level 1期間はtransactional / async eventを禁止する | APPROVED | Level変更時はGate再審査 |
 | 8 | koiki-starter-web-mvcを正式Framework artifactにするか、Reference実証に留めるかを判断する | APPROVED | P3-B0-D1 COMPLETE。P3-B2で実責務と同時に正式artifactを新設する |
 | 9 | HTMX連携library、依存範囲、asset配布方式とJavaScript無効時のfallbackを判断する | APPROVED | P3-B0-D3〜D5 COMPLETE。2.0.10 WebJarとSpring標準＋内部fallbackを選択し、効果が明確な操作だけに適用する |
-| 10 | 最小REST APIのendpoint、DTO、Permission、status、error code、optimistic lock契約を確定する | STAGED DECISION APPROVED | P3-C0。REST production codeより前に確定する |
+| 10 | 最小REST APIのendpoint、DTO、Permission、status、error code、optimistic lock契約を確定する | APPROVED | P3-C0-D1〜D13 COMPLETE / OWNER APPROVED。P3-C1は承認済み契約内で実装する |
 | 11 | Reference migration version、history table、table / index / constraint、module間FKを確定する | APPROVED | P3-A0-D3 / D4 COMPLETE。V1〜V3、module内FKのみ、module間 / Framework FKなし |
 | 12 | masterのJPA class-based射影はTier 1のApplication DTOとして扱う | APPROVED | P3-B1でpackage / namingをEvidence化する |
 | 13 | cache対象、TTL、複数instance間で許容するstalenessを確定する | STAGED DECISION APPROVED | P3-B4のcache実装より前に確定する |
@@ -420,7 +420,7 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 8. §4の16判断点と、P3-A0 / B0 / C0 / C3 / Remote Gateへ配置したblocking review
 
 **Decision:** APPROVED — GATE P3-1 PASSED
-**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 READY
+**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 COMPLETE / OWNER APPROVED / P3-C1 READY
 **Approved scope:** §1〜17、§4の確定判断、staged decisionの停止点、P3-CP0からGate Cまでの順序、Hybrid Verification方針
 **Evidence:** 上位設計とReference仕様、Phase 2 COMPLETE / ACCEPTED baseline、開始main c88b335efdd556613c9ef7f4c5267214fdb8254b、§3のread-only棚卸し、本計画のDoD / AC trace
 **Decided by:** Shuichi Kataoka, Architecture Owner
@@ -557,3 +557,21 @@ REST、distributed cache、Framework昇格、SPA、Level 2およびremote変更�
 Gate Bの承認はP3-C0 contract reviewの開始だけを許可する。endpoint、DTO、Permission、status、error、
 optimistic lock契約のOwner承認前にREST production codeを実装しない。workflow、required check、remote push / PR / merge、
 ruleset変更またはsnapshot publishは引き続き個別Owner承認を必要とする。
+
+## 26. P3-C0 Architecture Owner decision record
+
+Architecture Ownerは`docs/architecture/validation/phase3-p3-c0-rest-contract-review.md`のP3-C0-D1〜D13を
+2026年9月15日に一体として承認した。
+
+**Decision:** APPROVED — P3-C0 CONTRACT COMPLETE / P3-C1 READY
+**Approved boundary:** 3 endpoint、独立REST DTO、expectedVersion、HTTP status / Problem Details、
+P3-C1限定Bearer代表profile、Phase 4必須Profile Sとの非衝突、Reference / Framework / Tooling Ownership、
+React / Next.js・SSO・Access / Refresh Token継続事項
+**Evidence:** `docs/architecture/validation/phase3-p3-c0-rest-contract-review.md`
+**Decided by:** Shuichi Kataoka, Architecture Owner
+**Date:** 2026年9月15日
+**Next CP:** P3-C1 最小REST API / Jackson 3 / Problem Details
+
+P3-C0の承認はP3-C1のReference / Tooling限定実装と検証だけを許可する。P3-C2以降、Phase 4実装、
+Framework Public API、migration、workflow、required check、remote push / PR / merge、ruleset変更または
+snapshot publishを先行しない。
