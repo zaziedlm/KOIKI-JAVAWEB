@@ -1,12 +1,13 @@
 # Phase 3 Gate B — Web / query acceptance inventory
 
-**Status:** INVENTORY / DISPOSITION OWNER APPROVED — GATE B INCOMPLETE / BLOCKING ITEMS OPEN  
+**Status:** COMPLETE / ACCEPTED — GATE B PASSED<br>
 **Inventory date:** 2026年9月15日  
 **Branch:** `feature/phase3-reference-vertical-slice`  
 **Inventory HEAD:** `272a2ab7c792a6b6fcf84c867b3697843fe907b5`  
+**Final verification HEAD:** `0f998ba440881108e7ffec2b1690a7d28f19bf61`<br>
 **Architecture Owner:** Shuichi Kataoka  
 **Production change:** Framework内部HTMX focus resource / Reference accessibility templateの限定修正
-**Next action:** Gate B accessibility remediationを単一commitとし、commit後clean HEADでGB-CLOSE-01を実行
+**Next action:** P3-C0最小REST API contract review。Owner承認前にREST production codeを実装しない
 
 ## 1. Review objective and boundary
 
@@ -79,7 +80,7 @@ browser runnerとdemo seedはRoot Reactor外の非配布Toolingである。
 | Form / View | inbound FormとApplication DTO / query recordを使用 | READY |
 | Domain / Entity | Controller、MVC Model、Templateへの露出なし | READY |
 | Full HTML | 通常GET / POST / PRGで対象画面が成立 | READY |
-| HTMX | master検索・paging・登録Validationだけに限定 | READY WITH L4 BLOCKER |
+| HTMX | master検索・paging・登録Validationだけに限定 | READY |
 | CSRF | Spring Security token / header名をmetaから取得しHTMX requestへ注入 | READY |
 | Partial error | 403 / 404 / 500のstatusとsanitized HTML fragmentを維持 | READY |
 | Conflict | 通常POST、hidden version、409専用画面、最新detail link、自動retryなし | READY |
@@ -92,24 +93,24 @@ browser runnerとdemo seedはRoot Reactor外の非配布Toolingである。
 | Ownership | Framework / Reference / Toolingの成果物とdependencyをB0〜B4で分離 | READY |
 | Query | applicant / approver / accounting scope、paging、count、最終record materializationを実DB確認 | READY |
 | MVC | full-page主軸、Form / View DTO / Controller / Use Case境界、OSIV無効 | READY |
-| HTMX | 11契約のMockMvc / source / 過去browser Evidenceあり。ただし現PCでL4 journeyが同一点で2回連続timeout | **BLOCKED** |
+| HTMX | 11契約のMockMvc / source / browser Evidenceと、Tooling同期修正後の通常timeout headed 3 / 3 PASS | READY |
 | Conflict | 409、最新detail、先行だけcommit、後発reason / Auditなし | READY |
 | Cache | option一覧だけ、30秒write TTL、master query非cache、command fail-safe | READY |
 | Security | default deny、CSRF、Permission、scope、Session、情報非露出を維持 | READY |
-| Accessibility | label / live region / status / alert / focus supportあり。keyboard-onlyとscreen readerの直接Evidence不足 | **BLOCKED FOR CHECKPOINT** |
-| Hybrid verification | L1〜L6の個別Evidenceあり。L4安定性とaccessibility分類を閉じた後に最終集約が必要 | NOT READY |
-| Clean aggregate | accepted P3-B4 HEADのRoot 16 / 16は成功済み。inventory後のclean HEAD最終実行は未実施 | PENDING FINAL RUN |
+| Accessibility | keyboard / focus / field error関連付けとNarrator限定checkpointを完了。件数固有announcementはGB-D8でnonblockingへ分類 | READY |
+| Hybrid verification | L1〜L6の個別Evidence、安定したheaded browser再検証、最終Root aggregateが成立 | READY |
+| Clean aggregate | remediation commit後のclean HEAD `0f998ba`でRoot `clean verify`が16 / 16 SUCCESS | READY |
 | Deferred | REST、distributed cache、Framework昇格、SPA、Level 2、remote変更は未着手 | READY |
 
-現時点のGate B判定は`INCOMPLETE`である。これはP3-B1〜B4の個別完了を否定するものではなく、Gate B固有の
-横断受入条件である安定した自動browser journeyとaccessibility checkpointが未完了であることを示す。
+P3-B1〜B4の個別完了、安定した自動browser journey、accessibility checkpointおよび最終clean aggregateが成立し、
+Architecture Ownerの最終承認によりGate Bを`COMPLETE / ACCEPTED`とする。
 
 ## 4. DoD / acceptance trace
 
 | Requirement | Milestone B Evidence | Gate B treatment |
 |---|---|---|
 | DoD 3-4 EntityをTemplateへ渡す違反のCI検出 | Architecture test、MVC Model / Template inventory、Public API 0型 | SATISFIED |
-| DoD 3-5 HTMX検索・paging・部分更新とCSRF自動注入 | B3 MockMvc / source / browser journey | FUNCTION SATISFIED / L4 STABILITY OPEN |
+| DoD 3-5 HTMX検索・paging・部分更新とCSRF自動注入 | B3 MockMvc / source / browser journeyとGB-BLK-01 close後の通常timeout再検証 | SATISFIED |
 | DoD 3-6 2 Session後発競合画面 | B4 PostgreSQL / MockMvc / 2 BrowserContext / DB / Audit | SATISFIED |
 | DoD 3-7 master JPA射影 / expense JdbcClient | B1の実DB scope / materializationとB2画面利用 | SATISFIED |
 | DoD 3-8 申請・承認・却下のBusiness Audit | Milestone A、B2 HTTP、B4先行承認 / 後発rollback | SUPPORTED BY COMBINED EVIDENCE |
@@ -126,8 +127,8 @@ DoD 3-10 / AC-P3-10のRESTおよびDoD 3-11のCI E2EはMilestone Cの責務で�
 | L1 Domain / Application | 状態、不変条件、Permission、version、Audit、cache fail-safe | COVERED |
 | L2 Web / Repository / PostgreSQL | MockMvc、JPA射影、JdbcClient scope、optimistic lock、TTL | COVERED |
 | L3 packaged HTTP journey | B2のlogin、Form、Validation、draft / submit、log / Audit / DB | COVERED |
-| L4 automated real browser | B3 HTMXとB4競合。GB-BLK-01はclose済み。keyboard checkpointでouterHTML error focus gapを検出 | **ACCESSIBILITY BLOCKER OPEN** |
-| L5 human visual / manual | full HTML、Validation、history、focus、409、TTL前後、stale拒否 | ACCESSIBILITY DETAILS OPEN |
+| L4 automated real browser | B3 HTMXとB4競合、Tooling安定化、outerHTML error focus修正後のactive-element assertion | COVERED |
+| L5 human visual / manual | full HTML、Validation、history、focus、409、TTL前後、stale拒否、keyboard / Narrator限定checkpoint | COVERED / LIMITED CHECKPOINT |
 | L6 log / Audit / DB | B2〜B4でstate / version / reason / Audit / sanitized logを突合 | COVERED |
 
 同一scenarioを全層へ重複させていない。query scopeと業務規則はL1 / L2、packageされた外部挙動はL3、
@@ -152,7 +153,7 @@ loading表示は応答が速くOwnerが視覚的には確認できなかった�
 MockMvcおよびsourceで確認済みである。この点を未検証とはしない一方、screen readerによる実announcementを
 確認済みとは表現しない。
 
-### 6.2 Not directly verified
+### 6.2 Limited verification and deferred boundary
 
 | Item | Current evidence boundary | Required Gate B treatment |
 |---|---|---|
@@ -267,6 +268,17 @@ OwnerのNarrator / browser checkpoint完了後、保持していたReference App
 解放を直接確認し、ランダムcredentialと使い捨て業務dataを破棄した。操作用に表示したcredential windowはApplication / DBを
 所有しないためcleanup対象processへ含めず、不要になった時点で利用者が閉じる。
 
+### 6.6 GB-CLOSE-01 final clean aggregate
+
+2026年9月15日、accessibility remediation commit後のclean HEAD
+`0f998ba440881108e7ffec2b1690a7d28f19bf61`でRoot Reactor `clean verify`を実行した。16 / 16 modulesが
+`SUCCESS`、Reference Applicationは86 tests、failure / error / skip 0、全体は1分13秒で`BUILD SUCCESS`となった。
+PostgreSQL 17 TestcontainerではFramework 3 migrationsとReference V1〜V3を適用し、package済みReference JARを生成した。
+test JVMの終了後、今回のPostgreSQL containerとRyuk containerが残っていないことをDocker APIで確認した。
+
+sandbox内の初回起動はMaven Wrapper配布物への通信が拒否され、Maven Reactor開始前に終了した。同じHEADとコマンドを
+許可済み実行環境で再実行した上記結果だけをGB-CLOSE-01の最終runとする。
+
 ## 7. Browser runner stability observation
 
 ### 7.1 New-PC reproduction result
@@ -330,14 +342,14 @@ Architecture Ownerは同日、限定修正、再検証結果およびGB-BLK-01�
 
 ## 8. Open items and disposition
 
-### 8.1 Blocking before Gate B close
+### 8.1 Gate B close items
 
 | ID | Item | Close condition |
 |---|---|---|
 | GB-BLK-01 | **CLOSED / OWNER APPROVED** — Browser ToolingのouterHTML swap / settle同期不足 | native `htmx:afterSettle`同期をTooling限定で適用し、通常timeoutのfocused headed runが3 / 3 PASS（2026年9月15日） |
 | GB-BLK-02 | **CLOSED / OWNER APPROVED** — keyboard、focus、Narrator Validationと検索内容読み上げが成立。件数固有announcementは承認済み要件でなく、nonblockingへ再分類 | §6.5のrequirement traceとGB-D8をOwnerが承認（2026年9月15日） |
 | GB-BLK-03 | **CLOSED / OWNER APPROVED** — expense全7可視fieldを関連付け済み | focused MockMvc 1 testとheaded rendered-DOM browser testがPASSし、Ownerがcloseを承認（2026年9月15日） |
-| GB-CLOSE-01 | inventory後clean HEADのRoot Reactor未実行 | blocking解消後のclean HEADで`clean verify`を1回実行し、16 / 16、test、DB、cleanupを記録する |
+| GB-CLOSE-01 | **CLOSED** — remediation commit後clean HEADのRoot Reactorを完了 | `0f998ba`で16 / 16 SUCCESS、Reference 86 tests、failure / error / skip 0、Testcontainers cleanup済み（2026年9月15日） |
 
 ### 8.2 Nonblocking observations
 
@@ -397,18 +409,34 @@ Reference / Tooling境界を越える場合
 
 **Decision date:** 2026年9月15日
 
-この承認はGate Bの最終Decisionではない。accepted HEAD、最終Root resultおよびArchitecture Owner close recordは、
-blocking itemの解消前に記入しない。
+**Final Decision:** `APPROVED — GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED`
 
-## 10. Proposed close sequence
+**Accepted scope:** P3-B1〜P3-B4のWeb / query成果、Framework / Reference / Tooling Ownership、限定accessibility remediation、GB-D1〜D8、GB-BLK-01〜03 closeおよびGB-CLOSE-01
+
+**Verification:** HEAD `0f998ba440881108e7ffec2b1690a7d28f19bf61`、Root Reactor 16 / 16 SUCCESS、Reference 86 tests、failure / error / skip 0、headed browser、Owner実演、keyboard / Narrator限定checkpoint、log / Audit / DB突合およびTestcontainers cleanup
+
+**Nonblocking / deferred:** §8.2および§11を維持し、WCAG適合認証、REST、distributed cache、Framework昇格、SPA、Level 2、remote変更をGate Bの達成主張へ含めない
+
+**Decided by:** Shuichi Kataoka, Architecture Owner
+
+**Decision date:** 2026年9月15日
+
+**Next CP:** P3-C0最小REST API contract review
+
+**Revisit trigger:** accepted scope、Ownership、HTMX / accessibility契約、query / cache / Security境界または最終検証結果を変更する場合
+
+この最終承認はP3-C0 contract reviewの開始だけを許可する。REST production code、workflow、required check、
+remote push / PR / merge、ruleset変更またはsnapshot publishを自動承認しない。
+
+## 10. Close sequence
 
 1. **DONE（2026年9月15日）** Architecture Ownerが§8のdispositionとGB-D1〜D5を承認した。
 2. **DONE（2026年9月15日）** GB-BLK-01を限定診断し、Browser Toolingのswap / settle同期不足と確定した。
 3. **DONE / OWNER APPROVED（2026年9月15日）** Tooling限定修正を適用し、通常timeoutのfocused headed browser testが3 / 3 PASSした。
 4. **DONE / OWNER APPROVED（2026年9月15日）** Framework内部focus修正、headed再検証、Narrator限定checkpointおよびrequirement traceが完了し、GB-BLK-02 / GB-BLK-03をcloseした。
-5. clean HEADでRoot Reactor `clean verify`を1回実行し、package、PostgreSQL、test、cleanupを記録する。
-6. Gate B Architecture Owner final review後にだけ`COMPLETE / ACCEPTED`、実行計画、validation indexを更新する。
-7. Gate B承認後にだけP3-C0最小REST API contract reviewへ進む。
+5. **DONE（2026年9月15日）** clean HEAD `0f998ba`でRoot Reactor `clean verify`を実行し、16 / 16 SUCCESS、Reference 86 tests、package、PostgreSQL migrationおよびcleanupを確認した。
+6. **DONE / OWNER APPROVED（2026年9月15日）** Gate Bを`COMPLETE / ACCEPTED`とし、実行計画とvalidation indexを更新する。
+7. P3-C0最小REST API contract reviewへ進む。Owner承認前にREST production codeを先行しない。
 
 ## 11. Deferred boundary
 

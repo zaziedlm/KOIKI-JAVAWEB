@@ -8,8 +8,8 @@ Phase 2 Security Foundationは`COMPLETE / ACCEPTED`である。Phase 3 Reference
 `docs/development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md`のGate P3-1承認とCP境界に従う。
 P3-CP0とP3-A0は`COMPLETE`、P3-A1〜P3-A4およびGate Aは`COMPLETE / ACCEPTED`、P3-B0は
 `COMPLETE / OWNER APPROVED`、P3-B1は`COMPLETE`、P3-B2〜P3-B4は
-`COMPLETE / OWNER APPROVED`である。次はGate B Web / query acceptanceの棚卸しであり、
-Gate B承認前にP3-C0以降を先行しない。
+`COMPLETE / OWNER APPROVED`、Gate Bは`COMPLETE / ACCEPTED`である。次はP3-C0最小REST API contract reviewであり、
+Owner承認前にREST production codeまたはP3-C1以降を先行しない。
 
 Phase 3では、承認済みbaselineを維持し、次を優先する。
 

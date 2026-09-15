@@ -24,7 +24,7 @@ P3-CP0、P3-A0 contract review、P3-A1 master、P3-A2 expense、P3-A3 authorizat
 P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX contract reviewを
 `COMPLETE / OWNER APPROVED`、P3-B1 read modelを`COMPLETE`、P3-B2 MVC / Thymeleafを
 `COMPLETE / OWNER APPROVED`、P3-B3 HTMXおよびP3-B4 optimistic conflict / cacheも
-`COMPLETE / OWNER APPROVED`とし、次はGate B Web / query acceptanceです。
+`COMPLETE / OWNER APPROVED`、Gate B Web / query acceptanceを`COMPLETE / ACCEPTED`とし、次はP3-C0最小REST API contract reviewです。
 
 ### Phase 3 Reference Vertical Slice
 
@@ -42,6 +42,7 @@ P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX con
 | P3-B2 MVC / Thymeleaf | COMPLETE / OWNER APPROVED | `validation/phase3-p3-b2-mvc-thymeleaf.md` |
 | P3-B3 HTMX | COMPLETE / OWNER APPROVED | `validation/phase3-p3-b3-htmx.md` |
 | P3-B4 Optimistic Conflict / Cache | COMPLETE / OWNER APPROVED | `validation/phase3-p3-b4-lock-cache-contract-review.md`、`validation/phase3-p3-b4-lock-cache.md` |
+| Gate B Web / Query Acceptance | COMPLETE / ACCEPTED | `validation/phase3-gate-b-web-query-acceptance.md` |
 
 ### Phase 2 Security Foundation
 

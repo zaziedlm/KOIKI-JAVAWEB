@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B INVENTORY READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 READY
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B INVENTORY READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 READY
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -420,7 +420,7 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 8. §4の16判断点と、P3-A0 / B0 / C0 / C3 / Remote Gateへ配置したblocking review
 
 **Decision:** APPROVED — GATE P3-1 PASSED
-**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B INVENTORY READY
+**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 READY
 **Approved scope:** §1〜17、§4の確定判断、staged decisionの停止点、P3-CP0からGate Cまでの順序、Hybrid Verification方針
 **Evidence:** 上位設計とReference仕様、Phase 2 COMPLETE / ACCEPTED baseline、開始main c88b335efdd556613c9ef7f4c5267214fdb8254b、§3のread-only棚卸し、本計画のDoD / AC trace
 **Decided by:** Shuichi Kataoka, Architecture Owner
@@ -534,3 +534,26 @@ TTL前後のOwner目視、stale category command拒否とDB非更新、applicati
 
 Gate BではP3-B1〜P3-B4の一貫性、accessibility、自動browser、Owner実演、log / Audit / DB Evidenceを
 横断評価する。Gate B承認前にP3-C0 REST contract review、workflow、required checkまたはremote操作を先行しない。
+
+## 25. Gate B Architecture Owner close record
+
+Architecture Ownerは`docs/architecture/validation/phase3-gate-b-web-query-acceptance.md`の横断評価、
+GB-D1〜D8、全blocking itemのclose、限定accessibility remediationおよび最終clean aggregateを
+2026年9月15日に一体として承認した。
+
+P3-B1〜P3-B4は、Framework / Reference / Tooling Ownership、query / command分離、full-page Thymeleaf主軸、
+選択的HTMX、Phase 2 Security再利用、Reference専用競合画面および表示専用local cacheの承認済み境界を維持する。
+件数固有のNarrator announcement、全画面・全Role・全支援技術のaccessibility certification、Playwright setup、
+REST、distributed cache、Framework昇格、SPA、Level 2およびremote変更はEvidence記載の先へdeferする。
+
+**Decision:** APPROVED — GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED
+**Accepted HEAD:** `0f998ba440881108e7ffec2b1690a7d28f19bf61`
+**Verification:** Root Reactor 16 / 16 SUCCESS、Reference 86 tests、failure / error / skip 0、headed browser、Owner実演、keyboard / Narrator限定checkpoint、log / Audit / DB突合、Testcontainers cleanup
+**Evidence:** `docs/architecture/validation/phase3-gate-b-web-query-acceptance.md`
+**Decided by:** Shuichi Kataoka, Architecture Owner
+**Date:** 2026年9月15日
+**Next CP:** P3-C0最小REST API contract review
+
+Gate Bの承認はP3-C0 contract reviewの開始だけを許可する。endpoint、DTO、Permission、status、error、
+optimistic lock契約のOwner承認前にREST production codeを実装しない。workflow、required check、remote push / PR / merge、
+ruleset変更またはsnapshot publishは引き続き個別Owner承認を必要とする。

@@ -121,8 +121,8 @@ scope先行の狭いread-only JOINを許容するADR-038 fittingをArchitecture 
 P3-B2では正式`koiki-starter-web-mvc`、full-page Thymeleaf、Reference MVC、Phase 2 Security再利用および
 実browser / log / Audit / DB checkpointを実装・検証し、`COMPLETE / OWNER APPROVED`とした。P3-B3の
 選択的HTMX / browser runnerとP3-B4の楽観lock競合画面、Reference限定cache / TTLも
-`COMPLETE / OWNER APPROVED`である。次はGate B Web / query acceptanceの棚卸しであり、Gate B承認前に
-P3-C0以降を先行しない。以降も同計画のCP、blocking reviewおよびGateを順守する。
+`COMPLETE / OWNER APPROVED`、Gate Bは`COMPLETE / ACCEPTED`である。次はP3-C0最小REST API contract reviewであり、
+Owner承認前にREST production codeまたはP3-C1以降を先行しない。以降も同計画のCP、blocking reviewおよびGateを順守する。
 
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
 Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは
