@@ -56,10 +56,12 @@
           th:attr="hx-post=@{/master/expense-categories}"
           hx-target="#category-create" hx-swap="outerHTML" hx-indicator="#category-create-loading">
       <label for="code">科目コード</label>
-      <input id="code" th:field="*{code}" required maxlength="100" pattern="[A-Z][A-Z0-9_]{0,99}" aria-describedby="code-error">
+      <input id="code" th:field="*{code}" required maxlength="100" pattern="[A-Z][A-Z0-9_]{0,99}" aria-describedby="code-error"
+             th:attr="data-koiki-focus=${#fields.hasErrors('code')} ? 'true' : null">
       <p id="code-error" class="error" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></p>
       <label for="name">科目名</label>
-      <input id="name" th:field="*{name}" required maxlength="200" aria-describedby="name-error">
+      <input id="name" th:field="*{name}" required maxlength="200" aria-describedby="name-error"
+             th:attr="data-koiki-focus=${!#fields.hasErrors('code') && #fields.hasErrors('name')} ? 'true' : null">
       <p id="name-error" class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
       <button type="submit">登録</button>
       <span id="category-create-loading" class="htmx-indicator" role="status">登録中</span>

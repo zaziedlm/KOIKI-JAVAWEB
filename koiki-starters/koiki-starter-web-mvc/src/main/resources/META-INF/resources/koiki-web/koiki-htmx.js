@@ -10,6 +10,13 @@
     return event.detail.target || event.detail.elt || null;
   }
 
+  function connectedTarget(target) {
+    if (!target || target.isConnected || !target.id) {
+      return target;
+    }
+    return document.getElementById(target.id) || target;
+  }
+
   document.addEventListener("htmx:configRequest", function (event) {
     var token = metaContent("_csrf");
     var header = metaContent("_csrf_header");
@@ -48,10 +55,13 @@
   });
 
   document.addEventListener("htmx:afterSwap", function (event) {
-    var target = event.detail.target;
-    var focusTarget = target.matches("[data-koiki-focus]")
-      ? target
-      : target.querySelector("[data-koiki-focus]");
+    var target = connectedTarget(event.detail.target);
+    var focusTarget = null;
+    if (target) {
+      focusTarget = target.matches("[data-koiki-focus]")
+        ? target
+        : target.querySelector("[data-koiki-focus]");
+    }
     if (focusTarget) {
       focusTarget.focus();
     }

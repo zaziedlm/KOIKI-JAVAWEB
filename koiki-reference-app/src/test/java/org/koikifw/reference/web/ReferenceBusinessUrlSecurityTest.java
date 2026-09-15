@@ -113,6 +113,8 @@ class ReferenceBusinessUrlSecurityTest {
                 .andExpect(content().string(containsString("htmx:configRequest")))
                 .andExpect(content().string(containsString("htmx:beforeSwap")))
                 .andExpect(content().string(containsString("responseUrl.endsWith(\"/login\")")))
+                .andExpect(content().string(containsString("target.isConnected")))
+                .andExpect(content().string(containsString("document.getElementById(target.id)")))
                 .andExpect(content().string(containsString("koiki:htmx:afterSwap")));
 
         mockMvc.perform(get("/webjars/htmx.org/2.0.10/dist/htmx.min.js"))
@@ -218,6 +220,7 @@ class ReferenceBusinessUrlSecurityTest {
                         .param("name", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("id=\"department-create\"")))
+                .andExpect(content().string(containsString("data-koiki-focus=\"true\"")))
                 .andExpect(content().string(containsString("must match")))
                 .andExpect(content().string(containsString("must not be blank")))
                 .andExpect(content().string(not(containsString("<html"))))
@@ -309,6 +312,41 @@ class ReferenceBusinessUrlSecurityTest {
                 org.mockito.ArgumentMatchers.eq(departmentId),
                 org.mockito.ArgumentMatchers.eq(1000L),
                 org.mockito.ArgumentMatchers.anyList());
+    }
+
+    @Test
+    void associatesEveryExpenseFieldErrorWithItsControl() throws Exception {
+        when(expenseReads.findAvailableDepartments()).thenReturn(List.of());
+        when(expenseReads.findAvailableExpenseCategories()).thenReturn(List.of());
+
+        mockMvc.perform(post("/expenses")
+                        .with(user("applicant"))
+                        .with(csrf())
+                        .param("departmentId", "")
+                        .param("claimedAmount", "0")
+                        .param("expenseCategoryId", "")
+                        .param("usageDate", LocalDate.now(java.time.ZoneOffset.UTC)
+                                .plusDays(1).toString())
+                        .param("description", "")
+                        .param("purpose", "")
+                        .param("lineAmount", "0"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("aria-describedby=\"department-error\"")))
+                .andExpect(content().string(containsString("id=\"department-error\"")))
+                .andExpect(content().string(containsString("aria-describedby=\"claimed-amount-error\"")))
+                .andExpect(content().string(containsString("id=\"claimed-amount-error\"")))
+                .andExpect(content().string(containsString("aria-describedby=\"expense-category-error\"")))
+                .andExpect(content().string(containsString("id=\"expense-category-error\"")))
+                .andExpect(content().string(containsString("aria-describedby=\"usage-date-error\"")))
+                .andExpect(content().string(containsString("id=\"usage-date-error\"")))
+                .andExpect(content().string(containsString("aria-describedby=\"description-error\"")))
+                .andExpect(content().string(containsString("id=\"description-error\"")))
+                .andExpect(content().string(containsString("aria-describedby=\"purpose-error\"")))
+                .andExpect(content().string(containsString("id=\"purpose-error\"")))
+                .andExpect(content().string(containsString("aria-describedby=\"line-amount-error\"")))
+                .andExpect(content().string(containsString("id=\"line-amount-error\"")));
+
+        verifyNoInteractions(expenseCommands);
     }
 
     @Test

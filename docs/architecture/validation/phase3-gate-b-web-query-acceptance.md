@@ -5,8 +5,8 @@
 **Branch:** `feature/phase3-reference-vertical-slice`  
 **Inventory HEAD:** `272a2ab7c792a6b6fcf84c867b3697843fe907b5`  
 **Architecture Owner:** Shuichi Kataoka  
-**Production change:** 0  
-**Next action:** GB-BLK-02 / 03の代表accessibility checkpoint
+**Production change:** Framework内部HTMX focus resource / Reference accessibility templateの限定修正
+**Next action:** Gate B accessibility remediationを単一commitとし、commit後clean HEADでGB-CLOSE-01を実行
 
 ## 1. Review objective and boundary
 
@@ -17,8 +17,10 @@
 2. **横断Evidenceで支持** — 複数CPの実装境界と検証結果を組み合わせると主張が成立する。
 3. **未確認 / blocking / deferred** — Gate Bの達成主張へ含めず、再確認条件または後続CPを明示する。
 
-本inventoryではproduction code、Public API、Maven module、migration、dependency、workflowまたはremote設定を
-変更しない。Gate Bが`COMPLETE / ACCEPTED`となる前にP3-C0 REST contract reviewへ進まない。
+本inventory開始時点ではproduction codeを変更しなかった。その後、blocking checkpointで検出した不足に対し、
+Architecture Ownerの個別承認を得てFramework内部HTMX resourceとReference accessibility templateだけを限定修正した。
+Public API、Maven module、migration、dependency、workflowまたはremote設定は変更しない。Gate Bが
+`COMPLETE / ACCEPTED`となる前にP3-C0 REST contract reviewへ進まない。
 
 P3-B1は`COMPLETE`、P3-B2〜P3-B4は`COMPLETE / OWNER APPROVED`であり、各CPの承認を取り消したり
 過去Evidenceを無効化したりしない。一方、別PCでGate B開始前に得た新しいbrowser再現結果は、Gate Bの
@@ -124,7 +126,7 @@ DoD 3-10 / AC-P3-10のRESTおよびDoD 3-11のCI E2EはMilestone Cの責務で�
 | L1 Domain / Application | 状態、不変条件、Permission、version、Audit、cache fail-safe | COVERED |
 | L2 Web / Repository / PostgreSQL | MockMvc、JPA射影、JdbcClient scope、optimistic lock、TTL | COVERED |
 | L3 packaged HTTP journey | B2のlogin、Form、Validation、draft / submit、log / Audit / DB | COVERED |
-| L4 automated real browser | B3 HTMXとB4競合。B4競合は現在も安定、B3 HTMXは現PCで連続timeout | **BLOCKING GAP** |
+| L4 automated real browser | B3 HTMXとB4競合。GB-BLK-01はclose済み。keyboard checkpointでouterHTML error focus gapを検出 | **ACCESSIBILITY BLOCKER OPEN** |
 | L5 human visual / manual | full HTML、Validation、history、focus、409、TTL前後、stale拒否 | ACCESSIBILITY DETAILS OPEN |
 | L6 log / Audit / DB | B2〜B4でstate / version / reason / Audit / sanitized logを突合 | COVERED |
 
@@ -143,7 +145,7 @@ HTMX / 2 Sessionの利用者操作はL4 / L5、backendの事実はL6がそれぞ
 | Loading | indicatorに`role="status"`、request中にtargetへ`aria-busy=true` | SOURCE + MockMvc + browser assertion |
 | Validation | master登録field errorを`aria-describedby`で関連付け、partial再描画 | SOURCE + MockMvc + browser |
 | Partial error | `role="alert"`、`tabindex="-1"`、`data-koiki-focus` | SOURCE + MockMvc |
-| Focus after swap | integration scriptが`data-koiki-focus`へfocusしcustom eventを発行 | SOURCE + Owner目視 / browser event |
+| Focus after swap | integration scriptが接続済みtarget内の`data-koiki-focus`へfocusしcustom eventを発行 | SOURCE + browser active-element assertion |
 | Conflict recovery | alert文言と最新detailへのnative link | SOURCE + MockMvc + browser |
 
 loading表示は応答が速くOwnerが視覚的には確認できなかったが、`aria-busy`の開始・終了を既存browser assertion、
@@ -154,13 +156,116 @@ MockMvcおよびsourceで確認済みである。この点を未検証とはし�
 
 | Item | Current evidence boundary | Required Gate B treatment |
 |---|---|---|
-| Keyboard-only journey | native control / link中心だが、Tab / Enter / Shift+Tabを使った明示checkpoint記録なし | master検索・paging・Validation・競合回復の代表経路を確認 |
-| Screen reader | semantic markupとlive / status / alertはあるが、読み上げ順・announcementの直接記録なし | Windows Narrator等による代表的smokeを確認、またはOwnerが例外と再判断条件を明記 |
-| Field error association全体 | master登録とexpense部門には`aria-describedby`があるが、expense全fieldのerror関連付けを網羅確認していない | source / rendered DOMを限定確認し、必要ならReferenceだけを限定修正 |
-| Focusのbrowser assertion | Owner目視とcustom event assertionはあるが、全swap / errorで`document.activeElement`を直接assertしていない | focused browser診断時に代表focusを確認 |
+| Keyboard-only journey | master検索・paging・Validation・競合回復をTab / Enter / Shift+Tabで確認済み | 代表経路は完了。全画面網羅はdeferred boundaryを維持 |
+| Screen reader | Windows Narratorでmaster Validation後のlabel / 関連errorを直接確認し、検索後の画面内容も読み上げ可能。件数固有announcementは非blocking観察 | Gate Bの限定checkpointを完了。全支援技術・固有announcement保証はdeferred boundaryを維持 |
+| Field error association全体 | expense全7可視fieldをsource / MockMvc / rendered DOMで確認済み | GB-D8で承認し、GB-BLK-03をclose済み |
+| Focusのbrowser assertion | master検索focus保持とValidation error focusを`document.activeElement`で直接確認済み | 代表経路は完了。全swap網羅へ拡張しない |
 
 色、responsive layout、zoom倍率および全画面・全Roleの網羅的screen reader試験はGate Bの現行Evidenceにない。
 これらをGate Bの達成主張へ暗黙に含めず、Phase 3の代表critical journeyを越える範囲はOwner reviewでdeferredを明示する。
+
+### 6.3 Gate B representative checkpoint result
+
+2026年9月15日、HEAD `153e262`をbaselineに代表checkpointを実施した。検出したouterHTML error-focus gapは、
+Architecture Ownerの個別承認後にFramework内部HTMX resourceへ限定修正した。
+
+| Checkpoint | Result | Evidence boundary |
+|---|---|---|
+| master検索 | PASS | Tabで検索inputへ到達し、keyboard入力後のHTMX GET、swap、URL更新を確認 |
+| master paging | PASS | 使い捨てDBへcheckpoint専用20件を一時投入し、native「次へ」linkへTabで到達してEnter遷移。正式seedは未変更 |
+| master Validation | PASS | Tab / Shift+Tab / EnterでPOSTとerror描画が成立し、新fragmentの最初のerror controlへのfocusを直接assert |
+| conflict recovery | PASS | 409画面のnative回復linkへTabで到達し、Enterで最新detailへ遷移 |
+| expense error association | PASS | 7可視fieldすべてのnative label、`aria-describedby`、対応する非空error要素をrendered DOMで確認 |
+| Screen reader | PASS / LIMITED CHECKPOINT | Windows NarratorでValidation errorを直接確認し、master検索後の画面内容も読み上げ可能。件数固有announcementは確認できず、非blocking観察へ分離 |
+
+keyboard強化後のheaded browser suiteは、focus marker追加前の検索、Validation操作、expense error関連付け、409回復を
+3 tests、failure / error / skip 0、7.789秒で成功した。Framework修正後は通常30秒timeoutのheaded suiteを再実行し、
+同じ3 testsがfailure / error / skip 0、7.627秒で成功した。この再検証にはmaster検索のfocus保持とValidation後の
+`#department-create #code`へのactive-element assertionを含む。paging checkpointも一時testで成功し、testと追加dataは破棄した。
+一覧1ページに20件を表示すると行ごとの名称更新・廃止controlが先行し、「次へ」までのTab回数が多くなるが、link自体は
+到達・操作可能である。これはGate B blockerではない操作性観察とし、全画面UX改善へscopeを拡張しない。
+
+GB-BLK-03では、expense Formの部門以外の6 fieldにerror関連付けがないことを検出した。Reference templateへ各error IDと
+`aria-describedby`を追加し、focused MockMvc 1 testとheaded rendered-DOM browser testを成功させた。Domain、Use Case、
+Form binding、migration、FrameworkまたはPublic APIは変更していないため、GB-BLK-03の技術的close条件を満たす。
+
+### 6.4 HTMX outerHTML error-focus finding
+
+master Validationの新fragmentで最初のerror controlへ条件付き`data-koiki-focus`を描画し、MockMvcではmarkerを確認した。
+一方、headed / headless browserの`document.activeElement`待機は通常30秒および診断用5秒でtimeoutした。secretを含まない
+lifecycle観測結果は次のとおりである。
+
+| Phase | event target | `isConnected` | target内marker | active element |
+|---|---|---:|---|---|
+| query `afterSwap` / `afterSettle` | 旧`department-query` | false | 旧`search` | `search` |
+| Validation `afterSwap` / `afterSettle` | 旧`department-create` | false | なし | body |
+
+HTMX outerHTML swapでは`event.detail.target`が切断済み旧DOMを指す。現行KOIKI integration scriptはこの旧target内で
+`data-koiki-focus`を検索するため、新fragmentのmarkerを発見できない。検索inputのfocusはHTMX自身の同一ID保持で成立しており、
+integration scriptが置換後DOMをfocusできる証拠ではなかった。原因をFramework内部HTMX focus処理のlive target解決不足へ
+分類する。
+
+Architecture Ownerは責務越境としての個別確認後、Framework内部限定修正への着手を承認した。`koiki-htmx.js`内部に、
+切断済みtargetと同じIDの接続済み要素をdocumentから解決し、見つからなければ従来targetへ戻す処理を追加した。
+focus探索と`koiki:htmx:afterSwap`のdetailはこのlive targetを使用する。custom event名、Public Java API、Reference MVC、
+timeoutまたはHTMX採用範囲は変更していない。
+
+修正済みresourceの配信契約、master Validation markerおよびexpense error関連付けをfocused MockMvc 3 testsで確認し、
+failure / error / skip 0で成功した。続いて使い捨てPostgreSQL、package済みReference JAR、Chromium headedで通常timeoutの
+3 browser testsを実行し、failure / error / skip 0、7.627秒で成功した。Validation後のactive elementは新しい
+`#department-create #code`であり、旧target参照によるfocus gapは解消した。使い捨てApplication、DB、credentialは破棄済みである。
+
+同日、Architecture OwnerはChromeのnative constraint validationとKOIKIのserver-side Validationを分けて確認した。
+checkpoint時だけBrowser consoleで対象formの`noValidate`を有効にし、HTMX partial再描画後、Windows Narratorが
+「部門コード」と関連する正規表現errorを読み上げることを直接確認した。この操作は使い捨てBrowser DOMだけへの変更であり、
+Reference template、ApplicationまたはFramework artifactを追加変更していない。これによりValidation announcementの
+代表screen-reader checkpointをPASSとする。master検索結果更新の`aria-live` announcementは別checkpointとして継続確認した。
+
+続くmaster検索checkpointでは、Architecture OwnerはNarratorが画面上の内容を読み上げる挙動を確認したが、
+「部門 0件」等の検索結果更新に固有のannouncementは確認できなかった。これをscreen reader全体の不成立とはせず、
+同時に`aria-live` announcementのPASSとも判定しない。source上は`aria-live="polite"` / `aria-atomic="true"`を持つ
+`#department-results`が、親`#department-query`の`outerHTML` swapとともに除去・再生成される。既存live regionの
+内容更新ではなくlive region自体の再挿入になることが影響した可能性があるが、現時点では実測に基づく原因候補であり、
+Reference viewのfocused診断前に修正方針へ固定しない。
+
+### 6.5 Master search announcement requirement trace and disposition
+
+検索結果件数の固有announcementがGate Bの承認済み要件かを、上位設計から実装Evidenceまで逆向きに確認した。
+
+| Source | Required accessibility boundary | Result-count announcement |
+|---|---|---|
+| グランドデザイン§13.2 / §13.4 | accessibility規約、screen reader、keyboard、focus管理 | 固有文言または検索件数announcementの指定なし |
+| Phase 3実行計画§6.2 / Gate B | JavaScript有効下のaccessibility、自動browser、Owner実演 | 固有announcementのexit criteriaなし |
+| P3-B0-D5 / HTMX 11契約 | semantic HTML、keyboard、focus、error関連付け、loading通知 | loadingは明示。検索はdebounce / query整合であり、件数announcementは未指定 |
+| P3-B1〜B4 Evidence | query scope、MVC、HTMX、conflict、cacheの個別受入 | 固有announcementをPublic / Reference契約として固定していない |
+| Gate B §6.2初期inventory | 未確認範囲を安全側に抽出 | 上位要件の転記ではなく、Gate内で追加した確認候補 |
+
+W3Cの[WCAG 2.2 Understanding SC 4.1.3](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html)では、
+検索結果一覧そのものはstatus updateではない一方、非フォーカス更新される「18 results returned」「No results returned」等の
+短い表示はstatus messageになり得ると説明する。現行caption「部門 N 件」は`aria-live="polite"` / `aria-atomic="true"`を持つ
+領域内にあり、[WAI-ARIA 1.2](https://www.w3.org/TR/wai-aria-1.2/#aria-live)が定める更新予告のprogrammatic propertyは存在する。
+ただしKOIKI Phase 3はWCAG適合level、特定screen readerでの発話文言、または件数固有announcementを受入契約としていない。
+
+HTMX公式の[`hx-swap`](https://htmx.org/attributes/hx-swap/)どおり、`outerHTML`はtarget要素全体を置換する。
+今回のNarrator観測はlive region再挿入時の相互運用性を示すが、keyboard操作、検索結果への到達、画面内容の読み上げ、
+Validation error関連付け / focus / 読み上げは成立している。固有announcementのためにswap境界を変更すると、承認済み
+検索・paging・history・focus契約へ新たな変更を入れることになる。
+
+以上から、件数固有announcementをGate B blockerとして新設せず、screen reader / browser組合せの非blocking相互運用性観察へ
+再分類する。Architecture OwnerはGB-D8でこのdispositionを承認し、限定keyboard / screen-reader checkpointを満たした
+GB-BLK-02をcloseした。
+将来WCAG適合levelまたはstatus message契約を定める場合は、安定live region、`role="status"`、swap境界および複数支援技術での
+実測を一体で再評価する。現時点ではReference templateまたはFramework resourceを追加修正しない。
+
+この人系確認前のコミット前worktreeでは、Root Reactor `clean verify`が16 / 16 SUCCESS、Reference 86 testsを含めて
+failure / error / skip 0、1分12秒で成功した。そのpackage済みJARに対するChromium headed browser suiteも3 tests、
+failure / error / skip 0、7.454秒で成功した。Evidence追記後かつ手動確認環境を維持中であるため、このrunを
+GB-CLOSE-01のコミット後clean HEAD / cleanup済み最終runへは代用しない。
+
+OwnerのNarrator / browser checkpoint完了後、保持していたReference Application processを停止し、`--rm`指定の
+`koiki-reference-postgres`を停止・自動削除した。Application process不在、container不在およびhost側18080 / 55432の
+解放を直接確認し、ランダムcredentialと使い捨て業務dataを破棄した。操作用に表示したcredential windowはApplication / DBを
+所有しないためcleanup対象processへ含めず、不要になった時点で利用者が閉じる。
 
 ## 7. Browser runner stability observation
 
@@ -230,8 +335,8 @@ Architecture Ownerは同日、限定修正、再検証結果およびGB-BLK-01�
 | ID | Item | Close condition |
 |---|---|---|
 | GB-BLK-01 | **CLOSED / OWNER APPROVED** — Browser ToolingのouterHTML swap / settle同期不足 | native `htmx:afterSettle`同期をTooling限定で適用し、通常timeoutのfocused headed runが3 / 3 PASS（2026年9月15日） |
-| GB-BLK-02 | keyboard-onlyとscreen readerの代表checkpointが未記録 | §6.2の代表操作を実施し、結果・未確認範囲・deferredを記録する |
-| GB-BLK-03 | expense Formのfield error関連付けを網羅確認していない | rendered DOM / sourceを確認し、必要ならReference限定修正とfocused testを行う |
+| GB-BLK-02 | **CLOSED / OWNER APPROVED** — keyboard、focus、Narrator Validationと検索内容読み上げが成立。件数固有announcementは承認済み要件でなく、nonblockingへ再分類 | §6.5のrequirement traceとGB-D8をOwnerが承認（2026年9月15日） |
+| GB-BLK-03 | **CLOSED / OWNER APPROVED** — expense全7可視fieldを関連付け済み | focused MockMvc 1 testとheaded rendered-DOM browser testがPASSし、Ownerがcloseを承認（2026年9月15日） |
 | GB-CLOSE-01 | inventory後clean HEADのRoot Reactor未実行 | blocking解消後のclean HEADで`clean verify`を1回実行し、16 / 16、test、DB、cleanupを記録する |
 
 ### 8.2 Nonblocking observations
@@ -241,7 +346,9 @@ Architecture Ownerは同日、限定修正、再検証結果およびGB-BLK-01�
 | applicantをemail表示する業務上の不自然さ | P3-B2承認どおりIdentityへ氏名を追加せず、employee profile等のOwnership reviewへ送る |
 | Identity AuthenticationProvider起動WARN | P3-B4承認どおり既知の構成WARNとして保持する |
 | loadingのOwner視覚確認 | automated browser / MockMvc / sourceの複数Evidenceを保持し、screen reader announcementとは分ける |
+| master検索件数のNarrator固有announcement | `aria-live` semanticsは存在するが、outerHTML再挿入時に固有発話を確認できず。Gate B要件へ追加せず、将来のWCAG level / status message契約時に再評価する |
 | Playwright初回のFirefox / WebKit追加download | 非配布Toolingのsetup再現性としてP3-C2で評価する |
+| master一覧のpaging linkまでのTab回数 | native linkは到達・Enter操作可能。行単位操作が先行するUXは全画面改善へ拡張せず後続評価へ送る |
 
 ## 9. Architecture Owner decision
 
@@ -253,6 +360,8 @@ Architecture Ownerは同日、限定修正、再検証結果およびGB-BLK-01�
 | GB-D4 | GB-BLK-01〜03の解消後、clean HEADのRoot ReactorをGate B最終close条件として1回実行する | REQUIRE FINAL RUN | APPROVED（2026年9月15日） |
 | GB-D5 | applicant表示、全画面網羅accessibility、Playwright setup、REST、distributed cache、Framework昇格、SPA、Level 2、remote変更を明示した先へdeferする | ACCEPT DEFERRED BOUNDARY | APPROVED（2026年9月15日） |
 | GB-D6 | GB-BLK-01のTooling限定`htmx:afterSettle`同期、通常timeoutのheaded focused 3 / 3 PASSおよびblocker closeを受け入れる | ACCEPT BLOCKER CLOSE | APPROVED（2026年9月15日） |
+| GB-D7 | outerHTMLの切断済みtargetを接続済み同一ID要素へ解決するFramework内部限定修正へ進み、公開契約を変えずfocused再検証する | AUTHORIZE LIMITED FRAMEWORK FIX | APPROVED（2026年9月15日） |
+| GB-D8 | 件数固有announcementは承認済みGate B要件でないため追加修正せず、Narrator相互運用性をnonblockingへ再分類してGB-BLK-02をcloseする | ACCEPT BLOCKER CLOSE | APPROVED（2026年9月15日） |
 
 **Decision:** `APPROVED — GATE B INVENTORY / OPEN ITEM DISPOSITION APPROVED; GATE B INCOMPLETE`  
 **Approved scope:** §8のblocking / nonblocking分類、GB-D1〜D5、および§10のclose sequence  
@@ -272,6 +381,22 @@ Reference / Tooling境界を越える場合
 
 **Decision date:** 2026年9月15日
 
+**GB-D7 Decision:** `APPROVED — LIMITED FRAMEWORK FIX AUTHORIZED`
+
+**Approved scope:** `koiki-htmx.js`内部のlive target解決、Referenceの条件付きfocus marker、MockMvc / headed browser再検証
+
+**Decided by:** Shuichi Kataoka, Architecture Owner
+
+**Decision date:** 2026年9月15日
+
+**GB-D8 Decision:** `APPROVED — GB-BLK-02 / GB-BLK-03 CLOSED`
+
+**Approved scope:** §6.5のrequirement trace、件数固有announcementのnonblocking再分類、限定keyboard / Narrator checkpoint、expense全7可視fieldのerror関連付け、およびGB-BLK-02 / GB-BLK-03 close
+
+**Decided by:** Shuichi Kataoka, Architecture Owner
+
+**Decision date:** 2026年9月15日
+
 この承認はGate Bの最終Decisionではない。accepted HEAD、最終Root resultおよびArchitecture Owner close recordは、
 blocking itemの解消前に記入しない。
 
@@ -280,7 +405,7 @@ blocking itemの解消前に記入しない。
 1. **DONE（2026年9月15日）** Architecture Ownerが§8のdispositionとGB-D1〜D5を承認した。
 2. **DONE（2026年9月15日）** GB-BLK-01を限定診断し、Browser Toolingのswap / settle同期不足と確定した。
 3. **DONE / OWNER APPROVED（2026年9月15日）** Tooling限定修正を適用し、通常timeoutのfocused headed browser testが3 / 3 PASSした。
-4. GB-BLK-02 / 03の代表accessibility checkpointと必要な限定修正を完了する。
+4. **DONE / OWNER APPROVED（2026年9月15日）** Framework内部focus修正、headed再検証、Narrator限定checkpointおよびrequirement traceが完了し、GB-BLK-02 / GB-BLK-03をcloseした。
 5. clean HEADでRoot Reactor `clean verify`を1回実行し、package、PostgreSQL、test、cleanupを記録する。
 6. Gate B Architecture Owner final review後にだけ`COMPLETE / ACCEPTED`、実行計画、validation indexを更新する。
 7. Gate B承認後にだけP3-C0最小REST API contract reviewへ進む。
