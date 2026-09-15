@@ -52,6 +52,7 @@ class ReferenceHtmxJourneyTest {
 
             page.evaluate("""
                     window.__koikiAfterSwap = 0;
+                    window.__koikiAfterSettle = 0;
                     window.__koikiBusyObserved = false;
                     document.addEventListener('htmx:beforeRequest', event => {
                       if (event.detail.target?.getAttribute('aria-busy') === 'true') {
@@ -59,6 +60,7 @@ class ReferenceHtmxJourneyTest {
                       }
                     });
                     document.addEventListener('koiki:htmx:afterSwap', () => window.__koikiAfterSwap++);
+                    document.addEventListener('htmx:afterSettle', () => window.__koikiAfterSettle++);
                     """);
 
             Response searchResponse = page.waitForResponse(
@@ -76,6 +78,8 @@ class ReferenceHtmxJourneyTest {
             assertTrue(((Number) page.evaluate("window.__koikiAfterSwap")).intValue() > 0);
             assertTrue((Boolean) page.evaluate("window.__koikiBusyObserved"));
             assertNull(page.locator("#department-query").getAttribute("aria-busy"));
+            page.waitForCondition(
+                    () -> ((Number) page.evaluate("window.__koikiAfterSettle")).intValue() > 0);
 
             page.waitForResponse(
                     response -> response.url().contains("/master/departments")

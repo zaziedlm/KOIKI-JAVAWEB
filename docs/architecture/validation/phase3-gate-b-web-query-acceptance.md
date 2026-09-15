@@ -6,7 +6,7 @@
 **Inventory HEAD:** `272a2ab7c792a6b6fcf84c867b3697843fe907b5`  
 **Architecture Owner:** Shuichi Kataoka  
 **Production change:** 0  
-**Next action:** GB-BLK-01 browser runner安定性のfocused原因分析
+**Next action:** GB-BLK-02 / 03の代表accessibility checkpoint
 
 ## 1. Review objective and boundary
 
@@ -186,14 +186,34 @@ container、credentialおよび一時logを破棄した。
 同じ箇所の2回連続timeoutを単発の外部揺らぎとして無視しない。Architecture Ownerは2026年9月15日、
 この再現結果をGate Bで確認・原因整理が必要なbrowser runner安定性事項として扱う方向を確認した。
 
-現時点ではproduct側HTMX処理の不成立か、outerHTML swap直後にrunnerが次操作へ進む同期不足かを確定していない。
-Application ERRORがなく、初回検索と競合journeyが成立し、過去Owner目視と最初の新PC runが成功しているため、
-runnerのswap / settle同期が第一の調査候補である。ただし、原因確認前にtestだけの問題と断定しない。
+同日、承認済みinventory HEAD `3463d1c`で、testへ一時的なsecretを含まないlifecycle counterだけを追加し、
+同じheaded focused journeyを再現した。第2検索のinput event時点とtimeout後の観測値は次のとおりである。
 
-次の対応ではtimeout延長、無条件retryまたはassertion削除で閉じない。request / HTMX lifecycle / DOM replacementを
-secretなしで観測し、次の操作開始条件を特定する。runner同期の問題であれば、outerHTML swap後の安定したlifecycleを
-待ち、置換後DOMからlocatorを再取得する等の限定修正を検討する。product側で2回目interactionが欠落する場合は、
-Reference / Starterの責務に沿って限定修正する。
+| Observation | Value |
+|---|---|
+| `koiki:htmx:afterSwap` count | 1 |
+| timeout後の`htmx:afterSettle` count | 1 |
+| 第2input event時点の`htmx:afterSettle` count | 0 |
+| 第2input value | `P3B3_NO_MATCH_B` |
+| timeout後URL | `?search=P3B3_NO_MATCH_A` |
+
+outerHTML swap後の新しいinputへ値は設定されたが、その要素をHTMXがsettleしてtriggerを結線する前にinput eventが発生したため、
+第2HTMX GET自体が発火していなかった。response predicateの取りこぼし、Applicationの応答停止、Reference MVCまたは
+Starter integrationの機能不成立ではない。原因を**Browser Toolingのlifecycle同期不足**へ分類する。
+
+診断実験として、第1swap後にnative `htmx:afterSettle`を明示的に待ってから第2inputを操作したところ、同一Application / DBに
+対してbrowserを毎回作り直したheaded focused journeyが3 / 3 PASSした。固定sleep、timeout延長、無条件retry、assertion削除、
+product code変更またはDB更新は行っていない。観測用test変更は実験後にすべて戻した。
+
+Architecture Ownerは2026年9月15日、この切り分けとTooling限定修正を確認した。非配布
+`ReferenceHtmxJourneyTest`へ第1swapのnative `htmx:afterSettle` counterと待機を追加し、置換後DOMの初期化完了後に
+第2検索へ進むよう修正した。KOIKI integration eventの意味、Reference template / MVC、Framework artifact、Public API、
+assertionまたはtimeout既定値は変更していない。
+
+恒久修正後、通常の30秒timeoutを維持したheaded focused journeyを、同一Application / DBに対してbrowser / JVMを毎回
+作り直して3回連続実行し、3 / 3 PASSした。無条件retryはなく、使い捨てApplication、DB、credentialおよび一時logは
+実行後に破棄した。以上によりGB-BLK-01のclose条件を満たした。
+Architecture Ownerは同日、限定修正、再検証結果およびGB-BLK-01のcloseを確認し、承認した。
 
 ### 7.3 Tooling-only setup observation
 
@@ -209,7 +229,7 @@ Reference / Starterの責務に沿って限定修正する。
 
 | ID | Item | Close condition |
 |---|---|---|
-| GB-BLK-01 | HTMX browser journeyが同一箇所で2回連続timeout | 原因をproduct / runner / environmentへ切り分け、限定修正後にfocused headed runを安定して成功させる |
+| GB-BLK-01 | **CLOSED / OWNER APPROVED** — Browser ToolingのouterHTML swap / settle同期不足 | native `htmx:afterSettle`同期をTooling限定で適用し、通常timeoutのfocused headed runが3 / 3 PASS（2026年9月15日） |
 | GB-BLK-02 | keyboard-onlyとscreen readerの代表checkpointが未記録 | §6.2の代表操作を実施し、結果・未確認範囲・deferredを記録する |
 | GB-BLK-03 | expense Formのfield error関連付けを網羅確認していない | rendered DOM / sourceを確認し、必要ならReference限定修正とfocused testを行う |
 | GB-CLOSE-01 | inventory後clean HEADのRoot Reactor未実行 | blocking解消後のclean HEADで`clean verify`を1回実行し、16 / 16、test、DB、cleanupを記録する |
@@ -232,6 +252,7 @@ Reference / Starterの責務に沿って限定修正する。
 | GB-D3 | accessibilityの成立済みEvidenceと未確認範囲を§6どおり分離し、代表keyboard / screen reader checkpointをclose条件とする | REQUIRE LIMITED CHECKPOINT | APPROVED（2026年9月15日） |
 | GB-D4 | GB-BLK-01〜03の解消後、clean HEADのRoot ReactorをGate B最終close条件として1回実行する | REQUIRE FINAL RUN | APPROVED（2026年9月15日） |
 | GB-D5 | applicant表示、全画面網羅accessibility、Playwright setup、REST、distributed cache、Framework昇格、SPA、Level 2、remote変更を明示した先へdeferする | ACCEPT DEFERRED BOUNDARY | APPROVED（2026年9月15日） |
+| GB-D6 | GB-BLK-01のTooling限定`htmx:afterSettle`同期、通常timeoutのheaded focused 3 / 3 PASSおよびblocker closeを受け入れる | ACCEPT BLOCKER CLOSE | APPROVED（2026年9月15日） |
 
 **Decision:** `APPROVED — GATE B INVENTORY / OPEN ITEM DISPOSITION APPROVED; GATE B INCOMPLETE`  
 **Approved scope:** §8のblocking / nonblocking分類、GB-D1〜D5、および§10のclose sequence  
@@ -243,14 +264,22 @@ Gate Bの最終close条件を維持する。
 **Revisit trigger:** blockerの分類またはclose条件の変更、Ownership / scopeの変更、あるいは限定修正が
 Reference / Tooling境界を越える場合
 
+**GB-D6 Decision:** `APPROVED — GB-BLK-01 CLOSED`
+
+**Approved scope:** 非配布Browser Toolingの限定修正、通常timeoutのheaded focused再検証結果、GB-BLK-01 close
+
+**Decided by:** Shuichi Kataoka, Architecture Owner
+
+**Decision date:** 2026年9月15日
+
 この承認はGate Bの最終Decisionではない。accepted HEAD、最終Root resultおよびArchitecture Owner close recordは、
 blocking itemの解消前に記入しない。
 
 ## 10. Proposed close sequence
 
 1. **DONE（2026年9月15日）** Architecture Ownerが§8のdispositionとGB-D1〜D5を承認した。
-2. GB-BLK-01についてHTMX request / lifecycle / DOM replacementを限定診断し、責務を確定する。
-3. 承認された場合だけ限定修正を行い、focused MockMvc / browser testで回帰する。
+2. **DONE（2026年9月15日）** GB-BLK-01を限定診断し、Browser Toolingのswap / settle同期不足と確定した。
+3. **DONE / OWNER APPROVED（2026年9月15日）** Tooling限定修正を適用し、通常timeoutのfocused headed browser testが3 / 3 PASSした。
 4. GB-BLK-02 / 03の代表accessibility checkpointと必要な限定修正を完了する。
 5. clean HEADでRoot Reactor `clean verify`を1回実行し、package、PostgreSQL、test、cleanupを記録する。
 6. Gate B Architecture Owner final review後にだけ`COMPLETE / ACCEPTED`、実行計画、validation indexを更新する。
