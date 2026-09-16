@@ -28,6 +28,10 @@
     </dependency>
     <dependency>
       <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.koikifw</groupId>
       <artifactId>koiki-starter-session-jdbc</artifactId>
     </dependency>
     <dependency>

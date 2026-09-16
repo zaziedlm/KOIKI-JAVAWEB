@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 COMPLETE / OWNER APPROVED / P3-C1 READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C1 COMPLETE / OWNER APPROVED
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 COMPLETE / OWNER APPROVED / P3-C1 READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C1 COMPLETE / OWNER APPROVED
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -420,7 +420,7 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 8. §4の16判断点と、P3-A0 / B0 / C0 / C3 / Remote Gateへ配置したblocking review
 
 **Decision:** APPROVED — GATE P3-1 PASSED
-**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0 COMPLETE / OWNER APPROVED / P3-C1 READY
+**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C1 COMPLETE / OWNER APPROVED
 **Approved scope:** §1〜17、§4の確定判断、staged decisionの停止点、P3-CP0からGate Cまでの順序、Hybrid Verification方針
 **Evidence:** 上位設計とReference仕様、Phase 2 COMPLETE / ACCEPTED baseline、開始main c88b335efdd556613c9ef7f4c5267214fdb8254b、§3のread-only棚卸し、本計画のDoD / AC trace
 **Decided by:** Shuichi Kataoka, Architecture Owner
@@ -575,4 +575,23 @@ React / Next.js・SSO・Access / Refresh Token継続事項
 
 P3-C0の承認はP3-C1のReference / Tooling限定実装と検証だけを許可する。P3-C2以降、Phase 4実装、
 Framework Public API、migration、workflow、required check、remote push / PR / merge、ruleset変更または
+snapshot publishを先行しない。
+
+## 27. P3-C1 implementation and verification checkpoint
+
+2026年9月16日、P3-C0の承認契約内で最小REST API、Jackson 3 Problem Details、P3-C1限定Bearer代表profile、
+PostgreSQL integrationおよびpackage済みJARの外部HTTP journeyを実装・検証した。
+
+**Status:** COMPLETE / OWNER APPROVED
+**Verification:** Root Reactor 16 / 16 projects、217 tests、Reference 99 tests、failure / error / skip 0、
+PostgreSQL 17、実署名Bearer、HTTP 201 / 200 / 204、state / version / Business Audit / log突合、
+通常profileのMVC local manualでmaster HTMX検索、expense create / submit、DB / Audit突合、操作中ERROR / WARNなし
+**Evidence:** `docs/architecture/validation/phase3-p3-c1-minimal-rest-api.md`
+**Decision:** APPROVED — P3-C1 COMPLETE / OWNER APPROVED
+**Decided by:** Shuichi Kataoka, Architecture Owner
+**Decision date:** 2026年9月16日
+**Next CP:** P3-C2 critical journey E2E
+
+P3-C1のReference / Tooling限定実装とEvidenceをcommit pointとして閉じた後、P3-C2を開始する。
+Phase 4、Framework Public API、migration、workflow、required check、remote push / PR / merge、ruleset変更または
 snapshot publishを先行しない。
