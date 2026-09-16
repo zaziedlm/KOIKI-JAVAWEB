@@ -124,12 +124,13 @@ P3-B2では正式`koiki-starter-web-mvc`、full-page Thymeleaf、Reference MVC�
 `COMPLETE / OWNER APPROVED`、Gate Bは`COMPLETE / ACCEPTED`である。P3-C0最小REST API contract reviewと
 P3-C1実装・検証とP3-C2 critical journey E2Eも`COMPLETE / OWNER APPROVED`である。P3-C2では
 Browser / API / DB / log aggregate、cleanupおよびCI候補を非配布Toolingで検証した。DoD 3-11の実CI PASSは
-Remote Gate / Gate Cへ継続する。P3-C3 MyBatis規約fixture / Rule 35〜37はArchitecture Owner判断により
+Remote Gateで充足し、Gate C final acceptanceへ入力する。P3-C3 MyBatis規約fixture / Rule 35〜37はArchitecture Owner判断により
 `DEFERRED — MyBatis adoption trigger required`である。Rule 8のMyBatis拒否を維持し、`SEPARATED`、
 Rule 25〜27 / 30〜37、fixtureまたはdependencyを採用トリガー前に追加しない。P3-C4 Journey / ADR /
 Skill / DoD traceは`COMPLETE / OWNER APPROVED`である。
-Remote Gate計画は`OWNER APPROVED`であり、RG-1〜RG-3、RG-7、RG-8に基づくlocal workflow実装を承認済みである。
-RG-4 push、RG-5 PR、RG-6 ruleset変更、workflow rerunまたはmergeは未承認である。
+Remote Gate計画は`OWNER APPROVED`であり、RG-4 push、RG-5 draft PRおよびRG-6 required check追加まで
+`APPROVED / EXECUTED`である。DoD 3-11は実CIでPASSし、`Phase 3 Critical Journey E2E`を含むrequired checks
+8件を維持する。workflow rerun、PR ready化、mergeまたはGate C acceptanceは未承認である。
 Phase 4または未承認のremote変更を先行せず、以降も同計画のCP、blocking review
 およびGateを順守する。
 

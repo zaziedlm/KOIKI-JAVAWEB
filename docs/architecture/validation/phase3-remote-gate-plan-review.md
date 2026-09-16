@@ -7,7 +7,7 @@
 | Review date | 2026年9月17日 |
 | Planning identity | `ee84312beda89a9430a4e2f4451a827d4c0aa863`（P3-C4 Owner承認commit） |
 | Branch | `feature/phase3-reference-vertical-slice` |
-| Status | `REMOTE CI EVIDENCE RECORDED / DoD 3-11 CI PASS / RG-6 OWNER DECISION READY` |
+| Status | `RG-6 APPROVED / EXECUTED / REQUIRED CHECKS 8 / 8 PASS / GATE C ACCEPTANCE PENDING` |
 | Ownership | Repository governance / CI Tooling / Architecture Evidence |
 | DoD continuation | DoD 3-11 `CI PASS — GATE C ACCEPTANCE PENDING` |
 | Remote mutation in planning review | 0 |
@@ -213,7 +213,7 @@ This PR starts as draft. Merge, ruleset mutation, workflow rerun, and Gate C acc
 | RG-3 | CI jobと同時に`.github/workflows/README.md`へ権限・実行・cleanup境界を記録してよいか | APPROVED |
 | RG-4 | workflow実装commit後、既存branchをforceなしでpushしてよいか | APPROVED / EXECUTED — forceなしでpush済み |
 | RG-5 | push後、`main`向けdraft PRを作成し自動CIを起動してよいか | APPROVED / EXECUTED — draft PR #35を作成済み |
-| RG-6 | fresh runner PASS後、新contextを8件目のrequired checkへ追加してよいか | READY FOR OWNER DECISION — §11のrun Evidence確認待ち |
+| RG-6 | fresh runner PASS後、新contextを8件目のrequired checkへ追加してよいか | APPROVED / EXECUTED — 8件目追加、read-back、8 / 8 PASS確認済み |
 | RG-7 | §8の失敗・rerun境界を採用するか | APPROVED |
 | RG-8 | Gate Cまでdraft、merge commit、bypass / direct push禁止を採用するか | APPROVED |
 
@@ -258,17 +258,26 @@ Gate C開始を許可しなかった。RG-4 / RG-5の後続個別承認と実行
 この結果は§8の失敗・retry境界に適合する。DoD 3-11の要求である実CI上のcritical journey PASSは充足した。
 これはGate Cのfinal acceptance、ruleset変更、ready化またはmerge承認を意味しない。
 
-### RG-6 recommended decision
+### RG-6 decision and execution
 
 `Phase 3 Critical Journey E2E`は独立jobとしてfresh runnerで成功し、cleanupも独立stepで成功した。
 同一HEADで既存7 required contextsを含む全checkが成功しているため、既存7件を維持したまま8件目のrequired checkへ
 追加する条件は満たしている。
 
-推奨承認文言は次のとおりとする。
+承認文言は次のとおりとした。
 
 > §11のfresh runner Evidenceを確認し、RG-6を承認する。`main-merge-protection`のactive、strict、
 > bypassなしおよび既存7 required checksを維持したまま、`Phase 3 Critical Journey E2E`を8件目の
 > required checkへ追加してよい。変更後はrulesetをread-backし、final PR HEADで8 / 8 required checksを確認する。
 
-RG-6がOwner承認されるまではrulesetを変更しない。workflow rerun、PR ready化、mergeおよびGate C acceptanceも
-引き続き別判断とする。
+**Decision:** APPROVED — RG-6 COMPLETE
+**Decided by:** Shuichi Kataoka, Architecture Owner
+**Decision date:** 2026年9月17日
+**Ruleset:** `main-merge-protection`（ID `21140116`）
+**Execution:** `Phase 3 Critical Journey E2E`をGitHub Actions integration ID `15368`の8件目として追加
+**Read-back:** active、strict=true、bypass actors 0、既存7件維持、required checks 8件
+**PR verification:** PR #35、HEAD `420ef798bf5003407d078cb8b33ee48ce738b77a`、required checks 8 / 8 PASS、draft維持、merge state `CLEAN`
+**Ruleset updated at:** 2026年9月17日 08:18:00 JST
+
+workflow rerun、PR ready化、mergeおよびGate C acceptanceは引き続き別判断とする。次のRepository commit後は、
+新しいPR HEADでrequired checks 8 / 8を再確認してからGate C reviewへ進む。

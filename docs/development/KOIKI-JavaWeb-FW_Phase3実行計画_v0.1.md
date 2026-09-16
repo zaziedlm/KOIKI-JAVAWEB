@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE PLAN OWNER APPROVED / RG-4・RG-5 EXECUTED / DoD 3-11 CI PASS / RG-6 OWNER DECISION READY / GATE C ACCEPTANCE PENDING
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE PLAN OWNER APPROVED / RG-4〜RG-6 EXECUTED / DoD 3-11 CI PASS / REQUIRED CHECKS 8 / 8 PASS / GATE C ACCEPTANCE PENDING
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE PLAN OWNER APPROVED / RG-4・RG-5 EXECUTED / DoD 3-11 CI PASS / RG-6 OWNER DECISION READY / GATE C ACCEPTANCE PENDING
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE PLAN OWNER APPROVED / RG-4〜RG-6 EXECUTED / DoD 3-11 CI PASS / REQUIRED CHECKS 8 / 8 PASS / GATE C ACCEPTANCE PENDING
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -767,7 +767,7 @@ remote mutation、Gate C開始またはPhase 3 final acceptanceを意味しな�
 2026年9月17日、RG-4 / RG-5の個別Owner承認に基づくforceなしのpushとdraft PR #35作成後、
 最終修正HEAD `9dd1ee250cc1e1f92f25245a3afa3a5e2d8d8785`のfresh runner結果を確認した。
 
-**Status:** DoD 3-11 CI PASS / RG-6 OWNER DECISION READY / GATE C ACCEPTANCE PENDING
+**Status:** DoD 3-11 CI PASS / RG-6 APPROVED / EXECUTED / REQUIRED CHECKS 8 / 8 PASS / GATE C ACCEPTANCE PENDING
 **PR:** `#35`、base `main`、head `feature/phase3-reference-vertical-slice`、draft維持
 **CI:** run `35130435989` attempt 1、7 / 7 jobs SUCCESS
 **Runtime compatibility:** run `35130436062` attempt 1、2 / 2 jobs SUCCESS
@@ -775,7 +775,10 @@ remote mutation、Gate C開始またはPhase 3 final acceptanceを意味しな�
 **Critical journey:** `Phase 3 Critical Journey E2E` SUCCESS、2分27秒。BOM stage、Chromium install、Reference package、journey、独立cleanup stepの全件SUCCESS
 **Failure treatment:** 先行runのfailureはmanual rerunせず、source修正commitと新runで解消。最終成功runはattempt 1
 **Evidence:** `docs/architecture/validation/phase3-remote-gate-plan-review.md` §11
-**Next:** RG-6のOwner判断。承認された場合だけ`Phase 3 Critical Journey E2E`を既存7件に加える8件目のrequired checkとして登録し、ruleset read-backとfinal HEAD 8 / 8を確認する
+**RG-6 decision:** Architecture Owner承認。`Phase 3 Critical Journey E2E`を8件目のrequired checkへ追加
+**Ruleset read-back:** `main-merge-protection` active、strict=true、bypass actors 0、既存7件維持、required checks 8件
+**PR verification:** HEAD `420ef798bf5003407d078cb8b33ee48ce738b77a`でrequired checks 8 / 8 PASS、draft維持、merge state `CLEAN`
+**Next:** 本記録のcommit / push後、新しいPR HEADでrequired checks 8 / 8を確認してGate C reviewへ進む
 
-DoD 3-11の実CI PASSは充足したが、Phase 3はまだ`COMPLETE / ACCEPTED`ではない。RG-6、Gate C、PR ready化、
+DoD 3-11の実CI PASSは充足したが、Phase 3はまだ`COMPLETE / ACCEPTED`ではない。Gate C、PR ready化、
 mergeおよびmerge後main CIはそれぞれ定めた順序と個別承認に従う。
