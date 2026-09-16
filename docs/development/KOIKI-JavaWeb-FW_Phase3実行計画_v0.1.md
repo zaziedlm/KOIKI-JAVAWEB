@@ -643,6 +643,7 @@ traceability一致を確認する
 **Decided by:** Shuichi Kataoka, Architecture Owner
 **Decision date:** 2026年9月16日
 **Next CP:** P3-C4 Journey / ADR / Skill / DoD trace
+**Start handoff:** `docs/development/phase3-p3-c4-start-handoff-20260916.md`
 
 P3-C4の開始はMyBatis実装を許可しない。adoption trigger成立後のblocking reviewなしに、MyBatis production code、
 Public API、dependency、migration、fixtureまたはRule 8の許可変更を行わない。workflow、required check、
