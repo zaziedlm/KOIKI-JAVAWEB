@@ -76,6 +76,13 @@ jobs:
           java-version: "21"
           cache: maven
 
+      - name: Stage KOIKI BOM for E2E tooling
+        timeout-minutes: 2
+        shell: bash
+        run: >-
+          ./mvnw --batch-mode --no-transfer-progress
+          -f pom.xml -pl koiki-dependencies-bom -am -DskipTests install
+
       - name: Install Playwright Chromium
         timeout-minutes: 4
         shell: bash
