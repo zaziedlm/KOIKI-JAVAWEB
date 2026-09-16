@@ -126,8 +126,9 @@ P3-C1実装・検証とP3-C2 critical journey E2Eも`COMPLETE / OWNER APPROVED`�
 Browser / API / DB / log aggregate、cleanupおよびCI候補を非配布Toolingで検証した。DoD 3-11の実CI PASSは
 Remote Gate / Gate Cへ継続する。P3-C3 MyBatis規約fixture / Rule 35〜37はArchitecture Owner判断により
 `DEFERRED — MyBatis adoption trigger required`である。Rule 8のMyBatis拒否を維持し、`SEPARATED`、
-Rule 25〜27 / 30〜37、fixtureまたはdependencyを採用トリガー前に追加しない。次はP3-C4 Journey / ADR /
-Skill / DoD traceであり、Phase 4、workflowまたはremote変更を先行せず、以降も同計画のCP、blocking review
+Rule 25〜27 / 30〜37、fixtureまたはdependencyを採用トリガー前に追加しない。P3-C4 Journey / ADR /
+Skill / DoD traceは`IN PROGRESS — C4-1 baseline classification COMPLETE`であり、次はC4-2 DoD / AC / ADR /
+Skill trace matrixである。Phase 4、workflowまたはremote変更を先行せず、以降も同計画のCP、blocking review
 およびGateを順守する。
 
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと

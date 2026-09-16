@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 IN PROGRESS / C4-1 COMPLETE
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 IN PROGRESS / C4-1 COMPLETE
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -648,3 +648,22 @@ traceability一致を確認する
 P3-C4の開始はMyBatis実装を許可しない。adoption trigger成立後のblocking reviewなしに、MyBatis production code、
 Public API、dependency、migration、fixtureまたはRule 8の許可変更を行わない。workflow、required check、
 remote操作およびsnapshot publishはRemote Gateまでdeferする。
+
+## 30. P3-C4 C4-1 baseline classification checkpoint
+
+2026年9月16日、Phase 3開始baseline `c88b335efdd556613c9ef7f4c5267214fdb8254b`から
+P3-C4開始HEAD `4f6b2ccc4b186c46d5dfcba1f83d0e5fb951da65`までのcommit済み差分をread-onlyで分類した。
+
+**Status:** C4-1 BASELINE CLASSIFICATION COMPLETE / P3-C4 IN PROGRESS
+**Result:** 28 commits、194 files、追加172、変更22、削除0
+**Classification:** Framework、Reference、Tooling、Documentationおよび対応CP / Gateへ全filesを分類
+**Boundary:** Java Public API差分0、Framework migration差分0、workflow差分0、想定外top-level path 0、
+MyBatis `SEPARATED` / fixture / test dependency 0
+**Finding:** Reference Local Run GuideがP3-B2対象表示のままであり、Phase 3完成形のEngineer-facing Journey導線を
+C4-2以降の文書closeoutで補正する
+**Evidence:** `docs/architecture/validation/phase3-p3-c4-traceability-closeout.md`
+**Verification:** Git baseline diffと`git diff --check`。Maven / Docker / BrowserはC4-1では未実行
+**Next:** C4-2 DoD 3-1〜3-11、AC-P3-01〜10、ADR / Skill trace matrix
+
+C4-1はP3-C4 close、Remote GateまたはGate Cを意味しない。DoD 3-11の実CI PASS、workflow、required check、
+remote操作およびsnapshot publishは引き続き個別Owner承認までdeferする。
