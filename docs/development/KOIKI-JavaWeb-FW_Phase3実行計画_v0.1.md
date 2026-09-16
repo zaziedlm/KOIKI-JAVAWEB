@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE PLAN OWNER APPROVED / LOCAL WORKFLOW IMPLEMENTATION AUTHORIZED / REMOTE ACTIONS PENDING / DoD 3-11 PENDING CI EVIDENCE
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE PLAN OWNER APPROVED / RG-4・RG-5 EXECUTED / DoD 3-11 CI PASS / RG-6 OWNER DECISION READY / GATE C ACCEPTANCE PENDING
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE PLAN OWNER APPROVED / LOCAL WORKFLOW IMPLEMENTATION AUTHORIZED / REMOTE ACTIONS PENDING / DoD 3-11 PENDING CI EVIDENCE
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE PLAN OWNER APPROVED / RG-4・RG-5 EXECUTED / DoD 3-11 CI PASS / RG-6 OWNER DECISION READY / GATE C ACCEPTANCE PENDING
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -761,3 +761,21 @@ read-only inventoryと承認候補を整理した。
 
 DoD 3-11は`PENDING CI EVIDENCE`を維持する。本承認はlocal workflow実装とそのlocal検証に限定し、
 remote mutation、Gate C開始またはPhase 3 final acceptanceを意味しない。
+
+## 36. Remote CI Evidence checkpoint
+
+2026年9月17日、RG-4 / RG-5の個別Owner承認に基づくforceなしのpushとdraft PR #35作成後、
+最終修正HEAD `9dd1ee250cc1e1f92f25245a3afa3a5e2d8d8785`のfresh runner結果を確認した。
+
+**Status:** DoD 3-11 CI PASS / RG-6 OWNER DECISION READY / GATE C ACCEPTANCE PENDING
+**PR:** `#35`、base `main`、head `feature/phase3-reference-vertical-slice`、draft維持
+**CI:** run `35130435989` attempt 1、7 / 7 jobs SUCCESS
+**Runtime compatibility:** run `35130436062` attempt 1、2 / 2 jobs SUCCESS
+**PR rollup:** 同一HEADで9 / 9 checks SUCCESS
+**Critical journey:** `Phase 3 Critical Journey E2E` SUCCESS、2分27秒。BOM stage、Chromium install、Reference package、journey、独立cleanup stepの全件SUCCESS
+**Failure treatment:** 先行runのfailureはmanual rerunせず、source修正commitと新runで解消。最終成功runはattempt 1
+**Evidence:** `docs/architecture/validation/phase3-remote-gate-plan-review.md` §11
+**Next:** RG-6のOwner判断。承認された場合だけ`Phase 3 Critical Journey E2E`を既存7件に加える8件目のrequired checkとして登録し、ruleset read-backとfinal HEAD 8 / 8を確認する
+
+DoD 3-11の実CI PASSは充足したが、Phase 3はまだ`COMPLETE / ACCEPTED`ではない。RG-6、Gate C、PR ready化、
+mergeおよびmerge後main CIはそれぞれ定めた順序と個別承認に従う。

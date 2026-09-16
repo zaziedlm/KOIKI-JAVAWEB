@@ -7,10 +7,10 @@
 | Review date | 2026年9月17日 |
 | Planning identity | `ee84312beda89a9430a4e2f4451a827d4c0aa863`（P3-C4 Owner承認commit） |
 | Branch | `feature/phase3-reference-vertical-slice` |
-| Status | `REMOTE GATE PLAN OWNER APPROVED / LOCAL WORKFLOW IMPLEMENTATION AUTHORIZED / REMOTE ACTIONS PENDING` |
+| Status | `REMOTE CI EVIDENCE RECORDED / DoD 3-11 CI PASS / RG-6 OWNER DECISION READY` |
 | Ownership | Repository governance / CI Tooling / Architecture Evidence |
-| DoD continuation | DoD 3-11 `PENDING CI EVIDENCE` |
-| Remote mutation in this review | 0 |
+| DoD continuation | DoD 3-11 `CI PASS — GATE C ACCEPTANCE PENDING` |
+| Remote mutation in planning review | 0 |
 
 P3-C4は`COMPLETE / OWNER APPROVED`である。Remote Gateは、P3-C2で受け入れたcritical journey CI候補を
 GitHub-hosted runnerで実行し、DoD 3-11の実CI PASSをGate Cへ入力するためのworkflow、push、PR、ruleset、
@@ -211,19 +211,64 @@ This PR starts as draft. Merge, ruleset mutation, workflow rerun, and Gate C acc
 | RG-1 | §2のremote inventoryとcurrent branch継続利用を受け入れるか | APPROVED |
 | RG-2 | §4の独立CI jobを既存`ci.yml`へ追加してよいか | APPROVED WITH CLEANUP CONDITION |
 | RG-3 | CI jobと同時に`.github/workflows/README.md`へ権限・実行・cleanup境界を記録してよいか | APPROVED |
-| RG-4 | workflow実装commit後、既存branchをforceなしでpushしてよいか | PENDING — 実装差分確認後に個別承認 |
-| RG-5 | push後、`main`向けdraft PRを作成し自動CIを起動してよいか | PENDING — remote HEAD確認後に個別承認 |
-| RG-6 | fresh runner PASS後、新contextを8件目のrequired checkへ追加してよいか | PENDING — run Evidence確認後に個別承認 |
+| RG-4 | workflow実装commit後、既存branchをforceなしでpushしてよいか | APPROVED / EXECUTED — forceなしでpush済み |
+| RG-5 | push後、`main`向けdraft PRを作成し自動CIを起動してよいか | APPROVED / EXECUTED — draft PR #35を作成済み |
+| RG-6 | fresh runner PASS後、新contextを8件目のrequired checkへ追加してよいか | READY FOR OWNER DECISION — §11のrun Evidence確認待ち |
 | RG-7 | §8の失敗・rerun境界を採用するか | APPROVED |
 | RG-8 | Gate Cまでdraft、merge commit、bypass / direct push禁止を採用するか | APPROVED |
 
 RG-2の承認条件として、local workflowの最終cleanupは、本jobが所有するTestcontainers container、
 package済みReference JAR process、Playwright / Chromium processおよび一時process logの残存0を独立確認する。
 
-**Decision:** RG-1〜RG-3、RG-7、RG-8 APPROVED
+**Planning-time decision:** RG-1〜RG-3、RG-7、RG-8 APPROVED
 **Decided by:** Shuichi Kataoka, Architecture Owner
 **Decision date:** 2026年9月17日
 **Authorized next action:** §4のworkflowとworkflow READMEのlocal実装・検証・commit
 
-RG-4〜RG-6は、それぞれworkflow実装差分、remote branch identity、fresh runner Evidenceが揃ってから判断する。
-本承認はpush、PR、ruleset変更、workflow rerun、mergeまたはGate C開始を許可しない。
+計画承認時点ではRG-4〜RG-6を、それぞれworkflow実装差分、remote branch identity、fresh runner Evidenceが
+揃ってから判断するものとした。この計画承認自体はpush、PR、ruleset変更、workflow rerun、mergeまたは
+Gate C開始を許可しなかった。RG-4 / RG-5の後続個別承認と実行結果は上表および§11へ記録する。
+
+## 11. Remote CI Evidence and RG-6 readiness
+
+2026年9月17日、draft PR #35の最終修正HEADに対するfresh runner結果をread-onlyで確認した。
+
+| Evidence | Result |
+|---|---|
+| PR | [#35](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/35)、base `main`、head `feature/phase3-reference-vertical-slice`、draft維持 |
+| Source identity | `9dd1ee250cc1e1f92f25245a3afa3a5e2d8d8785` |
+| CI run | [35130435989](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/35130435989)、attempt 1、7 / 7 jobs SUCCESS |
+| Runtime run | [35130436062](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/35130436062)、attempt 1、2 / 2 jobs SUCCESS |
+| PR check rollup | 同一HEADで9 / 9 checks SUCCESS |
+| Critical E2E | `Phase 3 Critical Journey E2E` SUCCESS、2分27秒 |
+| Critical E2E steps | BOM stage、Chromium install、Reference package、critical journey、cleanupの全step SUCCESS |
+| Cleanup | `Inspect and clean owned E2E resources` SUCCESS、test本体成功後の独立stepとして11秒で完了 |
+| Cumulative verification | `Local Identity Session Audit Integration`を含む既存checkもSUCCESS |
+
+初回のremote実行系列ではsource defectを検出し、manual rerunで結果を上書きせず、原因ごとに修正commitを追加した。
+
+| Run | HEAD | Result / treatment |
+|---|---|---|
+| [35122117830](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/35122117830) | `753d5cf` | CANCELLED。後続source commitのpushにより新runへ移行 |
+| [35123220247](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/35123220247) | `3d8bae8` | CANCELLED。後続source commitのpushにより新runへ移行 |
+| [35124442067](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/35124442067) | `66fa0ad` | FAILURE。Phase 2累積検証のReference migration境界を修正 |
+| [35127925961](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/35127925961) | `4e07592` | FAILURE。Phase 2累積検証のReference source境界を修正 |
+| [35130435989](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/35130435989) | `9dd1ee2` | SUCCESS。最終HEADのattempt 1 |
+
+この結果は§8の失敗・retry境界に適合する。DoD 3-11の要求である実CI上のcritical journey PASSは充足した。
+これはGate Cのfinal acceptance、ruleset変更、ready化またはmerge承認を意味しない。
+
+### RG-6 recommended decision
+
+`Phase 3 Critical Journey E2E`は独立jobとしてfresh runnerで成功し、cleanupも独立stepで成功した。
+同一HEADで既存7 required contextsを含む全checkが成功しているため、既存7件を維持したまま8件目のrequired checkへ
+追加する条件は満たしている。
+
+推奨承認文言は次のとおりとする。
+
+> §11のfresh runner Evidenceを確認し、RG-6を承認する。`main-merge-protection`のactive、strict、
+> bypassなしおよび既存7 required checksを維持したまま、`Phase 3 Critical Journey E2E`を8件目の
+> required checkへ追加してよい。変更後はrulesetをread-backし、final PR HEADで8 / 8 required checksを確認する。
+
+RG-6がOwner承認されるまではrulesetを変更しない。workflow rerun、PR ready化、mergeおよびGate C acceptanceも
+引き続き別判断とする。
