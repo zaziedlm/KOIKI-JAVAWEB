@@ -65,7 +65,9 @@ Tier 1 SIMPLEを開始点とし、次のいずれかに該当する場合はTier
 ## 4. 永続化とモデル方式を選ぶ
 
 - 更新系はSpring Data JPAを既定とする。
-- SQL指向の更新または既存SQL資産の移行では、モジュール単位でMyBatisを選ぶ。
+- SQL指向の更新または既存SQL資産の移行では、モジュール単位のMyBatisを採用候補とする。ただし現行baselineは
+  `PersistenceModel.SEPARATED`を未提供としてRule 8でMyBatisを拒否しているため、adoption trigger成立後の
+  blocking reviewと実装検証を閉じるまで選択しない。
 - 1モジュールの更新系でJPAとMyBatisを混在させない。
 - Tier 2 + JPAではDomain ModelとJPA Entityの共有方式を既定とする。
 - setterを公開せず、状態変更を意味のある業務メソッドへ閉じ込める。
@@ -77,7 +79,7 @@ Tier 1 SIMPLEを開始点とし、次のいずれかに該当する場合はTier
 3. schema制約によりモデル側の不変条件を表現できない。
 4. MyBatisを採用する。
 
-分離方式やMyBatisの詳細規約は後続Phaseの証拠を確認し、未検証の構造を推測で固定しない。
+分離方式やMyBatisの詳細規約はadoption Gateの証拠を確認し、未検証の構造を推測で固定しない。
 
 ## 5. read modelを選ぶ
 

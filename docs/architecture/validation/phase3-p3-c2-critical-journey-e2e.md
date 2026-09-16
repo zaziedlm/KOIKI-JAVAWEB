@@ -118,6 +118,9 @@ CI候補判断を承認した。
 **Decided by:** Shuichi Kataoka, Architecture Owner
 **Decision date:** 2026年9月16日
 **Next CP:** P3-C3 MyBatis規約fixture / Rule 35〜37
+**Subsequent decision:** P3-C3は同日、Architecture Owner判断により
+`DEFERRED — MyBatis adoption trigger required`となった。現在のNext CPはP3-C4である。
+判断Evidenceは`phase3-p3-c3-mybatis-deferral.md`を参照する。
 
 本承認はP3-C2のcommit pointとP3-C3開始だけを許可する。workflow、required check、remote操作、
 snapshot publishまたはDoD 3-11最終充足を承認するものではない。

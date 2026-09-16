@@ -9,9 +9,11 @@ Phase 2 Security Foundationは`COMPLETE / ACCEPTED`である。Phase 3 Reference
 P3-CP0とP3-A0は`COMPLETE`、P3-A1〜P3-A4およびGate Aは`COMPLETE / ACCEPTED`、P3-B0は
 `COMPLETE / OWNER APPROVED`、P3-B1は`COMPLETE`、P3-B2〜P3-B4は
 `COMPLETE / OWNER APPROVED`、Gate Bは`COMPLETE / ACCEPTED`、P3-C0〜P3-C2は
-`COMPLETE / OWNER APPROVED`である。次はP3-C3 MyBatis規約fixture / Rule 35〜37であり、P3-C2の
-commit pointを閉じてから開始する。P3-C4以降、Phase 4、Framework Public API、migration、workflowまたは
-remote変更を先行しない。DoD 3-11の実CI PASSはRemote Gate / Gate Cへ継続する。
+`COMPLETE / OWNER APPROVED`である。P3-C3 MyBatis規約fixture / Rule 35〜37はArchitecture Owner判断により
+`DEFERRED — MyBatis adoption trigger required`であり、`PersistenceModel.SEPARATED`、Rule 25〜27 / 30〜37、
+MyBatis fixtureおよびtest dependencyを追加せず、Rule 8のMyBatis拒否を維持する。次はP3-C4 Journey / ADR /
+Skill / DoD traceである。Phase 4、Framework Public API、migration、workflowまたはremote変更を先行しない。
+DoD 3-11の実CI PASSはRemote Gate / Gate Cへ継続する。
 
 Phase 3では、承認済みbaselineを維持し、次を優先する。
 

@@ -572,6 +572,10 @@ Deferred 12件は実装していない。内訳はTier 2分離modelのRule 25〜
 MyBatisのRule 30〜34、分離modelのMapper / JPA signatureに関するRule 35〜37である。未使用の将来module、
 package、StarterまたはPublic APIも生成していない。
 
+2026年9月16日のP3-C3 Owner判断により、Rule 25〜27 / 30〜37はMyBatis adoption trigger成立後へ
+明示的に延期した。延期中は`PersistenceModel.SEPARATED`を提供せず、Rule 8のMyBatis拒否を維持する。
+判断Evidenceは`phase3-p3-c3-mybatis-deferral.md`を参照する。
+
 B3実装はB2の承認済み設計から逸脱せず、新規のarchitecture decisionを導入していないため、ADRの追加・変更は
 不要と判定した。migration / schema変更もない。既存SkillがOwnershipと業務module境界を扱い、今回の規則は
 artifactとtestで機械的に保証するため、Skill正本の変更も行わない。

@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 READY
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 READY
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -93,7 +93,7 @@ Owner reviewで確定する停止点として承認する。
 | 12 | masterのJPA class-based射影はTier 1のApplication DTOとして扱う | APPROVED | P3-B1でpackage / namingをEvidence化する |
 | 13 | cache対象、TTL、複数instance間で許容するstalenessを確定する | STAGED DECISION APPROVED | P3-B4のcache実装より前に確定する |
 | 14 | API / 自動testを回帰の主軸とし、操作面が成立するP3-B2以降で実browser、人系checkpoint、log / Audit / DB突合を併用する | APPROVED | Gate Aのbrowser確認は操作面がある場合のみ。runnerとCI required化はP3-B0 / C2 / Remote Gateで確定する |
-| 15 | MyBatis fixtureに必要なPublic API変更は型単位で再reviewし、fixture都合で先行追加しない | APPROVED | P3-C3。承認前はPublic API変更0 |
+| 15 | MyBatis fixtureに必要なPublic API変更は型単位で再reviewし、fixture都合で先行追加しない | DEFERRED — MyBatis adoption trigger required | P3-C3 Owner判断。`SEPARATED`、Rule 25〜27 / 30〜37、fixture、test dependencyは追加せずRule 8の拒否を維持する |
 | 16 | workflow、required check、snapshot publish、remote environment変更はlocal closeout後の別Gateで承認する | APPROVED | Remote Gate |
 
 個別のPublic API、property名、migration SQL、UI component、外部libraryおよびremote設定は、
@@ -251,7 +251,7 @@ ReferenceのRole / Permission code、部門scope、初期dataはReferenceが所�
 | P3-C0 | 最小REST API contract review | Ownerがendpoint、DTO、Permission、status、error、lock契約を承認し、先行REST実装0 |
 | P3-C1 | 最小REST API、Jackson 3、/api/v1、Problem Details | DoD 3-10、AC-P3-10、MVCと同じ認可・業務結果 |
 | P3-C2 | critical journey E2E、package済みJAR、CI候補 | DoD 3-11のCI実行候補、browser / API / DB / log aggregateとcleanup。実CI通過はRemote Gate / Gate Cで確定 |
-| P3-C3 | MyBatis規約fixture、Rule 35〜37 | 非配布Toolingでconverter、MybatisTest、楽観lock、reconstitute境界を実証 |
+| P3-C3 | MyBatis規約fixture、Rule 35〜37 | `DEFERRED — MyBatis adoption trigger required`。実装0、Rule 8の拒否を維持し、再開条件をEvidence化 |
 | P3-C4 | Journey / ADR / Skill / DoD trace | DoD、AC、Public API、migration、dependency、deferred inventory一致 |
 | Gate C | Phase 3 final acceptance | clean HEAD、local aggregate、Remote Gate承認済みDoD 3-11 CI PASS、checks、実browser実演、Owner承認 |
 
@@ -352,11 +352,13 @@ critical journeyだけを実行し、全画面・全権限・全拒否組合せ�
 - Authorization Server、token発行 / refresh / revoke、SAML、MFA有効化
 - Redis、WebFlux、Oracle、AWS / ALB / ECS固有Adapter
 - MyBatisによるaccounting実装、MyBatis専用Starter
+- MyBatis規約fixture、`PersistenceModel.SEPARATED`、Rule 25〜27 / 30〜37、`@MybatisTest` dependency
 - Project Template、code generator、正式Upgrade / Migration Guide、正式OpenRewrite recipe
 - 正式release、一般公開repository、Customer support付き配布
 - Reference業務語彙、Form、Template、Eventまたはcache方針のFramework昇格
 
-Phase 3末尾のMyBatis作業は、後続Phaseのaccountingに先立つ規約と非配布fixtureの実証だけとする。
+MyBatis作業は具体的なadoption triggerが成立するまで延期する。Rule 8のMyBatis拒否を維持し、再開時は
+後続Phaseのaccountingを含むproduction実装より前にblocking adoption Gateで規約と非配布fixtureを実証する。
 
 ## 14. Verification commands policy
 
@@ -615,6 +617,33 @@ P3-B3 / B4 browser focused 3 tests、failure / error / skip 0
 **Decision date:** 2026年9月16日
 **DoD continuation:** 実CI通過によるDoD 3-11最終充足はRemote Gate / Gate Cへ継続する
 **Next CP:** P3-C3 MyBatis規約fixture / Rule 35〜37
+**Start handoff:** `docs/development/phase3-p3-c3-start-handoff-20260916.md`
+**Subsequent decision:** P3-C3は2026年9月16日に`DEFERRED — MyBatis adoption trigger required`となった。
+現在のNext CPはP3-C4である。
 
 P3-C2をcommit pointとして閉じた後、P3-C3を開始できる。workflow、required check、remote操作および
 snapshot publishはRemote Gateまでdeferする。
+
+## 29. P3-C3 Architecture Owner deferral record
+
+P3-C3開始準備で、MyBatisを正規moduleとして許可するには、非配布fixtureだけでなく
+`PersistenceModel.SEPARATED`のPublic API追加、Rule 8の許可matrix変更、および未実装の
+Rule 25〜27 / 30〜37のscope確定が必要になることを確認した。現時点ではMyBatisを必要とする具体的な
+業務module、変更不能schema、既存SQL移行またはJPAで満たせない計測済み要件がないため、JPA baselineを
+維持し、採用理由が成立するまで契約固定を行わない。
+
+**Decision:** DEFERRED — MyBatis adoption trigger required
+**Preserved safety boundary:** `PersistenceModel.SEPARATED`追加0、Rule 25〜27 / 30〜37実装0、
+MyBatis fixture / test dependency追加0、Rule 8のMyBatis拒否を維持
+**Reopen triggers:** SQL指向の更新要件、変更不能schema / 既存SQL移行、JPAで満たせない計測済み要件、
+またはPhase 4 `accounting`開始判断
+**Gate C impact:** DoD 3-1〜3-11とAC-P3-01〜10は変更しない。P3-C4で本延期とdeferred inventoryの
+traceability一致を確認する
+**Evidence:** `docs/architecture/validation/phase3-p3-c3-mybatis-deferral.md`
+**Decided by:** Shuichi Kataoka, Architecture Owner
+**Decision date:** 2026年9月16日
+**Next CP:** P3-C4 Journey / ADR / Skill / DoD trace
+
+P3-C4の開始はMyBatis実装を許可しない。adoption trigger成立後のblocking reviewなしに、MyBatis production code、
+Public API、dependency、migration、fixtureまたはRule 8の許可変更を行わない。workflow、required check、
+remote操作およびsnapshot publishはRemote Gateまでdeferする。

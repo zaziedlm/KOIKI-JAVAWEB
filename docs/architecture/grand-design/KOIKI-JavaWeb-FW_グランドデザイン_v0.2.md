@@ -3063,7 +3063,7 @@ Oracleはoptional `P4-ORACLE`承認時に新しいDoDと見積を設定し、旧
 
 `master`（Tier 1）／`expense`（Tier 2）／**両者間の同期イベント連携**／Spring Modulith **Level 1**／Thymeleaf ＋ HTMX／**HTMX 契約11項目の標準化**／REST API（API Versioning、Jackson 3）／read model（JPA 射影／JdbcClient）／楽観ロック競合画面／業務監査／キャッシュ規約と適用例／SPA 契約の文書化／E2E スモークテスト／Agent Skills
 
-**Phase 3 の末尾で実施** — MyBatis 実装規約の整備（楽観ロック、`converter`、`@MybatisTest`、`reconstitute` 誤用防止、ArchUnit 規則35〜37）。Phase 4 の `accounting` モジュールの前提となる
+**Adoption trigger成立後に実施** — MyBatis実装規約の整備（楽観ロック、`converter`、`@MybatisTest`、`reconstitute`誤用防止、ArchUnit規則35〜37）は、2026年9月16日のArchitecture Owner判断によりPhase 3では実装せず延期する。SQL指向の更新、変更不能schema / 既存SQL移行、JPAで満たせない計測済み要件、またはPhase 4 `accounting`開始判断をtriggerとし、production実装より前のblocking adoption Gateで実証する。延期中は`PersistenceModel.SEPARATED`を提供せず、Rule 8によるMyBatis拒否を維持する
 
 **完了条件**
 
@@ -3088,6 +3088,10 @@ Oracleはoptional `P4-ORACLE`承認時に新しいDoDと見積を設定し、旧
 **成果物**
 
 `notification`（非同期、Level 2）／`accounting`（MyBatis 分離）／Phase 3の`expense` REST APIを利用する **SPA 最小参照実装**とMVC / SPA併用構成／SAML Extension／External API Resilience／Spring Batch／File・Object Storage／OpenTelemetry／**Container・ECS Reference**／**Virtual Threads 有効化ガイドと CI 検証系統**
+
+`accounting`をMyBatis分離方式で開始する場合はMyBatis adoption triggerの成立とみなし、実装着手前に
+`PersistenceModel.SEPARATED`、Rule 25〜27 / 30〜37、非配布fixture、依存関係およびPublic API影響を
+blocking Gateで再reviewする。Phase 3で延期した案を自動承認済みとして扱わない。
 
 **Optional work package** — KOIKI-hosted Authorization Serverは現行Phase 4の必須成果物・DoDに含めない。明示use caseがある場合に限り、
 `P4-AS0`でbuild-vs-buy、threat、protocol、運用Owner、Grand Design / ADR / DoD / 見積変更を承認してから開始する。
