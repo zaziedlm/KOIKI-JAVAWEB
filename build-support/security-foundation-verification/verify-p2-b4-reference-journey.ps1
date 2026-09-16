@@ -504,10 +504,20 @@ function Assert-ReferenceArtifactBoundary {
     $archive = [System.IO.Compression.ZipFile]::OpenRead($referenceJar)
     try {
         $entryNames = @($archive.Entries.FullName)
-        if ($entryNames -match '^BOOT-INF/classes/db/migration/' -or
-            $entryNames -match '^BOOT-INF/classes/.+\.sql$' -or
-            $entryNames -match '^BOOT-INF/classes/org/koikifw/buildsupport/') {
-            throw 'The Reference JAR contains migration SQL or Tooling fixture code.'
+        $referenceMigrationPattern =
+            '^BOOT-INF/classes/db/migration/kkref/[^/]+[.]sql$'
+        $unexpectedMigrationOrSql = @($entryNames | Where-Object {
+                -not $_.EndsWith('/') -and
+                (($_ -match '^BOOT-INF/classes/db/migration/' -and
+                        $_ -notmatch $referenceMigrationPattern) -or
+                    ($_ -match '^BOOT-INF/classes/.+[.]sql$' -and
+                        $_ -notmatch $referenceMigrationPattern))
+            })
+        if ($unexpectedMigrationOrSql.Count -gt 0) {
+            throw 'The Reference JAR contains SQL outside the Reference-owned migration location.'
+        }
+        if ($entryNames -match '^BOOT-INF/classes/org/koikifw/buildsupport/') {
+            throw 'The Reference JAR contains Tooling fixture code.'
         }
         foreach ($requiredTemplate in @(
                 'BOOT-INF/classes/templates/identity/users.html',
