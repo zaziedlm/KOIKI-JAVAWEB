@@ -122,9 +122,10 @@ P3-B2では正式`koiki-starter-web-mvc`、full-page Thymeleaf、Reference MVC�
 実browser / log / Audit / DB checkpointを実装・検証し、`COMPLETE / OWNER APPROVED`とした。P3-B3の
 選択的HTMX / browser runnerとP3-B4の楽観lock競合画面、Reference限定cache / TTLも
 `COMPLETE / OWNER APPROVED`、Gate Bは`COMPLETE / ACCEPTED`である。P3-C0最小REST API contract reviewと
-P3-C1実装・検証も`COMPLETE / OWNER APPROVED`である。次はP3-C2 critical journey E2Eであり、
-Browser / API / DB / log aggregateとcleanupを非配布Toolingで検証する。P3-C3以降、Phase 4、workflowまたは
-remote変更を先行せず、以降も同計画のCP、blocking reviewおよびGateを順守する。
+P3-C1実装・検証とP3-C2 critical journey E2Eも`COMPLETE / OWNER APPROVED`である。P3-C2では
+Browser / API / DB / log aggregate、cleanupおよびCI候補を非配布Toolingで検証した。DoD 3-11の実CI PASSは
+Remote Gate / Gate Cへ継続する。次はP3-C3 MyBatis規約fixture / Rule 35〜37であり、P3-C4以降、Phase 4、
+workflowまたはremote変更を先行せず、以降も同計画のCP、blocking reviewおよびGateを順守する。
 
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
 Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは

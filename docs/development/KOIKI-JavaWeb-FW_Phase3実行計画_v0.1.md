@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C1 COMPLETE / OWNER APPROVED / P3-C2 READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 READY
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C1 COMPLETE / OWNER APPROVED / P3-C2 READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 READY
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -250,16 +250,18 @@ ReferenceのRole / Permission code、部門scope、初期dataはReferenceが所�
 |---:|---|---|
 | P3-C0 | 最小REST API contract review | Ownerがendpoint、DTO、Permission、status、error、lock契約を承認し、先行REST実装0 |
 | P3-C1 | 最小REST API、Jackson 3、/api/v1、Problem Details | DoD 3-10、AC-P3-10、MVCと同じ認可・業務結果 |
-| P3-C2 | critical journey E2E、package済みJAR、CI候補 | DoD 3-11、browser / API / DB / log aggregateとcleanup |
+| P3-C2 | critical journey E2E、package済みJAR、CI候補 | DoD 3-11のCI実行候補、browser / API / DB / log aggregateとcleanup。実CI通過はRemote Gate / Gate Cで確定 |
 | P3-C3 | MyBatis規約fixture、Rule 35〜37 | 非配布Toolingでconverter、MybatisTest、楽観lock、reconstitute境界を実証 |
 | P3-C4 | Journey / ADR / Skill / DoD trace | DoD、AC、Public API、migration、dependency、deferred inventory一致 |
-| Gate C | Phase 3 final acceptance | clean HEAD、local aggregate、checks、実browser実演、Owner承認 |
+| Gate C | Phase 3 final acceptance | clean HEAD、local aggregate、Remote Gate承認済みDoD 3-11 CI PASS、checks、実browser実演、Owner承認 |
 
 ### Remote Gate
 
 workflow追加、required check変更、protected environment、push / PR / merge、snapshot publishは、
 local Evidenceと実行時間・flakiness・cleanup確認後に個別承認する。
 Gate P3-1はremote mutationを一括許可しない。
+DoD 3-11の最終充足には、Remote Gateで承認したworkflowによるcritical journey E2EのPASS Evidenceを必要とする。
+P3-C2のlocal CI候補受入だけで「CIで通る」を完了扱いにせず、この結果をGate C final acceptanceへ入力する。
 
 ## 10. Hybrid verification strategy
 
@@ -386,7 +388,7 @@ AI支援Owner稼働78〜164日である。これを納期commitmentとして扱�
 
 Gate P3-1ではこのrangeを初期planning rangeとして承認する。P3-CP0 / A0でPhase 2実績と
 master / expenseのmodule契約を反映し、P3-B0でHTMX libraryとbrowser runnerを固定した。P3-C2で
-CI実行時間を反映して再見積する。Gate A / B / Cごとに残range、flakinessと
+CI候補のlocal実行時間を反映し、Remote Gateで実CI時間を確定して再見積する。Gate A / B / Cごとに残range、flakinessと
 手動checkpoint負担を再評価する。
 
 ## 17. Stop conditions
@@ -420,7 +422,7 @@ Architecture Ownerは次をreviewし、§1〜17の実行計画と段階的な停
 8. §4の16判断点と、P3-A0 / B0 / C0 / C3 / Remote Gateへ配置したblocking review
 
 **Decision:** APPROVED — GATE P3-1 PASSED
-**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C1 COMPLETE / OWNER APPROVED
+**Subsequent status:** P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED
 **Approved scope:** §1〜17、§4の確定判断、staged decisionの停止点、P3-CP0からGate Cまでの順序、Hybrid Verification方針
 **Evidence:** 上位設計とReference仕様、Phase 2 COMPLETE / ACCEPTED baseline、開始main c88b335efdd556613c9ef7f4c5267214fdb8254b、§3のread-only棚卸し、本計画のDoD / AC trace
 **Decided by:** Shuichi Kataoka, Architecture Owner
@@ -596,3 +598,23 @@ PostgreSQL 17、実署名Bearer、HTTP 201 / 200 / 204、state / version / Busin
 P3-C1のReference / Tooling限定実装とEvidenceをcommit pointとして閉じた後、P3-C2を開始する。
 Phase 4、Framework Public API、migration、workflow、required check、remote push / PR / merge、ruleset変更または
 snapshot publishを先行しない。
+
+## 28. P3-C2 implementation and verification checkpoint
+
+2026年9月16日、Root Reactor外の非配布`build-support/reference-e2e-verification`に、package済みJAR、
+PostgreSQL 17、Bearer API、Session Chromium、HTMX、DB / Audit / logを連結する代表critical journeyを実装した。
+
+**Status:** COMPLETE / OWNER APPROVED / CI CANDIDATE ACCEPTED
+**Verification:** 最終コード3回連続PASS（19.058 / 18.601 / 18.577秒、spread約2.59%）、
+各run cleanup残存0、Root Reactor 16 / 16 projects・217 tests、P3-C1 API focused 1 test、
+P3-B3 / B4 browser focused 3 tests、failure / error / skip 0
+**Boundary:** production変更0、Root外・test scope限定、workflow / required check変更0
+**Evidence:** `docs/architecture/validation/phase3-p3-c2-critical-journey-e2e.md`
+**Decision:** APPROVED — P3-C2 COMPLETE / OWNER APPROVED / CI CANDIDATE ACCEPTED
+**Decided by:** Shuichi Kataoka, Architecture Owner
+**Decision date:** 2026年9月16日
+**DoD continuation:** 実CI通過によるDoD 3-11最終充足はRemote Gate / Gate Cへ継続する
+**Next CP:** P3-C3 MyBatis規約fixture / Rule 35〜37
+
+P3-C2をcommit pointとして閉じた後、P3-C3を開始できる。workflow、required check、remote操作および
+snapshot publishはRemote Gateまでdeferする。

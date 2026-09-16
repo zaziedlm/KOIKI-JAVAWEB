@@ -106,6 +106,12 @@ pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-a
 Project TemplateおよびCustomer dependencyには含めません。browser binary setupと実行手順は
 `reference-browser-verification/README.md`を参照してください。
 
+## Reference Critical Journey E2E Verification
+
+`reference-e2e-verification/`はPhase 3 P3-C2のpackage済みReference JARに対し、Bearer API、Session browser、
+PostgreSQL、Audit、process logおよびcleanupを一連で突合するTooling所有の非配布Harnessです。Root Reactorや
+workflowへ暗黙追加せず、実行手順は`reference-e2e-verification/README.md`を参照してください。
+
 Maven Toolchains例は開発環境の再現用に保持します。Walking Skeleton専用のclass version確認と
 Java 25 runtime scriptは、C4のmanifest・hash・class major・Java 21 / 25検証へ置き換えたため除去しました。
 Maven Wrapper bootstrap scriptは公式`bin`型を再生成する保守手段として保持します。
