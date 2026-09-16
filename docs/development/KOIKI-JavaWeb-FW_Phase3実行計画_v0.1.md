@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 IN PROGRESS / C4-1〜C4-2 COMPLETE
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 IN PROGRESS / C4-1〜C4-3 COMPLETE
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 IN PROGRESS / C4-1〜C4-2 COMPLETE
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 IN PROGRESS / C4-1〜C4-3 COMPLETE
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -685,3 +685,22 @@ Business Feature Skillを、実装、自動test、DB / Audit / log / browser観�
 C4-2はP3-C4 close、Remote GateまたはGate Cを意味しない。production / test不足は検出しておらず、C4-3で
 inventoryと文書導線を確定する。workflow、required check、remote操作およびsnapshot publishは引き続き
 個別Owner承認までdeferする。
+
+## 32. P3-C4 C4-3 inventory / deferred / Journey checkpoint
+
+2026年9月16日、Public API、formal artifact / publish unit、Root Reactor、dependency、migration / table、
+property / profile、routeおよび非配布Tooling境界を実体から棚卸しし、deferred inventoryと
+Engineer-facing Journeyを確定した。
+
+**Status:** C4-3 INVENTORY / JOURNEY COMPLETE / P3-C4 IN PROGRESS
+**Inventory:** formal 15 projects / 12 JAR、publish 14 coordinates、Root Reactor 16 projects / 13 JAR
+**Unchanged:** Java Public API差分0、Framework migration差分0、workflow差分0
+**Reference:** V1〜V3 / 6 tables、base追加9 properties、`api-bearer` 4 properties、Phase 3追加28 method routes
+**Tooling:** local demo / browser / API / E2EはRoot外・非配布、Maven dependencyはtest scope限定
+**Journey:** `docs/reference/README.md`を入口に既存Local Run Guideと3 Tooling READMEを目的別に接続
+**Evidence:** `docs/architecture/validation/phase3-p3-c4-traceability-closeout.md`
+**Verification:** POM、Public API inventory、properties、Security configuration、route、SQL、Tooling sourceのread-only照合と`git diff --check`
+**Next:** C4-4 Root Reactor clean verify、Public API compatibility、package済みAPI / critical E2E Tooling、cleanup / non-disclosure
+
+C4-3はP3-C4 close、Remote GateまたはGate Cを意味しない。DoD 3-11は`PENDING CI EVIDENCE`を維持し、
+workflow、required check、remote操作およびsnapshot publishは個別Owner承認までdeferする。

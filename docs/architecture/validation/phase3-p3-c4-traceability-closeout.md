@@ -8,11 +8,11 @@
 | Branch | `feature/phase3-reference-vertical-slice` |
 | Phase 3 start baseline | `c88b335efdd556613c9ef7f4c5267214fdb8254b` |
 | P3-C4 start HEAD | `4f6b2ccc4b186c46d5dfcba1f83d0e5fb951da65` |
-| Current status | `IN PROGRESS — C4-1 / C4-2 COMPLETE` |
+| Current status | `IN PROGRESS — C4-1 / C4-2 / C4-3 COMPLETE` |
 | Ownership | Architecture documentation / closeout verification |
-| Production change in C4-1 / C4-2 | 0 |
+| Production change in C4-1 / C4-2 / C4-3 | 0 |
 | Remote operation | 0 |
-| Next | C4-3 inventory / deferred / Engineer-facing Journey closeout |
+| Next | C4-4 aggregate / compatibility / packaged Tooling verification |
 
 P3-C4は、Phase 3で追加した実装と承認Evidenceを横断して、DoD、Reference AC、Journey、ADR、Skill、
 Public API、migration、dependency、artifactおよびdeferred inventoryを一致させるcloseout CPである。
@@ -377,3 +377,137 @@ Phase 3実装およびP3-C3延期境界と一致する。
 3回連続PASSはCI候補の受入Evidenceであり、実workflow PASSへ読み替えない。C4-2を`COMPLETE`とし、次はC4-3として
 Public API、artifact / publish unit、dependency、migration / table、property / profile、route、Tooling混入、
 deferred inventoryおよびEngineer-facing Journeyを確定する。P3-C4 close、Remote GateまたはGate Cはまだ宣言しない。
+
+## 20. C4-3 inventory method
+
+C4-3ではPhase 3開始baselineからC4-2完了HEADまでを対象に、Root POM、BOM、全Phase 3変更POM、
+Public API inventory、production properties、Security configuration、Controller mapping、Flyway SQLおよび
+3つのReference verification POM / READMEを実体から照合した。生成済み`target`、IDE表示または文書上の予定値は
+inventoryへ含めていない。
+
+## 21. Public API, artifact and publish inventory
+
+| Inventory | C4-3 result | Boundary |
+|---|---:|---|
+| Formal Framework release projects | 15 | Root aggregator、BOM、Parent、Architecture Contract、ArchUnit Rules、9 Starter、`koiki-testing` |
+| Formal Framework JAR | 12 | Architecture Contract / ArchUnit Rules、9 Starter、`koiki-testing` |
+| Formal publish unit | 14 coordinates | Root aggregatorを除く2 POM + 12 JAR |
+| Root Reactor projects | 16 | Formal 15 projects + `koiki-reference-app` |
+| Root Reactor JAR | 13 | Formal 12 JAR + Reference executable JAR |
+| Phase 3 formal artifact addition | 1 | `koiki-starter-web-mvc` |
+| Java Public API inventory diff | 0 | baselineと`build-support/api-compatibility/public-api.txt`が同一 |
+| Web MVC Starter Java Public API | 0 types | internal auto-configurationとresource contractだけを提供 |
+| Phase 3 Tooling in Root Reactor / publish unit | 0 | local demo、browser、API、E2EはRoot外・非配布 |
+
+`public-api.txt`のSHA-256は`9B2B26920B8B69B61C656F6A22438218822FA5CB41A707942D2CF5F806542FEA`であり、
+Phase 3 baselineとの差分は0である。Reference ApplicationはRoot Reactorでbuildするが正式Framework publish unitではない。
+
+## 22. Dependency inventory
+
+| Owner / module | Phase 3 dependency change | Disposition |
+|---|---|---|
+| BOM | `koiki-starter-web-mvc`座標、`org.webjars.npm:htmx.org:2.0.10`を管理 | P3-B0 / B2承認済み |
+| Web MVC Starter | Spring Boot Web MVC、Thymeleaf、Validation、HTMX WebJar、JSpecify | Spring標準中心の正式Starter。testはBoot Starter Testだけ |
+| Reference | 直接Web MVC / ThymeleafをWeb MVC Starterへ置換し、`koiki-starter-api`、Spring Cache、Caffeineを追加 | REST、表示専用30秒local cache、MVC resource contractの承認範囲 |
+| Reference test | `koiki-testing`をtest scopeへ追加 | 正式test artifactの承認済み利用 |
+| Browser Tooling | Playwright / JUnitをtest scopeだけで利用 | Root外・非配布 |
+| API Tooling | JUnit、Testcontainers PostgreSQL、PostgreSQL Driver、OAuth2 JOSEをtest scopeだけで利用 | Root外・非配布 |
+| E2E Tooling | Playwright、JUnit、Testcontainers PostgreSQL、PostgreSQL Driver、OAuth2 JOSEをtest scopeだけで利用 | Root外・非配布 |
+
+MyBatisはbaseline BOMでversion管理されるだけで、Reference、Framework StarterまたはPhase 3 Toolingのdependencyには
+追加されていない。Spring Modulith runtime、Redis、WebFlux、SPA、SAML、Oracle、AWS固有libraryおよび
+`htmx-spring-boot`の追加も0である。
+
+## 23. Migration and table inventory
+
+| Owner | Location / history | Phase 3 result |
+|---|---|---|
+| Framework | `classpath:db/migration/koiki` / `koiki_flyway_history` | baselineからmigration差分0 |
+| Reference | `classpath:db/migration/kkref` / `kkref_flyway_history` | V1〜V3、3 files、6 tables |
+
+Reference tableは`kkref_department`、`kkref_expense_category`、`kkref_user_department_assignment`、
+`kkref_expense_request`、`kkref_expense_line`、`kkref_expense_approver_scope`の6つである。DB-level FKは
+master内のassignment→departmentとexpense内のline→requestだけであり、master / expense間または
+Reference / Framework間のFKはない。identity user ID、department ID、expense category IDを跨ぐ参照整合は
+承認済みApplication / event / current-value contractで扱い、他owner tableの更新Ownershipを移動していない。
+production seedとTooling fixture SQLのmigration混入は0である。
+
+## 24. Property and profile inventory
+
+| Configuration | Keys / behavior | Boundary |
+|---|---|---|
+| Base Reference | API path-segment versioning 2 keys、Caffeine 3 keys、Reference Flyway 4 keys | `application.properties`へ9 keys追加。既存OSIV / Identity設定を維持 |
+| `api-bearer` profile | activation、enabled、issuer、audienceの4 keys | P3-C1 Reference限定。issuerは環境変数必須、audienceだけ既定値あり |
+| Web MVC Starter | KOIKI独自property 0 | resource / internal auto-configuration contractだけ |
+| Framework property / profile | Phase 3追加0 | Phase 2のdefault deny、Session、Identity、Audit契約を維持 |
+
+通常profileではSession MVC chainを使用し、`/api/**`はBearer chainが未生成のためdefault deny側へ残る。
+`api-bearer`を有効にすると最優先のstateless `/api/**` chainが追加され、Session MVC chain自体は無効化されない。
+したがって同一processで技術的には共存するが、P3-C1の受入はBearer API focused Toolingと通常profile MVC手動確認を
+分離しており、両経路同時利用を新しい正式profile契約として固定していない。
+
+## 25. Route inventory
+
+Phase 3でReference productionへ追加したController method mappingは28である。
+
+| Route group | Methods | Representative path / behavior |
+|---|---:|---|
+| Home | 1 | `GET /` |
+| master MVC | 8 | department / expense categoryのlist、create、rename、deactivate |
+| expense MVC | 16 | applicant / approver / accountingのlist / detail、create / edit、7状態操作 |
+| expense REST | 3 | `POST /api/v1/expense-requests`、`GET /api/v1/expense-requests/{id}`、`POST .../{id}/submit` |
+
+Phase 2 identity管理5 mappingとform login / logoutは既存経路を再利用する。Static resourceは
+`/koiki-web/**`とHTMX WebJar、Template共通部品は`templates/koiki/fragments.html`であり、業務routeではない。
+test route、issuer route、failure switch、seed endpointまたはactuator公開追加は0である。APIはversion 1だけを受理し、
+noncanonical / unsupported versionをController testで拒否する。
+
+## 26. Tooling containment inventory
+
+| Tooling | Root module | Dependency scope | Production artifact inclusion | Cleanup / secret boundary |
+|---|---|---|---|---|
+| `reference-local-demo` | No | PowerShell only | No | disposable DBだけ。random passwordをterminal外へ保存しない |
+| `reference-browser-verification` | No | Playwright / JUnit test | No | 外部起動済みApplicationを使用しBrowserContextをclose |
+| `reference-api-verification` | No | 全dependency test | No | issuer / key / token / user / DBをprocess内生成してcleanup |
+| `reference-e2e-verification` | No | 全dependency test | No | browser、issuer、JAR process、DB、port、temp logを成功・失敗ともcleanup |
+
+3つのMaven Toolingは`org.koikifw.buildsupport` groupであり、正式`org.koikifw` publish unitへ含まれない。
+Reference JARを外部processとして検証するだけで、fixture class / resourceをReference classpathへ注入しない。
+Root Reactor、BOM、`koiki-testing`、Project Template、workflowおよびCustomer dependencyへの混入は0である。
+
+## 27. Final deferred / pending inventory before local verification
+
+| Item | Classification / owner | Preserved boundary | Reopen / completion trigger |
+|---|---|---|---|
+| DoD 3-11 actual CI PASS | Pending / Remote Gate・Gate C | workflow / required check / remote mutation 0 | Ownerがworkflowを個別承認し、実CI PASS Evidenceを取得 |
+| P3-C3 MyBatis detail rules | Deferred by decision / Architecture | Rule 8拒否、`SEPARATED` / Rule 25〜27 / 30〜37 / fixture / dependency 0 | SQL指向更新、変更不能schema / SQL移行、JPAで満たせない計測要件、またはPhase 4 accounting判断 |
+| React / Next.js、SSO、Access / Refresh Token | Deferred by phase / Phase 4 | P3-C1 Bearer fixtureを正式認証基盤へ昇格しない | Phase 4 Profile S blocking review |
+| accounting拡張、notification、Level 2、async event | Deferred by phase / Phase 4 | 現在の同期Level 1とReference scopeを維持 | Phase 4開始判断と個別設計 |
+| Project Template、正式Upgrade / Migration Guide / OpenRewrite recipe | Deferred by phase / Phase 5 | Reference / ToolingをCustomer成果物へ自動昇格しない | 対応Phase / Gate |
+| Authorization Server、SAML、Redis、WebFlux、Oracle、AWS Adapter | Optional / future owner | dependency、profile、migration、image追加0 | 明示Customer要件と対応Gate |
+| 申請者email表示の属性Ownership | Nonblocking observation / future review | Framework Identityへ業務属性を追加しない | 独立したIdentity / business profile設計判断 |
+| 全画面・全Role・全支援技術accessibility certification | Nonblocking observation / future review | Gate Bの限定keyboard / Narrator Evidenceを過大表現しない | certification scopeと担当を明示した別計画 |
+| AC-P3-06 / 07 strict concurrent race | Explicitly outside accepted AC / future production design | 現在の同期event / transaction Evidenceを維持 | production保証要件化時のlock / isolation review |
+
+deferred itemは欠落を隠すために削除せず、同時にPhase 3必須DoD / ACへ追加してGate Cを不要にblockしない。
+
+## 28. Engineer-facing Journey closeout
+
+`docs/reference/README.md`をPhase 3 Referenceの入口として、業務仕様、通常Session MVC手動journey、
+browser focused、Bearer API focused、critical E2EおよびPhase 2 Security developer journeyを目的別に接続した。
+Local Run Guideの対象をP3-B2からPhase 3完成形の通常Session MVCへ更新し、`api-bearer`を有効化しない境界を明記した。
+`build-support/README.md`には分散していたlocal demoとAPI Toolingの入口を追加した。
+
+各Tooling READMEをcommand、fixture、secret、cleanupの正本として維持したため、新しい
+`phase3-developer-journey.md`は作成しない。profile、route、fixture、credentialまたはproduction設定の変更もない。
+
+## 29. C4-3 conclusion
+
+Public API、formal artifact / publish unit、Root Reactor、dependency、migration / table、property / profile、routeおよび
+Tooling containmentは、P3-B0〜C3の承認済み境界と一致する。未承認のFramework / Reference production差分、
+Phase 4成果物、Tooling昇格またはdeferred itemの消失は認めない。Engineer-facing Journeyのdocumentation gapも
+既存文書の責務を重複させず補正した。
+
+C4-3を`COMPLETE`とし、次はC4-4でRoot Reactor clean verify、Public API compatibility、package済みReference JAR、
+API focused Toolingおよびcritical E2E Toolingを実行し、cleanupと非露出を確認する。実CI PASS、workflow、remote操作、
+Gate CおよびPhase 4は引き続き開始しない。

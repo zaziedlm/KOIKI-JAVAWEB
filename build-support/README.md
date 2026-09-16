@@ -106,6 +106,20 @@ pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-a
 Project TemplateおよびCustomer dependencyには含めません。browser binary setupと実行手順は
 `reference-browser-verification/README.md`を参照してください。
 
+## Reference Local Demo
+
+`reference-local-demo/`は、通常Session MVCを人手確認する使い捨てPostgreSQLへ、demo user、credential、
+master、scopeおよびexpense dataを明示投入するTooling所有scriptです。production seed、migration、正式provisioning、
+browser harnessまたはCustomer配布物ではありません。利用条件とcleanupは
+`../docs/reference/KOIKI-JavaWeb-FW_Reference_Application_Local_Run_Guide_v0.1.md`を参照してください。
+
+## Reference API Verification
+
+`reference-api-verification/`はPhase 3 P3-C1のpackage済みReference JAR、使い捨てPostgreSQLおよび
+test-only OIDC / JWKSを使うBearer API focused Harnessです。Root Reactor、Framework / Reference artifact、
+`koiki-testing`、Project Template、workflowおよびCustomer dependencyには含めません。実行手順は
+`reference-api-verification/README.md`を参照してください。
+
 ## Reference Critical Journey E2E Verification
 
 `reference-e2e-verification/`はPhase 3 P3-C2のpackage済みReference JARに対し、Bearer API、Session browser、

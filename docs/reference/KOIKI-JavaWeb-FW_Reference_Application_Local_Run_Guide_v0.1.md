@@ -1,7 +1,7 @@
 # KOIKI-JavaWeb-FW Reference Application ローカル手動起動ガイド
 
 **版:** v0.1  
-**対象:** Phase 3 P3-B2 MVC / Thymeleaf  
+**対象:** Phase 3完成形の通常Session MVC手動journey
 **Ownership:** Reference  
 
 ## 1. 目的
@@ -11,8 +11,10 @@
 成立確認、起動障害の切り分け、および手動Checkpointの基礎経路として利用する。
 
 本書はProject Template、production deployment手順、固定test userの提供、またはbrowser test harnessではない。
+Bearer REST APIのfocused確認またはBrowser / API / DB / Audit / logのaggregate確認は、
+`docs/reference/README.md`から対応する非配布Toolingへ進む。本手順では`api-bearer` profileを有効化しない。
 
-## 2. P3-B2で確認した構成
+## 2. Phase 3で確認した構成
 
 | 項目 | 確認した構成 |
 |---|---|
@@ -70,7 +72,7 @@ Application停止中にRepository rootから実行する。
 Get-Item .\koiki-reference-app\target\koiki-reference-app-0.1.0-SNAPSHOT.jar
 ```
 
-`clean`を含め、過去のincremental compilation出力へ依存しない状態から生成する。P3-B2では約63 MBの
+`clean`を含め、過去のincremental compilation出力へ依存しない状態から生成する。P3-B2時点では約63 MBの
 実行可能JARが生成されることを確認した。正式な受入では、この手動buildだけでなくRoot Reactorの
 `clean verify`を別途実行する。
 
