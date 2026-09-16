@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 IN PROGRESS / C4-1〜C4-3 COMPLETE
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 IN PROGRESS / C4-1〜C4-4 COMPLETE / OWNER CLOSE REVIEW READY
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 IN PROGRESS / C4-1〜C4-3 COMPLETE
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 IN PROGRESS / C4-1〜C4-4 COMPLETE / OWNER CLOSE REVIEW READY
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -587,7 +587,7 @@ snapshot publishを先行しない。
 PostgreSQL integrationおよびpackage済みJARの外部HTTP journeyを実装・検証した。
 
 **Status:** COMPLETE / OWNER APPROVED
-**Verification:** Root Reactor 16 / 16 projects、217 tests、Reference 99 tests、failure / error / skip 0、
+**Verification:** Root Reactor 16 / 16 projects、170 tests、Reference 99 tests、failure / error / skip 0、
 PostgreSQL 17、実署名Bearer、HTTP 201 / 200 / 204、state / version / Business Audit / log突合、
 通常profileのMVC local manualでmaster HTMX検索、expense create / submit、DB / Audit突合、操作中ERROR / WARNなし
 **Evidence:** `docs/architecture/validation/phase3-p3-c1-minimal-rest-api.md`
@@ -608,7 +608,7 @@ PostgreSQL 17、Bearer API、Session Chromium、HTMX、DB / Audit / logを連結
 
 **Status:** COMPLETE / OWNER APPROVED / CI CANDIDATE ACCEPTED
 **Verification:** 最終コード3回連続PASS（19.058 / 18.601 / 18.577秒、spread約2.59%）、
-各run cleanup残存0、Root Reactor 16 / 16 projects・217 tests、P3-C1 API focused 1 test、
+各run cleanup残存0、Root Reactor 16 / 16 projects・170 tests、P3-C1 API focused 1 test、
 P3-B3 / B4 browser focused 3 tests、failure / error / skip 0
 **Boundary:** production変更0、Root外・test scope限定、workflow / required check変更0
 **Evidence:** `docs/architecture/validation/phase3-p3-c2-critical-journey-e2e.md`
@@ -704,3 +704,21 @@ Engineer-facing Journeyを確定した。
 
 C4-3はP3-C4 close、Remote GateまたはGate Cを意味しない。DoD 3-11は`PENDING CI EVIDENCE`を維持し、
 workflow、required check、remote操作およびsnapshot publishは個別Owner承認までdeferする。
+
+## 33. P3-C4 C4-4 aggregate / compatibility / packaged verification checkpoint
+
+2026年9月16日、C4-3のclean commitからRoot aggregate、timestamped Public API baseline、package済みAPI focused、
+critical E2Eおよびcleanup / non-disclosureを再検証した。
+
+**Status:** C4-4 COMPLETE / P3-C4 OWNER CLOSE REVIEW READY
+**Root:** 16 / 16 projects、170 tests、Reference 99 tests、failure / error / skip 0
+**Public API:** baseline SHA-256 2件MATCH、inventory MATCH、japicmp modifications 0、fixture expected failure PASS
+**Packaged Tooling:** API 1 test / 12.11秒、critical E2E 1 test / 15.81秒、failure / error / skip 0
+**Cleanup:** Reference / issuer process、PostgreSQL 17 container、dynamic port、Public API temp directoryの残存0
+**Non-disclosure:** token / password / Cookie / key / source HMAC / SQL / stack trace assertion PASS
+**Correction:** P3-C1 / C2で記録した217 testsは再現不能な集計誤りであり、実内訳4 + 67 + 99 = 170へ訂正。test source削除0
+**Evidence:** `docs/architecture/validation/phase3-p3-c4-traceability-closeout.md`
+**Next:** P3-C4 Architecture Owner close review
+
+C4-4は実CI PASSを意味しない。DoD 3-11は`PENDING CI EVIDENCE`を維持し、Owner承認前にP3-C4 close、
+Remote Gate、Gate C、workflow、required check、remote操作またはsnapshot publishを開始しない。

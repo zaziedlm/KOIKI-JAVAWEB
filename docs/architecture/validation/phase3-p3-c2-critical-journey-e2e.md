@@ -68,7 +68,7 @@ Session件数を検査する。この差異はfixture assertionの精度問題�
 
 | Verification | Result |
 |---|---|
-| Root Reactor `clean verify` | PASS。16 / 16 projects、217 tests、Reference 99 tests、failure / error / skip 0 |
+| Root Reactor `clean verify` | PASS。16 / 16 projects、170 tests、Reference 99 tests、failure / error / skip 0 |
 | P3-C1 package API focused Tooling | PASS。1 test、11.88 s、failure / error / skip 0 |
 | P3-B3 / B4 browser focused Tooling | PASS。3 tests、6.430 s、failure / error / skip 0 |
 | P3-C2 package E2E focused Tooling | PASS。1 test、failure / error / skip 0 |

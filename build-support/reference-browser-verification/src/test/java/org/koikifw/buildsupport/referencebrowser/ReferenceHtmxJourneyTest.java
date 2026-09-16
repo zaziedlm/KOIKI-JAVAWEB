@@ -163,7 +163,7 @@ class ReferenceHtmxJourneyTest {
             page.locator("#claimedAmount").fill("0");
             page.locator("#usageDate")
                     .fill(java.time.LocalDate.now(java.time.ZoneOffset.UTC)
-                            .plusDays(1).toString());
+                            .plusDays(2).toString());
             page.locator("#lineAmount").fill("0");
             tabTo(page, "button[type='submit']");
 

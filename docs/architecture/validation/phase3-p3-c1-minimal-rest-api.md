@@ -82,7 +82,7 @@ Session Cookie Profile Sまたはproduction SSO選択を確定しない。
 | MVC / browser regression | PASS | API version resolverを`/api/**`へ限定し、既存Session / CSRF / MVC / HTMX suiteを維持 |
 | MVC local manual | PASS | 通常profileのpackage済みJARでlogin、master HTMX検索、expense create / submitを実操作し、HTTP成功、`SUBMITTED:2`、申請額と明細合計、`SUBMIT_EXPENSE` AuditをDB突合。操作中ERROR / WARN、4xx / 5xxなし |
 | Architecture | PASS | Reference business module rulesとFramework Identity public boundary |
-| Root Reactor | PASS | `clean verify`、16 / 16 projects、217 tests、failure / error / skip 0、Reference 99 tests |
+| Root Reactor | PASS | `clean verify`、16 / 16 projects、170 tests、failure / error / skip 0、Reference 99 tests |
 | Packaged JAR HTTP | PASS | 最終JARを別JVMで起動し、PostgreSQL 17、test-only OIDC/JWKS、実署名Bearerでcreate → detail → submit |
 | HTTP / DB / Audit / log | PASS | 201 / 200 / 204、`SUBMITTED:2`、`SUBMIT_EXPENSE` 1件、response PIIなし、process logにBearer tokenなし |
 

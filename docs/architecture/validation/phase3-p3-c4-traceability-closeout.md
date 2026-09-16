@@ -8,11 +8,11 @@
 | Branch | `feature/phase3-reference-vertical-slice` |
 | Phase 3 start baseline | `c88b335efdd556613c9ef7f4c5267214fdb8254b` |
 | P3-C4 start HEAD | `4f6b2ccc4b186c46d5dfcba1f83d0e5fb951da65` |
-| Current status | `IN PROGRESS — C4-1 / C4-2 / C4-3 COMPLETE` |
+| Current status | `IN PROGRESS — C4-1〜C4-4 COMPLETE / OWNER CLOSE REVIEW READY` |
 | Ownership | Architecture documentation / closeout verification |
-| Production change in C4-1 / C4-2 / C4-3 | 0 |
-| Remote operation | 0 |
-| Next | C4-4 aggregate / compatibility / packaged Tooling verification |
+| Production change in C4-1〜C4-4 | 0 |
+| Remote mutation | 0 |
+| Next | Architecture Owner close review |
 
 P3-C4は、Phase 3で追加した実装と承認Evidenceを横断して、DoD、Reference AC、Journey、ADR、Skill、
 Public API、migration、dependency、artifactおよびdeferred inventoryを一致させるcloseout CPである。
@@ -511,3 +511,76 @@ Phase 4成果物、Tooling昇格またはdeferred itemの消失は認めない�
 C4-3を`COMPLETE`とし、次はC4-4でRoot Reactor clean verify、Public API compatibility、package済みReference JAR、
 API focused Toolingおよびcritical E2E Toolingを実行し、cleanupと非露出を確認する。実CI PASS、workflow、remote操作、
 Gate CおよびPhase 4は引き続き開始しない。
+
+## 30. C4-4 execution baseline
+
+2026年9月16日、C4-3 commit `b60f403`のclean worktreeからC4-4を開始した。Java 21.0.12.1、
+Maven Wrapper 3.9.16およびDocker Engineを使用し、production source、dependency、migration、property、profile、
+routeまたはworkflowを変更していない。
+
+## 31. Aggregate and packaged verification result
+
+| Verification | Result | Evidence |
+|---|---|---|
+| Root Reactor `clean verify` | PASS | 16 / 16 projects、170 tests、failure / error / skip 0、Reference 99 tests、1分24秒 |
+| Public API timestamped baseline identity | PASS | Architecture Contract / ArchUnit Rulesの`0.1.0-20260826.091429-1`を取得し、固定SHA-256が両方MATCH |
+| Public API inventory | PASS | 5 public types、4 annotation elements、2 Rules methodsが`public-api.txt`とMATCH |
+| japicmp 0.26.1 | PASS | Architecture Contract / ArchUnit Rulesとも`access=public`、`modifications=NONE`、exit 0 |
+| Public API fixture | PASS | package-private変更を許容し、public return type破壊と未承認public追加を期待failureとして検出 |
+| package済みBearer API focused | PASS | 1 test、failure / error / skip 0、12.11秒 |
+| package済みcritical E2E | PASS | 1 test、failure / error / skip 0、15.81秒 |
+
+Public API本比較には`read:packages`だけを持つPAT classicをsecure promptから供給した。scriptがscopeを検査し、
+baseline JAR、隔離Maven repository、比較reportおよびtoken参照を`finally`で破棄した。PAT値をEvidence、Repository、
+command lineまたは共有出力へ保存していない。
+
+API focusedは実署名Bearerでcreate / read / submit、PostgreSQL state / version / line totalとBusiness Audit、
+認証・scope・stale version・inactive masterの拒否およびtoken非出力を検証した。critical E2Eは同じpackage済みJARで
+Bearer API、Session Chromium、HTMX検索 / 承認、DB / Business / Security Auditおよびprocess logを一連で突合した。
+
+## 32. Root test count correction
+
+C4-4のclean実行とSurefire XML再集計では、Root Reactorのtest内訳は次のとおりである。
+
+| Module | Tests |
+|---|---:|
+| `koiki-architecture-contract` | 4 |
+| `koiki-archunit-rules` | 67 |
+| `koiki-reference-app` | 99 |
+| **Total** | **170** |
+
+P3-C1 / C2 Evidenceと実行計画に記録していた217 testsは、同じ実装から再現できない集計誤りであった。
+P3-C2実装commitからC4-3 commitまでRoot test sourceの変更は0であり、test削除またはcoverage縮小による差ではない。
+本C4-4でC1 / C2 Evidenceと実行計画の該当値を170へ訂正する。各testのPASS、Reference 99 tests、
+focused Tooling結果およびOwnerの機能受入判断は変更しない。
+
+## 33. Cleanup and non-disclosure result
+
+| Check | Result |
+|---|---|
+| Reference JAR / issuer / journey process | 残存0 |
+| PostgreSQL 17 Testcontainers | 残存0 |
+| Public API temporary directory / report / isolated repository | 残存0 |
+| E2E dynamic port | test内で再bind可能を確認 |
+| Bearer token / password / Cookie / private key / source HMAC key | process log非出力assertion PASS |
+| SQL statement / stack trace | critical E2E process log非出力assertion PASS |
+| Worktree before Evidence update | clean |
+| Remote mutation / workflow / required check / publish | 0 |
+
+Docker上にC4-4以前から存在する別用途のPostgreSQL 15 container 2件は、C4-4の所有物ではないため停止・変更していない。
+
+## 34. C4-4 conclusion and close review input
+
+Root aggregate、timestamped Public API baseline、inventory / japicmp、package済みBearer APIおよびcritical E2Eは
+すべてPASSした。cleanup、secret、SQLおよびstack traceの非露出境界も満たし、production不足または
+P3-C4から所有CPへ戻すblocking findingは認めない。Root test総数の誤記だけをEvidence上で明示訂正した。
+
+C4-1〜C4-4を`COMPLETE`とし、P3-C4をArchitecture Owner close reviewへ送る。Owner reviewでは次を判断する。
+
+1. DoD 3-1〜3-10、AC-P3-01〜10、ADR / Skill traceを受け入れる。
+2. inventory、deferred分類およびEngineer-facing Journeyを受け入れる。
+3. C4-4の実検証と170 testsへの集計訂正を受け入れる。
+4. DoD 3-11だけを`PENDING CI EVIDENCE`としてRemote Gate / Gate Cへ継続する。
+5. P3-C4を`COMPLETE / OWNER APPROVED`として閉じてよいか判断する。
+
+Owner承認前にP3-C4 close、Remote Gate、Gate C、workflow変更、remote操作またはPhase 4を開始しない。
