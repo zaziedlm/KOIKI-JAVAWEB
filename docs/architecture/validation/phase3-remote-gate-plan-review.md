@@ -7,7 +7,7 @@
 | Review date | 2026年9月17日 |
 | Planning identity | `ee84312beda89a9430a4e2f4451a827d4c0aa863`（P3-C4 Owner承認commit） |
 | Branch | `feature/phase3-reference-vertical-slice` |
-| Status | `REMOTE GATE PLAN READY / OWNER REVIEW REQUIRED` |
+| Status | `REMOTE GATE PLAN OWNER APPROVED / LOCAL WORKFLOW IMPLEMENTATION AUTHORIZED / REMOTE ACTIONS PENDING` |
 | Ownership | Repository governance / CI Tooling / Architecture Evidence |
 | DoD continuation | DoD 3-11 `PENDING CI EVIDENCE` |
 | Remote mutation in this review | 0 |
@@ -66,11 +66,11 @@ Remote Gateは次のlocal Evidenceを再審査せず入力として利用する�
 P3-C2後にcritical E2E source、Reference production source、dependency、migration、propertyまたはprofileの
 変更はない。P3-C4後のbrowser fixture補正は別Toolingの未来日入力だけであり、critical E2E契約を変更しない。
 
-## 4. Proposed CI workflow contract
+## 4. Approved local CI workflow contract
 
 新しいworkflow fileを増やさず、既存`.github/workflows/ci.yml`へ次の独立jobを追加する。
 
-| Contract | Proposal |
+| Contract | Approved local contract |
 |---|---|
 | Job ID | `phase3-critical-journey-e2e` |
 | Check name | `Phase 3 Critical Journey E2E` |
@@ -93,7 +93,8 @@ jobのstep順は次とする。
    package済みReference JARを生成する。
 5. `./mvnw --batch-mode --no-transfer-progress -f build-support/reference-e2e-verification/pom.xml test`で
    accepted entrypointを1回実行する。
-6. `if: always()`の最終stepで、PostgreSQL 17 containerとpackage済みReference JAR processの残存0を独立確認する。
+6. `if: always()`の最終stepで、本jobが所有するTestcontainers container、package済みReference JAR process、
+   Playwright / Chromium processおよび一時process logの残存0を独立確認する。
 
 TestcontainersはGitHub-hosted runnerのDocker Engineを使用する。fixture credential、RSA key、Bearer token、Cookie、
 source HMAC keyおよびdynamic portはtest process内で生成し、GitHub secret、environmentまたはcommand lineへ渡さない。
@@ -205,17 +206,24 @@ This PR starts as draft. Merge, ruleset mutation, workflow rerun, and Gate C acc
 
 ## 10. Architecture Owner review points
 
-| ID | Decision requested | Current recommendation |
+| ID | Decision requested | Owner decision |
 |---|---|---|
-| RG-1 | §2のremote inventoryとcurrent branch継続利用を受け入れるか | APPROVE |
-| RG-2 | §4の独立CI jobを既存`ci.yml`へ追加してよいか | APPROVE |
-| RG-3 | CI jobと同時に`.github/workflows/README.md`へ権限・実行・cleanup境界を記録してよいか | APPROVE |
-| RG-4 | workflow実装commit後、既存branchをforceなしでpushしてよいか | 実装差分確認後に個別承認 |
-| RG-5 | push後、`main`向けdraft PRを作成し自動CIを起動してよいか | remote HEAD確認後に個別承認 |
-| RG-6 | fresh runner PASS後、新contextを8件目のrequired checkへ追加してよいか | run Evidence確認後に個別承認 |
-| RG-7 | §8の失敗・rerun境界を採用するか | APPROVE |
-| RG-8 | Gate Cまでdraft、merge commit、bypass / direct push禁止を採用するか | APPROVE |
+| RG-1 | §2のremote inventoryとcurrent branch継続利用を受け入れるか | APPROVED |
+| RG-2 | §4の独立CI jobを既存`ci.yml`へ追加してよいか | APPROVED WITH CLEANUP CONDITION |
+| RG-3 | CI jobと同時に`.github/workflows/README.md`へ権限・実行・cleanup境界を記録してよいか | APPROVED |
+| RG-4 | workflow実装commit後、既存branchをforceなしでpushしてよいか | PENDING — 実装差分確認後に個別承認 |
+| RG-5 | push後、`main`向けdraft PRを作成し自動CIを起動してよいか | PENDING — remote HEAD確認後に個別承認 |
+| RG-6 | fresh runner PASS後、新contextを8件目のrequired checkへ追加してよいか | PENDING — run Evidence確認後に個別承認 |
+| RG-7 | §8の失敗・rerun境界を採用するか | APPROVED |
+| RG-8 | Gate Cまでdraft、merge commit、bypass / direct push禁止を採用するか | APPROVED |
 
-推奨する最初の承認範囲はRG-1〜RG-3、RG-7、RG-8である。RG-4〜RG-6は、それぞれworkflow実装差分、
-remote branch identity、fresh runner Evidenceが揃ってから判断する。本planの作成だけではworkflow変更、push、PR、
-ruleset変更、workflow rerun、mergeまたはGate C開始を許可しない。
+RG-2の承認条件として、local workflowの最終cleanupは、本jobが所有するTestcontainers container、
+package済みReference JAR process、Playwright / Chromium processおよび一時process logの残存0を独立確認する。
+
+**Decision:** RG-1〜RG-3、RG-7、RG-8 APPROVED
+**Decided by:** Shuichi Kataoka, Architecture Owner
+**Decision date:** 2026年9月17日
+**Authorized next action:** §4のworkflowとworkflow READMEのlocal実装・検証・commit
+
+RG-4〜RG-6は、それぞれworkflow実装差分、remote branch identity、fresh runner Evidenceが揃ってから判断する。
+本承認はpush、PR、ruleset変更、workflow rerun、mergeまたはGate C開始を許可しない。

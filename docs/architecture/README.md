@@ -50,7 +50,7 @@ P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX con
 | P3-C2 Critical Journey E2E | COMPLETE / OWNER APPROVED / CI CANDIDATE ACCEPTED | `validation/phase3-p3-c2-critical-journey-e2e.md` |
 | P3-C3 MyBatis Rules / Fixture | DEFERRED — adoption trigger required | `validation/phase3-p3-c3-mybatis-deferral.md` |
 | P3-C4 Traceability Closeout | COMPLETE / OWNER APPROVED | `validation/phase3-p3-c4-traceability-closeout.md` |
-| Remote Gate | PLAN READY / OWNER REVIEW REQUIRED | `validation/phase3-remote-gate-plan-review.md` |
+| Remote Gate | PLAN OWNER APPROVED / LOCAL WORKFLOW IMPLEMENTATION AUTHORIZED / REMOTE ACTIONS PENDING | `validation/phase3-remote-gate-plan-review.md` |
 
 ### Phase 2 Security Foundation
 

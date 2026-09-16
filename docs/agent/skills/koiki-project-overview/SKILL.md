@@ -128,8 +128,9 @@ Remote Gate / Gate Cへ継続する。P3-C3 MyBatis規約fixture / Rule 35〜37�
 `DEFERRED — MyBatis adoption trigger required`である。Rule 8のMyBatis拒否を維持し、`SEPARATED`、
 Rule 25〜27 / 30〜37、fixtureまたはdependencyを採用トリガー前に追加しない。P3-C4 Journey / ADR /
 Skill / DoD traceは`COMPLETE / OWNER APPROVED`である。
-Remote Gateは`PLAN READY / OWNER REVIEW REQUIRED`であり、workflow、push、PR、rulesetまたはmergeは未承認である。
-Phase 4、workflowまたはremote変更を先行せず、以降も同計画のCP、blocking review
+Remote Gate計画は`OWNER APPROVED`であり、RG-1〜RG-3、RG-7、RG-8に基づくlocal workflow実装を承認済みである。
+RG-4 push、RG-5 PR、RG-6 ruleset変更、workflow rerunまたはmergeは未承認である。
+Phase 4または未承認のremote変更を先行せず、以降も同計画のCP、blocking review
 およびGateを順守する。
 
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
