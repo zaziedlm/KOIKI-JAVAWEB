@@ -127,7 +127,7 @@ Browser / API / DB / log aggregate、cleanupおよびCI候補を非配布Tooling
 Remote Gate / Gate Cへ継続する。P3-C3 MyBatis規約fixture / Rule 35〜37はArchitecture Owner判断により
 `DEFERRED — MyBatis adoption trigger required`である。Rule 8のMyBatis拒否を維持し、`SEPARATED`、
 Rule 25〜27 / 30〜37、fixtureまたはdependencyを採用トリガー前に追加しない。P3-C4 Journey / ADR /
-Skill / DoD traceは`IN PROGRESS — C4-1〜C4-4 COMPLETE / OWNER CLOSE REVIEW READY`である。
+Skill / DoD traceは`COMPLETE / OWNER APPROVED`である。
 Phase 4、workflowまたはremote変更を先行せず、以降も同計画のCP、blocking review
 およびGateを順守する。
 

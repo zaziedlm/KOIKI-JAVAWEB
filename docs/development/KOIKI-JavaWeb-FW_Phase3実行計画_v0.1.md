@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 IN PROGRESS / C4-1〜C4-4 COMPLETE / OWNER CLOSE REVIEW READY
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 COMPLETE / OWNER APPROVED / DoD 3-11 PENDING CI EVIDENCE
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 IN PROGRESS / C4-1〜C4-4 COMPLETE / OWNER CLOSE REVIEW READY
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 COMPLETE / OWNER APPROVED / DoD 3-11 PENDING CI EVIDENCE
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -722,3 +722,22 @@ critical E2Eおよびcleanup / non-disclosureを再検証した。
 
 C4-4は実CI PASSを意味しない。DoD 3-11は`PENDING CI EVIDENCE`を維持し、Owner承認前にP3-C4 close、
 Remote Gate、Gate C、workflow、required check、remote操作またはsnapshot publishを開始しない。
+
+## 34. P3-C4 Architecture Owner close record
+
+2026年9月17日、C4-4後のclose reviewで、JST日付境界に依存するbrowser validation fixtureを検出した。
+`ReferenceHtmxJourneyTest`の未来日入力をUTC基準の翌日から2日後へ補正し、通常Session profileの
+package済みReference JAR、使い捨てPostgreSQL 17および実Chromiumでfocused 3 testsを再実行した。
+
+**Supplemental verification:** 3 tests、failure / error / skip 0、6.575秒
+**DB / cleanup:** 競合対象`APPROVED` / version 2、専用container残存0、18080 / 55432 port解放
+**Classification:** 非配布browser Toolingのtest fixture安定化。production、Public API、dependency、migration、property、profile、routeまたはworkflow変更0
+**Decision:** APPROVED — P3-C4 COMPLETE / OWNER APPROVED
+**Accepted:** DoD 3-1〜3-10、AC-P3-01〜10、ADR / Skill trace、inventory、deferred分類、Engineer-facing Journey、C4-4実検証および170 testsへの集計訂正
+**DoD continuation:** DoD 3-11だけを`PENDING CI EVIDENCE`としてRemote Gate / Gate Cへ継続する
+**Decided by:** Shuichi Kataoka, Architecture Owner
+**Decision date:** 2026年9月17日
+**Next decision point:** Remote Gate。workflow、required check、push / PR / merge、snapshot publishまたはGate C開始には個別Owner承認を必要とする
+
+P3-C4完了はPhase 3 final acceptanceまたはGate C通過を意味しない。Phase 4を開始せず、DoD 3-11の
+実CI PASSとRemote Gateの個別判断を先に扱う。

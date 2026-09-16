@@ -5,14 +5,15 @@
 | Item | Result |
 |---|---|
 | Date | 2026年9月16日 |
+| Owner approval date | 2026年9月17日 |
 | Branch | `feature/phase3-reference-vertical-slice` |
 | Phase 3 start baseline | `c88b335efdd556613c9ef7f4c5267214fdb8254b` |
 | P3-C4 start HEAD | `4f6b2ccc4b186c46d5dfcba1f83d0e5fb951da65` |
-| Current status | `IN PROGRESS — C4-1〜C4-4 COMPLETE / OWNER CLOSE REVIEW READY` |
+| Current status | `COMPLETE / OWNER APPROVED` |
 | Ownership | Architecture documentation / closeout verification |
 | Production change in C4-1〜C4-4 | 0 |
 | Remote mutation | 0 |
-| Next | Architecture Owner close review |
+| Next | Remote Gate（個別Owner承認前は未開始） |
 
 P3-C4は、Phase 3で追加した実装と承認Evidenceを横断して、DoD、Reference AC、Journey、ADR、Skill、
 Public API、migration、dependency、artifactおよびdeferred inventoryを一致させるcloseout CPである。
@@ -583,4 +584,50 @@ C4-1〜C4-4を`COMPLETE`とし、P3-C4をArchitecture Owner close reviewへ送�
 4. DoD 3-11だけを`PENDING CI EVIDENCE`としてRemote Gate / Gate Cへ継続する。
 5. P3-C4を`COMPLETE / OWNER APPROVED`として閉じてよいか判断する。
 
-Owner承認前にP3-C4 close、Remote Gate、Gate C、workflow変更、remote操作またはPhase 4を開始しない。
+本節作成時点ではOwner承認前であり、P3-C4 close、Remote Gate、Gate C、workflow変更、remote操作または
+Phase 4を開始しない境界としていた。2026年9月17日の補足検証とOwner判断は次節に記録する。
+
+## 35. Browser focused supplemental verification and Owner close decision
+
+2026年9月17日JST 00時台のbrowser focused再実行で、3 tests中2件がPASSし、validation accessibility testだけが
+`#usage-date-error`待機でtimeoutした。test fixtureが`UTC current date + 1 day`を入力していたため、この時間帯には
+JST当日となり、未来日validationが成立しないことを原因と確認した。これはReference productionの業務日付判定ではなく、
+非配布browser Toolingのタイムゾーン境界不具合である。
+
+`ReferenceHtmxJourneyTest`の入力を`UTC current date + 2 days`へ補正した。UTC-12〜UTC+14の範囲で
+application local dateより確実に未来日となり、production code、Public API、dependency、migration、property、
+profile、routeまたはworkflowは変更していない。
+
+同じ通常Session profileのpackage済みReference JAR、使い捨てPostgreSQL 17および実Chromiumで再実行した。
+
+| Supplemental check | Result |
+|---|---|
+| Browser focused | 3 tests、failure / error / skip 0、6.575秒 |
+| Master HTMX / history / CSRF | PASS |
+| Expense validation accessibility | PASS |
+| Two independent browser contexts / optimistic lock | PASS |
+| Conflict target DB state | `APPROVED` / version 2 |
+| Cleanup | 専用container残存0、18080 / 55432 port解放 |
+| Worktree verification | `git diff --check` PASS |
+
+Architecture Ownerはclose reviewの5判断点を次のとおり承認した。
+
+1. DoD 3-1〜3-10、AC-P3-01〜10、ADR / Skill traceを受け入れる。
+2. inventory、deferred分類およびEngineer-facing Journeyを受け入れる。
+3. C4-4の実検証と170 testsへの集計訂正を受け入れる。
+4. DoD 3-11だけを`PENDING CI EVIDENCE`としてRemote Gate / Gate Cへ継続する。
+5. P3-C4を`COMPLETE / OWNER APPROVED`として閉じる。
+
+**Decision:** APPROVED — P3-C4 COMPLETE / OWNER APPROVED
+
+**Decided by:** Shuichi Kataoka, Architecture Owner
+
+**Decision date:** 2026年9月17日
+
+**Preserved boundary:** production、Public API、migration、dependency、workflowおよびremote変更0
+
+**Next decision point:** Remote Gate。workflow、required check、push / PR / merge、snapshot publishまたは
+Gate C開始には個別Owner承認を必要とする。
+
+P3-C4完了はPhase 3 final acceptanceまたはGate C通過を意味しない。Phase 4を開始せず、DoD 3-11の
+実CI PASSとRemote Gateの個別判断を先に扱う。
