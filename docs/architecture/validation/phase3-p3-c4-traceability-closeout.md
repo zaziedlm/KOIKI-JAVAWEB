@@ -8,11 +8,11 @@
 | Branch | `feature/phase3-reference-vertical-slice` |
 | Phase 3 start baseline | `c88b335efdd556613c9ef7f4c5267214fdb8254b` |
 | P3-C4 start HEAD | `4f6b2ccc4b186c46d5dfcba1f83d0e5fb951da65` |
-| Current status | `IN PROGRESS — C4-1 BASELINE CLASSIFICATION COMPLETE` |
+| Current status | `IN PROGRESS — C4-1 / C4-2 COMPLETE` |
 | Ownership | Architecture documentation / closeout verification |
-| Production change in C4-1 | 0 |
+| Production change in C4-1 / C4-2 | 0 |
 | Remote operation | 0 |
-| Next | C4-2 DoD / AC / ADR / Skill trace matrix |
+| Next | C4-3 inventory / deferred / Engineer-facing Journey closeout |
 
 P3-C4は、Phase 3で追加した実装と承認Evidenceを横断して、DoD、Reference AC、Journey、ADR、Skill、
 Public API、migration、dependency、artifactおよびdeferred inventoryを一致させるcloseout CPである。
@@ -266,3 +266,114 @@ Phase 3開始baselineからP3-C4開始HEADまでの194 filesを、Framework、Re
 
 C4-1を`COMPLETE`とし、次はC4-2 DoD 3-1〜3-11、AC-P3-01〜10、ADRおよびSkillのtrace matrixを作成する。
 この結論はMaven / runtime verificationまたはP3-C4 close承認を代替しない。
+
+## 13. C4-2 trace method and status vocabulary
+
+C4-2はGrand DesignのDoD、Reference SpecificationのAC、承認済みADRおよびKOIKI固有Skillを、
+Phase 3の実装・自動test・DB / Audit / log観測・Owner判断へ追跡した。ここでは過去CPの承認済み結果を
+再利用し、Maven、Docker、Browserまたはpackage済みJARを再実行していない。
+
+| Status | Meaning |
+|---|---|
+| `SATISFIED / OWNER ACCEPTED` | 実装と自動testに加え、必要なDB / Audit / log / browser観測が承認済みEvidenceに存在する |
+| `CONSISTENT` | ADR / Skillの指示と実装・Evidence・deferred境界が一致する |
+| `PENDING CI EVIDENCE` | local候補は受入済みだが、Owner承認済みworkflowによる実CI PASSがまだ存在しない |
+| `DEFERRED BY DECISION` | 欠落ではなく、理由・安全境界・再開条件をOwnerが明示して延期した |
+
+文書リンクだけを充足根拠とせず、代表test class / method、観測対象および最終Owner判断を各行に含める。
+
+## 14. DoD 3-1〜3-11 trace
+
+| DoD | Implementation / representative verification | Observed evidence / Owner decision | C4-2 status |
+|---|---|---|---|
+| 3-1 | `master` Tier 1 SIMPLE / JPAと`expense` Tier 2 RICH / JPA共有model。`MasterPostgreSqlIntegrationTest`、`ExpenseRequestTest.followsAllSevenAcceptedTransitions`、`ExpensePostgreSqlIntegrationTest.persistsAcceptedLifecycleWithSharedJpaModelAndOptimisticVersion` | P3-A1 / A2でPostgreSQL、state / version、Audit、rollbackを観測。Tier選択は実行計画、Specification、Skillへ記録しGate Aで承認 | `SATISFIED / OWNER ACCEPTED` |
+| 3-2 | 同期`DepartmentDeactivating`とexpense listener。`DepartmentDeactivationPostgreSqlIntegrationTest.rollsBackDepartmentDeactivationForAllFourPendingExpenseStates` | 4未処理状態で部門active維持、Business Audit 0件、transaction rollbackをP3-A4 / Gate Aで確認 | `SATISFIED / OWNER ACCEPTED` |
+| 3-3 | masterはmaster-owned event / query contractだけを公開しexpenseを直接参照しない。`ReferenceArchitectureTest`と`BusinessModuleRuleSetTest` | ADR-049の依存方向、production直接参照0、同期rollbackをP3-A4 / Gate Aで承認 | `SATISFIED / OWNER ACCEPTED` |
+| 3-4 | MVC Model / TemplateへEntityを渡す経路をArchitecture testで拒否。`ReferenceArchitectureTest`をRoot Reactor verifyへ包含 | Gate BでMVC Model型、Template inventory、Web MVC Starter Java Public API 0型を突合 | `SATISFIED / OWNER ACCEPTED` |
+| 3-5 | 選択的HTMX 11契約、通常HTML fallback、CSRF header自動注入。P3-B3 MockMvcと`ReferenceHtmxJourneyTest` | headed Chromiumでlogin、検索、履歴、validation、CSRF、部分errorを確認し、DB / Audit / logと突合 | `SATISFIED / OWNER ACCEPTED` |
+| 3-6 | JPA `@Version`とReference専用409競合画面。`ExpensePostgreSqlIntegrationTest.jpaVersionRejectsStalePersistenceContextWithoutStateOrAuditSideEffects`およびbrowser 2 context test | 先行だけ更新、後発409、state / version / Audit非更新をP3-B4 / Gate Bで確認 | `SATISFIED / OWNER ACCEPTED` |
+| 3-7 | masterはJPA projection、expenseはscope先行のread-only `JdbcClient`。`ExpenseReadModelPostgreSqlIntegrationTest.enforcesApplicantApproverAndAccountingScopeBeforeMaterialization` | SQL時点のscope、取得後filter 0、Application所有recordへのmaterializeをP3-B1 / Gate Bで承認 | `SATISFIED / OWNER ACCEPTED` |
+| 3-8 | submit / approve / rejectをBusiness transaction内で監査。`ExpensePostgreSqlIntegrationTest.recordsApproveRejectReturnAndReeditSuccessesWithinTheBusinessTransaction` | 成功時stateとAuditを同時記録し、拒否 / rollback時Audit 0件をP3-A3、C1、C2でDB突合 | `SATISFIED / OWNER ACCEPTED` |
+| 3-9 | active経費科目だけをReference local Caffeine cacheへ30秒保持し、commandはcurrent-value確認を継続 | TTL前後のbrowser / DB観測、inactive master command拒否、認可cache 0をP3-B4 / Gate Bで承認 | `SATISFIED / OWNER ACCEPTED` |
+| 3-10 | `/api/v1/expense-requests`のcreate / read / submitと独立REST DTO / Problem Details。`ExpenseApiControllerTest`、`ExpenseApiPostgreSqlIntegrationTest` | 実署名Bearer、HTTP 201 / 200 / 204、DB / Audit / log、MVC parityをP3-C1で承認 | `SATISFIED / OWNER ACCEPTED` |
+| 3-11 | Root Reactor外の`PackagedReferenceCriticalJourneyTest.crossesBearerAndSessionBoundariesAndReconcilesExternalEvidence` | package済みJAR、PostgreSQL、Bearer API、Session Chromium、HTMX、DB / Audit / sanitized logを最終コード3回連続PASS。P3-C2をCI候補として承認したが実workflow PASSは未実施 | `PENDING CI EVIDENCE` |
+
+3-2と3-3の核心は同じP3-A4実行で成立しており、業務rollbackとmodule依存方向を別々の推測で補っていない。
+3-11以外に未充足DoDは認めない。3-11はRemote Gateでworkflow内容とremote mutationを個別承認し、Gate Cへ
+実CI PASS Evidenceを入力するまで完了へ変更しない。
+
+## 15. AC-P3-01〜10 trace
+
+| AC | Representative implementation / test | DB / Audit / UI / API evidence | Owner evidence | C4-2 status |
+|---|---|---|---|---|
+| AC-P3-01 | master管理Use Case、JPA、method security、`MasterAdministrationTest` / `MasterPostgreSqlIntegrationTest` | 有効master保存、拒否rollback、管理Business Audit。B2 / B3でMVC検索・管理操作 | P3-A1、P3-B2 / B3 | `SATISFIED / OWNER ACCEPTED` |
+| AC-P3-02 | expense Aggregate 7遷移、create / edit / submit Use Case、`ExpenseRequestTest` / `ExpensePostgreSqlIntegrationTest` | `DRAFT`作成から`SUBMITTED`、line / total / version / AuditをPostgreSQLで突合 | P3-A2 / A3、P3-C1 / C2 | `SATISFIED / OWNER ACCEPTED` |
+| AC-P3-03 | Aggregate不変条件とApplication validation。APIではrepresentation validationも実施 | 金額不一致、日付・金額・master無効、stale versionを拒否し、Aggregate / Audit非更新 | P3-A2 / A3、P3-C1 | `SATISFIED / OWNER ACCEPTED` |
+| AC-P3-04 | approve / reject / return遷移とexact department scope。`recordsApproveRejectReturnAndReeditSuccessesWithinTheBusinessTransaction` | 許可状態への遷移と同一transactionのBusiness AuditをDB突合 | P3-A3、P3-B4 / C2 | `SATISFIED / OWNER ACCEPTED` |
+| AC-P3-05 | method security、ownership / scope / state check。`enforcesPermissionOwnershipAndExactDepartmentScopeWithoutAuditLeakage` | 自己承認、scope外、不正状態を拒否し、state / Audit変更0 | P3-A3、P3-C1 | `SATISFIED / OWNER ACCEPTED` |
+| AC-P3-06 | `DepartmentDeactivationPostgreSqlIntegrationTest.rollsBackDepartmentDeactivationForAllFourPendingExpenseStates` | `DRAFT` / `SUBMITTED` / `APPROVED` / `RETURNED`参照時に部門廃止とAuditをrollback | P3-A4 / Gate A | `SATISFIED / OWNER ACCEPTED` |
+| AC-P3-07 | `DepartmentDeactivationPostgreSqlIntegrationTest.deactivatesDepartmentWithNoExpenseOrOnlyTerminalExpenseStates` | 申請なし、`REJECTED` / `SETTLED`のみで部門廃止とAudit 1件 | P3-A4 / Gate A | `SATISFIED / OWNER ACCEPTED` |
+| AC-P3-08 | JPA optimistic lock、409 mapping、2 BrowserContext journey | 先行更新成立、後発競合画面、後発によるstate / version / Audit副作用0 | P3-B4 / Gate B | `SATISFIED / OWNER ACCEPTED` |
+| AC-P3-09 | scopeをSQL内で強制するexpense read model。`enforcesApplicantApproverAndAccountingScopeBeforeMaterialization` | applicant / approver / accountingのscope内だけをlist / detailへmaterialize、取得後filter 0 | P3-B1 / Gate B、P3-C1 | `SATISFIED / OWNER ACCEPTED` |
+| AC-P3-10 | MVC / REST Controllerが同じApplication input portを使用し、Form / View DTO / REST DTOは分離 | 同一actorのcreate / read / submitでPermission、不変条件、state / version / Audit結果をPostgreSQLと外部HTTPで突合 | P3-C1 / C2 | `SATISFIED / OWNER ACCEPTED` |
+
+Gate Aで明示したとおり、申請作成・提出と部門廃止を別transactionから完全同時実行した場合のstrict race保証は
+AC-P3-06 / 07の受入範囲外である。これはAC未充足ではなく、production要件化時にlock / isolationを再設計する
+既知の境界である。
+
+## 16. ADR consistency trace
+
+| ADR | Phase 3 fitting / implementation | Evidence / disposition | C4-2 status |
+|---|---|---|---|
+| ADR-004 / 022 | 単一Reference modular monolith内のmaster Tier 1 / expense Tier 2とArchitecture rule | P3-A1〜A4、`ReferenceArchitectureTest`、Gate A | `CONSISTENT` |
+| ADR-023 / 024 / 028 | expenseのJPA共有Domain / Entity、domain repository + Spring Data、OSIV無効、外部Entity露出0 | P3-A2、B1 / B2、Gate B | `CONSISTENT` |
+| ADR-025 / 049 | 同期Domain Eventでcommand rollback、master-owned narrow current-value query、Reference V1〜V3、module内FKのみ | P3-A0 / A4、Gate A | `CONSISTENT` |
+| ADR-006 / 007 / 008 | 通常server-side UIはSession、P3-C1限定APIはstateless Bearer。MVCとRESTのSecurity chainを分離 | P3-B2、C0 / C1。Phase 4 Profile S判断はdeferred | `CONSISTENT` |
+| ADR-027 | Thymeleaf HTML主軸、HTMX 2.0.10を効果がある11契約へ選択適用、第三者Spring integration非採用 | P3-B0 / B3、Gate B | `CONSISTENT` |
+| ADR-037 | Reference表示専用local cache、30秒TTL、認可・command判断をcacheしない | P3-B4、Gate B | `CONSISTENT` |
+| ADR-038 | 複数owner表示queryだけをscope先行read-only JOINとし、Application recordを直接materialize | P3-B1、Gate B、AC-P3-09 | `CONSISTENT` |
+| ADR-039 | Level B方針を維持しつつ、具体需要までMyBatis詳細規約と実装を延期。Rule 8拒否を維持 | P3-C3 deferral。`SEPARATED`、Rule 25〜27 / 30〜37、fixture / dependency追加0 | `DEFERRED BY DECISION` |
+| ADR-041 / 043 | Reference code / fixtureをFramework Public APIへ自動昇格せず、単一`koiki-reference-app`で題材を完成 | C4-1 Java Public API差分0、Reference classification | `CONSISTENT` |
+| ADR-042 | Framework migrationとReference V1〜V3 / history / table ownershipを分離 | P3-A0 / A1 / A2、C4-1 Framework migration差分0 | `CONSISTENT` |
+| ADR-046 / 047 / 048 | Phase 2 default deny、Identity、Business / Security Audit、Session JDBC契約を再利用し弱めない | P3-A3、B2〜B4、C1 / C2 | `CONSISTENT` |
+
+ADR-039だけが実装延期であるが、ADR自体を否定していない。採用トリガー、blocking review、安全境界が
+`phase3-p3-c3-mybatis-deferral.md`に残るため、P3-C4およびGate Cをblockする不整合ではない。
+
+## 17. KOIKI Skill consistency trace
+
+| Skill instruction | Phase 3 realization | C4-2 status |
+|---|---|---|
+| Project Overview: Framework / Reference / Customer / Tooling / Walking SkeletonのOwnershipを分離 | Web MVC StarterだけをFrameworkへ追加。業務codeはReference、browser / API / E2E fixtureはRoot Reactor外Tooling、Customer変更0 | `CONSISTENT` |
+| Project Overview: modular monolithと承認済みCP / Gateを順守 | master / expenseを単一Reference artifactのpackageとして分離し、A / B / Cの順でOwner Evidenceを確定 | `CONSISTENT` |
+| Business Feature Work: master Tier 1 SIMPLE、expense Tier 2 RICH / JPA共有model | A1 / A2の実装、Domain 7遷移、JPA optimistic version、PostgreSQL Evidence | `CONSISTENT` |
+| Business Feature Work: inbound / application / domain / outbound責務とDomain / Entity非露出 | MVC Form / View DTO、REST DTOを分離し、共通Application input portだけを再利用。Architecture / Controller testで固定 | `CONSISTENT` |
+| Business Feature Work: module連携は同期event、ADR-049の狭いread-only queryだけを例外化 | DepartmentDeactivating + expense listener、master `*Query` contractへのadapter.outbound限定依存 | `CONSISTENT` |
+| Business Feature Work: queryはmaster JPA projection、expense JdbcClient、scopeをSQLで先に強制 | P3-B1の2方式とAC-P3-09、取得後filter 0 | `CONSISTENT` |
+| Business Feature Work: JPA既定、MyBatisは明示Gate後だけ | P3-C3をadoption trigger待ちにし、Rule 8拒否とJPA baselineを維持 | `DEFERRED BY DECISION / CONSISTENT` |
+| 両Skill: 実装検証を文書上の推測より優先し、Public API / Framework昇格を抑制 | PostgreSQL、browser、package済みJAR、DB / Audit / log Evidenceを各CPで取得。Java Public API差分0 | `CONSISTENT` |
+
+Skillの設計指示とPhase 3実装に矛盾は認めない。ただしProject Overviewの現在地表示はC4-2完了へ同期し、
+Engineer-facing Journeyの入口不足はC4-3以降でReference文書を最小補正する。
+
+## 18. C4-2 gaps, deferred items and non-gaps
+
+| Classification | Item | Required follow-up |
+|---|---|---|
+| Pending | DoD 3-11の実workflow PASS | Remote Gateでworkflow / required check / remote mutationを個別承認し、Gate Cへ実CI Evidenceを入力 |
+| Documentation gap | Phase 3完成形のSession MVC、Bearer API、focused Tooling、critical E2EへのReference入口 | C4-3以降のEngineer-facing Journey補正。production / profile変更は行わない |
+| Deferred by decision | P3-C3 MyBatis詳細規約 / fixture / rule / Public API | adoption trigger成立後にblocking reviewを再開。それまではRule 8拒否を維持 |
+| Deferred by phase | SPA、Level 2 / async event、accounting、Project Template、migration toolingほかPhase 4 / 5成果物 | 当該Phase / optional Gateまで先行しない |
+| Nonblocking observation | 申請者email表示のIdentity / business profile Ownership、限定範囲外のaccessibility certification | 既存Evidenceの再開条件を維持し、Gate Cの必須AC / DoDへ読み替えない |
+| Explicit non-gap | AC-P3-06 / 07のstrict concurrent race保証 | production要件化時にlock / isolationを再設計。現在の受入契約は変更しない |
+
+## 19. C4-2 conclusion
+
+DoD 3-1〜3-10とAC-P3-01〜10は、具体的な実装、自動test、DB / Audit / log / browser観測および
+Architecture Owner承認へ双方向に追跡できる。主要ADRとProject Overview / Business Feature Skillも、
+Phase 3実装およびP3-C3延期境界と一致する。
+
+唯一の未充足DoDは、計画どおりRemote Gate / Gate Cへ継続するDoD 3-11の実CI PASSである。local critical E2Eの
+3回連続PASSはCI候補の受入Evidenceであり、実workflow PASSへ読み替えない。C4-2を`COMPLETE`とし、次はC4-3として
+Public API、artifact / publish unit、dependency、migration / table、property / profile、route、Tooling混入、
+deferred inventoryおよびEngineer-facing Journeyを確定する。P3-C4 close、Remote GateまたはGate Cはまだ宣言しない。

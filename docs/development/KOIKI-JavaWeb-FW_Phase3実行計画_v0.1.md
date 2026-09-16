@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 IN PROGRESS / C4-1 COMPLETE
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 IN PROGRESS / C4-1〜C4-2 COMPLETE
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 IN PROGRESS / C4-1 COMPLETE
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 IN PROGRESS / C4-1〜C4-2 COMPLETE
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -667,3 +667,21 @@ C4-2以降の文書closeoutで補正する
 
 C4-1はP3-C4 close、Remote GateまたはGate Cを意味しない。DoD 3-11の実CI PASS、workflow、required check、
 remote操作およびsnapshot publishは引き続き個別Owner承認までdeferする。
+
+## 31. P3-C4 C4-2 DoD / AC / ADR / Skill trace checkpoint
+
+2026年9月16日、DoD 3-1〜3-11、AC-P3-01〜10、Phase 3主要ADRおよびKOIKI固有Project Overview /
+Business Feature Skillを、実装、自動test、DB / Audit / log / browser観測とOwner判断へ追跡した。
+
+**Status:** C4-2 TRACE MATRIX COMPLETE / P3-C4 IN PROGRESS
+**Satisfied:** DoD 3-1〜3-10、AC-P3-01〜10
+**Pending:** DoD 3-11のOwner承認済みworkflowによる実CI PASS。P3-C2のlocal 3回連続PASSはCI候補受入であり代替しない
+**ADR / Skill:** ADR-027 / 038 / 049を含む実装境界は一致。ADR-039は採用トリガー待ちの明示的延期として一致
+**Gap:** Reference engineer-facing入口のPhase 3完成形への更新だけをdocumentation gapとしてC4-3以降へ継続
+**Evidence:** `docs/architecture/validation/phase3-p3-c4-traceability-closeout.md`
+**Verification:** 承認済みEvidenceと代表test sourceのread-only照合、`git diff --check`。Maven / Docker / BrowserはC4-2では未実行
+**Next:** C4-3 Public API / artifact / dependency / migration / property / profile / route / Tooling inventory、deferred、Journey closeout
+
+C4-2はP3-C4 close、Remote GateまたはGate Cを意味しない。production / test不足は検出しておらず、C4-3で
+inventoryと文書導線を確定する。workflow、required check、remote操作およびsnapshot publishは引き続き
+個別Owner承認までdeferする。
