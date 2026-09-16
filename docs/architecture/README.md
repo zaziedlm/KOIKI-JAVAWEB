@@ -24,7 +24,9 @@ P3-CP0、P3-A0 contract review、P3-A1 master、P3-A2 expense、P3-A3 authorizat
 P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX contract reviewを
 `COMPLETE / OWNER APPROVED`、P3-B1 read modelを`COMPLETE`、P3-B2 MVC / Thymeleafを
 `COMPLETE / OWNER APPROVED`、P3-B3 HTMXおよびP3-B4 optimistic conflict / cacheも
-`COMPLETE / OWNER APPROVED`、Gate B Web / query acceptanceを`COMPLETE / ACCEPTED`とし、次はP3-C0最小REST API contract reviewです。
+`COMPLETE / OWNER APPROVED`、Gate B Web / query acceptanceを`COMPLETE / ACCEPTED`、P3-C0〜C2を
+`COMPLETE / OWNER APPROVED`、P3-C3をadoption trigger待ちの`DEFERRED`、P3-C4を
+`COMPLETE / OWNER APPROVED`としています。次はDoD 3-11の実CI Evidenceを扱うRemote Gateです。
 
 ### Phase 3 Reference Vertical Slice
 
@@ -43,6 +45,12 @@ P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX con
 | P3-B3 HTMX | COMPLETE / OWNER APPROVED | `validation/phase3-p3-b3-htmx.md` |
 | P3-B4 Optimistic Conflict / Cache | COMPLETE / OWNER APPROVED | `validation/phase3-p3-b4-lock-cache-contract-review.md`、`validation/phase3-p3-b4-lock-cache.md` |
 | Gate B Web / Query Acceptance | COMPLETE / ACCEPTED | `validation/phase3-gate-b-web-query-acceptance.md` |
+| P3-C0 REST Contract Review | COMPLETE / OWNER APPROVED | `validation/phase3-p3-c0-rest-contract-review.md` |
+| P3-C1 Minimal REST API | COMPLETE / OWNER APPROVED | `validation/phase3-p3-c1-minimal-rest-api.md` |
+| P3-C2 Critical Journey E2E | COMPLETE / OWNER APPROVED / CI CANDIDATE ACCEPTED | `validation/phase3-p3-c2-critical-journey-e2e.md` |
+| P3-C3 MyBatis Rules / Fixture | DEFERRED — adoption trigger required | `validation/phase3-p3-c3-mybatis-deferral.md` |
+| P3-C4 Traceability Closeout | COMPLETE / OWNER APPROVED | `validation/phase3-p3-c4-traceability-closeout.md` |
+| Remote Gate | PLAN READY / OWNER REVIEW REQUIRED | `validation/phase3-remote-gate-plan-review.md` |
 
 ### Phase 2 Security Foundation
 

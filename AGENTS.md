@@ -13,6 +13,7 @@ P3-CP0とP3-A0は`COMPLETE`、P3-A1〜P3-A4およびGate Aは`COMPLETE / ACCEPTE
 `DEFERRED — MyBatis adoption trigger required`であり、`PersistenceModel.SEPARATED`、Rule 25〜27 / 30〜37、
 MyBatis fixtureおよびtest dependencyを追加せず、Rule 8のMyBatis拒否を維持する。P3-C4 Journey / ADR /
 Skill / DoD traceは`COMPLETE / OWNER APPROVED`である。
+Remote Gateは`PLAN READY / OWNER REVIEW REQUIRED`であり、workflow、push、PR、rulesetまたはmergeは未承認である。
 Phase 4、Framework Public API、migration、workflowまたはremote変更を先行しない。
 DoD 3-11の実CI PASSはRemote Gate / Gate Cへ継続する。
 
