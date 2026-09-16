@@ -8,6 +8,20 @@ KOIKIでは、CIとartifact公開を別の権限境界として扱います。
 - `ubuntu-24.04` / Temurin 21で、Maven Wrapperから`clean verify`を実行します。production runtimeを
   Linux-onlyとしたため、Windows matrixは再採用判断まで無効です。
 - NullAwayのpositive、意図的違反のexpected failure、restoreを隔離fixtureから検証します。
+- `Phase 3 Critical Journey E2E` jobは、Root Reactor外の非配布`reference-e2e-verification`
+  Toolingを実行します。Temurin 21とMaven cacheを使用し、Playwright 1.62.0のChromiumを
+  `--with-deps`で導入した後、`koiki-reference-app`をclean packageし、package済みJARに対して
+  Browser / Bearer API / PostgreSQL / Business Audit / Security Audit / sanitized logのcritical journeyを1回実行します。
+- Phase 3 E2E jobは`ubuntu-24.04`、job timeout 20分、`contents: read`だけで実行します。
+  追加secret、PAT、Packages権限、environment、artifact uploadまたはbrowser binary cacheを使用しません。
+- test本体のcleanupとは独立した`if: always()`の最終stepで、専用runner上のTestcontainersラベル付き
+  container、package済みReference JAR process、Playwright / Chromium processおよび
+  `koiki-p3-c2-e2e-*.log`の残存を検査します。残存があればcleanupしたうえでjobを失敗させ、
+  検査command自体が失敗した場合も成功扱いにしません。GitHub-hosted runnerの破棄だけを
+  cleanup成功証拠にしません。
+- `Phase 3 Critical Journey E2E`はrequired checkへ未登録です。draft PRのfresh runner PASS、
+  cleanup・実行時間・secret非露出のOwner Reviewおよび別の明示承認後にだけ、
+  既存7 contextsを維持した8件目のrequired check候補として扱います。
 - `Security Foundation Integration` jobは、隔離Maven repositoryへrelease unitをstageし、Root Reactor外の
   Customer-like Consumerをbuild／test／packageします。Java 21でbuildした同一JARをJava 21／25で実行し、
   Security依存、Public API fixture、secret non-exposureおよびcleanupを累積検証します。
