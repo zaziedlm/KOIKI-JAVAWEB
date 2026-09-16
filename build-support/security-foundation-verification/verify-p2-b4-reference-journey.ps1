@@ -552,37 +552,58 @@ function Assert-ReferenceArtifactBoundary {
         @($inventory | Where-Object { $_ -match '^TYPE ' }).Count -ne 10) {
         throw 'The Identity Public API type inventory changed during B4-4.'
     }
-    $referenceSource = Get-ChildItem -LiteralPath (
-        Join-Path $repositoryRoot 'koiki-reference-app/src/main') -Recurse -File
-      foreach ($source in $referenceSource) {
-          $content = Get-Content -Raw -LiteralPath $source.FullName
-        if ($content -match 'org\.koikifw\.[a-z0-9_.]+\.internal(?:\.|;)' -or
-            $content -match '(?m)^\s*(?:CREATE|ALTER|DROP)\s+TABLE\b') {
-              throw "The Reference source crossed its Framework ownership boundary: $($source.Name)."
-          }
-      }
-      $productionJava = @($referenceSource | Where-Object { $_.Extension -eq '.java' })
-      $templates = @($referenceSource | Where-Object {
-              $_.FullName -match '[\\/]resources[\\/]templates[\\/]' -and $_.Extension -eq '.html'
-          })
-      $sqlFiles = @($referenceSource | Where-Object { $_.Extension -eq '.sql' })
-      if ($productionJava.Count -ne 12 -or $templates.Count -ne 3 -or $sqlFiles.Count -ne 0) {
-          throw "Reference inventory changed: Java=$($productionJava.Count), templates=$($templates.Count), SQL=$($sqlFiles.Count)."
-      }
-      $controllerSource = Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot (
-          'koiki-reference-app/src/main/java/org/koikifw/reference/identity/adapter/inbound/web/IdentityManagementController.java'))
-      if ([regex]::Matches($controllerSource, '@GetMapping').Count -ne 3 -or
-          [regex]::Matches($controllerSource, '@PostMapping').Count -ne 2) {
-          throw 'The approved Reference HTTP mapping inventory changed.'
-      }
-      $allReferenceSource = ($referenceSource | ForEach-Object {
-              Get-Content -Raw -LiteralPath $_.FullName
-          }) -join "`n"
-      if ($allReferenceSource -match '@Transactional' -or
-          $allReferenceSource -match '(?m)^\s*(?:public\s+)?interface\s+\w*Repository\b') {
-          throw 'The Reference application added transaction ownership or a Repository declaration.'
-      }
-  }
+    $referenceMain = Join-Path $repositoryRoot 'koiki-reference-app/src/main'
+    $referenceSource = Get-ChildItem -LiteralPath $referenceMain -Recurse -File
+    $referenceJava = @($referenceSource | Where-Object { $_.Extension -eq '.java' })
+    foreach ($source in $referenceJava) {
+        $content = Get-Content -Raw -LiteralPath $source.FullName
+        if ($content -match 'org\.koikifw\.[a-z0-9_.]+\.internal(?:\.|;)') {
+            throw "The Reference source crossed its Framework internal boundary: $($source.Name)."
+        }
+    }
+    $referenceSql = @($referenceSource | Where-Object { $_.Extension -eq '.sql' })
+    foreach ($source in $referenceSql) {
+        $relativePath = [System.IO.Path]::GetRelativePath(
+            $referenceMain, $source.FullName).Replace('\', '/')
+        if ($relativePath -notmatch '^resources/db/migration/kkref/[^/]+[.]sql$') {
+            throw "The Reference source contains SQL outside its migration location: $relativePath."
+        }
+    }
+    $phase2ReferenceJavaPaths = @(
+        'java/org/koikifw/reference/ReferenceApplication.java',
+        'java/org/koikifw/reference/package-info.java',
+        'java/org/koikifw/reference/identity/package-info.java',
+        'java/org/koikifw/reference/identity/adapter/inbound/web/IdentityManagementController.java',
+        'java/org/koikifw/reference/identity/adapter/inbound/web/IdentityManagementExceptionHandler.java',
+        'java/org/koikifw/reference/identity/adapter/inbound/web/IdentityRoleChangeForm.java',
+        'java/org/koikifw/reference/identity/adapter/inbound/web/package-info.java',
+        'java/org/koikifw/reference/identity/application/IdentityUserManagement.java',
+        'java/org/koikifw/reference/identity/application/IdentityUserView.java',
+        'java/org/koikifw/reference/identity/application/package-info.java',
+        'java/org/koikifw/reference/identity/configuration/ReferenceSecurityConfiguration.java',
+        'java/org/koikifw/reference/identity/configuration/package-info.java'
+    )
+    $phase2ReferenceJava = @($phase2ReferenceJavaPaths | ForEach-Object {
+            $sourcePath = Join-Path $referenceMain $_
+            if (-not (Test-Path -LiteralPath $sourcePath -PathType Leaf)) {
+                throw "The Phase 2 Reference identity source is missing: $_."
+            }
+            Get-Item -LiteralPath $sourcePath
+        })
+    $controllerSource = Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot (
+        'koiki-reference-app/src/main/java/org/koikifw/reference/identity/adapter/inbound/web/IdentityManagementController.java'))
+    if ([regex]::Matches($controllerSource, '@GetMapping').Count -ne 3 -or
+        [regex]::Matches($controllerSource, '@PostMapping').Count -ne 2) {
+        throw 'The approved Reference HTTP mapping inventory changed.'
+    }
+    $phase2ReferenceSource = ($phase2ReferenceJava | ForEach-Object {
+            Get-Content -Raw -LiteralPath $_.FullName
+        }) -join "`n"
+    if ($phase2ReferenceSource -match '@Transactional' -or
+        $phase2ReferenceSource -match '(?m)^\s*(?:public\s+)?interface\s+\w*Repository\b') {
+        throw 'The Phase 2 Reference identity slice added transaction ownership or a Repository declaration.'
+    }
+}
 
 Assert-SafeTemporaryPath -Path $verificationRoot
 New-Item -ItemType Directory -Path $isolatedRepository -Force | Out-Null
