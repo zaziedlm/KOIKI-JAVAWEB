@@ -87,6 +87,8 @@ $env:SPRING_DATASOURCE_URL = "jdbc:postgresql://127.0.0.1:55432/koiki_reference"
 $env:SPRING_DATASOURCE_USERNAME = "koiki"
 $env:SPRING_DATASOURCE_PASSWORD = "local-only-password"
 $env:KOIKI_REFERENCE_SOURCE_HMAC_KEY_ID = "local-reference-1"
+$previousDebug = $env:DEBUG
+$env:DEBUG = "false"
 
 $sourceHmacKeyBytes = [byte[]]::new(32)
 $sourceHmacKeyGenerator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
@@ -102,6 +104,10 @@ Remove-Variable sourceHmacKeyBytes, sourceHmacKeyGenerator
 `KOIKI_REFERENCE_SOURCE_HMAC_KEY`はBase64文字列であり、Base64復号後に32 byte以上でなければならない。
 生成値をterminalへ表示せず、Repository、command history、log、文書または共有channelへ保存しない。同じPowerShellで
 Applicationを再起動する場合は設定値をそのまま再利用できる。
+
+`DEBUG=false`は、OSまたは別toolが設定した汎用環境変数`DEBUG`をSpring Bootがdebug有効化として
+解釈し、Hibernate / JdbcTemplateのSQLをprocess logへ出力することを防ぐ。本手順のPowerShellでは
+host側の値を引き継がず、明示的に無効化する。
 
 ## 7. Applicationを起動する
 
@@ -205,6 +211,12 @@ Remove-Item Env:SPRING_DATASOURCE_USERNAME
 Remove-Item Env:SPRING_DATASOURCE_PASSWORD
 Remove-Item Env:KOIKI_REFERENCE_SOURCE_HMAC_KEY_ID
 Remove-Item Env:KOIKI_REFERENCE_SOURCE_HMAC_KEY
+if ($null -eq $previousDebug) {
+  Remove-Item Env:DEBUG -ErrorAction SilentlyContinue
+} else {
+  $env:DEBUG = $previousDebug
+}
+Remove-Variable previousDebug
 ```
 
 ## 10. 切り分け
@@ -239,6 +251,9 @@ container内のPostgreSQL起動、hostへのport公開、および他processと�
 4. `KOIKI_REFERENCE_SOURCE_HMAC_KEY`がBase64としてdecodeでき、decode後に32 byte以上になるか。
 5. Framework / Reference Flyway migration、JPA schema validation、その後の設定検証のどこで失敗したか。
 6. `18080`を別processが使用していないか。
+
+起動後の操作でHibernate / JdbcTemplateのSQLがDEBUG出力される場合は、Applicationを起動したPowerShellで
+`DEBUG=false`を明示したか確認する。host側の汎用`DEBUG`値をそのままSpring Bootへ引き継がない。
 
 回避のためにCSRF、default deny、Identity source protection、migrationまたはJPA validationを無効化しない。
 
