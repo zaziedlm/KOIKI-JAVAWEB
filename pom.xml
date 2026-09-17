@@ -26,6 +26,7 @@
     <module>koiki-starters/koiki-starter-security</module>
     <module>koiki-starters/koiki-starter-identity</module>
     <module>koiki-starters/koiki-starter-session-jdbc</module>
+    <module>koiki-starters/koiki-starter-web-mvc</module>
     <module>koiki-testing</module>
     <module>koiki-reference-app</module>
   </modules>

@@ -65,7 +65,9 @@ Tier 1 SIMPLEを開始点とし、次のいずれかに該当する場合はTier
 ## 4. 永続化とモデル方式を選ぶ
 
 - 更新系はSpring Data JPAを既定とする。
-- SQL指向の更新または既存SQL資産の移行では、モジュール単位でMyBatisを選ぶ。
+- SQL指向の更新または既存SQL資産の移行では、モジュール単位のMyBatisを採用候補とする。ただし現行baselineは
+  `PersistenceModel.SEPARATED`を未提供としてRule 8でMyBatisを拒否しているため、adoption trigger成立後の
+  blocking reviewと実装検証を閉じるまで選択しない。
 - 1モジュールの更新系でJPAとMyBatisを混在させない。
 - Tier 2 + JPAではDomain ModelとJPA Entityの共有方式を既定とする。
 - setterを公開せず、状態変更を意味のある業務メソッドへ閉じ込める。
@@ -77,7 +79,7 @@ Tier 1 SIMPLEを開始点とし、次のいずれかに該当する場合はTier
 3. schema制約によりモデル側の不変条件を表現できない。
 4. MyBatisを採用する。
 
-分離方式やMyBatisの詳細規約は後続Phaseの証拠を確認し、未検証の構造を推測で固定しない。
+分離方式やMyBatisの詳細規約はadoption Gateの証拠を確認し、未検証の構造を推測で固定しない。
 
 ## 5. read modelを選ぶ
 
@@ -88,11 +90,28 @@ Tier 1 SIMPLEを開始点とし、次のいずれかに該当する場合はTier
 - Tier 2のread modelは`record`として最終形を返す。
 - Tier 1では専用read modelを先行導入せず、必要なApplication DTOを使う。
 
+表示専用read modelが複数moduleまたはFramework所有tableにまたがる場合は、Architecture Ownerが
+承認した範囲に限り、Outbound Adapterのread-only SQLでJOINしてApplication所有の最終recordを
+直接materializeしてよい。この例外は次をすべて満たす。
+
+- scope条件をSQL内で先に強制し、取得後filterを行わない。
+- 更新、認可判断、業務不変条件、current-value検証またはDomain Modelの復元に使わない。
+- providerのApplication Use Case、Domain Model、Repository、AdapterまたはJPA Entityへ依存しない。
+- table Ownership、migration Ownership、FK、更新責務を移動しない。
+- 実装をconsumer側の`adapter.outbound.persistence`内部に閉じ、Framework Public APIまたはshared-kernelへ昇格させない。
+- 実DBtestでscope外rowが返らないことと最終recordへのmaterializeを確認する。
+
 同一トランザクションでJPA書き込み後にJdbcClientやMyBatisで同じデータを読まない。必要なら読み取りを先に行うか、設計上必要な明示flushを検討する。
 
 ## 6. モジュール間連携を選ぶ
 
-直接Bean呼出ではなくDomain Eventを使う。
+command整合と業務通知には、直接Bean呼出ではなくDomain Eventを使う。
+
+Phase 3 Referenceで現在値を問い合わせる有効master確認だけは、ADR-049に従う狭い同期read-only
+module contractを明示例外とする。consumer moduleのApplicationは自module Portを参照し、Outbound
+Adapterがprovider-owned contractへ接続する。providerのApplication Use Case、Domain Model、Repository、
+Adapterまたは所有tableを直接参照せず、この例外をFramework Public API、別artifactまたはshared-kernelへ広げない。
+表示専用read modelの承認済みread-only JOINは前節の別例外であり、current-value判断へ流用しない。
 
 - 受け手の成功が送り手の業務成立条件なら同期`@EventListener`を使う。
 - 副作用または派生処理なら非同期候補とする。

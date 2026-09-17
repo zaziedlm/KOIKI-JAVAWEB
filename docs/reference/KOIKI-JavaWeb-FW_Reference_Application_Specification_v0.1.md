@@ -97,8 +97,8 @@ Phase 5でProduction BaselineとしてReference Applicationの完成を判定す
 
 ### 4.3 後続Phaseへ保留する技術方式
 
-次は業務上のNon-goalsではなく、本書では技術方式を固定しない。グランドデザインおよび
-該当Phaseで承認されたArchitecture判断に従い、設計・実装検証で具体化する。
+次は業務上のNon-goalsではなく、Phase 0 baselineでは技術方式を固定しない。グランドデザインおよび
+該当Phaseで承認されたArchitecture判断に従い、後続sectionまたはPhase別Evidenceで具体化する。
 
 - MVC、REST API、React SPAの提供形態
 - session、Bearer JWT、Cookie等の認証方式
@@ -131,6 +131,9 @@ Phase 5でProduction BaselineとしてReference Applicationの完成を判定す
 
 他moduleのApplication Use Case、Domain Model、Repository、Adapterを直接参照しない。
 module間の業務契約は、識別子と値のみを持つDomain Eventを原則とする。
+ただし、current-valueの有効master確認はADR-049に従い、`master`が所有する狭い同期read-only
+module contractを明示例外とする。`expense`は自module Port / outbound Adapterを介して利用し、
+master所有table、Entity、Repository、Domain ModelまたはApplication Use Caseを直接参照しない。
 
 ## 7. 中核業務概念
 
@@ -160,6 +163,10 @@ module間の業務契約は、識別子と値のみを持つDomain Eventを原�
 
 ### 8.1 明細合計と申請額
 
+**Phase 3 simplification review:** ACCEPTED（2026年9月13日、Shuichi Kataoka）
+
+- Phase 3 Referenceでは申請額と各明細金額を利用者が独立して入力する。
+- 金額は日本円、税込、正の整数とし、多通貨、為替換算または税額計算を行わない。
 - `DRAFT`の新規作成時に、明細合計と申請額が一致しなければ作成を拒否する。
 - `DRAFT`の編集は申請額と全明細を一つの業務操作として扱い、変更後に一致しなければAggregateと永続化済み状態を変更しない。
 - 提出時にも防御的に再検査し、不一致なら`SUBMITTED`へ遷移しない。
@@ -169,6 +176,10 @@ module間の業務契約は、識別子と値のみを持つDomain Eventを原�
 
 Walking Skeletonは提出時の検査だけを実証した。正式ReferenceではTier 2の複数Entity不変条件を
 明確に示すため、新規作成と編集にも保証範囲を拡張し、Phase 3で追加検証する。
+
+利用日は操作時点の業務日以前とし、提出時にも再検査する。新規作成、編集および再提出では
+有効な経費科目だけを許可し、既存申請の表示では廃止後も保持する。摘要、目的、却下理由、
+差戻し理由は前後空白を除去し、空文字を許可しない。
 
 ### 8.2 未処理申請
 
@@ -212,6 +223,10 @@ Walking Skeletonは提出時の検査だけを実証した。正式Referenceで�
 `DRAFT`だけを編集可能状態とする。`RETURNED`は差戻しの事実を表し、申請者が再編集を開始すると
 `DRAFT`へ遷移する。`REJECTED`と`SETTLED`は終端状態とし、`SETTLED`へ遷移できるのは
 `APPROVED`だけとする。月次締めjobもTR-07と同じApplication Use Caseと状態遷移規則を使用する。
+
+承認者は割り当てられた部門scopeの共有queueから処理し、同じ申請を複数の承認者が操作した場合は
+楽観lockにより先行操作だけを成立させる。却下・差戻し理由は申請者が確認できる形で保持し、
+成功した却下・差戻し操作を業務監査へ記録する。
 
 ### 9.3 v0.1で許可しない遷移
 
@@ -270,6 +285,17 @@ Walking Skeletonは提出時の検査だけを実証した。正式Referenceで�
 
 Spring Security annotation、認可失敗時のHTTP status、Session / JWT等の具体方式は、本sectionの
 業務権限を変更しない実装詳細として後続Phaseで確定する。
+
+### 10.5 Phase 3 browser authentication profile
+
+**Owner Review:** ACCEPTED（2026年9月13日、Shuichi Kataoka）
+
+Phase 3のMVC申請journeyはPhase 2のlocal Form Login、Spring Session JDBC、`FrameworkPrincipal`、
+immutable user IDとPermissionを再利用する。OIDCまたはBearer認証を同じbrowser pathへfallbackとして
+混在させない。最小REST APIの認証profileはP3-C0で別途決定する。
+
+申請者、承認者、経理およびmaster管理者のRole / Permission code、所属部門と承認scopeは
+Referenceが所有する。Framework Identityへ部門、業務scopeまたは業務状態を追加しない。
 
 ## 11. 代表Use Case
 
@@ -336,8 +362,9 @@ UC-EXP-Q01は§10の閲覧scopeをquery条件として適用し、scope外のdat
 | 承認者 | 担当部門の`DRAFT`以外 |
 | 経理 | 全部門の`APPROVED`と`SETTLED` |
 
-承認待ち一覧は申請者名・部門名を含む複数集約queryであり、Tier 2のQuery Portとread modelを
-`application.query`が所有し、Outbound AdapterがJdbcClientでmaterializeする。
+承認待ち一覧は申請者表示識別子・部門名を含む複数集約queryであり、Tier 2のQuery Portとread modelを
+`application.query`が所有し、Outbound AdapterがJdbcClientでmaterializeする。Identity v0.1は氏名属性を
+持たないためPhase 3ではemailを申請者表示識別子とし、氏名属性の追加は別の契約判断とする。
 
 ### 11.6 Phase 4の派生処理
 
@@ -376,6 +403,10 @@ Architecture側の監査規約に従い、業務仕様へFramework実装詳細�
 
 Eventは識別子と値のみを持つ不変なDomain Eventとし、JPA Entityを含めない。
 非同期eventの耐久性、再送、監視はPhase 4のArchitecture判断と実装検証で確定する。
+
+部門廃止のcommand整合は`DepartmentDeactivating`、部門・所属部門・経費科目の現在の利用可否は
+ADR-049の同期read-only contractとし、用途を入れ替えない。承認scopeは`expense`が自module tableから
+照会する。このquery例外をFramework Public API、別artifactまたはshared-kernelへ昇格させない。
 
 Walking Skeletonで同期rollbackを実証済みなのは`DRAFT`と`SUBMITTED`である。正式Referenceでは
 `RETURNED`と`APPROVED`を追加し、Phase 3の統合testで4状態の拒否と終端2状態の成功を検証する。
@@ -489,6 +520,7 @@ MVC / SPA併用時の認証とCSRFを実証する。SPAの認証方式、CSRF方
 | 経費データの最小範囲 | 単一通貨（受入scenarioは日本円）、正の金額、有効な経費科目、提出日以前の利用日、摘要・目的を扱い、入力額を税込金額とする | §4・§7 ACCEPTED |
 | 技術方式の扱い | REST、SPA、認証方式、CSRF、Level 2、外部通信protocol等は業務Non-goalsにせず、該当Phaseへ保留する | §4 ACCEPTED |
 | Phase別受入条件 | Reference固有のGiven / When / ThenをPhase 2〜4に定め、Phase 3で最小REST API、Phase 4でReact SPAとMVC / SPA併用構成を実証する | §14 ACCEPTED |
+| Phase 3の単純化 | local Form Login / Session、独立入力の申請額、日本円正整数、完成Draft、有効科目、共有承認queueと理由保持を採用する | §8〜§10 ACCEPTED（2026年9月13日） |
 
 ### 16.2 継続Review
 
@@ -503,3 +535,13 @@ MVC / SPA併用時の認証とCSRFを実証する。SPAの認証方式、CSRF方
 | Decided by | Shuichi Kataoka |
 | Date | 2026年8月17日 |
 | Revisit trigger | 業務scope、actor、状態遷移、不変条件、権限、またはReferenceの実証範囲を変更する場合 |
+
+### 17.1 Phase 3 simplification supplement
+
+| 項目 | 内容 |
+|---|---|
+| Decision | ACCEPTED。P3-A0の業務単純化baselineとして§8〜§10の補足を採用 |
+| Scope | local Form Login / Session、Reference-owned Role / scope、申請入力、完成Draft、共有承認queue、理由保持 |
+| Decided by | Shuichi Kataoka |
+| Date | 2026年9月13日 |
+| Revisit trigger | Phase 3の認証profile、金額、不変条件、Draft、経費科目、承認方式または理由保持を変更する場合 |

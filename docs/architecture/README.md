@@ -19,7 +19,40 @@ Phase 1b Runtime FoundationはMilestone A〜C、CP1〜CP10、Gate 1〜2、main�
 9成果物のsnapshot remote Consumer検証を完了し、Architecture Ownerがcloseoutを承認しています。
 Phase 2 Security FoundationはMilestone A / B、P2-C1 / C2、P2-C3 local closeout、final PR / mainおよび
 同一runのremote snapshot publish / Verifyを完了し、Architecture OwnerがGate CとPhase 2全体を
-`COMPLETE / ACCEPTED`として最終承認しています。
+`COMPLETE / ACCEPTED`として最終承認しています。Phase 3 Reference Vertical SliceはGate P3-1、
+P3-CP0、P3-A0 contract review、P3-A1 master、P3-A2 expense、P3-A3 authorization / Auditおよび
+P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX contract reviewを
+`COMPLETE / OWNER APPROVED`、P3-B1 read modelを`COMPLETE`、P3-B2 MVC / Thymeleafを
+`COMPLETE / OWNER APPROVED`、P3-B3 HTMXおよびP3-B4 optimistic conflict / cacheも
+`COMPLETE / OWNER APPROVED`、Gate B Web / query acceptanceを`COMPLETE / ACCEPTED`、P3-C0〜C2を
+`COMPLETE / OWNER APPROVED`、P3-C3をadoption trigger待ちの`DEFERRED`、P3-C4を
+`COMPLETE / OWNER APPROVED`としています。Remote GateでDoD 3-11の実CI PASSとrequired check追加を完了し、
+Gate Cは`COMPLETE / ACCEPTED`です。PR ready化、mergeおよびmerge後main CIは後続の個別remote actionです。
+
+### Phase 3 Reference Vertical Slice
+
+| Work Package / Gate | 状態 | 検証記録 |
+|---|---|---|
+| Gate P3-1 / P3-CP0 | COMPLETE / OWNER APPROVED | `../development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md` |
+| P3-A0 Contract Review | COMPLETE / OWNER APPROVED | `validation/phase3-p3-a0-contract-review.md` |
+| P3-A1 Master Vertical Slice | COMPLETE / ACCEPTED | `validation/phase3-p3-a1-master-vertical-slice.md` |
+| P3-A2 Expense Vertical Slice | COMPLETE / ACCEPTED | `validation/phase3-p3-a2-expense-vertical-slice.md` |
+| P3-A3 Authorization / Audit | COMPLETE / ACCEPTED | `validation/phase3-p3-a3-authorization-audit.md` |
+| P3-A4 Level 1 Synchronous Event | COMPLETE / ACCEPTED | `validation/phase3-p3-a4-level1-synchronous-event.md` |
+| Gate A Domain / Transaction / Module Acceptance | COMPLETE / ACCEPTED | `validation/phase3-gate-a-milestone-a-acceptance.md` |
+| P3-B0 MVC / HTMX Contract Review | COMPLETE / OWNER APPROVED | `validation/phase3-p3-b0-mvc-htmx-contract-review.md` |
+| P3-B1 Read Model | COMPLETE | `validation/phase3-p3-b1-read-model.md` |
+| P3-B2 MVC / Thymeleaf | COMPLETE / OWNER APPROVED | `validation/phase3-p3-b2-mvc-thymeleaf.md` |
+| P3-B3 HTMX | COMPLETE / OWNER APPROVED | `validation/phase3-p3-b3-htmx.md` |
+| P3-B4 Optimistic Conflict / Cache | COMPLETE / OWNER APPROVED | `validation/phase3-p3-b4-lock-cache-contract-review.md`、`validation/phase3-p3-b4-lock-cache.md` |
+| Gate B Web / Query Acceptance | COMPLETE / ACCEPTED | `validation/phase3-gate-b-web-query-acceptance.md` |
+| P3-C0 REST Contract Review | COMPLETE / OWNER APPROVED | `validation/phase3-p3-c0-rest-contract-review.md` |
+| P3-C1 Minimal REST API | COMPLETE / OWNER APPROVED | `validation/phase3-p3-c1-minimal-rest-api.md` |
+| P3-C2 Critical Journey E2E | COMPLETE / OWNER APPROVED / CI CANDIDATE ACCEPTED | `validation/phase3-p3-c2-critical-journey-e2e.md` |
+| P3-C3 MyBatis Rules / Fixture | DEFERRED — adoption trigger required | `validation/phase3-p3-c3-mybatis-deferral.md` |
+| P3-C4 Traceability Closeout | COMPLETE / OWNER APPROVED | `validation/phase3-p3-c4-traceability-closeout.md` |
+| Remote Gate | RG-1〜RG-6 APPROVED / EXECUTED / DoD 3-11 CI PASS | `validation/phase3-remote-gate-plan-review.md` |
+| Gate C Final Acceptance | COMPLETE / ACCEPTED | `validation/phase3-gate-c-final-acceptance.md` |
 
 ### Phase 2 Security Foundation
 

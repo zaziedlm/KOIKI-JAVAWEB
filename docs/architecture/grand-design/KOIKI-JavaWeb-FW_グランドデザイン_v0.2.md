@@ -1,7 +1,7 @@
 # KOIKI-JavaWeb-FW グランドデザイン v0.2
 
 **文書版:** v0.2（構想確定・基本設計準備版）
-**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）／2026年9月3日（Phase 2 Audit contract / transaction境界をADR-047として反映）／2026年9月8日（Phase 2 Session JDBC / cleanup / single execution境界をADR-048として反映）
+**改訂日:** 2026年7月27日（v0.2初期改訂）／2026年8月17日（Phase 0成果物反映）／2026年8月28日（Webテストクライアントの選択理由を明確化）／2026年8月31日（SPA Session / BFF / direct Token、Cognito / ALB SSO、token発行責務、およびOracleを将来optional patternとする解釈を進展）／2026年9月3日（Phase 2 Audit contract / transaction境界をADR-047として反映）／2026年9月8日（Phase 2 Session JDBC / cleanup / single execution境界をADR-048として反映）／2026年9月13日（Phase 3 Reference module collaboration / table Ownership境界をADR-049として反映、ADR-027のHTMX Phase 3 fitting、ADR-038の表示read model fittingを反映）
 **文書状態:** ACCEPTED（Phase 0 Architecture Baseline）
 **承認日:** 2026年8月19日
 **Architecture Owner:** Shuichi Kataoka
@@ -776,9 +776,10 @@ Application
 | 参照可否 | パッケージ |
 |---|---|
 | **参照してよい** | `domain.event`（モジュールが外部へ公開する業務イベントの契約） |
+| **承認されたquery例外だけ参照してよい** | provider-ownedの狭いread-only module contract（Phase 3 ReferenceはADR-049） |
 | **参照してはならない** | `domain.model`、`domain.service`、`domain.repository`、`domain.gateway`、`application`、`adapter` |
 
-**モジュール間の連携は Domain Event を経由する。**他モジュールの Bean を直接呼び出さない（§17.3）。
+**command整合と業務通知はDomain Eventを経由する。**現在値queryの明示例外を除き、他モジュールのBeanを直接呼び出さない（§17.3）。
 
 Spring Modulith の Named Interface を用いてモジュール公開範囲を記述するかは Phase 1b で判断する。当面は ArchUnit による検査を主とする（§21.3）。
 
@@ -1377,6 +1378,10 @@ ArchUnit は Java コードを検査できてもテンプレートは見えな�
 ### 13.4 HTMX
 
 **HTMX を Thymeleaf プロファイルの構成要素として同梱する。**後続の拡張プロファイルとしない。
+ただしserver-side UIの主軸はSpring MVC / Thymeleafが生成するHTMLであり、HTMXはその土台を置換しない。
+検索・paging・部分validation等で操作継続性が明確に改善し、更新DOM、history、focus、errorおよび
+同じUse Caseの再利用を説明・検証できる箇所だけに選択適用する。同梱または契約標準化を理由として
+全link、全Formまたは全CRUD操作へ適用しない。
 
 #### 同梱とする理由
 
@@ -1406,13 +1411,15 @@ HTMX を伴わない Thymeleaf では、検索、絞り込み、ページング�
 
 #### 依存ライブラリ
 
-HTMX と Spring Security の統合には `wimdeblauwe/htmx-spring-boot` を用いる。Spring Security の CSRF 保護は Thymeleaf の `th:action` によるフォーム送信には自動で効くが、**HTMX が発行するリクエストには効かない。**当該ライブラリは HTMX 要素の `hx-headers` へ CSRF トークンを自動注入し、`@HxRequest` 等のアノテーション、引数リゾルバ、Thymeleaf ダイアレクトを提供する。
+Phase 3 P3-B0で`wimdeblauwe/htmx-spring-boot`を再評価した。同libraryのcompatibility表および
+Spring Initializrの管理範囲から、KOIKI baselineのSpring Boot 4.1.1を明示的に含む対応情報を確認できないため、
+互換性を推測して採用しない。
 
-**これは Spring 公式ポートフォリオ外のコミュニティライブラリである。**§8.7 の第三者ライブラリ採用基準を適用する。
-
-**依存範囲の限定** — 利用する機能を「HTMX リクエスト判定アノテーション、CSRF ヘッダー自動注入、リダイレクト／OOB 用ビュー、Thymeleaf ダイアレクト」に限定し、`koiki-starter-web-mvc` 内に閉じる。
-
-**代替手段** — 当該ライブラリが Spring Boot の新版へ追従しない場合、CSRF ヘッダー注入は `htmx:configRequest` イベントを捕捉する JavaScript で代替可能である。アノテーションと引数リゾルバは自前実装が可能であり、**KOIKI 側で1〜2人週規模の代替実装で置換できる範囲に依存を留める。**
+HTMX本体は`org.webjars.npm:htmx.org:2.0.10`をMaven Centralからclasspath配布し、CDNをproduction前提に
+しない。HTMX requestは標準HTTP headerで判定し、CSRF token / header名をThymeleafでmetaへmaterializeして、
+外部scriptの`htmx:configRequest` eventからSpring Securityのtokenを自動注入する。redirect、OOB、history等も
+HTMX標準header / attribute / eventで表現し、独自public annotation、argument resolverまたは第三者dialectを
+初期実装へ追加しない。このfallbackは`koiki-starter-web-mvc`のinternal実装へ閉じる。
 
 ### 13.5 SPA プロファイル
 
@@ -1748,6 +1755,8 @@ MyBatis-Spring は MyBatis を Spring トランザクションへ参加させ、
 - Query Portは`application.query`が所有し、Outbound Adapterがその契約を実装してApplication所有のread modelをmaterializeする
 - **Tier 1ではread modelという専用概念を設けない。**Tier 1にはDomain層が存在しないため、`application.dto`で足りる。read modelを所有する`application.query`はTier 2でのみ使用する
 - 分離方式において、read model は `converter` を経由しない（既に最終形であるため）
+- 表示専用read modelは、複数moduleまたはFramework所有tableにまたがる現実的な参照が必要な場合、Architecture Ownerが承認した狭い範囲でread-only JOINを用いてよい。scopeはSQL内で先に強制し、Application所有の最終`record`を直接materializeする
+- この例外は更新、認可判断、業務不変条件、current-value検証またはDomain Model復元に使用しない。table / migration / FK / 更新責務のOwnershipは移動せず、providerのApplication、Domain、Repository、AdapterまたはEntityへ依存しない
 
 #### 将来のDB差し替えへの影響
 
@@ -1894,7 +1903,15 @@ TestcontainersまたはCI系統を選定・実装しない。PostgreSQL向け設
 
 ### 17.3 モジュール間連携
 
-**モジュール間の直接 Bean 呼出を禁止する。**他モジュールの `application` および `domain.model` の型を直接参照しない。連携は必ず Domain Event を経由する（§21.3 で検査）。
+**モジュール間の直接 Bean 呼出を禁止する。**他モジュールの `application` および `domain.model` の型を直接参照しない。command整合と業務通知はDomain Eventを経由する（§21.3で検査）。
+
+現在値を必要とするqueryは、provider moduleが所有する狭い同期read-only contractを明示的に承認した場合だけ例外とする。
+contractは識別子と判定値等の不変な値だけを返し、consumer moduleのPort / outbound Adapterを介して利用する。
+providerのApplication Use Case、Domain Model、Repository、Adapterまたは所有tableを直接参照せず、Framework Public API、
+別artifactまたはshared-kernelへ自動昇格させない。Phase 3 Referenceの有効master確認に限る具体的境界はADR-049を正本とする。
+
+上記はcommandやcurrent-value判断の境界である。表示専用read modelにおける承認済みのread-only JOINは
+§16.3の別例外とし、その結果を更新、認可判断、業務不変条件またはcurrent-value検証へ流用しない。
 
 #### 同期を既定とする
 
@@ -2241,6 +2258,7 @@ Oracle Testcontainersは現行Phaseへ導入しない。optional `P4-ORACLE`が�
 | 11 | Domain Event 型は `record` であり、`domain.model` の型をフィールドに持たない |
 | 12 | `RestTemplate` を新規コードで使用しない |
 | 13 | Framework 外から `org.koikifw.<module>.internal.**` を参照しない |
+| 14 | ADR-049のcurrent-value queryはprovider-ownedの狭いread-only contractだけを公開し、consumerのPort / Adapter経由で参照する |
 
 ##### Tier 1 固有
 
@@ -2804,10 +2822,12 @@ expense.adapter.inbound.event   未処理申請を検査 → 存在すれば例�
 加えて次を同時に実証する。
 
 - `master` は `expense` を知らない（依存方向の維持）
-- モジュール間の直接 Bean 呼出を行わない
+- command整合でモジュール間の直接Bean呼出を行わない
 - `domain.event` が他モジュールから参照可能な明示例外である
 - Domain Event が識別子と値のみを持つ不変 `record` である
 - リスナーが `adapter/inbound/event` に配置され、Application Use Case を呼ぶのみである
+- 有効masterのcurrent-value queryはADR-049の狭いread-only contractをexpenseのPort / Adapter経由で参照し、master所有tableを直接読まない
+- 承認待ち表示専用read modelはADR-038 P3-B1 fittingに従い、scopeをSQL内で強制したread-only JOINから申請者emailと部門名を含む最終recordを直接materializeする。Identity v0.1に氏名属性はないためemailを表示識別子とし、氏名属性の追加は別の契約判断とする
 
 #### Phase 4 — `notification`（Tier 1, JPA）
 
@@ -3043,7 +3063,7 @@ Oracleはoptional `P4-ORACLE`承認時に新しいDoDと見積を設定し、旧
 
 `master`（Tier 1）／`expense`（Tier 2）／**両者間の同期イベント連携**／Spring Modulith **Level 1**／Thymeleaf ＋ HTMX／**HTMX 契約11項目の標準化**／REST API（API Versioning、Jackson 3）／read model（JPA 射影／JdbcClient）／楽観ロック競合画面／業務監査／キャッシュ規約と適用例／SPA 契約の文書化／E2E スモークテスト／Agent Skills
 
-**Phase 3 の末尾で実施** — MyBatis 実装規約の整備（楽観ロック、`converter`、`@MybatisTest`、`reconstitute` 誤用防止、ArchUnit 規則35〜37）。Phase 4 の `accounting` モジュールの前提となる
+**Adoption trigger成立後に実施** — MyBatis実装規約の整備（楽観ロック、`converter`、`@MybatisTest`、`reconstitute`誤用防止、ArchUnit規則35〜37）は、2026年9月16日のArchitecture Owner判断によりPhase 3では実装せず延期する。SQL指向の更新、変更不能schema / 既存SQL移行、JPAで満たせない計測済み要件、またはPhase 4 `accounting`開始判断をtriggerとし、production実装より前のblocking adoption Gateで実証する。延期中は`PersistenceModel.SEPARATED`を提供せず、Rule 8によるMyBatis拒否を維持する
 
 **完了条件**
 
@@ -3068,6 +3088,10 @@ Oracleはoptional `P4-ORACLE`承認時に新しいDoDと見積を設定し、旧
 **成果物**
 
 `notification`（非同期、Level 2）／`accounting`（MyBatis 分離）／Phase 3の`expense` REST APIを利用する **SPA 最小参照実装**とMVC / SPA併用構成／SAML Extension／External API Resilience／Spring Batch／File・Object Storage／OpenTelemetry／**Container・ECS Reference**／**Virtual Threads 有効化ガイドと CI 検証系統**
+
+`accounting`をMyBatis分離方式で開始する場合はMyBatis adoption triggerの成立とみなし、実装着手前に
+`PersistenceModel.SEPARATED`、Rule 25〜27 / 30〜37、非配布fixture、依存関係およびPublic API影響を
+blocking Gateで再reviewする。Phase 3で延期した案を自動承認済みとして扱わない。
 
 **Optional work package** — KOIKI-hosted Authorization Serverは現行Phase 4の必須成果物・DoDに含めない。明示use caseがある場合に限り、
 `P4-AS0`でbuild-vs-buy、threat、protocol、運用Owner、Grand Design / ADR / DoD / 見積変更を承認してから開始する。
@@ -3167,7 +3191,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | リスク | 内容 | 対策 |
 |---|---|---|
 | Thymeleaf 成果物の不採用 | UI コンポーネント群を作っても案件で使われない | **HTMX 同梱により実用性を確保**（§13.4）。Phase 3 の Reference で検証 |
-| 第三者ライブラリの追従遅延 | `htmx-spring-boot` が Spring Boot 新版へ追従しない | 依存範囲の限定、代替実装コストの事前見積（§13.4） |
+| 第三者ライブラリの追従遅延 | `htmx-spring-boot` が Spring Boot 新版へ追従しない | P3-B0で採用を見送り、Spring標準＋KOIKI内部fallbackへ切替（§13.4） |
 | Thymeleaf の型安全性欠如 | テンプレートの誤りが実行時まで検出されない | Reference による網羅、スライステスト、Review Checklist |
 | UI プロファイル間の設定衝突 | Thymeleaf と SPA 併用時に CSRF・セッション設定が競合 | Phase 4 で併用構成を検証（§13.6） |
 
@@ -3289,6 +3313,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | ADR-023 | Tier 2 のモデル方針 | **兼用を既定とし、分離をトリガ付きオプトインとする** |
 | ADR-024 | Tier 2 の Repository 方針 | `domain.repository` にインターフェースを置き Spring Data が実装。MyBatis 採用時は例外 |
 | ADR-025 | Domain Event | **同期を既定、非同期は明示選択。監査はイベント機構に乗せない** |
+| ADR-049 | Reference module collaboration / table Ownership境界 | command整合は同期Domain Event、current-valueの有効master確認はmaster-ownedの狭い同期read-only contractとする。expenseは自module Port / Adapter経由で利用し、command / current-value判断ではmodule間table参照を行わず、module間FKも作らない。表示専用read modelはADR-038 fittingの別例外とする。所属部門はmaster、承認scopeはexpenseが所有する |
 
 ### UI
 
@@ -3296,7 +3321,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 |---|---|---|
 | ADR-006 | UI プロファイル方針 | **API 指向を正本とし、Thymeleaf＋HTMX と SPA を対等の公式プロファイルとする** |
 | ADR-026 | UI プロファイルの提供順序 | Phase 3 で Thymeleaf＋HTMX、Phase 4 で SPA 参照実装 |
-| ADR-027 | HTMX の同梱と第三者ライブラリ | HTMX を Thymeleaf プロファイルへ同梱。`htmx-spring-boot` を採用 |
+| ADR-027 | HTMX の同梱と第三者ライブラリ | HTMX 2.0.10をThymeleafプロファイルへ同梱して選択適用。`htmx-spring-boot`はBoot 4.1.1明示対応を確認できないため採用せず、Spring標準＋KOIKI内部fallbackを使用 |
 
 ### セキュリティと監査
 
@@ -3321,7 +3346,7 @@ Starter 安定化／Reference Application 完成／**Project Template 2種類**�
 | ADR-019 | マルチテナンシー | **単一テナントを前提とする**（v1.0 のスコープ外） |
 | ADR-028 | Open Session in View | **無効化する** |
 | ADR-037 | キャッシュ | Spring Cache ＋ Caffeine。対象限定と TTL 必須 |
-| ADR-038 | read model | Query契約と`record`は`application.query`が所有。単一集約はJPAのclass-based射影、複雑queryはJdbcClient |
+| ADR-038 | read model | Query契約と`record`は`application.query`が所有。単一集約はJPAのclass-based射影、複雑queryはJdbcClient。表示専用の複数owner queryは承認済み範囲でscope先行のread-only JOINと最終record直接materializeを許可する |
 | ADR-039 | MyBatis | 規約 ＋ BOM 管理（Level B）。モジュール単位で選択 |
 | ADR-042 | テーブル所有権と Flyway | 接頭辞規約 ＋ 所有者別の独立管理 |
 | ADR-044 | Oracle 検証戦略 | Phase 2 nightly判断をsupersede。Oracleはoptional `P4-ORACLE` Gate前に実装・依存・Image・CIを選定しない |

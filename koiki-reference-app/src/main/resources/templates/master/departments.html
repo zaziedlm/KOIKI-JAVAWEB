@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{koiki/fragments :: head('部門管理')}"></head>
+<body>
+<header th:replace="~{koiki/fragments :: header}"></header>
+<main>
+  <h1>部門管理</h1>
+  <p class="notice" th:if="${notice}" th:text="${notice}" role="status"></p>
+  <section id="department-query" th:fragment="query">
+  <form method="get" th:action="@{/master/departments}"
+        th:attr="hx-get=@{/master/departments}"
+        hx-target="#department-query" hx-swap="outerHTML" hx-push-url="true"
+        hx-trigger="input changed delay:350ms, submit" hx-indicator="#department-loading">
+    <label for="search">コード・名称検索</label>
+    <input id="search" name="search" th:value="${search}" data-koiki-focus>
+    <button type="submit">検索</button>
+    <span id="department-loading" class="htmx-indicator" role="status">検索中</span>
+  </form>
+  <section id="department-results" th:fragment="results" aria-live="polite" aria-atomic="true">
+  <table>
+    <caption th:text="|部門 ${result.totalElements} 件|">部門</caption>
+    <thead><tr><th>コード</th><th>名称</th><th>状態</th><th>操作</th></tr></thead>
+    <tbody>
+    <tr th:each="item : ${result.content}">
+      <td data-label="コード" th:text="${item.departmentCode}"></td>
+      <td data-label="名称" th:text="${item.departmentName}"></td>
+      <td data-label="状態" th:text="${item.active ? '有効' : '廃止'}"></td>
+      <td data-label="操作" class="actions">
+        <form th:if="${item.active}" method="post" th:action="@{/master/departments/{id}/rename(id=${item.departmentId})}">
+          <label th:for="|name-${item.departmentId}|">新しい名称</label>
+          <input th:id="|name-${item.departmentId}|" name="name" th:value="${item.departmentName}" required maxlength="200">
+          <input type="hidden" name="expectedVersion" th:value="${item.version}">
+          <button type="submit">名称更新</button>
+        </form>
+        <form th:if="${item.active}" method="post" th:action="@{/master/departments/{id}/deactivate(id=${item.departmentId})}">
+          <input type="hidden" name="expectedVersion" th:value="${item.version}">
+          <button type="submit">廃止</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <nav aria-label="ページ" class="actions">
+    <a th:if="${result.page > 0}" th:href="@{/master/departments(search=${search},page=${result.page - 1})}"
+       th:attr="hx-get=@{/master/departments(search=${search},page=${result.page - 1})}"
+       hx-target="#department-query" hx-swap="outerHTML" hx-push-url="true">前へ</a>
+    <a th:if="${(result.page + 1) * result.size < result.totalElements}" th:href="@{/master/departments(search=${search},page=${result.page + 1})}"
+       th:attr="hx-get=@{/master/departments(search=${search},page=${result.page + 1})}"
+       hx-target="#department-query" hx-swap="outerHTML" hx-push-url="true">次へ</a>
+  </nav>
+  </section>
+  </section>
+  <section id="department-create" aria-labelledby="create-heading" th:fragment="create">
+    <h2 id="create-heading">部門登録</h2>
+    <form method="post" th:action="@{/master/departments}" th:object="${createForm}"
+          th:attr="hx-post=@{/master/departments}"
+          hx-target="#department-create" hx-swap="outerHTML" hx-indicator="#department-create-loading">
+      <label for="code">部門コード</label>
+      <input id="code" th:field="*{code}" required maxlength="100" pattern="[A-Z][A-Z0-9_]{0,99}" aria-describedby="code-error"
+             th:attr="data-koiki-focus=${#fields.hasErrors('code')} ? 'true' : null">
+      <p id="code-error" class="error" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></p>
+      <label for="name">部門名</label>
+      <input id="name" th:field="*{name}" required maxlength="200" aria-describedby="name-error"
+             th:attr="data-koiki-focus=${!#fields.hasErrors('code') && #fields.hasErrors('name')} ? 'true' : null">
+      <p id="name-error" class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+      <button type="submit">登録</button>
+      <span id="department-create-loading" class="htmx-indicator" role="status">登録中</span>
+    </form>
+  </section>
+</main>
+</body>
+</html>

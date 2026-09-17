@@ -56,6 +56,211 @@ jobs:
         shell: pwsh
         run: pwsh -NoProfile -File build-support/null-safety/verify-null-safety.ps1
 
+  phase3-critical-journey-e2e:
+    name: Phase 3 Critical Journey E2E
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Set up Temurin 21
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Stage KOIKI BOM for E2E tooling
+        timeout-minutes: 2
+        shell: bash
+        run: >-
+          ./mvnw --batch-mode --no-transfer-progress
+          -f pom.xml -pl koiki-dependencies-bom -am -DskipTests install
+
+      - name: Install Playwright Chromium
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          ./mvnw --batch-mode --no-transfer-progress \
+            -f build-support/reference-e2e-verification/pom.xml \
+            dependency:build-classpath \
+            -Dmdep.includeScope=test \
+            -Dmdep.outputFile=target/playwright-classpath.txt
+          java -cp "$(cat build-support/reference-e2e-verification/target/playwright-classpath.txt)" \
+            com.microsoft.playwright.CLI install --with-deps chromium
+
+      - name: Package Reference application
+        timeout-minutes: 5
+        shell: bash
+        run: >-
+          ./mvnw --batch-mode --no-transfer-progress
+          -pl koiki-reference-app -am -DskipTests clean package
+
+      - name: Verify Phase 3 critical journey
+        timeout-minutes: 7
+        shell: bash
+        run: >-
+          ./mvnw --batch-mode --no-transfer-progress
+          -f build-support/reference-e2e-verification/pom.xml test
+
+      - name: Inspect and clean owned E2E resources
+        if: always()
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          set -uo pipefail
+          cleanup_failure=0
+
+          report_cleanup_failure() {
+            echo "::error::$1"
+            cleanup_failure=1
+          }
+
+          inspect_processes() {
+            local pattern="$1"
+            local label="$2"
+            local -n result="$3"
+            local output
+            local status
+
+            output="$(pgrep -f -- "$pattern" 2>/dev/null)"
+            status=$?
+            result=()
+            if (( status > 1 )); then
+              report_cleanup_failure "Could not inspect $label processes"
+              return 1
+            fi
+            if [[ -n "$output" ]]; then
+              mapfile -t result <<< "$output"
+            fi
+            return 0
+          }
+
+          cleanup_processes() {
+            local pattern="$1"
+            local label="$2"
+            local -a pids=()
+
+            if ! inspect_processes "$pattern" "$label" pids; then
+              return
+            fi
+            if (( ${#pids[@]} > 0 )); then
+              report_cleanup_failure "$label process remained after the E2E step"
+              kill -TERM "${pids[@]}" 2>/dev/null || true
+              sleep 2
+              if ! inspect_processes "$pattern" "$label" pids; then
+                return
+              fi
+              if (( ${#pids[@]} > 0 )); then
+                kill -KILL "${pids[@]}" 2>/dev/null || true
+                sleep 1
+              fi
+            fi
+
+            if ! inspect_processes "$pattern" "$label" pids; then
+              return
+            fi
+            if (( ${#pids[@]} > 0 )); then
+              report_cleanup_failure "$label process could not be cleaned"
+            fi
+          }
+
+          inspect_containers() {
+            local -n result="$1"
+            local output
+            local status
+
+            output="$(docker ps -aq --filter label=org.testcontainers=true 2>/dev/null)"
+            status=$?
+            result=()
+            if (( status != 0 )); then
+              report_cleanup_failure "Could not inspect Testcontainers resources"
+              return 1
+            fi
+            if [[ -n "$output" ]]; then
+              mapfile -t result <<< "$output"
+            fi
+            return 0
+          }
+
+          wait_for_containers_to_exit() {
+            local result_name="$1"
+            local -n pending="$result_name"
+            local attempt
+
+            for (( attempt = 1; attempt <= 10; attempt++ )); do
+              if (( ${#pending[@]} == 0 )); then
+                return 0
+              fi
+              sleep 1
+              if ! inspect_containers "$result_name"; then
+                return 1
+              fi
+            done
+            return 0
+          }
+
+          declare -a container_ids=()
+          if inspect_containers container_ids && (( ${#container_ids[@]} > 0 )); then
+            if wait_for_containers_to_exit container_ids && (( ${#container_ids[@]} > 0 )); then
+              report_cleanup_failure "Testcontainers container remained after the E2E step"
+              if ! docker rm --force "${container_ids[@]}" >/dev/null 2>&1; then
+                report_cleanup_failure "Testcontainers container cleanup command failed"
+              fi
+            fi
+          fi
+          container_ids=()
+          if inspect_containers container_ids && (( ${#container_ids[@]} > 0 )); then
+            report_cleanup_failure "Testcontainers container could not be cleaned"
+          fi
+
+          cleanup_processes 'koiki-reference-app-0\.1\.0-SNAPSHOT\.jar' 'Reference JAR'
+          cleanup_processes '(ms-playwright|playwright-java)' 'Playwright/Chromium'
+
+          inspect_process_logs() {
+            local -n result="$1"
+            local output
+            local status
+
+            output="$({
+              find "${RUNNER_TEMP:-/tmp}" /tmp -maxdepth 1 -type f \
+                -name 'koiki-p3-c2-e2e-*.log' -print 2>/dev/null
+            } | sort -u)"
+            status=$?
+            result=()
+            if (( status != 0 )); then
+              report_cleanup_failure "Could not inspect temporary E2E process logs"
+              return 1
+            fi
+            if [[ -n "$output" ]]; then
+              mapfile -t result <<< "$output"
+            fi
+            return 0
+          }
+
+          declare -a process_logs=()
+          if inspect_process_logs process_logs && (( ${#process_logs[@]} > 0 )); then
+            report_cleanup_failure "Temporary E2E process log remained after the E2E step"
+            if ! rm -f -- "${process_logs[@]}"; then
+              report_cleanup_failure "Temporary E2E process log cleanup command failed"
+            fi
+          fi
+          process_logs=()
+          if inspect_process_logs process_logs && (( ${#process_logs[@]} > 0 )); then
+            report_cleanup_failure "Temporary E2E process log could not be cleaned"
+          fi
+
+          if (( cleanup_failure != 0 )); then
+            exit 1
+          fi
+          echo "Owned Testcontainers, Reference JAR, Playwright/Chromium, and process-log residue: 0"
+
   security-foundation-integration:
     name: Security Foundation Integration
     runs-on: ubuntu-24.04

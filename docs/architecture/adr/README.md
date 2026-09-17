@@ -4,7 +4,7 @@
 
 **状態:** Accepted
 
-**承認日:** Phase 0 Baseline 2026年8月15日 / ADR-046 2026年9月1日 / ADR-047 2026年9月3日 / ADR-048 2026年9月8日
+**承認日:** Phase 0 Baseline 2026年8月15日 / ADR-046 2026年9月1日 / ADR-047 2026年9月3日 / ADR-048 2026年9月8日 / ADR-049 2026年9月13日 / ADR-027・ADR-038 Phase 3 fitting 2026年9月13日
 
 **Decided by:** Shuichi Kataoka
 
@@ -22,6 +22,8 @@
 | P2-A1で検証 | P2-A1の実装証拠によりSecurity artifact / profile境界を確認した判断 |
 | P2-B1で検証 | P2-B1の実PostgreSQL証拠によりAudit contract / transaction境界を確認した判断 |
 | P2-B3で検証 | P2-B3の実PostgreSQL、複数processおよびnon-web実行証拠によりSession JDBC / cleanup / single execution境界を確認した判断 |
+| P3-A0で承認 | P3-A0のproduction変更前contract reviewによりReference module collaboration / table Ownership境界を確定した判断。実装成立はP3-A1〜A4で検証する |
+| P3-B0で再確認 | P3-B0のproduction変更前contract reviewによりMVC / HTMX artifact、dependency、選択的適用、Securityおよびbrowser Tooling境界を確定した判断。実装成立はP3-B1〜B4で検証する |
 
 「Phase 0で検証」はADR全体の将来実装を完了したという意味ではない。たとえばSpring Modulithの
 Level 2以降、Flyway三階層、非同期event等は、registerで示すPhase 0検証scopeの外である。
@@ -56,7 +58,7 @@ ADR-001〜ADR-045は、Architecture Ownerによるreviewを2026年8月15日に�
 | ADR-024 | Tier 2のRepository方針 | Phase 0で検証 | `../validation/walking-skeleton-tier2-practicality.md`（`domain.repository`とSpring Data） | ACCEPTED |
 | ADR-025 | Domain Event | Phase 0で検証 | `../validation/walking-skeleton-tier2-practicality.md`（同期eventとrollback。非同期は対象外） | ACCEPTED |
 | ADR-026 | UIプロファイルの提供順序 | 確定 | —（Phase配置による実装順序であり、公式profileとしての優劣を意味しない） | ACCEPTED |
-| ADR-027 | HTMXの同梱と第三者library | 確定 | —（HTMX同梱を確定。`htmx-spring-boot`の実採用はPhase 3開始時に§8.7で再確認し、不適合時は代替実装へ切り替える） | ACCEPTED |
+| ADR-027 | HTMXの同梱と第三者library | P3-B0で再確認 | `../validation/phase3-p3-b0-mvc-htmx-contract-review.md`（Thymeleaf HTMLを主軸としHTMX 2.0.10を選択適用。Boot 4.1.1明示対応を確認できない`htmx-spring-boot`は採用せず、Spring標準＋KOIKI内部fallbackへ切替） | ACCEPTED |
 | ADR-028 | Open Session in View | Phase 0で検証 | `../validation/walking-skeleton-tier2-practicality.md`（OSIV無効とEntity露出失敗） | ACCEPTED |
 | ADR-029 | Migration Support | 確定 | —（方針の承認。OpenRewrite recipeの正式提供とCI検証はPhase 5） | ACCEPTED |
 | ADR-030 | JSON Processing | 確定 | — | ACCEPTED |
@@ -67,8 +69,8 @@ ADR-001〜ADR-045は、Architecture Ownerによるreviewを2026年8月15日に�
 | ADR-035 | Virtual Threads | 確定 | —（既定無効、Java 25以上でopt-in。JEP 491後も残るpinningと依存ライブラリをPhase 4で検証） | ACCEPTED |
 | ADR-036 | レート制御 | 確定 | — | ACCEPTED |
 | ADR-037 | キャッシュ | 確定 | —（Caffeineの一時的不整合を許容できる対象とTTLに限定。認可関係は即時失効要件に応じて除外し、分散cacheへの変更時は再検証） | ACCEPTED |
-| ADR-038 | read model | 確定 | —（Query契約と`record`は`application.query`が所有し、Outbound Adapterがmaterialize。JPAはclass-based射影に限定） | ACCEPTED |
-| ADR-039 | MyBatis | 確定 | —（Boot 4対応StarterをBOM管理するLevel B方針の承認。詳細規約と実装検証はPhase 3末尾～Phase 4。`MYBATIS`宣言は`SEPARATED`必須であり、同モデル未提供の間はKOIKI-ARCH-008で拒否する） | ACCEPTED |
+| ADR-038 | read model | 確定 | `../validation/phase3-p3-b1-read-model.md`（P3-B1 fittingとして、表示専用の複数owner queryはscope先行、read-only、更新・認可・不変条件判断への非流用、最終record直接materializeを条件にJOIN可） | ACCEPTED |
+| ADR-039 | MyBatis | 確定 | `../validation/phase3-p3-c3-mybatis-deferral.md`（Boot 4対応StarterをBOM管理するLevel B方針は維持。詳細規約と実装検証はadoption trigger成立後へ延期し、`SEPARATED`未提供の間はKOIKI-ARCH-008で拒否する） | ACCEPTED / IMPLEMENTATION DEFERRED |
 | ADR-040 | 昇格ポリシーの運用化 | 確定 | —（Reference／Customer／Walking Skeletonの候補をFrameworkへ昇格する場合に適用。Phase 1の定義済み基盤構築は「2案件の実績」の対象外） | ACCEPTED |
 | ADR-041 | Public API境界 | Phase 0で検証 | `../validation/walking-skeleton-archunit-distribution.md`（外部consumerを含む） | ACCEPTED |
 | ADR-042 | テーブル所有権とFlyway | Phase 0で検証 | `../validation/walking-skeleton-flyway-two-tier.md`（所有者別location／history） | ACCEPTED |
@@ -78,6 +80,7 @@ ADR-001〜ADR-045は、Architecture Ownerによるreviewを2026年8月15日に�
 | ADR-046 | Security artifact / profile境界 | P2-A1で検証 | `../validation/phase2-p2-a1-contract-review.md`（単一Starter、internal Auto Configuration、default deny、Customer chain合成／明示置換、Public API 0型／property 0件） | ACCEPTED |
 | ADR-047 | Audit contract / transaction境界 | P2-B1で検証 | `../validation/phase2-p2-b1-contract-review.md`、`../validation/phase2-p2-b1-t4-verification.md`（単一Audit Starter、Public API 6型、Business `MANDATORY`、Security `REQUIRES_NEW`、JPA `persist + flush`、DB正本） | ACCEPTED |
 | ADR-048 | Session JDBC / cleanup / single execution境界 | P2-B3で検証 | `../validation/phase2-p2-b3-contract-review.md`、`../validation/phase2-p2-b3-b3-6-closeout.md`（optional Starter、Session Public API 3型、Framework 2 table、全Session失効、Spring標準cleanup、PostgreSQL internal advisory lock、Web / non-web process Evidence） | ACCEPTED |
+| ADR-049 | Reference module collaboration / table Ownership境界 | P3-A0で承認 | `../validation/phase3-p3-a0-contract-review.md`（command event / current-value queryの分離、master-owned contract、Reference 6 tableのOwnership、V1〜V3、module内FKのみ） | ACCEPTED |
 
 ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
 
@@ -99,19 +102,23 @@ ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
 | 2026年9月1日 | ADR-046 | ACCEPTED（P2-A1 fixtureにより単一Security Starter、internal Auto Configuration、default deny、Customer chain合成／明示置換、Public API最小境界を確認） | Shuichi Kataoka |
 | 2026年9月3日 | ADR-047 | ACCEPTED（P2-B1の実PostgreSQL fixtureによりAudit Public API、Business／Security transaction差、failure semantics、DB正本とApplication logの分離を確認） | Shuichi Kataoka |
 | 2026年9月8日 | ADR-048 | ACCEPTED（P2-B3の実PostgreSQL、package済み複数processおよびnon-web fixtureによりSession JDBC、全Session失効、cleanup / single execution、failure semanticsと配布境界を確認） | Shuichi Kataoka |
+| 2026年9月13日 | ADR-049 | ACCEPTED（P3-A0 contract reviewによりcommand eventとcurrent-value queryを分離し、Reference table Ownership、V1〜V3、module内FKだけとする境界をproduction変更前に確定） | Shuichi Kataoka |
+| 2026年9月13日 | ADR-027 Phase 3 fitting | ACCEPTED（Thymeleaf HTMLを主軸としてHTMXを効果が明確な操作だけに適用し、`htmx-spring-boot`からSpring標準＋KOIKI内部fallbackへ切り替える） | Shuichi Kataoka |
+| 2026年9月13日 | ADR-038 Phase 3 fitting | ACCEPTED（表示専用read modelでは、scopeをSQL内で先に強制し、更新・認可・不変条件判断に流用しないread-only JOINからApplication所有の最終recordを直接materializeできる） | Shuichi Kataoka |
 
 ## 集計
 
 | 項目 | 件数 |
 |---|---:|
-| 有効ADR | 46 |
+| 有効ADR | 47 |
 | 確定 | 28 |
 | Phase 0で検証 | 15 |
 | P2-A1で検証 | 1 |
 | P2-B1で検証 | 1 |
 | P2-B3で検証 | 1 |
+| P3-A0で承認 | 1 |
 | PENDING | 0 |
-| ACCEPTED | 46 |
+| ACCEPTED | 47 |
 
 ## Owner Review Result
 
@@ -128,6 +135,7 @@ Architecture Ownerは次を確認し、ADR-001〜ADR-045をPhase 0 Architecture 
 ADR-046はP2-A1の実装Evidenceに基づき、2026年9月1日にArchitecture Ownerが承認した。
 ADR-047はP2-B1の実PostgreSQL Evidenceに基づき、2026年9月3日にArchitecture Ownerが承認した。
 ADR-048はP2-B3の実PostgreSQL、複数processおよびnon-web実行Evidenceに基づき、2026年9月8日にArchitecture Ownerが承認した。
+ADR-049はP3-A0 contract reviewに基づき、2026年9月13日にArchitecture Ownerが承認した。実装成立のEvidenceはP3-A1〜A4で追加する。
 
 今後、後から再判断し得る技術判断を追加・変更する場合も、手続きのためにADRを増やすのではなく、
 技術判断、理由、状態、再判断条件を残すために使用する。

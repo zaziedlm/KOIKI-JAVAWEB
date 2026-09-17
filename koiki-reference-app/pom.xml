@@ -23,8 +23,12 @@
       <artifactId>koiki-architecture-contract</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-web-mvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-starter-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.koikifw</groupId>
@@ -32,7 +36,11 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+      <artifactId>spring-boot-starter-cache</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
     </dependency>
     <dependency>
       <groupId>org.flywaydb</groupId>
@@ -67,6 +75,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.koikifw</groupId>
+      <artifactId>koiki-testing</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

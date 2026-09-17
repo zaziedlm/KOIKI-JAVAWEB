@@ -65,7 +65,7 @@ application
     └── configuration
 ```
 
-他モジュールの`application`、`domain.model`、Repository、Adapterを直接参照しない。公開するモジュール間契約は原則として`domain.event`の値だけのイベントとする。`shared-kernel`は最小限に保ち、肥大化したらモジュール境界を見直す。
+他モジュールの`application`、`domain.model`、Repository、Adapterを直接参照しない。公開するモジュール間契約は原則として`domain.event`の値だけのイベントとする。Phase 3 Referenceのcurrent-value master確認だけはADR-049の狭い同期read-only contractを明示例外とし、consumer moduleのPort / Adapterを介して使う。`shared-kernel`は最小限に保ち、肥大化したらモジュール境界を見直す。
 
 ## モジュール内部の依存方向を保つ
 
@@ -103,16 +103,39 @@ Phase 0、Phase 1a Build Foundation、Phase 1b Runtime FoundationおよびPhase 
 Securityを伴う業務アプリの依存選択、profile、Ownership、診断および検証入口は
 `docs/development/phase2-developer-journey.md`を使う。一方、次は後続Phaseまたはoptional Gateの正式判断として固定しない。
 
-- Phase 3の正式Reference `master` / `expense`、MVC / HTMX、最小REST API、業務Vertical Slice、
-  Spring Modulith Level 1
+- Phase 3 P3-B1以降のread model、MVC / HTMX実装、最小REST APIおよびbrowser / E2E実装
 - Project Template、正式Upgrade / Migration Guideおよび正式OpenRewrite recipe
 - Spring Modulith Level 2、非同期Domain Eventおよびruntime依存
 - Authorization Server、SAML、Redis、WebFlux、SPA production実装
 - MyBatisの詳細実装規約、Oracle、AWS固有Adapterおよびcloud固有実装
 
-Phase 3は候補scopeだけが上位設計にあり、承認済み実行計画と開始Gateはまだない。未確定事項が必要になった場合は、
-該当Phaseまたはoptional Gateの設計・実装検証として扱い、実行計画とOwner承認前にproduction code、Public API、
-module、Starter、migration、workflowまたは既定規約を先行生成しない。
+Phase 3 Reference Vertical Sliceは
+`docs/development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md`のGate P3-1が承認済みであり、
+P3-CP0とP3-A0を完了し、P3-A1〜P3-A4およびGate Aを`COMPLETE / ACCEPTED`、P3-B0を
+`COMPLETE / OWNER APPROVED`とした。P3-A0で承認された有効master確認の狭い同期read-only contract、
+command整合の同期Event、承認者部門scopeのReference Ownership、V1〜V3 migration、module内FKのみの
+方針を維持する。P3-B0で正式`koiki-starter-web-mvc`、初期Java Public API 0型、Spring標準＋KOIKI内部
+HTMX fallback、Thymeleaf HTML主軸の選択適用、Phase 2 Security再利用および非配布browser Tooling境界を
+承認した。P3-B1ではmaster JPA射影とexpense JdbcClient read modelを実装し、表示専用の複数owner queryに
+scope先行の狭いread-only JOINを許容するADR-038 fittingをArchitecture Ownerが承認した。P3-B1は`COMPLETE`である。
+P3-B2では正式`koiki-starter-web-mvc`、full-page Thymeleaf、Reference MVC、Phase 2 Security再利用および
+実browser / log / Audit / DB checkpointを実装・検証し、`COMPLETE / OWNER APPROVED`とした。P3-B3の
+選択的HTMX / browser runnerとP3-B4の楽観lock競合画面、Reference限定cache / TTLも
+`COMPLETE / OWNER APPROVED`、Gate Bは`COMPLETE / ACCEPTED`である。P3-C0最小REST API contract reviewと
+P3-C1実装・検証とP3-C2 critical journey E2Eも`COMPLETE / OWNER APPROVED`である。P3-C2では
+Browser / API / DB / log aggregate、cleanupおよびCI候補を非配布Toolingで検証した。DoD 3-11の実CI PASSは
+Remote Gateで充足し、Gate C final acceptanceへ入力する。P3-C3 MyBatis規約fixture / Rule 35〜37はArchitecture Owner判断により
+`DEFERRED — MyBatis adoption trigger required`である。Rule 8のMyBatis拒否を維持し、`SEPARATED`、
+Rule 25〜27 / 30〜37、fixtureまたはdependencyを採用トリガー前に追加しない。P3-C4 Journey / ADR /
+Skill / DoD traceは`COMPLETE / OWNER APPROVED`である。
+Remote Gate計画は`OWNER APPROVED`であり、RG-4 push、RG-5 draft PRおよびRG-6 required check追加まで
+`APPROVED / EXECUTED`である。DoD 3-11は実CIでPASSし、`Phase 3 Critical Journey E2E`を含むrequired checks
+8件を維持する。Gate CとPhase 3全体は`COMPLETE / ACCEPTED`である。workflow rerun、PR ready化、merge、
+merge後main CIまたはPhase 4開始は未承認である。未承認のremote変更を先行せず、後続Gateと個別承認を順守する。
+
+個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
+Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは
+Remote Gateの個別承認を必要とする。
 
 ## 作業開始時の結論を示す
 

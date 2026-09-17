@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{koiki/fragments :: head(${title})}"></head>
+<body>
+<header th:replace="~{koiki/fragments :: header}"></header>
+<main>
+  <h1 th:text="${title}">経費申請</h1>
+  <p class="notice" th:if="${notice}" th:text="${notice}" role="status"></p>
+  <nav aria-label="経費申請メニュー"><ul>
+    <li><a th:href="@{/expenses}">自分の申請</a></li>
+    <li><a th:href="@{/expenses/new}">新規申請</a></li>
+    <li><a th:href="@{/expenses/approvals}">承認対象</a></li>
+    <li><a th:href="@{/expenses/accounting}">精算対象</a></li>
+  </ul></nav>
+  <table>
+    <caption th:text="|${result.totalElements} 件|">申請一覧</caption>
+    <thead><tr><th>申請者</th><th>部門</th><th>申請額</th><th>状態</th><th>更新日時</th><th>操作</th></tr></thead>
+    <tbody>
+    <tr th:each="item : ${result.content}">
+      <td data-label="申請者" th:text="${item.applicantEmail}"></td>
+      <td data-label="部門" th:text="|${item.departmentCode} ${item.departmentName}|"></td>
+      <td data-label="申請額" th:text="${item.claimedAmount}"></td>
+      <td data-label="状態" th:text="${item.status}"></td>
+      <td data-label="更新日時" th:text="${item.updatedAt}"></td>
+      <td data-label="操作">
+        <a th:href="@{|/expenses/${context}/${item.expenseRequestId}|}" th:if="${context != 'mine'}">詳細</a>
+        <a th:href="@{|/expenses/${item.expenseRequestId}|}" th:if="${context == 'mine'}">詳細</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <nav aria-label="ページ" class="actions">
+    <a th:if="${result.page > 0}" th:href="@{|/expenses/${context == 'mine' ? '' : context}?page=${result.page - 1}|}">前へ</a>
+    <a th:if="${(result.page + 1) * result.size < result.totalElements}" th:href="@{|/expenses/${context == 'mine' ? '' : context}?page=${result.page + 1}|}">次へ</a>
+  </nav>
+</main>
+</body>
+</html>

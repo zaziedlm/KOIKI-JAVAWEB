@@ -68,7 +68,7 @@ class IdentityUrlSecurityTest {
     }
 
     @Test
-    void redirectsSuccessfulLoginToIdentityLookupInsteadOfAnUnrelatedSavedRequest()
+    void redirectsSuccessfulLoginToReferenceHomeInsteadOfAnUnrelatedSavedRequest()
             throws Exception {
         when(compromisedPasswordChecker.check("test-password"))
                 .thenReturn(new CompromisedPasswordDecision(false));
@@ -77,7 +77,7 @@ class IdentityUrlSecurityTest {
                         .user("administrator")
                         .password("test-password"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/identity/users"));
+                .andExpect(redirectedUrl("/"));
     }
 
     @Test

@@ -214,12 +214,13 @@ Phase 3の業務scopeは、Reference仕様で承認された次の範囲とす�
 `ExpenseSettled`の非同期処理と月次締めjobはPhase 4で扱い、Phase 3へ先行導入しない。
 
 `Phase共通`には、Spring Modulith Level 1の正式構成と公開境界、Reference仕様からtest証拠への
-traceability、SPA実装を伴わないAPI契約文書、Agent Skills、Phase終了時のMyBatis規約、
-converter・`@MybatisTest`・楽観lock・reconstituteの検証、およびArchUnit Rule 35〜37を割り当てる。
+traceability、SPA実装を伴わないAPI契約文書およびAgent Skillsを割り当てる。当初割り当てた
+Phase終了時のMyBatis規約、converter・`@MybatisTest`・楽観lock・reconstituteの検証、および
+ArchUnit Rule 35〜37は、2026年9月16日のOwner判断によりadoption trigger成立後へ延期した。
 
 | DoD | 規模（標準人日） | 主な依存 | 主要リスク |
 |---|---:|---|---|
-| Phase共通 | 18〜30人日 | Phase 2、Reference仕様、Level 1判断、Skills、ArchUnit Rule 35〜37 | Walking Skeleton codeの昇格、業務仕様とFramework規約の混在、個別DoDへ現れない横断成果物の検証脱落 |
+| Phase共通 | 18〜30人日（当初見積。MyBatis部分は延期） | Phase 2、Reference仕様、Level 1判断、Skills | Walking Skeleton codeの昇格、業務仕様とFramework規約の混在、個別DoDへ現れない横断成果物の検証脱落 |
 | 3-1 | 18〜28人日 | `master` / `expense` module、Tier Template、Reference仕様の全Use Case・不変条件 | 代表flowだけで完成とみなし、承認済みの状態・権限・拒否flowが欠落する |
 | 3-2 | 8〜12人日 | 同期Domain Event、4未処理状態 | `DRAFT` / `SUBMITTED` / `RETURNED` / `APPROVED`で無効化を拒否せず、`REJECTED` / `SETTLED`との判定を混同する |
 | 3-3 | 5〜8人日 | module公開境界、ArchUnit / Modulith | event型以外の直接参照が紛れ込む |
