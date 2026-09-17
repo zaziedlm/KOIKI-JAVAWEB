@@ -268,7 +268,8 @@ try {
 
     Write-Host '=== Stage KOIKI release unit into an isolated repository ==='
     Invoke-Checked -Label 'KOIKI release unit stage' -Command {
-        & $wrapper -f $rootPom "-Dmaven.repo.local=$isolatedRepository" -DskipTests install
+        & $wrapper -f $rootPom "-Dmaven.repo.local=$isolatedRepository" `
+            -pl '!koiki-reference-app' -DskipTests install
     }
 
     Write-Host '=== Build the paired performance fixtures ==='
