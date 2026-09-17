@@ -9,6 +9,7 @@
 | Source HEAD | `1c89fb9e6ee2d8016f0e0d347df1f6e022a807ce` |
 | Base `main` | `c88b335efdd556613c9ef7f4c5267214fdb8254b` |
 | PR | [#35](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/35)、draft、mergeable、merge state `CLEAN` |
+| Post-acceptance closeout | PR #35 `MERGED`、merge commit `aa83fa578b5f689ce72e2a2540ad3ec2b659c083`、main CI PASS |
 | Ownership | Reference / Framework Web MVC Starter / non-distributed Tooling / Architecture Evidence |
 | Remote mutation in this review | 0 |
 
@@ -157,3 +158,16 @@ required checks 8 / 8 PASS、PR #35 draft / mergeable / `CLEAN`
 
 本承認だけではPR ready化、merge、workflow rerun、snapshot publishまたはPhase 4開始を許可しない。
 PR ready化とmerge可否は、承認記録確定後に個別判断する。
+
+## 11. Post-acceptance remote closeout
+
+§10の承認記録確定後、Architecture OwnerはPR ready化とmergeを個別承認した。PR #35はfinal PR HEAD
+`bf08beb244d5685617d00aa0b65813f2fc90731c`からmerge commit
+`aa83fa578b5f689ce72e2a2540ad3ec2b659c083`として`main`へmergeされた。
+
+merge後のCI run `35175971023`はattempt 2で7 / 7 jobs、Java Runtime Compatibility run `35175971007`は
+attempt 1で2 / 2 jobsが成功した。attempt 1の`Milestone C Closeout`に発生したMaven Wrapper distribution取得中の
+一時的なconnection resetは、同一merge commitに対するfailed jobs only rerunで解消した。source、workflowおよび
+rulesetの変更はない。詳細は`phase3-post-merge-closeout.md`を参照する。
+
+**Post-acceptance status:** `PR MERGED / MAIN CI PASS / PHASE 3 REMOTE CLOSEOUT COMPLETE`

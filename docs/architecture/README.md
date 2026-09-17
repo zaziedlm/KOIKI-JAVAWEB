@@ -27,7 +27,8 @@ P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX con
 `COMPLETE / OWNER APPROVED`、Gate B Web / query acceptanceを`COMPLETE / ACCEPTED`、P3-C0〜C2を
 `COMPLETE / OWNER APPROVED`、P3-C3をadoption trigger待ちの`DEFERRED`、P3-C4を
 `COMPLETE / OWNER APPROVED`としています。Remote GateでDoD 3-11の実CI PASSとrequired check追加を完了し、
-Gate Cは`COMPLETE / ACCEPTED`です。PR ready化、mergeおよびmerge後main CIは後続の個別remote actionです。
+Gate Cは`COMPLETE / ACCEPTED`です。PR #35はmerge commit方式で`main`へmergeされ、merge後CI 7 / 7 jobsと
+Java Runtime Compatibility 2 / 2 jobsも成功しています。Phase 3 remote closeoutにblocking itemはありません。
 
 ### Phase 3 Reference Vertical Slice
 
@@ -53,6 +54,12 @@ Gate Cは`COMPLETE / ACCEPTED`です。PR ready化、mergeおよびmerge後main 
 | P3-C4 Traceability Closeout | COMPLETE / OWNER APPROVED | `validation/phase3-p3-c4-traceability-closeout.md` |
 | Remote Gate | RG-1〜RG-6 APPROVED / EXECUTED / DoD 3-11 CI PASS | `validation/phase3-remote-gate-plan-review.md` |
 | Gate C Final Acceptance | COMPLETE / ACCEPTED | `validation/phase3-gate-c-final-acceptance.md` |
+| Post-merge Remote Closeout | COMPLETE / MERGED / MAIN CI PASS | `validation/phase3-post-merge-closeout.md` |
+
+Phase 3 post-merge closeoutで判明した実案件始動とPhase 4作業の一部移管見込みは、Phase 3を再オープンせず、
+Pre-Phase 4 Adoption Readiness（P4-AR）のtransition Gateで扱います。P4-AR0とAR-1〜AR-7は
+`COMPLETE / OWNER APPROVED`であり、正本は`../development/KOIKI-JavaWeb-FW_Pre-Phase4_Adoption_Readiness計画_v0.1.md`です。
+P4-AR1以降は本計画の`main`反映とclean-main同期後に開始し、Phase 4開始は別途判断します。
 
 ### Phase 2 Security Foundation
 
