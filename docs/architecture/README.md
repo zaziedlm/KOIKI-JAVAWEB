@@ -26,7 +26,8 @@ P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX con
 `COMPLETE / OWNER APPROVED`、P3-B3 HTMXおよびP3-B4 optimistic conflict / cacheも
 `COMPLETE / OWNER APPROVED`、Gate B Web / query acceptanceを`COMPLETE / ACCEPTED`、P3-C0〜C2を
 `COMPLETE / OWNER APPROVED`、P3-C3をadoption trigger待ちの`DEFERRED`、P3-C4を
-`COMPLETE / OWNER APPROVED`としています。次はDoD 3-11の実CI Evidenceを扱うRemote Gateです。
+`COMPLETE / OWNER APPROVED`としています。Remote GateでDoD 3-11の実CI PASSとrequired check追加を完了し、
+Gate Cは`OWNER REVIEW READY`です。
 
 ### Phase 3 Reference Vertical Slice
 
@@ -50,7 +51,8 @@ P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX con
 | P3-C2 Critical Journey E2E | COMPLETE / OWNER APPROVED / CI CANDIDATE ACCEPTED | `validation/phase3-p3-c2-critical-journey-e2e.md` |
 | P3-C3 MyBatis Rules / Fixture | DEFERRED — adoption trigger required | `validation/phase3-p3-c3-mybatis-deferral.md` |
 | P3-C4 Traceability Closeout | COMPLETE / OWNER APPROVED | `validation/phase3-p3-c4-traceability-closeout.md` |
-| Remote Gate | PLAN OWNER APPROVED / LOCAL WORKFLOW IMPLEMENTATION AUTHORIZED / REMOTE ACTIONS PENDING | `validation/phase3-remote-gate-plan-review.md` |
+| Remote Gate | RG-1〜RG-6 APPROVED / EXECUTED / DoD 3-11 CI PASS | `validation/phase3-remote-gate-plan-review.md` |
+| Gate C Final Acceptance | OWNER REVIEW READY / DECISION PENDING | `validation/phase3-gate-c-final-acceptance.md` |
 
 ### Phase 2 Security Foundation
 
