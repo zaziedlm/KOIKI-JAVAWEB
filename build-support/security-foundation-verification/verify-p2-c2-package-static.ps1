@@ -1,5 +1,7 @@
 [CmdletBinding()]
-param()
+param(
+    [switch]$CurrentFormalReleaseUnit
+)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -70,6 +72,18 @@ function Read-Manifest {
     }
     if (@($entries.ArtifactId | Sort-Object -Unique).Count -ne $entries.Count) {
         throw 'Formal release manifest artifact IDs must be unique.'
+    }
+
+    if ($CurrentFormalReleaseUnit) {
+        $entries += [pscustomobject]@{
+            Packaging = 'JAR'
+            ArtifactId = 'koiki-starter-web-mvc'
+            ModulePath = 'koiki-starters/koiki-starter-web-mvc'
+        }
+        if ($entries.Count -ne 15 -or
+            @($entries | Where-Object Packaging -eq 'JAR').Count -ne 12) {
+            throw 'Current formal release unit must contain 15 projects / 12 JARs.'
+        }
     }
     return $entries
 }
@@ -175,14 +189,25 @@ Assert-ReactorAndBomInventory -Manifest $manifest
 New-Item -ItemType Directory -Path $isolatedRepository -Force | Out-Null
 
 try {
-    Invoke-KoikiMaven -Label 'Stage P2-C2 formal Framework release unit' -Arguments @(
+    $stageLabel = if ($CurrentFormalReleaseUnit) {
+        'Stage current formal Framework release unit'
+    } else {
+        'Stage P2-C2 formal Framework release unit'
+    }
+    Invoke-KoikiMaven -Label $stageLabel -Arguments @(
         '-f', $rootPom,
         '-pl', '!koiki-reference-app',
         'clean', 'install', '-DskipTests')
     Assert-StagedInventory -Manifest $manifest
-    Write-Host (
-        'Phase 2 P2-C2 C2-2 package verification succeeded ' +
-        '(14 projects / 11 JARs / Reference and Tooling excluded).')
+    if ($CurrentFormalReleaseUnit) {
+        Write-Host (
+            'Current formal Framework package verification succeeded ' +
+            '(15 projects / 12 JARs / Reference and Tooling excluded).')
+    } else {
+        Write-Host (
+            'Phase 2 P2-C2 C2-2 package verification succeeded ' +
+            '(14 projects / 11 JARs / Reference and Tooling excluded).')
+    }
 } finally {
     if (Test-Path -LiteralPath $verificationRoot) {
         Assert-SafeTemporaryPath -Path $verificationRoot

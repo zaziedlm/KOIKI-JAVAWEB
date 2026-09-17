@@ -242,6 +242,15 @@ staged coordinates、POM / JAR packaging、Reference / Tooling / Customer migrat
 隔離repositoryは成功・失敗のどちらでも終了時にcleanupする。C2-2ではConsumer、Public API baseline、snapshot publish、
 OpenRewrite prototypeまたはCIを追加・実行しない。
 
+Phase 3で追加された正式`koiki-starter-web-mvc`を含む現行release unitを後続Gateで再検証する場合は、Phase 2履歴manifestを
+変更せず次を使用する。履歴14 projects / 11 JARへWeb MVCを明示的に加えた15 projects / 12 JARと、現行Root Reactor、
+BOM、隔離repositoryを完全照合する。
+
+```powershell
+pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c2-package-static.ps1 `
+  -CurrentFormalReleaseUnit
+```
+
 P2-C2 C2-3のRoot Reactor外Consumerは次で検証する。
 
 ```powershell
