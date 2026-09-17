@@ -16,7 +16,15 @@ Skill / DoD traceは`COMPLETE / OWNER APPROVED`である。
 Remote Gate計画は`OWNER APPROVED`であり、RG-4 push、RG-5 draft PRおよびRG-6 required check追加まで
 `APPROVED / EXECUTED`である。`Phase 3 Critical Journey E2E`を含むrequired checks 8件を維持する。
 DoD 3-11の実CI PASS、Gate CおよびPhase 3全体は`COMPLETE / ACCEPTED`である。
-workflow rerun、PR ready化、merge、merge後main CIまたはPhase 4開始は未承認である。
+PR #35はmerge commit `aa83fa578b5f689ce72e2a2540ad3ec2b659c083`として`main`へmerge済みであり、
+merge後CI 7 / 7 jobsとJava Runtime Compatibility 2 / 2 jobsは成功した。Phase 3 remote closeoutは完了している。
+post-merge closeoutでFramework採用実案件の始動とPhase 4作業の一部移管見込みが明らかになったため、
+Phase 3を再オープンせず、Pre-Phase 4 Adoption Readiness（P4-AR）をtransition Gateとして追加した。
+P4-AR0とAR-1〜AR-7は`COMPLETE / OWNER APPROVED`である。承認記録をRepositoryへ反映してから、同期済みclean `main`で
+P4-AR1以降のFramework検証を開始する。Phase 4開始は未承認である。
+P4-ARではFramework本体だけでなく、Customer-like Consumer、package済みReference Application、検証Toolingおよび
+Developer Journeyを受渡し候補として棚卸しし、業務アプリ開発チームの受入側視点でbuild / run / operation / diagnosisを実証する。
+正式な受渡し対象はP4-AR Evidenceを入力とする見直し後Phase 4準備で判断し、Project TemplateはPhase 5境界を維持する。
 Framework Public API、migrationまたは未承認のremote変更を先行しない。
 
 Phase 3では、承認済みbaselineを維持し、次を優先する。

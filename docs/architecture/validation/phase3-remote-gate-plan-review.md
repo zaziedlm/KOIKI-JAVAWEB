@@ -7,9 +7,9 @@
 | Review date | 2026年9月17日 |
 | Planning identity | `ee84312beda89a9430a4e2f4451a827d4c0aa863`（P3-C4 Owner承認commit） |
 | Branch | `feature/phase3-reference-vertical-slice` |
-| Status | `RG-6 APPROVED / EXECUTED / REQUIRED CHECKS 8 / 8 PASS / GATE C ACCEPTANCE PENDING` |
+| Status | `REMOTE GATE COMPLETE / GATE C ACCEPTED / PR MERGED / MAIN CI PASS` |
 | Ownership | Repository governance / CI Tooling / Architecture Evidence |
-| DoD continuation | DoD 3-11 `CI PASS — GATE C ACCEPTANCE PENDING` |
+| DoD continuation | DoD 3-11 `SATISFIED / ACCEPTED` |
 | Remote mutation in planning review | 0 |
 
 P3-C4は`COMPLETE / OWNER APPROVED`である。Remote Gateは、P3-C2で受け入れたcritical journey CI候補を
@@ -281,3 +281,16 @@ Gate C開始を許可しなかった。RG-4 / RG-5の後続個別承認と実行
 
 workflow rerun、PR ready化、mergeおよびGate C acceptanceは引き続き別判断とする。次のRepository commit後は、
 新しいPR HEADでrequired checks 8 / 8を再確認してからGate C reviewへ進む。
+
+## 12. Gate C and post-merge closeout
+
+RG-6後、latest PR HEADのrequired checks 8 / 8を再確認し、Gate CでPhase 3を`COMPLETE / ACCEPTED`とした。
+その後の個別Owner承認により、PR #35をReady for reviewへ変更し、final PR HEAD
+`bf08beb244d5685617d00aa0b65813f2fc90731c`をmerge commit
+`aa83fa578b5f689ce72e2a2540ad3ec2b659c083`として`main`へmergeした。
+
+merge後CI run `35175971023`はattempt 2で7 / 7 jobs、Java Runtime Compatibility run `35175971007`は
+attempt 1で2 / 2 jobsが成功した。CI attempt 1の一時的なnetwork failureは、source、workflowおよびrulesetを
+変更しないfailed jobs only rerunで解消した。remote closeoutの詳細は`phase3-post-merge-closeout.md`を参照する。
+
+**Final status:** `REMOTE GATE COMPLETE / GATE C ACCEPTED / PR MERGED / MAIN CI PASS`

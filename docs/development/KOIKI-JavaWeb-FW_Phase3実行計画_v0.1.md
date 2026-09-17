@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW Phase 3 Reference Vertical Slice 実行計画
 
-**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE COMPLETE / DoD 3-11 CI PASS / REQUIRED CHECKS 8 / 8 PASS / GATE C PASSED / PHASE 3 COMPLETE / ACCEPTED / PR READY・MERGE PENDING
+**状態:** GATE P3-1 APPROVED / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED — MyBatis adoption trigger required / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE COMPLETE / DoD 3-11 CI PASS / REQUIRED CHECKS 8 / 8 PASS / GATE C PASSED / PHASE 3 COMPLETE / ACCEPTED / PR #35 MERGED / MAIN CI PASS
 **作成日:** 2026年9月13日
 **開始作業branch:** feature/phase3-reference-vertical-slice
 **開始基準main:** c88b335efdd556613c9ef7f4c5267214fdb8254b
@@ -63,7 +63,7 @@ Maven build、CI、Consumerまたは成果物の必須前提にしない。
 
 ### 3.2 Work positioning
 
-    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE COMPLETE / DoD 3-11 CI PASS / REQUIRED CHECKS 8 / 8 PASS / GATE C PASSED / PHASE 3 COMPLETE / ACCEPTED / PR READY・MERGE PENDING
+    Phase / status: Phase 3 / P3-CP0 COMPLETE / P3-A0 COMPLETE / P3-A1〜A4 COMPLETE / ACCEPTED / GATE A PASSED / P3-B0 COMPLETE / OWNER APPROVED / P3-B1 COMPLETE / P3-B2〜B4 COMPLETE / OWNER APPROVED / GATE B PASSED / MILESTONE B COMPLETE / ACCEPTED / P3-C0〜C2 COMPLETE / OWNER APPROVED / P3-C3 DEFERRED / P3-C4 COMPLETE / OWNER APPROVED / REMOTE GATE COMPLETE / DoD 3-11 CI PASS / REQUIRED CHECKS 8 / 8 PASS / GATE C PASSED / PHASE 3 COMPLETE / ACCEPTED / PR #35 MERGED / MAIN CI PASS
     Primary ownership: Reference
     Target Maven module: koiki-reference-app
     Business modules: master / expense
@@ -804,3 +804,27 @@ entry criteria、DoD / AC、Hybrid Verification、Remote Gate、PR inventoryお�
 
 Gate CとPhase 3 final acceptanceは完了した。本承認はPR ready化、merge、workflow rerun、snapshot publish、
 merge後main CIまたはPhase 4開始を許可しない。
+
+## 38. Post-merge remote closeout
+
+2026年9月17日、Gate C承認記録を確定した後、Architecture Ownerの個別承認に基づきPR #35を
+DraftからReady for reviewへ変更し、merge commit方式で`main`へmergeした。
+
+**Status:** PHASE 3 COMPLETE / ACCEPTED / PR #35 MERGED / MAIN CI PASS
+**Final PR HEAD:** `bf08beb244d5685617d00aa0b65813f2fc90731c`
+**Merge commit:** `aa83fa578b5f689ce72e2a2540ad3ec2b659c083`
+**Merge boundary:** squash / rebase / force / bypass / direct pushなし、source branch削除なし
+**Main CI:** run `35175971023` attempt 2、7 / 7 jobs SUCCESS
+**Runtime compatibility:** run `35175971007` attempt 1、2 / 2 jobs SUCCESS
+**Retry treatment:** attempt 1の`Milestone C Closeout`はMaven Wrapper distribution取得中の一時的な
+`Connection reset by peer`で失敗した。source、workflowおよびrulesetを変更せず、個別承認されたfailed jobs only rerunで成功した
+**Evidence:** `docs/architecture/validation/phase3-post-merge-closeout.md`
+**Finding:** Phase 3 remote closeoutのblocking item 0
+
+P3-C3は`DEFERRED — MyBatis adoption trigger required`を維持する。snapshot publish、source branch削除および
+Phase 4開始は本closeoutに含めず、後続作業は新たな計画と個別承認に従う。
+
+**Transition discovery:** post-merge closeout時点でFramework採用実案件の始動とPhase 4作業の一部移管見込みが
+明らかになった。Phase 3を再オープンせず、`P4-AR`（Pre-Phase 4 Adoption Readiness）をtransition Gateとして追加し、
+本計画をmergeしたclean `main`からFramework / Consumer / Referenceと開発環境を再検証した後、見直し後Phase 4の
+責任分担と開始可否を判断する。正本は`KOIKI-JavaWeb-FW_Pre-Phase4_Adoption_Readiness計画_v0.1.md`とする。
