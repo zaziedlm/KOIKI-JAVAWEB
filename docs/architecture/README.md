@@ -61,6 +61,11 @@ Pre-Phase 4 Adoption Readiness（P4-AR）のtransition Gateで扱います。P4-
 `COMPLETE / OWNER APPROVED`であり、正本は`../development/KOIKI-JavaWeb-FW_Pre-Phase4_Adoption_Readiness計画_v0.1.md`です。
 P4-AR1以降は本計画の`main`反映とclean-main同期後に開始し、Phase 4開始は別途判断します。
 
+| Work Package | 状態 | 検証記録 |
+|---|---|---|
+| P4-AR1 Clean-main environment preflight | COMPLETE / READY FOR P4-AR2 | `validation/pre-phase4-p4-ar1-environment-preflight.md` |
+| P4-AR2 Framework build / quality baseline | PREPARED / NOT STARTED | `validation/pre-phase4-p4-ar2-framework-quality-baseline.md` |
+
 ### Phase 2 Security Foundation
 
 | Work Package / Gate | 状態 | 検証記録 |
