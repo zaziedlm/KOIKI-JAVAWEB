@@ -5,7 +5,7 @@
 | Item | Result |
 |---|---|
 | Review date | 2026年9月17日 |
-| Status | `GATE C OWNER REVIEW READY / DECISION PENDING` |
+| Status | `COMPLETE / ACCEPTED — GATE C PASSED` |
 | Source HEAD | `1c89fb9e6ee2d8016f0e0d347df1f6e022a807ce` |
 | Base `main` | `c88b335efdd556613c9ef7f4c5267214fdb8254b` |
 | PR | [#35](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/35)、draft、mergeable、merge state `CLEAN` |
@@ -14,8 +14,8 @@
 
 本書はPhase 3 Reference Vertical SliceのGate C final acceptance判断資料である。P3-C4、Remote Gateおよび
 RG-6までの承認済みEvidenceを集約し、DoD 3-1〜3-11、AC-P3-01〜10、PR差分、実browser、CI、deferred境界を
-最終確認する。本書作成だけではPhase 3を`COMPLETE / ACCEPTED`とせず、PR ready化、merge、workflow rerun、
-snapshot publishまたはPhase 4を承認しない。
+最終確認する。§9までのreview準備だけではPhase 3を`COMPLETE / ACCEPTED`とせず、§10にArchitecture Ownerの
+明示承認を記録する。Gate C承認後も、PR ready化、merge、workflow rerun、snapshot publishまたはPhase 4は別判断とする。
 
 ## 2. Gate C entry criteria
 
@@ -122,13 +122,13 @@ Gate Cのacceptance criteriaは満たされている。Architecture OwnerへPhas
 
 | ID | Decision requested | Recommended disposition | Owner decision |
 |---|---|---|---|
-| GC-1 | DoD 3-1〜3-11を最終充足として受け入れるか | ACCEPT | PENDING |
-| GC-2 | AC-P3-01〜10と業務architecture境界を受け入れるか | ACCEPT | PENDING |
-| GC-3 | 実browser / API / DB / Audit / logとcleanup Evidenceを受け入れるか | ACCEPT | PENDING |
-| GC-4 | Public API、artifact、migration、Ownership、deferred分類を受け入れるか | ACCEPT | PENDING |
-| GC-5 | Remote Gate、ruleset、latest HEADのrequired checks 8 / 8を受け入れるか | ACCEPT | PENDING |
-| GC-6 | Phase 3を`COMPLETE / ACCEPTED`としてGate Cを通過させるか | APPROVE | PENDING |
-| GC-7 | Gate C記録確定後、PR ready化とmerge可否を別途判断する境界を維持するか | APPROVE | PENDING |
+| GC-1 | DoD 3-1〜3-11を最終充足として受け入れるか | ACCEPT | APPROVED |
+| GC-2 | AC-P3-01〜10と業務architecture境界を受け入れるか | ACCEPT | APPROVED |
+| GC-3 | 実browser / API / DB / Audit / logとcleanup Evidenceを受け入れるか | ACCEPT | APPROVED |
+| GC-4 | Public API、artifact、migration、Ownership、deferred分類を受け入れるか | ACCEPT | APPROVED |
+| GC-5 | Remote Gate、ruleset、latest HEADのrequired checks 8 / 8を受け入れるか | ACCEPT | APPROVED |
+| GC-6 | Phase 3を`COMPLETE / ACCEPTED`としてGate Cを通過させるか | APPROVE | APPROVED |
+| GC-7 | Gate C記録確定後、PR ready化とmerge可否を別途判断する境界を維持するか | APPROVE | APPROVED |
 
 推奨承認文言は次のとおりとする。
 
@@ -136,4 +136,24 @@ Gate Cのacceptance criteriaは満たされている。Architecture OwnerへPhas
 > required checks 8 / 8およびdeferred境界を確認し、GC-1〜GC-7を承認する。Phase 3 Reference Vertical Sliceを
 > `COMPLETE / ACCEPTED`とする。PR ready化、mergeおよびmerge後main CIは、本承認記録の確定後に個別に進める。
 
-本節は判断案であり、Architecture Ownerの明示承認まではDecisionを記録しない。
+## 10. Architecture Owner decision
+
+Architecture Ownerは§9の承認文言を確認し、GC-1〜GC-7をすべて承認した。
+
+**Decision:** APPROVED — GATE C PASSED / PHASE 3 COMPLETE / ACCEPTED
+
+**Decided by:** Shuichi Kataoka, Architecture Owner
+
+**Decision date:** 2026年9月17日
+
+**Accepted source:** `cb93db4a4ee6e758a2c3373cf986155e7d61e957`
+
+**Accepted remote Evidence:** CI run `35166445815` 7 / 7 jobs SUCCESS、runtime run `35166445792` 2 / 2 jobs SUCCESS、
+required checks 8 / 8 PASS、PR #35 draft / mergeable / `CLEAN`
+
+**Accepted boundaries:** P3-C3 MyBatis延期、Rule 8拒否、Phase 4 / 5 deferred、Tooling非配布、Public API / Ownership境界を維持
+
+**Authorized next action:** 本承認記録をcommit / pushし、最新HEADのrequired checks 8 / 8を確認する。
+
+本承認だけではPR ready化、merge、workflow rerun、snapshot publishまたはPhase 4開始を許可しない。
+PR ready化とmerge可否は、承認記録確定後に個別判断する。

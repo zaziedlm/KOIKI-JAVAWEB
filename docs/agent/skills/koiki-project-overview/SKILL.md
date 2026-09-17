@@ -130,9 +130,8 @@ Rule 25〜27 / 30〜37、fixtureまたはdependencyを採用トリガー前に�
 Skill / DoD traceは`COMPLETE / OWNER APPROVED`である。
 Remote Gate計画は`OWNER APPROVED`であり、RG-4 push、RG-5 draft PRおよびRG-6 required check追加まで
 `APPROVED / EXECUTED`である。DoD 3-11は実CIでPASSし、`Phase 3 Critical Journey E2E`を含むrequired checks
-8件を維持する。workflow rerun、PR ready化、mergeまたはGate C acceptanceは未承認である。
-Phase 4または未承認のremote変更を先行せず、以降も同計画のCP、blocking review
-およびGateを順守する。
+8件を維持する。Gate CとPhase 3全体は`COMPLETE / ACCEPTED`である。workflow rerun、PR ready化、merge、
+merge後main CIまたはPhase 4開始は未承認である。未承認のremote変更を先行せず、後続Gateと個別承認を順守する。
 
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
 Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは
