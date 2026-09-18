@@ -170,6 +170,87 @@ Framework側のrehearsalで成立した候補は、P4-AR6で実案件側の受�
 問い合わせ経路および追加gapを確認する。実案件repositoryへの変更、artifact配布、credential共有または環境操作が
 必要な場合は、本計画の承認へ含めず、対象と影響を示して別途承認を得る。
 
+### 7.3 Application team extension boundary
+
+Frameworkが提供する契約で充足できる機能は、業務アプリ開発チームがSpring標準の作法と、承認済みFramework Public API、
+StarterおよびArchitecture Rulesを利用して実装する。業務module、画面、外部連携、案件固有configuration / migrationは
+Customer Ownershipに置き、Framework内部へ混在させない。
+
+ここで目指す「機能十分」は、あらゆる案件機能をFrameworkが先回りして内包することではない。頻度が高く安定した横断契約と
+安全な既定・拡張境界をFrameworkが提供し、案件ごとに変わる機能を通常のSpring Applicationとして実装できる状態を指す。
+
+一方、見直し後Phase 4の機能が未実装である場合や、FrameworkとCustomerの責務境界に近い機能を実案件側が先行して
+設計・製造する場合は、次の順序で現実解を判断する。
+
+1. Spring標準機能とCustomer-owned module / Adapter / configurationの組合せで実現する。
+2. 承認済みPublic APIまたは明示された拡張点へ、composition、Port / Adapter、型と`Qualifier`が明確なDIで接続する。
+3. 案件固有bridgeをCustomer側へ隔離し、Framework内部package、bean name、未公開classまたは実装順序へ依存させない。
+4. 安全な拡張点がない場合は無理に統合せず、F2、F4またはF5 findingとして不足と影響を記録し、blocking reviewへ戻す。
+5. Framework本体の変更が必要な場合は、Customer非依存性、再利用性、後方互換性、Security / Audit、検証可能性および
+   support責任を設計した上で、Public API等の承認手順とArchitecture Owner判断を経る。
+
+ここでいう機能差替えは、Frameworkが契約として用意した拡張点を使用することを指す。Springのbean definition overriding、
+同名beanによる偶発的shadowing、内部実装classの継承または起動順序依存を一般的な拡張手段とはしない。必要な差替え契約が
+存在しなければ、DIで接続できるという理由だけで採用しない。
+
+次は回避すべき状態としてP4-AR5 Evidenceで確認する。
+
+- Framework sourceまたは内部実装をCustomer repositoryへ複製し、独立進化させる。
+- Frameworkと同じ責務を持つ横付け機能が、Identity、認可、Audit、transaction、migrationまたはmodule境界を迂回する。
+- Framework既定を無効化または弱化して、案件固有処理を暗黙に優先する。
+- 実案件だけで成立した仕組みを、十分な設計・回帰検証なしにFramework成果物へ昇格する。
+- 将来の統合を理由に、現時点で不自然な共通化、Public API化またはdeployable統合を強制する。
+
+P4-AR5では個々の未実装機能のproduction設計を確定しない。受渡し候補ごとに、標準利用、承認済み拡張、Customer隔離、
+Framework gapのどこに位置するかを確認し、無理のない接続方式が存在しないものは未解決として明示する。P4-AR6はこの結果を
+用いてFramework / Customer / joint responsibilityを判断する。
+
+### 7.4 General design review
+
+§7.3の方針は、一般的なApplication Framework / Platform Engineeringにおけるstable core、explicit extension point、
+composition over forkおよびconsumer-owned integrationの考え方と整合する。ただし、実務で過度な統制または不自然な統合に
+ならないよう、手段を次のように区別する。
+
+| Mechanism | Appropriate use | Required boundary |
+|---|---|---|
+| Configuration | endpoint、timeout、feature有効化等の契約済みvariation | 型付き設定、validation、安全なdefault、設定変更時の影響を明記 |
+| Composition | Customer module、業務Use Case、外部連携Adapterの追加 | 依存方向、transaction、Identity / Permission / Auditの責務を維持 |
+| Designed substitution | Frameworkが明示したinterface / SPIまたはconditional defaultの差替え | Public contract、選択条件、default back-off、複数候補時のfail-fast、contract test |
+| Separate integration | 別deployable、BFF、gatewayまたは案件固有serviceが妥当な場合 | protocol、認証、障害、整合性、observabilityおよび運用Ownerを明示し、Framework責務を迂回しない |
+| Provisional bridge | 納期上、正式拡張点の確定前に案件側で一時的に接続する必要がある場合 | Customer隔離、Owner、期限、削除trigger、既知risk、upgrade確認および正式化／廃止の再review日を記録 |
+| Framework contribution | 複数案件へ共通化すべき安定契約で、Spring標準では代替できない場合 | Grand Design §9.2、Public API review、ADR、互換性・回帰検証、support義務 |
+
+Spring Bootの`@ConditionalOnMissingBean`等によるback-offはdesigned substitutionを作る手段になり得るが、DI containerが
+技術的に差替え可能であること自体は拡張契約を意味しない。Framework側が対象型、既定動作、選択条件、lifecycleおよび
+差替え後も守るべきsemanticsを公開し、consumer側のcontract testで検証できる場合に限り正式な拡張点として扱う。
+`@Primary`や`@Qualifier`は候補選択を明確にする手段であり、Ownershipや互換性を保証するものではない。
+
+差替えまたはbridgeの評価では、機能結果だけでなく次のinvariantを確認する。
+
+- default deny、Identity、Permission、CSRF / CORS等のSecurity境界を弱めない。
+- Business / Security Auditの記録主体、transaction境界、失敗時semanticsを変えない、または差を明示する。
+- migration / schema ownership、error contract、configuration validationおよびstartup fail-fastを維持する。
+- log、metric、trace、health、cleanupおよび障害診断の観測点を失わない。
+- Framework upgrade時に内部実装へ追随する必要がなく、Public API互換検査とCustomer側Architecture Rulesを通過する。
+
+別deployableや案件固有Adapterは、それ自体を「歪な横付け」と判定しない。責務が明確で、安定したprotocolを介し、重複する
+正本やSecurity / Auditの迂回を作らず、独立した運用責任を持てる場合は正当な分離である。反対に、同一process内のDIであっても
+内部実装依存、暗黙の優先順位または責務重複があれば不適切とする。
+
+Architecture Owner reviewは、Framework Public API、default、安全性、共通artifactまたは複数案件support義務を変える判断へ
+集中する。Customer内部の通常実装まで逐次承認対象にせず、公開済み契約とArchitecture Rulesの範囲内はアプリ開発チームが
+自律的に進められる状態を受渡し目標とする。
+
+### 7.5 Architecture Owner approval record
+
+2026年9月18日、Architecture Ownerは§7.3および§7.4を、P4-AR5で用いるアプリ開発チームの位置づけと
+拡張判断方式として承認した。
+
+承認対象は、標準利用、承認済み拡張、Customer隔離、Framework gapの分類、designed substitution、
+provisional bridgeおよびFramework contributionの判断方式である。これはP4-AR5の実行完了、個別機能の方式選定、
+新規拡張点またはPublic API、Framework本体改修、実案件repository操作、artifact配布、P4-AR6の責任分担、
+Gate P4-AR acceptanceまたはPhase 4開始を承認するものではない。
+
 ## 8. Phase 4 responsibility reallocation review
 
 実案件側の担当範囲はP4-AR6で具体化する。現時点では次の成果物ごとに、実装OwnerとPhase 4 acceptance Evidenceの
@@ -209,10 +290,10 @@ Framework acceptanceへ昇格させない。
 | AR-D3 | 正式release unitをisolated repositoryからCustomer-like Consumerが利用できる |
 | AR-D4 | package済みReference JARのMVC / REST / DB / Audit / log / browser journeyが成立する |
 | AR-D5 | secret非露出とprocess / container / port / temp file cleanupを確認している |
-| AR-D6 | §7.1の受渡し候補を棚卸しし、現在渡せるもの／検証専用で渡さないもの／Phase 4で整備するものを分類している |
+| AR-D6 | §7.1の受渡し候補を棚卸しし、現在渡せるもの／検証専用で渡さないもの／Phase 4で整備するもの、および§7.3の標準利用／承認済み拡張／Customer隔離／Framework gapを分類している |
 | AR-D7 | §7.2の受入側execution rehearsalを完了し、build / run / representative operation / diagnosis / cleanupが成立する |
 | AR-D8 | 実案件連携を妨げる未記録の開発環境前提がない |
-| AR-D9 | F1 blockingが0で、F2〜F6のOwner、優先度、次Gateが明示されている |
+| AR-D9 | F1 blockingが0で、F2〜F6のOwner、優先度、次Gateが明示され、Framework copy、内部実装依存または責務迂回を未記録のまま受入れていない |
 | AR-D10 | 実案件側の受入確認を踏まえ、Phase 4成果物のFramework / Customer / joint Evidence責任分担と、見直し後Phase 4への入力をOwnerが承認している |
 
 ## 11. Evidence and commit points
