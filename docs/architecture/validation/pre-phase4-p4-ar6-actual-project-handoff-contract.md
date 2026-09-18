@@ -423,6 +423,8 @@ P4-AR6で空module、Project Templateまたは案件固有codeをKOIKI Repositor
 ## 5. Actual-team reception session plan
 
 P4-AR6は一方向の説明会ではなく、実チームが入口を選び、実行し、判断を説明できるかを確認する。
+実施時は[実チーム受入セッション worksheet](../../development/p4-ar6-actual-team-reception-worksheet.md)を使用し、
+Customer機密情報をFramework Repositoryへ記録せず、実行前承認からcleanup、findingおよびclose review入力までを追跡する。
 
 | Step | Activity | Evidence to retain | Stop / escalation condition |
 |---|---|---|---|
@@ -484,11 +486,12 @@ Security / Audit / migrationへの影響、Customer隔離の可否および希�
 | AR6-P2 | 移行期にFramework変更をどう追跡するか | R2を暫定推奨。stage手順とmanifest契約、Tooling実装およびFramework側rehearsalは完了。実チーム検証は未実施 | Framework release Owner + actual application team |
 | AR6-P3 | managed Maven repository / version / support条件 | 未決定。R1移行のblocking decision | Framework release Owner + organization platform |
 | AR6-P4 | actual Customer repository構成 | Customer要件未取得。概念Ownershipだけを提示 | Customer application lead |
-| AR6-P5 | actual-team session schedule / participant | 未決定 | Project / application Owner |
+| AR6-P5 | actual-team session schedule / participant | 実行前承認からclose入力までのworksheetは準備済み。schedule / participantは未決定 | Project / application Owner |
 | AR6-P6 | R2 stage Toolingを実装するか | `REINFORCED / FRAMEWORK REHEARSAL PASS`。`build-support` Ownershipの非配布Toolingとして、§3.2.2〜§3.2.5のversion 2契約を実証した | 実Customer Repository操作は別承認 |
 | AR6-P7 | R2契約review補強 | 2026-09-18、Architecture Ownerはclean source、cleanup安全性、artifact不変、final manifest、Parent / internal package検査境界の5点と、その反映後の最終契約を承認した | 反映済み |
 | AR6-P8 | Tooling identity | 別checkoutにも適用できるため、Framework commitとは別に実行script SHA-256をmanifestへ追加した。絶対pathやsourceは記録しない | Framework rehearsal PASS。Owner close reviewで確認 |
 | AR6-P9 | Tooling Owner review findings | cleanup scope、KOIKI依存0件、Architecture Rules実行証明、既存path祖先のreparse point検査をversion 2で補強した | 補強後Framework rehearsalをArchitecture Ownerが承認。実Customer Repository操作は別承認 |
+| AR6-P10 | actual-team reception worksheet | Handoff Guideを入口に、非機密情報だけでpreflight、操作承認、journey、topology、責任分担、finding、cleanupおよびclose入力を記録する様式をArchitecture Ownerが承認した | 実チーム実施と結果記録は未実施 |
 
 ### 9.1 R2 contract approval record
 
@@ -511,6 +514,17 @@ KOIKI依存0件、Architecture Rules実行証明およびpath祖先のreparse po
 実Customer Repositoryでの利用は、対象path、実行command、出力、影響およびsession resource cleanup方法を提示した上で、
 別途承認する。本承認は、実Customer Repository操作、正式artifact配布、managed Maven repository、P4-AR6完了、
 Gate P4-AR acceptanceまたはPhase 4開始を承認するものではない。
+
+### 9.3 Actual-team reception worksheet approval record
+
+2026-09-18、Architecture Ownerは、[実チーム受入セッション worksheet](../../development/p4-ar6-actual-team-reception-worksheet.md)が
+Handoff Guideを単一入口として、実行前承認、環境確認、受入journey、Customer-owned module、Repository topology、
+artifact受渡し、Phase 4責任分担、finding、cleanupおよびclose review入力を一貫して記録できることを確認し、
+P4-AR6実チーム受入の実施様式として承認した。
+
+Customer機密情報をFramework Repositoryへ持ち込まず、Framework側rehearsalを実チーム受入の代替とせず、検査不能または
+cleanup不能をPASSにしない境界を維持する。本承認は、実Customer Repository操作、個別実行command、正式artifact配布、
+P4-AR6完了、Gate P4-AR acceptanceまたはPhase 4開始を承認するものではない。
 
 ## 10. Owner review boundary
 

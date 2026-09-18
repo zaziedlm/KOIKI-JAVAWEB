@@ -283,6 +283,10 @@ P4-AR5では本書が次を満たすかをArchitecture Ownerが確認し、P4-AR
 
 ## 13. P4-AR6で使用する実チーム受入記録
 
+実際のセッションでは、[P4-AR6 実チーム受入セッション worksheet](p4-ar6-actual-team-reception-worksheet.md)を使用します。
+worksheetは、実行前承認、環境確認、journey、Customer-owned module、Repository topology、Phase 4責任分担、finding、
+cleanupおよびclose review入力を一つの順序で記録するための空の様式です。
+
 実際の受入確認ではCustomer機密情報を記録せず、次の内容だけをEvidenceへ残します。
 
 次の表は、合否だけを付けるものではありません。左列の観点ごとに、実際に起きたことを右列の範囲で記録し、迷い、欠落、
