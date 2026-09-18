@@ -367,15 +367,15 @@ Customer source、個人情報またはSQL値をEvidenceへ貼付しない。
 
 1. **COMPLETE:** Phase 3 post-merge closeoutと本計画を同一branchでreviewする。
 2. **COMPLETE:** P4-AR0で本計画、検証範囲、credential前提および実案件情報の非持込み境界をOwner承認する。
-3. **NEXT:** 承認記録を含む文書差分をcommitし、個別承認に従ってPR / required checks / mergeを完了する。
-4. local `main`をremote `main`へ同期し、clean worktreeとsource commitを記録する。
-5. P4-AR1のenvironment preflightを実施する。
-6. P4-AR2〜AR4を順に実行し、Framework / Consumer / Reference baselineを確定する。
-7. P4-AR5で受渡し候補inventory、受入側execution rehearsal、開発環境gap分類を行う。
-8. blocking findingをOwnership別に補正し、該当範囲を再検証する。
-9. P4-AR6で実案件handoffとPhase 4責任分担を承認する。
-10. Gate P4-ARでAdoption Readinessを判定する。
-11. accepted inputを用いてPhase 4実行計画を見直し、Phase 4開始可否を別途判断する。
+3. **COMPLETE:** 承認記録を含む文書差分をcommitし、個別承認に従ってPR / required checks / mergeを完了した。
+4. **COMPLETE:** local `main`をremote `main`へ同期し、clean worktreeとsource commitを記録した。
+5. **COMPLETE:** P4-AR1のenvironment preflightを実施した。
+6. **COMPLETE:** P4-AR2〜AR4を順に実行し、Framework / Consumer / Reference baselineを確定した。
+7. **COMPLETE / OWNER APPROVED:** P4-AR5で受渡し候補inventory、受入側execution rehearsal、開発環境gap分類を行い、アプリ開発チーム向けhandoff guideを承認した。
+8. **COMPLETE（Framework側で確認済みのfinding）:** P4-AR3、P4-AR4およびP4-AR6準備で検出したfindingをOwnership別に補正し、該当範囲を再検証した。実チーム受入で新たに得るfindingはP4-AR7の入力とする。
+9. **WAITING FOR ACTUAL-TEAM INPUT:** P4-AR6のhandoff契約、R2 Tooling、Framework rehearsalおよび実チーム受入worksheetは`OWNER APPROVED`である。実チーム受入セッション、AR-D10の責任分担判断および最終handoff承認は、実案件情報を入手してから実施する。
+10. **PENDING:** Gate P4-ARでAdoption Readinessを判定する。
+11. **PENDING:** accepted inputを用いてPhase 4実行計画を見直し、Phase 4開始可否を別途判断する。
 
 ## 14. Architecture Owner review points
 
