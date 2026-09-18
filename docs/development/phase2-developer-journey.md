@@ -99,6 +99,10 @@ credential設定を含めない。
 同じpathでSession Cookie、Bearer Access Token、ID Tokenまたはraw edge headerをfallback認証しない。Authorization Server、
 token発行 / refresh / revoke、SAML、Redis、WebFluxおよびcloud固有AdapterはPhase 2の導入対象ではない。
 
+MVC単一JAR、same-origin React、Next.js BFF、direct Token SPAまたはALB edge認証のどれを選ぶかは、
+[UI / Authentication Profile Selection Guide](frontend-authentication-profile-guide.md)でdeployable、OAuth Client、
+Browser credentialおよびKOIKI API境界を先に決める。本節のSecurity profileをfrontend技術名だけから自動選択しない。
+
 ## 4. Implement through public seams
 
 Customer codeは`org.koikifw.*.internal`、Framework JPA EntityまたはRepositoryを参照しない。

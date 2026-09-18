@@ -14,6 +14,7 @@
 - `KOIKI-JavaWeb-FW_Phase1b実行計画_v0.1.md`: Phase 1bのCP0開始baseline、Gate 1承認結果、artifact Ownership、Customer-like Runtime Consumer、Milestone / commit point、DoD traceability、停止条件
 - `KOIKI-JavaWeb-FW_Phase2実行計画_v0.1.md`: `COMPLETE / ACCEPTED`となったPhase 2 Security FoundationのGate、Milestone、DoD、Gate C remote closeout
 - `phase2-developer-journey.md`: 業務アプリエンジニア向けのPhase 2依存選択、Security profile、Ownership、診断、検証入口
+- `frontend-authentication-profile-guide.md`: MVC単一JAR、same-origin React、Next.js BFF、direct Token SPAおよびALB edge認証のUI / Session / Token / SSO責任選択ガイド（P4-AR5入力）
 - `KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md`: `COMPLETE / ACCEPTED`となったPhase 3 Reference Vertical Sliceとpost-merge remote closeout
 - `KOIKI-JavaWeb-FW_Pre-Phase4_Adoption_Readiness計画_v0.1.md`: 実案件連携前にclean `main`からFramework、Consumer、Referenceおよび開発環境を再検証し、見直し後Phase 4の責任分担へ接続するtransition Gate計画
 - `phase2-p2-c3-start-handoff-20260912.md`: P2-C3 Developer Journey / DoD closeout開始時点の履歴引継ぎ

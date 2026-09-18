@@ -20,6 +20,7 @@
 | package済みJARのBearer REST APIをfocused確認する | [Reference API Verification](../../build-support/reference-api-verification/README.md) | test-only issuer / key / token / userをprocess内生成し、自動で`api-bearer`を有効化する |
 | Bearer API、Session browser、DB / Audit / logを代表journeyとして一括確認する | [Reference Critical Journey E2E](../../build-support/reference-e2e-verification/README.md) | Root Reactor外のCI候補。focused negative matrixは複製しない |
 | Security Starter、profileおよびCustomer側依存選択を確認する | [Phase 2 Developer Journey](../development/phase2-developer-journey.md) | Phase 2 Security契約の正本。Phase 3 fixtureを正式構成へ昇格しない |
+| MVC単一JARとReact / Next.js / ALBのUI・認証境界を比較する | [UI / Authentication Profile Selection Guide](../development/frontend-authentication-profile-guide.md) | P4-AR5入力。未実装profileをReferenceの実績と混同しない |
 
 最初に業務仕様を確認し、日常の画面確認は通常profileのローカル手動起動ガイドを使用する。変更内容に応じて
 browserまたはAPI focused Toolingを選び、Phase 3全体の代表経路を確認するときだけcritical E2Eを使用する。
