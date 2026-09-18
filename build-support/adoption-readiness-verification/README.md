@@ -13,6 +13,10 @@ build前後で変化していないことも確認します。検証終了時に
 stage外・source Repository外の指定先へfinal manifestとSHA-256 sidecarだけを残します。manifestには実行した
 Tooling script自身のSHA-256も記録し、Framework source identityと検証処理identityを分けて追跡します。
 
+Customer検証ではconsumer-visibleなKOIKI依存が1件以上と`koiki-archunit-rules`が解決されたことに加え、Customer test sourceと
+compiled test classが`KoikiArchitectureRules`を使用し、対応するSurefire test caseが実際に成功したことを確認します。一般の
+`clean verify`が成功しても、KOIKI依存またはArchitecture Rulesの実行証拠がなければFAILとします。
+
 ### 入力境界
 
 | Parameter | Meaning |
@@ -59,9 +63,11 @@ pwsh -NoProfile -File build-support/adoption-readiness-verification/invoke-p4-ar
 
 - 既存の検証scriptを変更、wrapまたはcleanup無効化していません。
 - stage rootはfilesystem root、home、通常の`.m2/repository`、Framework / Customer Repository配下、
-  非空directory、link / reparse pointを拒否します。
+  非空directoryを拒否します。stage rootとmanifest出力先は、既存の祖先directoryを含めてlink / reparse pointを拒否します。
 - cleanupはToolingが作成したmarker、canonical pathおよびexpected commitが一致した場合だけ実行します。
 - Customer buildには`--no-snapshot-updates`を指定し、実行前後の全KOIKI payloadを再照合します。
 - manifestへ絶対source path、stage path、credential、Customer source、dependency tree全文を記録しません。
 - manifestまたはSHA-256 sidecarが既に存在する場合は上書きしません。
+- manifestのcleanup PASSはTooling所有stage rootだけを対象とします。Customer process、port、containerおよび
+  一時credentialのcleanupは、実チーム受入セッションで別途確認・記録する必要があります。
 - 本Toolingは正式release、managed Maven repository、P4-AR6完了、Gate P4-ARまたはPhase 4開始を証明しません。

@@ -8,7 +8,7 @@
 | Ownership | Architecture / Framework / Customer joint decision |
 | Source baseline | P4-AR5 commit `c68648e6c9746a8ef9c7ab6969b8872f41fe1ede` (`docs: complete P4-AR5 developer handoff readiness`) |
 | Primary output | Repository topology、artifact handoff、Framework / Customer / joint Evidence責任分担、issue routing |
-| R2 stage / manifest design | `IMPLEMENTED / FRAMEWORK REHEARSAL PASS — ACTUAL-TEAM RUN PENDING` |
+| R2 stage / manifest design | `REINFORCED / FRAMEWORK REHEARSAL OWNER APPROVED — ACTUAL-TEAM RUN PENDING` |
 | Production change | 0 |
 | Customer repository operation | 0。対象、影響、Ownerの別承認前には実施しない |
 | Phase 4 start | 未承認。Gate P4-AR acceptance後に別途判断する |
@@ -103,13 +103,13 @@ R2のstage処理はFramework-owned Toolingとして提供し、Customer側がFra
 | Phase | Procedure | Required observation | Failure / stop condition |
 |---|---|---|---|
 | 0. Source preflight | Framework checkoutの`HEAD`、clean worktree、JDK 21、Maven Wrapper、networkを確認する | 40桁source commit、tracked / untrackedを含むdirty=false、tool version | detached / branch状態自体は問わないが、expected commit不一致、Git管理対象外を含む非ignored差分、JDK不一致で停止 |
-| 1. Safe stage root | Framework / Customer Repository外の明示pathをcanonical pathへ解決し、存在しないか空であること、junction / symbolic link / reparse pointでないことを確認してTooling所有markerを置く | resolved stage root、開始時entry 0、所有marker | filesystem root、home、通常`~/.m2/repository`、Repository配下、非空directory、link / reparse pointまたは安全確認不能で停止 |
+| 1. Safe stage root | Framework / Customer Repository外の明示pathをcanonical pathへ解決し、存在しないか空であること、pathの既存祖先を含めてjunction / symbolic link / reparse pointでないことを確認してTooling所有markerを置く | resolved stage root、開始時entry 0、所有marker | filesystem root、home、通常`~/.m2/repository`、Repository配下、非空directory、link / reparse pointまたは安全確認不能で停止 |
 | 2. Formal unit stage | 固定commitから現行formal release unit候補を`clean install -DskipTests`でstageする | 15 projects / 12 JAR、POM 3、`org.koikifw`座標の完全一致 | Maven失敗、欠落・余剰coordinate、packaging不一致で停止 |
 | 3. Boundary inspection | Reference、Tooling、Customer migration、source template、想定外groupを検査する | forbidden artifact 0 | `koiki-reference-app`または非配布artifact混入で停止 |
 | 4. Manifest draft | artifact identityと実行環境をstage外の明示Evidence出力先へJSONで記録し、schemaとSHA-256形式を自己検査する | §3.2.3の必須field、artifact count、payload hash | field欠落、duplicate coordinate、hash形式不正、secret候補または絶対user path混入で停止 |
-| 5. Customer resolution | Customer POMを同じ`maven.repo.local`でsnapshot更新を抑止して`clean verify`し、KOIKI dependency treeとArchitecture Rulesを検査する。実行前後で全KOIKI payloadを再走査する | KOIKI座標・payload SHA-256がmanifestと完全一致、Framework source / reactor依存0、internal package参照0 | Framework sourceを指す`relativePath`、`systemPath`、internal package、manifest外・追加・欠落・変更KOIKI artifactまたは通常local repoへの依存で停止 |
+| 5. Customer resolution | Customer POMを同じ`maven.repo.local`でsnapshot更新を抑止して`clean verify`し、KOIKI dependency treeとArchitecture Rulesを使用するtest source／compiled test class／Surefire実行結果を検査する。実行前後で全KOIKI payloadを再走査する | consumer-visible KOIKI座標1件以上、`koiki-archunit-rules`解決、KOIKI座標・payload SHA-256がmanifestと完全一致、Architecture Rules test成功1件以上、Framework source / reactor依存0、internal package参照0 | KOIKI依存0件、`koiki-archunit-rules`未解決、Architecture Rules未実行、Framework sourceを指す`relativePath`、`systemPath`、internal package、manifest外・追加・欠落・変更KOIKI artifactまたは通常local repoへの依存で停止 |
 | 6. Result capture | PASS / FAIL、所要時間、Customer側source identityの非機密表現、finding IDをfinal manifestへ記録する | 再現に必要な最小情報、KOIKI payload不変 | Customer source path、credential、個人情報、業務dataをEvidenceへ出力した場合、またはCustomer verify後のKOIKI payload差分がある場合はblocking |
-| 7. Cleanup / finalize | Customer process、port、container、一時credentialをcleanupし、開始時と同じcanonical pathおよびTooling所有markerを再検査してからstage rootを削除する。cleanup結果をmanifestへ反映し、final manifestのSHA-256をmanifest外で計算する | residual resource 0、stage root削除、final manifest、外部記録したmanifest SHA-256 | marker / path不一致時はstage rootを削除せずFAIL。cleanup不能もFAILとしてfinalizeし、成功扱いしない |
+| 7. Cleanup / finalize | Toolingは既存祖先を含むnon-link path、開始時と同じcanonical pathおよび所有markerを再検査して、Tooling所有stage rootだけを削除する。Customer process、port、container、一時credentialは実チーム受入セッションで別途cleanup・確認し、final manifest外のsession Evidenceへ記録する | stage residual 0、stage root削除、session resourceは別Evidence必須、final manifest、外部記録したmanifest SHA-256 | marker / path不一致時はstage rootを削除せずFAIL。stage cleanup不能もFAILとしてfinalizeする。所有を証明できないprocess / container等をToolingが自動削除せず、session cleanup未確認をP4-AR6全体の成功扱いにしない |
 
 Phase 2履歴の`p2-c2-formal-release-unit.txt`は書き換えない。Phase 3で追加した`koiki-starter-web-mvc`を含む現行境界は、
 既存`verify-p2-c2-package-static.ps1 -CurrentFormalReleaseUnit`とRuntime CP8 / CP10の15 projects / 12 JAR検査を
@@ -149,7 +149,7 @@ Evidenceへ埋め込むものではない。full manifestはstage root外のcall
 
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "kind": "p4Ar6LocalStageManifest",
   "stagedAtUtc": "2026-09-18T00:00:00.0000000Z",
   "finalizedAtUtc": "2026-09-18T00:10:00.0000000Z",
@@ -165,7 +165,7 @@ Evidenceへ埋め込むものではない。full manifestはstage root外のcall
     "os": "<non-user-identifying OS description>"
   },
   "tooling": {
-    "contractVersion": 1,
+    "contractVersion": 2,
     "scriptSha256": "<64 uppercase hex>"
   },
   "customer": {
@@ -215,12 +215,16 @@ Evidenceへ埋め込むものではない。full manifestはstage root外のcall
       "status": "PASS",
       "durationSeconds": 0,
       "koikiPayloadsUnchanged": true,
-      "internalPackageReferences": 0
+      "internalPackageReferences": 0,
+      "koikiDependencyCount": 1,
+      "architectureRuleTestCount": 1
     },
     "cleanup": {
       "status": "PASS",
-      "residualResourceCount": 0,
-      "stageRootRemoved": true
+      "scope": "tool-owned-stage-root",
+      "stageResidualResourceCount": 0,
+      "stageRootRemoved": true,
+      "sessionResourceStatus": "SEPARATE_EVIDENCE_REQUIRED"
     }
   },
   "result": "PASS",
@@ -233,7 +237,9 @@ Evidenceへ埋め込むものではない。full manifestはstage root外のcall
 各coordinateはPOM payloadを1件、JAR packagingはさらにJAR payloadを1件持つ。SHA-256はfile contentから計算し、
 relative pathはstage rootからの`/`区切りとする。
 
-`result`は全verificationが`PASS`で、cleanupを含むresidual resourceが0の場合だけ`PASS`とする。処理途中の例外でも
+`result`はToolingが担当する全verificationが`PASS`で、Tooling所有stage residualが0の場合だけ`PASS`とする。この値は
+Customer process、port、containerまたは一時credentialのcleanupを証明せず、実チーム受入セッションの別Evidenceがない状態で
+P4-AR6全体を`PASS`としてはならない。処理途中の例外でも
 可能な範囲でfinal manifestを生成し、`result=FAIL`、失敗したverification statusおよびfinding IDを記録する。
 final manifest自身のSHA-256はmanifest内へ埋め込まない。自己参照を避けるため、Evidence summaryまたはmanifestと並べた
 sidecarへ記録し、full manifestと同じretention / 非露出条件で扱う。
@@ -264,8 +270,10 @@ R2 stageにはKOIKI ParentとBOMの両方を含め、実チームが選択候補
 
 Customer verificationで記録するdependency treeは`org.koikifw`座標だけへsanitizationし、manifest外version、
 Framework source directoryへの参照およびCustomer側で再installしたKOIKI artifactを拒否する。Java packageの
-`org.koikifw.*.internal`参照はdependency treeでは判定できないため、Architecture Rulesまたは同等のsource / bytecode検査で
-別に確認する。
+`org.koikifw.*.internal`参照はdependency treeでは判定できないためsource検査で別に確認する。さらに、Customer test sourceが
+`KoikiArchitectureRules`を利用していること、compiled test classが同型を参照していること、およびそのtest classがSurefireで
+実際に成功したことを確認する。KOIKI dependencyが0件、`koiki-archunit-rules`が未解決、Architecture Rules test source／
+compiled reference／成功した該当test caseのいずれかが0件なら、一般の`clean verify`が成功してもFAILとする。
 
 Customer buildではMavenの`--no-snapshot-updates`を指定し、実行直前と直後にstage内の全`org.koikifw` coordinate / payloadを再走査する。
 manifestにない追加、欠落、sizeまたはSHA-256の変化が1件でもあれば、Customer build自体が成功してもR2検証はFAILとする。
@@ -286,12 +294,12 @@ Customer Repositoryへ含めない。候補interfaceは次の責務へ限定す�
 
 | Tooling responsibility | Required behavior |
 |---|---|
-| Prepare | expected commit、tracked / untrackedを含むclean source、safe / empty / non-link stage rootを検査し、所有markerを作成する |
+| Prepare | expected commit、tracked / untrackedを含むclean source、safe / empty stage rootとmanifest出力先について既存祖先を含むnon-link pathを検査し、所有markerを作成する |
 | Stage | current formal release unitだけをbuild / installする |
 | Inspect | coordinate / packaging / forbidden contentを完全一致で検査する |
 | Manifest | §3.2.3のJSONとSHA-256 summaryを生成・検証する |
-| Consumer verify | 外部Customer POMを変更せず、snapshot更新を抑止した明示parameterで`clean verify`し、前後のKOIKI payload完全一致とArchitecture Rulesを検査する |
-| Cleanup | success / failureの双方で一時resourceをcleanupし、canonical pathと所有markerの再確認後だけstage rootを削除する |
+| Consumer verify | 外部Customer POMを変更せず、snapshot更新を抑止した明示parameterで`clean verify`し、consumer-visible KOIKI依存1件以上、`koiki-archunit-rules`解決、前後のKOIKI payload完全一致、Architecture Rules test source／compiled reference／Surefire成功結果を検査する |
+| Cleanup | success / failureの双方でcanonical／non-link pathと所有markerを再確認し、Tooling所有stage rootだけを削除する。Customer process / port / container / 一時credentialはsession Evidenceへ分離する |
 
 Toolingは`build-support/adoption-readiness-verification/invoke-p4-ar6-r2-handoff.ps1`として実装する。Public API、Starter、
 dependency、migrationまたはworkflowを変更しない。Customer Repositoryを操作する場合は、対象path、実行commandおよび
@@ -320,6 +328,41 @@ Repository外の短い一時pathからR2 Toolingのfull rehearsalを実行した
 full manifest、isolated repositoryおよびclean cloneは検証終了後に破棄し、本書には非機密summaryだけを残した。初回の深いOS一時pathを
 使ったlocal cloneはWindowsのpath lengthでcheckout不能となったためstage前に停止し、短い専用一時pathで再実行した。
 この結果から、WindowsではFramework checkoutとstage rootを十分短いpathへ置くことをREADMEの実行前提とする。
+
+#### 3.2.7 Owner review finding remediation rehearsal
+
+同日、Owner reviewで、cleanup結果の対象範囲、KOIKI依存0件、Architecture Rules実行証明およびpath祖先の
+reparse point検査を補強対象とした。Tooling contractをversion 2へ更新し、次を反映した。
+
+- manifestのcleanup対象をTooling所有stage rootへ限定し、process / port / container / 一時credentialを
+  実チーム受入セッションの別Evidenceへ分離した。
+- consumer-visible KOIKI依存1件以上と`koiki-archunit-rules`の解決を必須にした。
+- Architecture Rules test source、compiled test classの型参照、およびSurefireの成功結果を相互確認するようにした。
+- stage root、manifest出力先、Framework / Customer Repositoryについて、既存祖先を含むreparse pointを拒否した。
+- AR6-P2に残っていた実装前の表現を、Framework側rehearsal完了／実チーム検証未実施へ修正した。
+
+補強後Toolingを、直前のTooling実装commit `5ea6c9d07964d045bb10829594699973b83a62d9`のclean local cloneと、
+同commit内のRuntime Foundation Customer-like Consumerに対して再実行した。実Customer Repositoryは操作していない。
+
+| Observation | Reinforced rehearsal result |
+|---|---|
+| Manifest / Tooling contract | schema 2 / contract 2 |
+| Framework source | clean / expected commit一致 |
+| Tooling script SHA-256 | `5CDC16B923AFF5D24DEB4CFB8A15F9A054428FCE20997C8624E39741A54A4A43` |
+| Formal stage | 15 projects / 12 JAR / 3 POM-only / 27 payload |
+| Customer-like Consumer | `clean verify`成功、37 tests、failure / error / skip 0 |
+| KOIKI dependency proof | consumer-visible KOIKI 7座標、`koiki-archunit-rules`解決 |
+| Architecture Rules proof | source / compiled reference / Surefire成功test 1件 |
+| KOIKI artifact reinspection | coordinate、version、size、SHA-256変更0 |
+| Cleanup | Tooling所有stage root削除、stage residual 0。session resourceは別Evidence必須 |
+| Final manifest | `PASS`、SHA-256 `1229A3287417B443FEC7DFE68AB3E7C313ECAE546B64B2A7BF833DCACB8CDB0A` |
+| Duration | 全体130.569秒、Customer verify 67.485秒 |
+
+誤った40桁expected commitを与えた事前negative実行は`framework-source-preflight`でFAILし、所有marker照合後に
+stage rootを削除してfinal manifestを`FAIL`とした。補強後のpositive実行は上表のとおりPASSした。
+`sessionResourceStatus=SEPARATE_EVIDENCE_REQUIRED`であるため、このPASSを実チームのprocess / port / container / credential
+cleanupまたはP4-AR6全体のPASSへ読み替えない。
+full manifest、失敗時manifest、clean cloneおよびisolated repositoryはsummary確認後に破棄し、検証用rootの残存entryは0件とした。
 
 R2では「同じIDE workspaceで開く」ことを、同じRepositoryまたは同じMaven reactorへ入ることと同一視しない。
 VS Codeではmulti-root workspaceとして両Repositoryを同時に開けるが、`.git`、POM、build lifecycleおよびcredential境界は
@@ -425,7 +468,7 @@ Security / Audit / migrationへの影響、Customer隔離の可否および希�
 - [ ] 実チームがHandoff Guideを単一入口として利用し、迷った箇所を記録している。
 - [ ] ReferenceまたはConsumerのbuild / run / representative operation / diagnosis / cleanupを実チーム条件で確認している。
 - [ ] R1〜R3のRepository topology候補を評価し、Customer業務codeをFramework Repositoryへ混在させていない。
-- [x] Framework-owned R2 Toolingがclean source、safe / empty / non-link stage、所有marker、formal inventory、manifest、Customer verify、artifact不変確認、安全なcleanupを一つの入口から実行できる（Framework rehearsal）。
+- [x] Framework-owned R2 Toolingがclean source、safe / empty / ancestorを含むnon-link stage、所有marker、formal inventory、manifest、Customer verify、artifact不変確認、Tooling所有stageの安全なcleanupを一つの入口から実行できる（Framework rehearsal）。
 - [x] Framework artifactのversion、source commit、checksumおよび解決経路を追跡できる（Framework rehearsal）。
 - [ ] 提供artifact、Reference、検証専用Tooling、非提供物を区別できる。
 - [ ] Phase 4成果物ごとのFramework / Customer / joint責任とacceptance Evidenceを合意している。
@@ -438,13 +481,14 @@ Security / Audit / migrationへの影響、Customer隔離の可否および希�
 | ID | Finding / decision | Current assessment | Required input / Owner |
 |---|---|---|---|
 | AR6-P1 | Customer RepositoryをKOIKI Root Reactorへ追加するか | Accepted Repository Architectureと競合するため通常案にはしない | 例外要求がある場合のみArchitecture Owner / ADR review |
-| AR6-P2 | 移行期にFramework変更をどう追跡するか | R2を暫定推奨。stage手順とmanifest契約は§3.2.2〜§3.2.5で設計済み、Tooling実装・実チーム検証は未実施 | Framework release Owner + actual application team |
+| AR6-P2 | 移行期にFramework変更をどう追跡するか | R2を暫定推奨。stage手順とmanifest契約、Tooling実装およびFramework側rehearsalは完了。実チーム検証は未実施 | Framework release Owner + actual application team |
 | AR6-P3 | managed Maven repository / version / support条件 | 未決定。R1移行のblocking decision | Framework release Owner + organization platform |
 | AR6-P4 | actual Customer repository構成 | Customer要件未取得。概念Ownershipだけを提示 | Customer application lead |
 | AR6-P5 | actual-team session schedule / participant | 未決定 | Project / application Owner |
-| AR6-P6 | R2 stage Toolingを実装するか | `IMPLEMENTED / FRAMEWORK REHEARSAL PASS`。`build-support` Ownershipの非配布Toolingとして、§3.2.2〜§3.2.5の契約を実証した | 実Customer Repository操作は別承認 |
+| AR6-P6 | R2 stage Toolingを実装するか | `REINFORCED / FRAMEWORK REHEARSAL PASS`。`build-support` Ownershipの非配布Toolingとして、§3.2.2〜§3.2.5のversion 2契約を実証した | 実Customer Repository操作は別承認 |
 | AR6-P7 | R2契約review補強 | 2026-09-18、Architecture Ownerはclean source、cleanup安全性、artifact不変、final manifest、Parent / internal package検査境界の5点と、その反映後の最終契約を承認した | 反映済み |
 | AR6-P8 | Tooling identity | 別checkoutにも適用できるため、Framework commitとは別に実行script SHA-256をmanifestへ追加した。絶対pathやsourceは記録しない | Framework rehearsal PASS。Owner close reviewで確認 |
+| AR6-P9 | Tooling Owner review findings | cleanup scope、KOIKI依存0件、Architecture Rules実行証明、既存path祖先のreparse point検査をversion 2で補強した | 補強後Framework rehearsalをArchitecture Ownerが承認。実Customer Repository操作は別承認 |
 
 ### 9.1 R2 contract approval record
 
@@ -457,6 +501,16 @@ formal release unit、Framework Public API、Starter、dependency、migrationま
 
 本承認は、実Customer Repositoryの操作、正式artifact配布、managed Maven repository、P4-AR6完了、Gate P4-AR acceptance
 またはPhase 4開始を承認するものではない。
+
+### 9.2 R2 Tooling version 2 / Framework rehearsal approval record
+
+2026-09-18、Architecture Ownerは、R2 Tooling version 2について、Owner reviewで指摘したcleanup保証範囲、
+KOIKI依存0件、Architecture Rules実行証明およびpath祖先のreparse point検査が補強されたことを確認した。
+§3.2.7の補強後Framework rehearsalはPASSしており、非配布Toolingとしての実装とFramework側検証結果を承認した。
+
+実Customer Repositoryでの利用は、対象path、実行command、出力、影響およびsession resource cleanup方法を提示した上で、
+別途承認する。本承認は、実Customer Repository操作、正式artifact配布、managed Maven repository、P4-AR6完了、
+Gate P4-AR acceptanceまたはPhase 4開始を承認するものではない。
 
 ## 10. Owner review boundary
 

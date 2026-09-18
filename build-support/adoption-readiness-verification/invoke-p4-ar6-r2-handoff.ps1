@@ -45,6 +45,8 @@ $forbiddenContentStatus = 'PENDING'
 $customerBuildStatus = if ($CustomerPom) { 'PENDING' } else { 'NOT_REQUESTED' }
 $payloadsUnchanged = $null
 $internalPackageReferences = $null
+$koikiDependencyCount = $null
+$architectureRuleTestCount = $null
 $cleanupStatus = 'PENDING'
 $findingIds = [System.Collections.Generic.List[string]]::new()
 $customerIdentityKind = if ($CustomerPom) { 'not-recorded' } else { 'not-requested' }
@@ -99,6 +101,30 @@ function Assert-NotReparsePoint {
         if (($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
             throw "A link or reparse point is not allowed: $Path"
         }
+    }
+}
+
+function Assert-NoReparsePointInExistingPathChain {
+    param([Parameter(Mandatory)][string]$Path)
+
+    $current = [System.IO.Path]::GetFullPath($Path)
+    while (-not (Test-Path -LiteralPath $current)) {
+        $parent = [System.IO.Path]::GetDirectoryName($current)
+        if ([string]::IsNullOrWhiteSpace($parent) -or
+            (Test-SamePath -Left $current -Right $parent)) {
+            throw "Unable to find an existing ancestor for path safety inspection: $Path"
+        }
+        $current = $parent
+    }
+
+    while ($true) {
+        Assert-NotReparsePoint -Path $current
+        $parent = [System.IO.Path]::GetDirectoryName($current)
+        if ([string]::IsNullOrWhiteSpace($parent) -or
+            (Test-SamePath -Left $current -Right $parent)) {
+            break
+        }
+        $current = $parent
     }
 }
 
@@ -464,19 +490,105 @@ function Assert-CustomerKoikiDependencies {
     )
 
     $allowed = @{}
-    foreach ($artifact in $ArtifactInventory) {
+    foreach ($artifact in @($ArtifactInventory | Where-Object consumerVisible)) {
         $allowed[$artifact.artifactId] = $artifact.version
     }
     $text = Get-Content -Raw -LiteralPath $DependencyTree
     $matches = [regex]::Matches(
         $text, 'org[.]koikifw:([A-Za-z0-9_.-]+):[A-Za-z0-9_.-]+:([A-Za-z0-9_.-]+)')
+    if ($matches.Count -eq 0) {
+        throw 'Customer dependency tree does not contain a consumer-visible KOIKI coordinate.'
+    }
+    $resolvedArtifacts = [System.Collections.Generic.HashSet[string]]::new(
+        [System.StringComparer]::Ordinal)
     foreach ($match in $matches) {
         $artifactId = $match.Groups[1].Value
         $version = $match.Groups[2].Value
         if (-not $allowed.ContainsKey($artifactId) -or $allowed[$artifactId] -cne $version) {
             throw 'Customer dependency tree contains a KOIKI coordinate outside the stage manifest.'
         }
+        [void]$resolvedArtifacts.Add($artifactId)
     }
+    if (-not $resolvedArtifacts.Contains('koiki-archunit-rules')) {
+        throw 'Customer dependency tree does not contain koiki-archunit-rules.'
+    }
+    return @($matches | ForEach-Object {
+        "$($_.Groups[1].Value):$($_.Groups[2].Value)"
+    } | Sort-Object -Unique).Count
+}
+
+function Get-ArchitectureRuleTestClasses {
+    param([Parameter(Mandatory)][string]$CustomerRoot)
+
+    $classes = foreach ($source in @(Get-ChildItem -LiteralPath $CustomerRoot -Recurse `
+        -Filter '*.java' -File | Where-Object { $_.FullName -notmatch '[\\/]target[\\/]' })) {
+        $text = Get-Content -Raw -LiteralPath $source.FullName
+        if ($text -notmatch '(?m)^\s*import\s+org[.]koikifw[.]archunit[.]KoikiArchitectureRules\s*;' -and
+            $text -notmatch 'org[.]koikifw[.]archunit[.]KoikiArchitectureRules\s*[.]') {
+            continue
+        }
+        $packageMatch = [regex]::Match(
+            $text, '(?m)^\s*package\s+([A-Za-z_][A-Za-z0-9_.]*)\s*;')
+        if (-not $packageMatch.Success) {
+            throw 'A Customer Architecture Rules test source has no package declaration.'
+        }
+        "$($packageMatch.Groups[1].Value).$([System.IO.Path]::GetFileNameWithoutExtension($source.Name))"
+    }
+    $result = @($classes | Sort-Object -Unique)
+    if ($result.Count -eq 0) {
+        throw 'Customer source does not contain a test using KOIKI Architecture Rules.'
+    }
+    return $result
+}
+
+function Assert-ArchitectureRulesExecuted {
+    param(
+        [Parameter(Mandatory)][string]$CustomerRoot,
+        [Parameter(Mandatory)][string[]]$ExpectedClasses
+    )
+
+    $reports = @(Get-ChildItem -LiteralPath $CustomerRoot -Recurse -Filter 'TEST-*.xml' -File |
+        Where-Object { $_.FullName -match '[\\/]target[\\/]surefire-reports[\\/]' })
+    $executed = [System.Collections.Generic.HashSet[string]]::new(
+        [System.StringComparer]::Ordinal)
+    $bytecodeReferences = [System.Collections.Generic.HashSet[string]]::new(
+        [System.StringComparer]::Ordinal)
+    foreach ($className in $ExpectedClasses) {
+        $classRelativePath = $className.Replace(
+            '.', [System.IO.Path]::DirectorySeparatorChar) + '.class'
+        $classFiles = @(Get-ChildItem -LiteralPath $CustomerRoot -Recurse -File |
+            Where-Object {
+                $_.FullName -match '[\\/]target[\\/]test-classes[\\/]' -and
+                $_.FullName.EndsWith($classRelativePath, $comparison)
+            })
+        foreach ($classFile in $classFiles) {
+            $classText = [System.Text.Encoding]::ASCII.GetString(
+                [System.IO.File]::ReadAllBytes($classFile.FullName))
+            if ($classText.Contains('org/koikifw/archunit/KoikiArchitectureRules')) {
+                [void]$bytecodeReferences.Add($className)
+            }
+        }
+    }
+    if ($bytecodeReferences.Count -eq 0) {
+        throw 'No compiled Customer test class references KOIKI Architecture Rules.'
+    }
+    foreach ($report in $reports) {
+        [xml]$document = Get-Content -Raw -LiteralPath $report.FullName
+        foreach ($testCase in @($document.SelectNodes('//testcase'))) {
+            $className = [string]$testCase.classname
+            if ($bytecodeReferences.Contains($className)) {
+                if ($null -ne $testCase.SelectSingleNode('failure') -or
+                    $null -ne $testCase.SelectSingleNode('error')) {
+                    throw "A KOIKI Architecture Rules test did not pass: $className"
+                }
+                [void]$executed.Add($className)
+            }
+        }
+    }
+    if ($executed.Count -eq 0) {
+        throw 'No successful Surefire test using KOIKI Architecture Rules was found.'
+    }
+    return $executed.Count
 }
 
 function ConvertTo-SafeManifestJson {
@@ -533,7 +645,7 @@ function New-R2Manifest {
     )
 
     return [ordered]@{
-        schemaVersion = 1
+        schemaVersion = 2
         kind = 'p4Ar6LocalStageManifest'
         stagedAtUtc = $script:marker.createdAtUtc
         finalizedAtUtc = $FinalizedAtUtc
@@ -549,7 +661,7 @@ function New-R2Manifest {
             os = [System.Runtime.InteropServices.RuntimeInformation]::OSDescription
         }
         tooling = [ordered]@{
-            contractVersion = 1
+            contractVersion = 2
             scriptSha256 = $script:toolingScriptSha256
         }
         customer = [ordered]@{
@@ -577,11 +689,15 @@ function New-R2Manifest {
                 durationSeconds = [math]::Round($script:customerStopwatch.Elapsed.TotalSeconds, 3)
                 koikiPayloadsUnchanged = $script:payloadsUnchanged
                 internalPackageReferences = $script:internalPackageReferences
+                koikiDependencyCount = $script:koikiDependencyCount
+                architectureRuleTestCount = $script:architectureRuleTestCount
             }
             cleanup = [ordered]@{
                 status = $CleanupResult
-                residualResourceCount = if ($StageWasRemoved) { 0 } else { 1 }
+                scope = 'tool-owned-stage-root'
+                stageResidualResourceCount = if ($StageWasRemoved) { 0 } else { 1 }
                 stageRootRemoved = $StageWasRemoved
+                sessionResourceStatus = 'SEPARATE_EVIDENCE_REQUIRED'
             }
         }
         durationSeconds = [math]::Round($script:stopwatch.Elapsed.TotalSeconds, 3)
@@ -598,7 +714,7 @@ function Remove-OwnedStageRoot {
         [Parameter(Mandatory)][string]$ExpectedCommit
     )
 
-    Assert-NotReparsePoint -Path $Path
+    Assert-NoReparsePointInExistingPathChain -Path $Path
     $markerPath = Join-Path $Path $markerName
     if (-not (Test-Path -LiteralPath $markerPath -PathType Leaf)) {
         throw 'Stage ownership marker is missing; refusing cleanup.'
@@ -641,6 +757,13 @@ if ($CustomerPom) {
     $customerRepositoryRoot = Get-GitRepositoryRoot -Path $customerPomPath
 }
 
+Assert-NoReparsePointInExistingPathChain -Path $frameworkRoot
+if ($customerRepositoryRoot) {
+    Assert-NoReparsePointInExistingPathChain -Path $customerRepositoryRoot
+}
+Assert-NoReparsePointInExistingPathChain -Path $stageRootPath
+Assert-NoReparsePointInExistingPathChain -Path $manifestOutputPath
+
 $pathRoot = [System.IO.Path]::GetPathRoot($stageRootPath)
 $userHome = [System.IO.Path]::GetFullPath([Environment]::GetFolderPath('UserProfile'))
 $normalMavenRepository = Join-Path $userHome '.m2/repository'
@@ -676,7 +799,6 @@ if ((Test-Path -LiteralPath $manifestOutputPath) -or
 }
 $manifestPathValidated = $true
 
-Assert-NotReparsePoint -Path $stageRootPath
 if (Test-Path -LiteralPath $stageRootPath) {
     if (-not (Test-Path -LiteralPath $stageRootPath -PathType Container)) {
         throw 'StageRoot exists and is not a directory.'
@@ -689,10 +811,9 @@ if (Test-Path -LiteralPath $stageRootPath) {
     if (-not (Test-Path -LiteralPath $parent -PathType Container)) {
         throw 'The StageRoot parent directory must already exist.'
     }
-    Assert-NotReparsePoint -Path $parent
     New-Item -ItemType Directory -Path $stageRootPath | Out-Null
 }
-Assert-NotReparsePoint -Path $stageRootPath
+Assert-NoReparsePointInExistingPathChain -Path $stageRootPath
 
 $markerId = [guid]::NewGuid().ToString('N')
 $marker = [ordered]@{
@@ -749,6 +870,7 @@ try {
         if ($internalPackageReferences -ne 0) {
             throw 'Customer source references a KOIKI internal package.'
         }
+        $architectureRuleTestClasses = @(Get-ArchitectureRuleTestClasses -CustomerRoot $customerRoot)
         if ($CustomerSourceIdentity) {
             if ($CustomerSourceIdentity -match '[\\/]' -or
                 $CustomerSourceIdentity.Contains($userHome, $comparison)) {
@@ -772,8 +894,10 @@ try {
             '--no-snapshot-updates', '-f', $customerPomPath,
             'dependency:tree', '-Dincludes=org.koikifw:*', "-DoutputFile=$dependencyTree")
         $customerStopwatch.Stop()
-        Assert-CustomerKoikiDependencies -DependencyTree $dependencyTree `
+        $koikiDependencyCount = Assert-CustomerKoikiDependencies -DependencyTree $dependencyTree `
             -ArtifactInventory $artifacts
+        $architectureRuleTestCount = Assert-ArchitectureRulesExecuted -CustomerRoot $customerRoot `
+            -ExpectedClasses $architectureRuleTestClasses
         $currentStep = 'customer-source-and-payload-reinspection'
         $sourceAfter = @(Get-SourceFingerprint -Root $customerRoot)
         if (@(Compare-Object $sourceBefore $sourceAfter -SyncWindow 0).Count -ne 0) {
