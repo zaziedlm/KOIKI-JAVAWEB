@@ -8,7 +8,7 @@
 | Ownership | Architecture / Framework / Customer joint decision |
 | Source baseline | P4-AR5 commit `c68648e6c9746a8ef9c7ab6969b8872f41fe1ede` (`docs: complete P4-AR5 developer handoff readiness`) |
 | Primary output | Repository topology、artifact handoff、Framework / Customer / joint Evidence責任分担、issue routing |
-| R2 stage / manifest design | `OWNER APPROVED — TOOLING IMPLEMENTATION AUTHORIZED / NOT IMPLEMENTED` |
+| R2 stage / manifest design | `IMPLEMENTED / FRAMEWORK REHEARSAL PASS — ACTUAL-TEAM RUN PENDING` |
 | Production change | 0 |
 | Customer repository operation | 0。対象、影響、Ownerの別承認前には実施しない |
 | Phase 4 start | 未承認。Gate P4-AR acceptance後に別途判断する |
@@ -140,6 +140,7 @@ Evidenceへ埋め込むものではない。full manifestはstage root外のcall
 - manifest SHA-256
 - project / coordinate / JAR count
 - Java / Maven Wrapper version
+- Tooling contract version / script SHA-256
 - stage / Customer verificationのPASS / FAILと時刻
 - finding ID（存在する場合）
 
@@ -162,6 +163,10 @@ Evidenceへ埋め込むものではない。full manifestはstage root外のcall
     "javaRuntime": "<vendor and exact version>",
     "mavenWrapper": "<exact version>",
     "os": "<non-user-identifying OS description>"
+  },
+  "tooling": {
+    "contractVersion": 1,
+    "scriptSha256": "<64 uppercase hex>"
   },
   "customer": {
     "sourceIdentityKind": "commit",
@@ -232,6 +237,7 @@ relative pathはstage rootからの`/`区切りとする。
 可能な範囲でfinal manifestを生成し、`result=FAIL`、失敗したverification statusおよびfinding IDを記録する。
 final manifest自身のSHA-256はmanifest内へ埋め込まない。自己参照を避けるため、Evidence summaryまたはmanifestと並べた
 sidecarへ記録し、full manifestと同じretention / 非露出条件で扱う。
+Framework source commitはartifact生成元、`tooling.scriptSha256`は検証処理のidentityとして別々に記録する。
 
 次はmanifestへ記録しない。
 
@@ -287,8 +293,33 @@ Customer Repositoryへ含めない。候補interfaceは次の責務へ限定す�
 | Consumer verify | 外部Customer POMを変更せず、snapshot更新を抑止した明示parameterで`clean verify`し、前後のKOIKI payload完全一致とArchitecture Rulesを検査する |
 | Cleanup | success / failureの双方で一時resourceをcleanupし、canonical pathと所有markerの再確認後だけstage rootを削除する |
 
-Tooling実装は本設計review後のP4-AR6準備作業とし、Public API、Starter、dependency、migrationまたはworkflowを変更しない。
-Customer Repositoryを操作する場合は、対象path、実行commandおよび影響を示して別途承認を得る。
+Toolingは`build-support/adoption-readiness-verification/invoke-p4-ar6-r2-handoff.ps1`として実装する。Public API、Starter、
+dependency、migrationまたはworkflowを変更しない。Customer Repositoryを操作する場合は、対象path、実行commandおよび
+影響を示して別途承認を得る。
+
+#### 3.2.6 Framework-side Tooling rehearsal
+
+2026-09-18、commit `3ecb836d23cec8a747ba2dcecbbb57156487a40f`のclean local cloneをFramework sourceとして、
+Repository外の短い一時pathからR2 Toolingのfull rehearsalを実行した。これはFramework側の実装検証であり、実アプリ開発チームの
+受入を代替しない。
+
+| Observation | Result |
+|---|---|
+| Framework source | clean / expected commit一致 |
+| Tooling script SHA-256 | `22987D2AFA385D73E4906818F1ECBCF24FE3F82F7F6EAB6F659F397D0A0524B3` |
+| Formal stage | 15 projects / 12 JAR / 3 POM-only / 15 coordinates |
+| Manifest payload | 15 POM + 12 JAR = 27 payload、各size / SHA-256記録 |
+| Boundary inspection | Reference / Tooling / Customer migration / source template混入0 |
+| Customer-like Consumer | `clean verify`成功、37 tests、failure / error / skip 0 |
+| KOIKI artifact reinspection | coordinate、version、size、SHA-256変更0 |
+| Cleanup | stage root削除、residual resource 0、実行後container 0 |
+| Manifest lifecycle | Customer build前に`PENDING` draftを外部出力し、cleanup後に`PASS` finalへ置換 |
+| Final manifest | `PASS`、SHA-256 `B2247CB24B025BA8B2205F292D35D29B2CE96DDC9850C1217A23E4318702C7E6` |
+| Duration | 142.882秒 |
+
+full manifest、isolated repositoryおよびclean cloneは検証終了後に破棄し、本書には非機密summaryだけを残した。初回の深いOS一時pathを
+使ったlocal cloneはWindowsのpath lengthでcheckout不能となったためstage前に停止し、短い専用一時pathで再実行した。
+この結果から、WindowsではFramework checkoutとstage rootを十分短いpathへ置くことをREADMEの実行前提とする。
 
 R2では「同じIDE workspaceで開く」ことを、同じRepositoryまたは同じMaven reactorへ入ることと同一視しない。
 VS Codeではmulti-root workspaceとして両Repositoryを同時に開けるが、`.git`、POM、build lifecycleおよびcredential境界は
@@ -394,8 +425,8 @@ Security / Audit / migrationへの影響、Customer隔離の可否および希�
 - [ ] 実チームがHandoff Guideを単一入口として利用し、迷った箇所を記録している。
 - [ ] ReferenceまたはConsumerのbuild / run / representative operation / diagnosis / cleanupを実チーム条件で確認している。
 - [ ] R1〜R3のRepository topology候補を評価し、Customer業務codeをFramework Repositoryへ混在させていない。
-- [ ] Framework-owned R2 Toolingがclean source、safe / empty / non-link stage、所有marker、formal inventory、manifest、Customer verify、artifact不変確認、安全なcleanupを一つの入口から実行できる。
-- [ ] Framework artifactのversion、source commit、checksumおよび解決経路を追跡できる。
+- [x] Framework-owned R2 Toolingがclean source、safe / empty / non-link stage、所有marker、formal inventory、manifest、Customer verify、artifact不変確認、安全なcleanupを一つの入口から実行できる（Framework rehearsal）。
+- [x] Framework artifactのversion、source commit、checksumおよび解決経路を追跡できる（Framework rehearsal）。
 - [ ] 提供artifact、Reference、検証専用Tooling、非提供物を区別できる。
 - [ ] Phase 4成果物ごとのFramework / Customer / joint責任とacceptance Evidenceを合意している。
 - [ ] findingsにF1〜F6、priority、Owner、次Gateを割り当てている。
@@ -411,8 +442,9 @@ Security / Audit / migrationへの影響、Customer隔離の可否および希�
 | AR6-P3 | managed Maven repository / version / support条件 | 未決定。R1移行のblocking decision | Framework release Owner + organization platform |
 | AR6-P4 | actual Customer repository構成 | Customer要件未取得。概念Ownershipだけを提示 | Customer application lead |
 | AR6-P5 | actual-team session schedule / participant | 未決定 | Project / application Owner |
-| AR6-P6 | R2 stage Toolingを実装するか | `OWNER APPROVED`。`build-support` Ownershipの非配布Toolingとして、§3.2.2〜§3.2.5の契約に限定して実装する | Tooling maintainer。実Customer Repository操作は別承認 |
+| AR6-P6 | R2 stage Toolingを実装するか | `IMPLEMENTED / FRAMEWORK REHEARSAL PASS`。`build-support` Ownershipの非配布Toolingとして、§3.2.2〜§3.2.5の契約を実証した | 実Customer Repository操作は別承認 |
 | AR6-P7 | R2契約review補強 | 2026-09-18、Architecture Ownerはclean source、cleanup安全性、artifact不変、final manifest、Parent / internal package検査境界の5点と、その反映後の最終契約を承認した | 反映済み |
+| AR6-P8 | Tooling identity | 別checkoutにも適用できるため、Framework commitとは別に実行script SHA-256をmanifestへ追加した。絶対pathやsourceは記録しない | Framework rehearsal PASS。Owner close reviewで確認 |
 
 ### 9.1 R2 contract approval record
 

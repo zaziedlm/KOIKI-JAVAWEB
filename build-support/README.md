@@ -2,6 +2,14 @@
 
 KOIKI自身のBuild / Quality Gate検証を補助するTooling所有の資材を配置します。
 
+## Pre-Phase 4 Adoption Readiness Verification
+
+`adoption-readiness-verification/`は、P4-AR6で承認された移行期R2方式について、cleanな固定Framework commitから
+isolated Maven repositoryへformal release unitをstageし、manifest、Customer-like resolution、artifact不変性および
+安全なcleanupを検証するTooling所有・非配布資材です。既存検証script、Root Reactor、BOM、formal release unit、
+Framework Public APIおよびworkflowへは接続しません。利用境界は
+`adoption-readiness-verification/README.md`を参照してください。
+
 ## Feature Template
 
 `feature-templates/`はPhase 1a B1のTooling所有Tier 1 SIMPLE / Tier 2 RICH生成資材です。
