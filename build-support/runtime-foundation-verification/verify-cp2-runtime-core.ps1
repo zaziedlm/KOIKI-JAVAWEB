@@ -61,7 +61,7 @@ New-Item -ItemType Directory -Path $isolatedRepository -Force | Out-Null
 
 try {
     Invoke-KoikiMaven -Label 'Stage KOIKI CP2 release unit into isolated repository' -Arguments @(
-        '-f', $rootPom, 'clean', 'install'
+        '-f', $rootPom, '-pl', '!koiki-reference-app', 'clean', 'install'
     )
 
     $stagedStarterJar = Join-Path $isolatedRepository `

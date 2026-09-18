@@ -60,6 +60,69 @@ function Invoke-KoikiMaven {
     }
 }
 
+function Get-CurrentFormalReleaseUnit {
+    [xml]$rootProject = Get-Content -Raw -LiteralPath $rootPom
+    $entries = @($rootProject.project.modules.module |
+        ForEach-Object { [string]$_ } |
+        Where-Object { $_ -ne 'koiki-reference-app' } |
+        ForEach-Object {
+            $modulePath = $_
+            [xml]$moduleProject = Get-Content -Raw -LiteralPath (
+                Join-Path $repositoryRoot "$modulePath/pom.xml")
+            $packaging = [string]$moduleProject.project.packaging
+            if ([string]::IsNullOrWhiteSpace($packaging)) { $packaging = 'jar' }
+            [pscustomobject]@{
+                ArtifactId = [string]$moduleProject.project.artifactId
+                Packaging = $packaging
+                ModulePath = $modulePath
+            }
+        })
+    $entries += [pscustomobject]@{
+        ArtifactId = [string]$rootProject.project.artifactId
+        Packaging = 'pom'
+        ModulePath = '.'
+    }
+
+    if ($entries.Count -ne 15 -or @($entries | Where-Object Packaging -eq 'jar').Count -ne 12) {
+        throw "Current formal release unit must contain 15 projects / 12 JARs. " +
+            "Actual: $($entries.Count) projects / " +
+            "$(@($entries | Where-Object Packaging -eq 'jar').Count) JARs."
+    }
+    if ($entries.ArtifactId -contains 'koiki-reference-app') {
+        throw 'Reference must not be part of the current formal release unit.'
+    }
+    return $entries
+}
+
+function Assert-StagedFormalReleaseUnit {
+    param([Parameter(Mandatory)][object[]]$Manifest)
+
+    $groupRepository = Join-Path $isolatedRepository 'org/koikifw'
+    $actualArtifacts = @(Get-ChildItem -LiteralPath $groupRepository -Directory |
+        Select-Object -ExpandProperty Name | Sort-Object)
+    $expectedArtifacts = @($Manifest.ArtifactId | Sort-Object)
+    $difference = @(Compare-Object -ReferenceObject $expectedArtifacts `
+        -DifferenceObject $actualArtifacts -SyncWindow 0)
+    if ($difference.Count -ne 0) {
+        throw "Staged coordinates differ from the current formal release unit:`n$($difference | Out-String)"
+    }
+
+    foreach ($entry in $Manifest) {
+        $artifactRoot = Join-Path $groupRepository "$($entry.ArtifactId)/0.1.0-SNAPSHOT"
+        $pom = Join-Path $artifactRoot "$($entry.ArtifactId)-0.1.0-SNAPSHOT.pom"
+        $jar = Join-Path $artifactRoot "$($entry.ArtifactId)-0.1.0-SNAPSHOT.jar"
+        if (-not (Test-Path -LiteralPath $pom -PathType Leaf)) {
+            throw "Staged POM is missing for $($entry.ArtifactId)."
+        }
+        if ($entry.Packaging -eq 'jar' -and -not (Test-Path -LiteralPath $jar -PathType Leaf)) {
+            throw "Staged JAR is missing for $($entry.ArtifactId)."
+        }
+        if ($entry.Packaging -eq 'pom' -and (Test-Path -LiteralPath $jar)) {
+            throw "POM-only project unexpectedly staged a JAR: $($entry.ArtifactId)."
+        }
+    }
+}
+
 function Invoke-PostgreSql {
     param([Parameter(Mandatory)][string]$Sql)
 
@@ -299,11 +362,13 @@ if ($LASTEXITCODE -ne 0) {
 
 Assert-SafeTemporaryPath -Path $verificationRoot
 New-Item -ItemType Directory -Path $isolatedRepository -Force | Out-Null
+$formalReleaseUnit = @(Get-CurrentFormalReleaseUnit)
 
 try {
-    Invoke-KoikiMaven -Label 'Stage KOIKI release unit into an isolated repository' -Arguments @(
-        '-f', $rootPom, 'install', '-DskipTests'
+    Invoke-KoikiMaven -Label 'Stage the current formal KOIKI release unit into an isolated repository' -Arguments @(
+        '-f', $rootPom, '-pl', '!koiki-reference-app', 'install', '-DskipTests'
     )
+    Assert-StagedFormalReleaseUnit -Manifest $formalReleaseUnit
     Invoke-KoikiMaven -Label 'Build and test the independent CP8 Consumer' -Arguments @(
         '-f', $consumerPom, 'clean', 'package'
     )

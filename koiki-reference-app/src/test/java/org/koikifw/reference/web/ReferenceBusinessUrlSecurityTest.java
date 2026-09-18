@@ -326,7 +326,7 @@ class ReferenceBusinessUrlSecurityTest {
                         .param("claimedAmount", "0")
                         .param("expenseCategoryId", "")
                         .param("usageDate", LocalDate.now(java.time.ZoneOffset.UTC)
-                                .plusDays(1).toString())
+                                .plusDays(2).toString())
                         .param("description", "")
                         .param("purpose", "")
                         .param("lineAmount", "0"))

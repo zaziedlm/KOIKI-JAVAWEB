@@ -58,7 +58,7 @@ New-Item -ItemType Directory -Path $isolatedRepository -Force | Out-Null
 
 try {
     Invoke-KoikiMaven -Label 'Stage KOIKI CP5 release unit into isolated repository' -Arguments @(
-        '-f', $rootPom, 'clean', 'install'
+        '-f', $rootPom, '-pl', '!koiki-reference-app', 'clean', 'install'
     )
 
     $observabilityJar = Join-Path $isolatedRepository `
