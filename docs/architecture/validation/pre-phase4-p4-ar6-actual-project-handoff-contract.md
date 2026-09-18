@@ -8,7 +8,7 @@
 | Ownership | Architecture / Framework / Customer joint decision |
 | Source baseline | P4-AR5 commit `c68648e6c9746a8ef9c7ab6969b8872f41fe1ede` (`docs: complete P4-AR5 developer handoff readiness`) |
 | Primary output | Repository topology、artifact handoff、Framework / Customer / joint Evidence責任分担、issue routing |
-| R2 stage / manifest design | `READY FOR OWNER REVIEW — TOOLING NOT IMPLEMENTED` |
+| R2 stage / manifest design | `OWNER APPROVED — TOOLING IMPLEMENTATION AUTHORIZED / NOT IMPLEMENTED` |
 | Production change | 0 |
 | Customer repository operation | 0。対象、影響、Ownerの別承認前には実施しない |
 | Phase 4 start | 未承認。Gate P4-AR acceptance後に別途判断する |
@@ -97,18 +97,19 @@ manifestへ記録することで、この曖昧さを閉じ込める。
 #### 3.2.2 R2 local stage procedure contract
 
 R2のstage処理はFramework-owned Toolingとして提供し、Customer側がFrameworkのMaven module構成や除外条件を
-組み立てなくても実行できることを目標とする。現時点では設計契約であり、script名、parameterおよび実装は未承認である。
+組み立てなくても実行できることを目標とする。2026-09-18、Architecture Ownerは本設計契約と§3.2.5の範囲に限定した
+非配布Tooling実装を承認した。script名およびparameterの詳細は実装時に本契約へ適合させる。
 
 | Phase | Procedure | Required observation | Failure / stop condition |
 |---|---|---|---|
-| 0. Source preflight | Framework checkoutの`HEAD`、clean worktree、JDK 21、Maven Wrapper、networkを確認する | 40桁source commit、dirty=false、tool version | detached / branch状態自体は問わないが、expected commit不一致、tracked差分、JDK不一致で停止 |
-| 1. Safe stage root | Framework / Customer Repository外の明示pathを解決し、存在しないか空であることを確認する | resolved stage root、開始時entry 0 | Repository root、home、通常`~/.m2/repository`、非空directoryまたは安全確認不能で停止 |
+| 0. Source preflight | Framework checkoutの`HEAD`、clean worktree、JDK 21、Maven Wrapper、networkを確認する | 40桁source commit、tracked / untrackedを含むdirty=false、tool version | detached / branch状態自体は問わないが、expected commit不一致、Git管理対象外を含む非ignored差分、JDK不一致で停止 |
+| 1. Safe stage root | Framework / Customer Repository外の明示pathをcanonical pathへ解決し、存在しないか空であること、junction / symbolic link / reparse pointでないことを確認してTooling所有markerを置く | resolved stage root、開始時entry 0、所有marker | filesystem root、home、通常`~/.m2/repository`、Repository配下、非空directory、link / reparse pointまたは安全確認不能で停止 |
 | 2. Formal unit stage | 固定commitから現行formal release unit候補を`clean install -DskipTests`でstageする | 15 projects / 12 JAR、POM 3、`org.koikifw`座標の完全一致 | Maven失敗、欠落・余剰coordinate、packaging不一致で停止 |
 | 3. Boundary inspection | Reference、Tooling、Customer migration、source template、想定外groupを検査する | forbidden artifact 0 | `koiki-reference-app`または非配布artifact混入で停止 |
 | 4. Manifest draft | artifact identityと実行環境をstage外の明示Evidence出力先へJSONで記録し、schemaとSHA-256形式を自己検査する | §3.2.3の必須field、artifact count、payload hash | field欠落、duplicate coordinate、hash形式不正、secret候補または絶対user path混入で停止 |
-| 5. Customer resolution | Customer POMを同じ`maven.repo.local`で`clean verify`し、KOIKI dependency treeを記録する | KOIKI座標がmanifestと一致、Framework source / reactor依存0 | `relativePath`、`systemPath`、internal package、manifest外KOIKI artifactまたは通常local repoへの依存で停止 |
-| 6. Result capture | PASS / FAIL、所要時間、Customer側source identityの非機密表現、manifest SHA-256を記録する | 再現に必要な最小情報 | Customer source path、credential、個人情報、業務dataをEvidenceへ出力した場合はblocking |
-| 7. Cleanup / finalize | Customer process、port、container、一時credential、stage rootを削除し、cleanup結果をmanifestへ反映してfinal manifestのSHA-256を計算する | residual resource 0、final manifest、manifest SHA-256 | cleanup不能はFAIL。manifestをfinalizeして失敗を記録し、成功扱いしない |
+| 5. Customer resolution | Customer POMを同じ`maven.repo.local`でsnapshot更新を抑止して`clean verify`し、KOIKI dependency treeとArchitecture Rulesを検査する。実行前後で全KOIKI payloadを再走査する | KOIKI座標・payload SHA-256がmanifestと完全一致、Framework source / reactor依存0、internal package参照0 | Framework sourceを指す`relativePath`、`systemPath`、internal package、manifest外・追加・欠落・変更KOIKI artifactまたは通常local repoへの依存で停止 |
+| 6. Result capture | PASS / FAIL、所要時間、Customer側source identityの非機密表現、finding IDをfinal manifestへ記録する | 再現に必要な最小情報、KOIKI payload不変 | Customer source path、credential、個人情報、業務dataをEvidenceへ出力した場合、またはCustomer verify後のKOIKI payload差分がある場合はblocking |
+| 7. Cleanup / finalize | Customer process、port、container、一時credentialをcleanupし、開始時と同じcanonical pathおよびTooling所有markerを再検査してからstage rootを削除する。cleanup結果をmanifestへ反映し、final manifestのSHA-256をmanifest外で計算する | residual resource 0、stage root削除、final manifest、外部記録したmanifest SHA-256 | marker / path不一致時はstage rootを削除せずFAIL。cleanup不能もFAILとしてfinalizeし、成功扱いしない |
 
 Phase 2履歴の`p2-c2-formal-release-unit.txt`は書き換えない。Phase 3で追加した`koiki-starter-web-mvc`を含む現行境界は、
 既存`verify-p2-c2-package-static.ps1 -CurrentFormalReleaseUnit`とRuntime CP8 / CP10の15 projects / 12 JAR検査を
@@ -117,6 +118,14 @@ Phase 2履歴の`p2-c2-formal-release-unit.txt`は書き換えない。Phase 3�
 
 Root aggregator POMを含む15 projectsはstage inventoryの完全性確認に使用する。Customerが依存対象として選べるのは、
 Parent、BOM、12 JARのうち案件に必要なartifactだけであり、Root aggregatorをCustomer dependencyとして公開しない。
+
+source preflightの`dirty=false`は、tracked差分だけでなく、Gitが無視していないuntracked fileも存在しない状態を指す。
+未追跡のJava sourceやresourceもMaven buildへ混入し得るため、`git status --porcelain --untracked-files=all`相当の結果が
+空でなければ停止する。stage後にも同じ検査を再実行し、固定commitからのbuildであることを確認する。
+
+stage rootのcleanupは、単に空で開始したという理由だけでは許可しない。Toolingが作成した所有marker、開始時に確定した
+canonical path、link / reparse pointでないことを削除直前に再検査し、すべて一致した場合だけstage rootを削除する。
+不一致時は対象を残してFAILとし、推測した別pathや親directoryを再帰削除しない。
 
 #### 3.2.3 R2 manifest contract
 
@@ -134,13 +143,15 @@ Evidenceへ埋め込むものではない。full manifestはstage root外のcall
 - stage / Customer verificationのPASS / FAILと時刻
 - finding ID（存在する場合）
 
-必須JSON構造の設計案は次のとおりとする。値は例示であり、実行結果ではない。
+必須JSON構造の設計案は次のとおりとする。次はfinal状態の例であり、値は実行結果ではない。draftでは
+`finalizedAtUtc`を`null`、未完了のverification statusを`PENDING`としてよいが、final manifestでは`PENDING`を残さない。
 
 ```json
 {
   "schemaVersion": 1,
   "kind": "p4Ar6LocalStageManifest",
-  "capturedAtUtc": "2026-09-18T00:00:00.0000000Z",
+  "stagedAtUtc": "2026-09-18T00:00:00.0000000Z",
+  "finalizedAtUtc": "2026-09-18T00:10:00.0000000Z",
   "source": {
     "repository": "KOIKI-JAVAWEB",
     "commit": "<40 lowercase hex>",
@@ -151,6 +162,10 @@ Evidenceへ埋め込むものではない。full manifestはstage root外のcall
     "javaRuntime": "<vendor and exact version>",
     "mavenWrapper": "<exact version>",
     "os": "<non-user-identifying OS description>"
+  },
+  "customer": {
+    "sourceIdentityKind": "commit",
+    "sourceIdentity": "<approved non-secret identity>"
   },
   "releaseUnit": {
     "logicalVersion": "0.1.0-SNAPSHOT",
@@ -191,9 +206,20 @@ Evidenceへ埋め込むものではない。full manifestはstage root外のcall
   "verification": {
     "formalInventory": "PASS",
     "forbiddenContent": "PASS",
-    "customerBuild": "PENDING",
-    "cleanup": "PENDING"
-  }
+    "customerBuild": {
+      "status": "PASS",
+      "durationSeconds": 0,
+      "koikiPayloadsUnchanged": true,
+      "internalPackageReferences": 0
+    },
+    "cleanup": {
+      "status": "PASS",
+      "residualResourceCount": 0,
+      "stageRootRemoved": true
+    }
+  },
+  "result": "PASS",
+  "findingIds": []
 }
 ```
 
@@ -201,6 +227,11 @@ Evidenceへ埋め込むものではない。full manifestはstage root外のcall
 `consumerVisible=false`、Parent / BOMは`packaging=pom`、その他12 artifactは`packaging=jar`とする。
 各coordinateはPOM payloadを1件、JAR packagingはさらにJAR payloadを1件持つ。SHA-256はfile contentから計算し、
 relative pathはstage rootからの`/`区切りとする。
+
+`result`は全verificationが`PASS`で、cleanupを含むresidual resourceが0の場合だけ`PASS`とする。処理途中の例外でも
+可能な範囲でfinal manifestを生成し、`result=FAIL`、失敗したverification statusおよびfinding IDを記録する。
+final manifest自身のSHA-256はmanifest内へ埋め込まない。自己参照を避けるため、Evidence summaryまたはmanifestと並べた
+sidecarへ記録し、full manifestと同じretention / 非露出条件で扱う。
 
 次はmanifestへ記録しない。
 
@@ -218,13 +249,21 @@ Phase 2 publish manifest相当の強い契約を別途設計する。
 
 Customer POMにはstage directoryの絶対pathを記述しない。KOIKI artifactは通常の`groupId` / `artifactId` / `version`で宣言し、
 stage pathはFramework / Customerの実行wrapperまたはcommand parameterから`-Dmaven.repo.local`として渡す。
+KOIKI Parentを継承する場合は、Maven既定のfilesystem上の親POM探索を無効にする空の`<relativePath/>`を要求する。
+Framework sourceを指す値付き`relativePath`、`systemPath`またはfilesystem repository URLは許可しない。
 
 Parent継承とCustomer-owned Parent + KOIKI BOM importのどちらを標準入口とするかはP4-AR6 decision pendingとする。
 R2 stageにはKOIKI ParentとBOMの両方を含め、実チームが選択候補を評価できるようにする。いずれの場合もStarterを
 個別versionでばらばらに指定せず、単一のKOIKI version identityへ揃える。
 
 Customer verificationで記録するdependency treeは`org.koikifw`座標だけへsanitizationし、manifest外version、
-`org.koikifw.*.internal`参照、Framework source directoryへの参照およびCustomer側で再installしたKOIKI artifactを拒否する。
+Framework source directoryへの参照およびCustomer側で再installしたKOIKI artifactを拒否する。Java packageの
+`org.koikifw.*.internal`参照はdependency treeでは判定できないため、Architecture Rulesまたは同等のsource / bytecode検査で
+別に確認する。
+
+Customer buildではMavenの`--no-snapshot-updates`を指定し、実行直前と直後にstage内の全`org.koikifw` coordinate / payloadを再走査する。
+manifestにない追加、欠落、sizeまたはSHA-256の変化が1件でもあれば、Customer build自体が成功してもR2検証はFAILとする。
+この契約はKOIKI artifact identityを固定するものであり、Customer固有の外部dependency全体をoffline lockするものではない。
 
 #### 3.2.5 Proposed Tooling ownership
 
@@ -241,12 +280,12 @@ Customer Repositoryへ含めない。候補interfaceは次の責務へ限定す�
 
 | Tooling responsibility | Required behavior |
 |---|---|
-| Prepare | expected commitとsafe / empty stage rootを検査する |
+| Prepare | expected commit、tracked / untrackedを含むclean source、safe / empty / non-link stage rootを検査し、所有markerを作成する |
 | Stage | current formal release unitだけをbuild / installする |
 | Inspect | coordinate / packaging / forbidden contentを完全一致で検査する |
 | Manifest | §3.2.3のJSONとSHA-256 summaryを生成・検証する |
-| Consumer verify | 外部Customer POMを変更せず、明示parameterで`clean verify`する |
-| Cleanup | success / failureの双方でstageと一時resourceを削除する |
+| Consumer verify | 外部Customer POMを変更せず、snapshot更新を抑止した明示parameterで`clean verify`し、前後のKOIKI payload完全一致とArchitecture Rulesを検査する |
+| Cleanup | success / failureの双方で一時resourceをcleanupし、canonical pathと所有markerの再確認後だけstage rootを削除する |
 
 Tooling実装は本設計review後のP4-AR6準備作業とし、Public API、Starter、dependency、migrationまたはworkflowを変更しない。
 Customer Repositoryを操作する場合は、対象path、実行commandおよび影響を示して別途承認を得る。
@@ -355,7 +394,7 @@ Security / Audit / migrationへの影響、Customer隔離の可否および希�
 - [ ] 実チームがHandoff Guideを単一入口として利用し、迷った箇所を記録している。
 - [ ] ReferenceまたはConsumerのbuild / run / representative operation / diagnosis / cleanupを実チーム条件で確認している。
 - [ ] R1〜R3のRepository topology候補を評価し、Customer業務codeをFramework Repositoryへ混在させていない。
-- [ ] Framework-owned R2 Toolingがsafe / empty stage、formal inventory、manifest、Customer verify、cleanupを一つの入口から実行できる。
+- [ ] Framework-owned R2 Toolingがclean source、safe / empty / non-link stage、所有marker、formal inventory、manifest、Customer verify、artifact不変確認、安全なcleanupを一つの入口から実行できる。
 - [ ] Framework artifactのversion、source commit、checksumおよび解決経路を追跡できる。
 - [ ] 提供artifact、Reference、検証専用Tooling、非提供物を区別できる。
 - [ ] Phase 4成果物ごとのFramework / Customer / joint責任とacceptance Evidenceを合意している。
@@ -372,7 +411,20 @@ Security / Audit / migrationへの影響、Customer隔離の可否および希�
 | AR6-P3 | managed Maven repository / version / support条件 | 未決定。R1移行のblocking decision | Framework release Owner + organization platform |
 | AR6-P4 | actual Customer repository構成 | Customer要件未取得。概念Ownershipだけを提示 | Customer application lead |
 | AR6-P5 | actual-team session schedule / participant | 未決定 | Project / application Owner |
-| AR6-P6 | R2 stage Toolingを実装するか | build-support Ownershipの候補interfaceまで設計。Public API変更なし | Architecture Owner / Tooling maintainer |
+| AR6-P6 | R2 stage Toolingを実装するか | `OWNER APPROVED`。`build-support` Ownershipの非配布Toolingとして、§3.2.2〜§3.2.5の契約に限定して実装する | Tooling maintainer。実Customer Repository操作は別承認 |
+| AR6-P7 | R2契約review補強 | 2026-09-18、Architecture Ownerはclean source、cleanup安全性、artifact不変、final manifest、Parent / internal package検査境界の5点と、その反映後の最終契約を承認した | 反映済み |
+
+### 9.1 R2 contract approval record
+
+2026-09-18、Architecture Ownerは、補強後のR2 stage / manifest契約をPre-Phase 4移行期のartifact受渡し検証方式として
+承認した。あわせて、同契約を実証する非配布Toolingを`build-support` Ownershipで実装することを承認した。
+
+実装範囲は、cleanな固定Framework commit、isolated Maven repository、現行formal release unit、manifest、
+Customer-like Consumerまたは専用fixtureによる検証、artifact不変確認および安全なcleanupに限定する。Root Reactor、BOM、
+formal release unit、Framework Public API、Starter、dependency、migrationまたはworkflowを変更しない。
+
+本承認は、実Customer Repositoryの操作、正式artifact配布、managed Maven repository、P4-AR6完了、Gate P4-AR acceptance
+またはPhase 4開始を承認するものではない。
 
 ## 10. Owner review boundary
 
@@ -380,13 +432,14 @@ P4-AR6のclose reviewでは次を確認する。
 
 1. 実チーム受入をFramework開発者側rehearsalで代替していない。
 2. Repository topologyが別Repository / Maven artifact境界を維持し、R4 / R5を通常経路として採用していない。
-3. R2を採用する場合もsource commit、version、checksum、isolated repositoryおよびcleanupを追跡できる。
-4. manifestがformal unitの全coordinateとpayload SHA-256を持ち、絶対path、credentialまたはCustomer機密情報を持たない。
-5. Parent継承またはBOM importの入口と、Customer POMへstage pathを埋め込まない境界が明確である。
-6. Framework / Customer / joint責任分担とacceptance Evidenceが成果物ごとに明確である。
-7. Customer固有code、schema、credential、個人情報または機密logをKOIKI Repositoryへ持ち込んでいない。
-8. F1〜F6 findingのOwner、priority、次Gateが決まっている。
-9. AR-D10を満たし、P4-AR7またはGate P4-ARへ進める状態か。
+3. R2を採用する場合もclean source、source commit、version、checksum、isolated repository、所有markerおよび安全なcleanupを追跡できる。
+4. manifestがformal unitの全coordinateとpayload SHA-256を持ち、Customer verify前後で不変であり、絶対path、credentialまたはCustomer機密情報を持たない。
+5. final manifestの状態、失敗時の記録および自己参照しないmanifest SHA-256の保存先が明確である。
+6. Parent継承またはBOM importの入口、空の`<relativePath/>`、Customer POMへstage pathを埋め込まない境界、およびinternal package検査の担当が明確である。
+7. Framework / Customer / joint責任分担とacceptance Evidenceが成果物ごとに明確である。
+8. Customer固有code、schema、credential、個人情報または機密logをKOIKI Repositoryへ持ち込んでいない。
+9. F1〜F6 findingのOwner、priority、次Gateが決まっている。
+10. AR-D10を満たし、P4-AR7またはGate P4-ARへ進める状態か。
 
 本書の骨格作成はRepository topology、artifact配布、実案件repository操作、P4-AR6完了、Gate P4-AR acceptanceまたは
 Phase 4開始を承認するものではない。
