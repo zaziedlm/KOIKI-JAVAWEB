@@ -170,6 +170,37 @@ Framework側のrehearsalで成立した候補は、P4-AR6で実案件側の受�
 問い合わせ経路および追加gapを確認する。実案件repositoryへの変更、artifact配布、credential共有または環境操作が
 必要な場合は、本計画の承認へ含めず、対象と影響を示して別途承認を得る。
 
+#### 7.2.1 Application-developer one path and acceptance
+
+P4-AR5では、技術checkpointの実行結果だけでなく、Phase履歴を知らない業務アプリ開発者が次の一本道をたどれる
+単一入口のhandoff guideを用意する。
+
+1. KOIKIから何が提供されるか。
+2. 現時点で提供されないものは何か。
+3. MVC、REST、React / BFFのどれから始めるか。
+4. 必要なStarterをどう選ぶか。
+5. Referenceをどう動かして理解するか。
+6. 最初のCustomer-owned業務moduleをどう設計するか。
+7. Referenceからコピーしてはいけないものは何か。
+8. Framework境界付近の機能をどう分類するか。
+9. 失敗時にどこを確認するか。
+10. どの判断をアプリチームで行い、どこからFramework側へ戻すか。
+
+P4-AR5の追加受入条件は次のとおりとする。
+
+- Phase履歴を知らない開発者が、単一の入口文書から開始できる。
+- 利用可能なartifactと検証専用Toolingを区別できる。
+- 30〜60分程度でReferenceまたはConsumerを起動できる。
+- MVC / REST / frontend構成の次の判断先を選べる。
+- Customer Ownershipの最初の業務moduleをどこに置くか説明できる。
+- ReferenceのDTO、Entity、migration、fixtureをコピーしない理由を説明できる。
+- 不足機能をStandard use / Approved extension / Customer isolation / Framework gapへ分類できる。
+- Security既定を弱めず、Framework側へ戻す条件が分かる。
+
+P4-AR5は[Application Team Handoff Guide](application-team-handoff-guide.md)と、その中の受入確認チェックリストを
+Owner review可能な状態まで整備する。実際のアプリ開発チームによる実行、理解度確認、所要時間計測およびfeedback分類は
+P4-AR6で行い、P4-AR5のFramework開発者側rehearsalを実案件受入の代替とはしない。
+
 ### 7.3 Application team extension boundary
 
 Frameworkが提供する契約で充足できる機能は、業務アプリ開発チームがSpring標準の作法と、承認済みFramework Public API、
@@ -251,6 +282,16 @@ provisional bridgeおよびFramework contributionの判断方式である。こ�
 新規拡張点またはPublic API、Framework本体改修、実案件repository操作、artifact配布、P4-AR6の責任分担、
 Gate P4-AR acceptanceまたはPhase 4開始を承認するものではない。
 
+### 7.6 P4-AR5 completion approval record
+
+同日、Architecture Ownerは技術checkpoint 1〜8のPASS、受渡し候補inventory、finding分類、
+[アプリ開発チーム向け引継ぎガイド](application-team-handoff-guide.md)の10項目の一本道と8項目の受入条件、
+日本語表現、表の読み方および説明補足を確認し、現時点で問題なしとして承認した。
+
+この承認によりP4-AR5を`COMPLETE / OWNER APPROVED`とする。実際のアプリ開発チームによる実行、理解度、
+所要時間およびfeedbackの確認はP4-AR6で行う。本承認は正式配布物、実案件repository操作、artifact配布、
+P4-AR6の責任分担、Gate P4-AR acceptanceまたはPhase 4開始を承認するものではない。
+
 ## 8. Phase 4 responsibility reallocation review
 
 実案件側の担当範囲はP4-AR6で具体化する。現時点では次の成果物ごとに、実装OwnerとPhase 4 acceptance Evidenceの
@@ -290,8 +331,8 @@ Framework acceptanceへ昇格させない。
 | AR-D3 | 正式release unitをisolated repositoryからCustomer-like Consumerが利用できる |
 | AR-D4 | package済みReference JARのMVC / REST / DB / Audit / log / browser journeyが成立する |
 | AR-D5 | secret非露出とprocess / container / port / temp file cleanupを確認している |
-| AR-D6 | §7.1の受渡し候補を棚卸しし、現在渡せるもの／検証専用で渡さないもの／Phase 4で整備するもの、および§7.3の標準利用／承認済み拡張／Customer隔離／Framework gapを分類している |
-| AR-D7 | §7.2の受入側execution rehearsalを完了し、build / run / representative operation / diagnosis / cleanupが成立する |
+| AR-D6 | §7.1の受渡し候補を棚卸しし、現在渡せるもの／検証専用で渡さないもの／Phase 4で整備するもの、および§7.3の標準利用／承認済み拡張／Customer隔離／Framework gapを分類し、§7.2.1の単一入口から説明できる |
+| AR-D7 | §7.2の受入側execution rehearsalでbuild / run / representative operation / diagnosis / cleanupが成立し、§7.2.1の8受入条件をP4-AR5でOwner review可能、P4-AR6で実チーム確認可能な形にしている |
 | AR-D8 | 実案件連携を妨げる未記録の開発環境前提がない |
 | AR-D9 | F1 blockingが0で、F2〜F6のOwner、優先度、次Gateが明示され、Framework copy、内部実装依存または責務迂回を未記録のまま受入れていない |
 | AR-D10 | 実案件側の受入確認を踏まえ、Phase 4成果物のFramework / Customer / joint Evidence責任分担と、見直し後Phase 4への入力をOwnerが承認している |
