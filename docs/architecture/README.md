@@ -68,6 +68,7 @@ P4-AR1以降は本計画の`main`反映とclean-main同期後に開始し、Phas
 | P4-AR3 Runtime / Security Consumer baseline | COMPLETE / READY FOR P4-AR4 | `validation/pre-phase4-p4-ar3-runtime-security-consumer-baseline.md` |
 | P4-AR4 Reference Application baseline | COMPLETE / READY FOR P4-AR5 | `validation/pre-phase4-p4-ar4-reference-application-baseline.md` |
 | P4-AR5 Developer Handoff Readiness | COMPLETE / OWNER APPROVED | `validation/pre-phase4-p4-ar5-developer-handoff-readiness.md` |
+| P4-AR6 Actual-project Handoff Contract | PREPARATION — ACTUAL-TEAM INPUT REQUIRED | `validation/pre-phase4-p4-ar6-actual-project-handoff-contract.md` |
 
 ### Phase 2 Security Foundation
 

@@ -1,0 +1,392 @@
+# Pre-Phase 4 P4-AR6 Actual-project Handoff Contract
+
+## 1. Status and boundary
+
+| Item | Current position |
+|---|---|
+| Status | `PREPARATION — ACTUAL-TEAM INPUT REQUIRED` |
+| Ownership | Architecture / Framework / Customer joint decision |
+| Source baseline | P4-AR5 commit `c68648e6c9746a8ef9c7ab6969b8872f41fe1ede` (`docs: complete P4-AR5 developer handoff readiness`) |
+| Primary output | Repository topology、artifact handoff、Framework / Customer / joint Evidence責任分担、issue routing |
+| R2 stage / manifest design | `READY FOR OWNER REVIEW — TOOLING NOT IMPLEMENTED` |
+| Production change | 0 |
+| Customer repository operation | 0。対象、影響、Ownerの別承認前には実施しない |
+| Phase 4 start | 未承認。Gate P4-AR acceptance後に別途判断する |
+
+P4-AR6では、P4-AR5でFramework側が準備した引継ぎ内容を実際のアプリ開発チームへ提示し、受け取る側の理解、
+実行可能性および責任分担を確認する。本書はその実施準備と記録先であり、Customer固有code、schema、credential、
+個人情報または機密logをKOIKI Repositoryへ取り込むものではない。
+
+## 2. Authoritative inputs
+
+| Input | P4-AR6で使用する内容 |
+|---|---|
+| [Pre-Phase 4計画](../../development/KOIKI-JavaWeb-FW_Pre-Phase4_Adoption_Readiness計画_v0.1.md) | P4-AR6 / AR-D10 / AR-CP4の境界、責任分担候補、停止条件 |
+| [P4-AR5 Evidence](pre-phase4-p4-ar5-developer-handoff-readiness.md) | 受渡し候補inventory、技術checkpoint、finding、非提供境界 |
+| [アプリ開発チーム向け引継ぎガイド](../../development/application-team-handoff-guide.md) | 10項目の一本道、30〜60分journey、8項目の受入条件、実チーム記録様式 |
+| [Repository Architecture](../KOIKI-JavaWeb-FW_Repository_Architecture_v0.1.md) | Customer Applicationは別Repositoryとし、KOIKIをMaven成果物として利用する承認済み境界 |
+| [Grand Design](../grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md) | 別Repository、version付き依存、FrameworkからCustomerへ依存しない上位方針 |
+
+上位Architectureが定める正式形は、Customer ApplicationをFrameworkと物理的に別Repositoryへ置き、Parent / BOM / Starter / Public APIを
+version付きMaven artifactとして利用する構成である。P4-AR6はこの境界を変更せず、正式artifact repositoryが未整備の移行期間に
+Frameworkの変化を安全に追跡する方法を決める。
+
+## 3. Repository topology decision preparation
+
+### 3.1 Decision principles
+
+Repository構成は、単に同時にbuildしやすいかではなく、次の観点で判断する。
+
+1. Customer業務code、migration、configurationおよびcredentialのOwnershipがFrameworkから分離される。
+2. Customer buildがFramework source tree、Root Reactor、relative pathまたは偶発的local artifactへ依存しない。
+3. 利用したFrameworkのversion、source commit、artifact checksumおよびPublic API互換性を追跡できる。
+4. Framework変更をCustomer側で早期に確認できるが、未承認変更へ自動追随しない。
+5. Customer側でもArchitecture Rules、NullAwayおよび必要なtestを実行できる。
+6. 将来、正式Maven repositoryへ移行するときにCustomer source配置を変更しない。
+
+### 3.2 Topology options
+
+次の表は、正式到達形と移行期の候補を同じ基準で比較する。`Current P4-AR6 position`は準備時点の提案であり、
+実チームの環境・権限・運用を確認するまで最終決定ではない。
+
+| ID | Topology | Framework変化の追跡 | Ownership / build isolation | Current P4-AR6 position |
+|---|---|---|---|---|
+| R1 | Customer別Repository + managed Maven repository | version更新、release note、互換性検査で追跡 | 最も明確 | **Target.** 正式release、repository、support条件の承認後に採用する |
+| R2 | VS Code multi-root workspace等の同一local workspaceにFramework / Customerの別Git Repositoryを並置し、固定Framework commitからisolated Maven repositoryへstage | source差分を確認しながら、version / commit / checksumを固定できる | IDE上は同時に扱いつつ、Git履歴、POM、reactor、credentialを分離できる | **Recommended transitional candidate.** P4-AR6で実チームの再現性を確認する |
+| R3 | 第三のintegration workspace / orchestration repositoryから両Repositoryを取得・検証 | 両者の組合せをmanifestで固定できる | 分離を保てるが、追加ToolingとOwnerが必要 | 必要性が確認された場合だけ設計する。先行生成しない |
+| R4 | Customer ApplicationをKOIKI Root ReactorのMaven moduleとして追加 | source変更を即時に見られる | CustomerとFrameworkの履歴、release、CI、secret、migrationが混在する | **Do not adopt as normal handoff.** Accepted Repository Architectureの変更とADR reviewなしには採用しない |
+| R5 | Framework source / ReferenceをCustomer Repositoryへcopyまたはfork | 独自差分には追随できるが、upstream identityを失う | Public / internal境界とupgrade責任が崩れる | **Prohibited.** 採用しない |
+
+#### 3.2.1 `isolated Maven repository`の意味
+
+現在のKOIKI検証Toolingでいう`isolated Maven repository`は、Nexus、ArtifactoryまたはGitHub Packagesのような
+常設serverではない。検証開始時に空のlocal directoryを作り、Mavenへ`-Dmaven.repo.local=<directory>`を渡して、
+その実行専用のlocal repositoryとして使用する。
+
+```text
+fixed Framework commit
+  -> 空のisolated Maven local repositoryを作成
+    -> formal release unit候補をbuild / install
+      -> Parent / BOMのPOM、Starter / libraryのJAR・POMをrepository layoutで格納
+        -> Customer buildも同じrepository pathを指定して通常のMaven coordinatesで解決
+          -> build / test後にmanifestを記録してdirectoryをcleanup
+```
+
+このdirectoryにはKOIKI artifactだけでなく、Maven Central等から解決した外部dependencyのcacheも入る。隔離の対象は、
+特に`org.koikifw`配下へstageされるartifactと、通常の`~/.m2/repository`に残っている偶発artifactへの依存である。
+Reference、Tooling、Customer migrationまたはsource templateがformal release unitへ混入していないことも別途検査する。
+
+したがって「移行期専用のJARビルド向けrepository」という理解は概ね近いが、次のように区別する。
+
+| Question | Answer |
+|---|---|
+| JARをbuildするsource workspaceか | いいえ。build元は固定commitのFramework checkoutである |
+| JARだけを保管するか | いいえ。Parent / BOM等のPOM、artifact metadata、外部dependency cacheも格納する |
+| repository serverを新設するか | local受入検証では不要。空のlocal directoryで実行できる |
+| Customer POMを特殊構成にするか | しない。通常のMaven coordinates / versionで依存し、実行時にrepository pathを指定する |
+| チーム全員が共有する正式配布先か | いいえ。temporary / disposableな移行期検証用であり、正式releaseまたはsupport対象ではない |
+
+開発者ごとのlocal受入ではこの方式を使用できる。一方、複数人・CI・長期間の共同開発で同じartifactを共有する場合は、
+local directoryの手渡しではなくmanaged Maven repositoryが必要になる。その場合はR1として、repository製品、URL、
+credential、publish権限、versioning、retention、checksum、source commit、supportおよび削除方針を別途承認する。
+
+現行の`0.1.0-SNAPSHOT`等を共有repositoryで上書きし続ける方式は、どのFramework commitを使用したか曖昧になるため、
+R1へ移行する前にversion identityを決める。R2のlocal検証では毎回空のrepositoryを作り、source commitとartifact checksumを
+manifestへ記録することで、この曖昧さを閉じ込める。
+
+#### 3.2.2 R2 local stage procedure contract
+
+R2のstage処理はFramework-owned Toolingとして提供し、Customer側がFrameworkのMaven module構成や除外条件を
+組み立てなくても実行できることを目標とする。現時点では設計契約であり、script名、parameterおよび実装は未承認である。
+
+| Phase | Procedure | Required observation | Failure / stop condition |
+|---|---|---|---|
+| 0. Source preflight | Framework checkoutの`HEAD`、clean worktree、JDK 21、Maven Wrapper、networkを確認する | 40桁source commit、dirty=false、tool version | detached / branch状態自体は問わないが、expected commit不一致、tracked差分、JDK不一致で停止 |
+| 1. Safe stage root | Framework / Customer Repository外の明示pathを解決し、存在しないか空であることを確認する | resolved stage root、開始時entry 0 | Repository root、home、通常`~/.m2/repository`、非空directoryまたは安全確認不能で停止 |
+| 2. Formal unit stage | 固定commitから現行formal release unit候補を`clean install -DskipTests`でstageする | 15 projects / 12 JAR、POM 3、`org.koikifw`座標の完全一致 | Maven失敗、欠落・余剰coordinate、packaging不一致で停止 |
+| 3. Boundary inspection | Reference、Tooling、Customer migration、source template、想定外groupを検査する | forbidden artifact 0 | `koiki-reference-app`または非配布artifact混入で停止 |
+| 4. Manifest draft | artifact identityと実行環境をstage外の明示Evidence出力先へJSONで記録し、schemaとSHA-256形式を自己検査する | §3.2.3の必須field、artifact count、payload hash | field欠落、duplicate coordinate、hash形式不正、secret候補または絶対user path混入で停止 |
+| 5. Customer resolution | Customer POMを同じ`maven.repo.local`で`clean verify`し、KOIKI dependency treeを記録する | KOIKI座標がmanifestと一致、Framework source / reactor依存0 | `relativePath`、`systemPath`、internal package、manifest外KOIKI artifactまたは通常local repoへの依存で停止 |
+| 6. Result capture | PASS / FAIL、所要時間、Customer側source identityの非機密表現、manifest SHA-256を記録する | 再現に必要な最小情報 | Customer source path、credential、個人情報、業務dataをEvidenceへ出力した場合はblocking |
+| 7. Cleanup / finalize | Customer process、port、container、一時credential、stage rootを削除し、cleanup結果をmanifestへ反映してfinal manifestのSHA-256を計算する | residual resource 0、final manifest、manifest SHA-256 | cleanup不能はFAIL。manifestをfinalizeして失敗を記録し、成功扱いしない |
+
+Phase 2履歴の`p2-c2-formal-release-unit.txt`は書き換えない。Phase 3で追加した`koiki-starter-web-mvc`を含む現行境界は、
+既存`verify-p2-c2-package-static.ps1 -CurrentFormalReleaseUnit`とRuntime CP8 / CP10の15 projects / 12 JAR検査を
+再利用する。ただし、既存検証scriptはtemporary repositoryをfinallyで削除するため、R2 Toolingは共通化可能なinventory / assertionを
+再利用または抽出し、検証scriptのcleanupを無効化して流用しない。
+
+Root aggregator POMを含む15 projectsはstage inventoryの完全性確認に使用する。Customerが依存対象として選べるのは、
+Parent、BOM、12 JARのうち案件に必要なartifactだけであり、Root aggregatorをCustomer dependencyとして公開しない。
+
+#### 3.2.3 R2 manifest contract
+
+manifestはlocal stageと使用Frameworkを一意に対応付けるためのhash inventoryである。Customer業務情報やartifact本体を
+Evidenceへ埋め込むものではない。full manifestはstage root外のcaller指定Evidence出力先へ保存し、stage cleanup後も
+合意したretention期間だけ保持する。Framework / Customerのsource Repositoryへ既定で書き込まず、P4-AR6 Evidenceには次の
+非機密summaryだけを転記する。
+
+- schema version / kind
+- Framework source commit / dirty=false
+- logical Framework version
+- manifest SHA-256
+- project / coordinate / JAR count
+- Java / Maven Wrapper version
+- stage / Customer verificationのPASS / FAILと時刻
+- finding ID（存在する場合）
+
+必須JSON構造の設計案は次のとおりとする。値は例示であり、実行結果ではない。
+
+```json
+{
+  "schemaVersion": 1,
+  "kind": "p4Ar6LocalStageManifest",
+  "capturedAtUtc": "2026-09-18T00:00:00.0000000Z",
+  "source": {
+    "repository": "KOIKI-JAVAWEB",
+    "commit": "<40 lowercase hex>",
+    "dirty": false
+  },
+  "build": {
+    "javaFeature": 21,
+    "javaRuntime": "<vendor and exact version>",
+    "mavenWrapper": "<exact version>",
+    "os": "<non-user-identifying OS description>"
+  },
+  "releaseUnit": {
+    "logicalVersion": "0.1.0-SNAPSHOT",
+    "projectCount": 15,
+    "coordinateCount": 15,
+    "jarCount": 12,
+    "pomOnlyCount": 3
+  },
+  "repository": {
+    "kind": "local-isolated",
+    "startedEmpty": true,
+    "absolutePathRecorded": false
+  },
+  "artifacts": [
+    {
+      "groupId": "org.koikifw",
+      "artifactId": "koiki-starter-api",
+      "version": "0.1.0-SNAPSHOT",
+      "packaging": "jar",
+      "role": "runtime",
+      "consumerVisible": true,
+      "payloads": [
+        {
+          "extension": "pom",
+          "relativePath": "org/koikifw/koiki-starter-api/0.1.0-SNAPSHOT/koiki-starter-api-0.1.0-SNAPSHOT.pom",
+          "sizeBytes": 0,
+          "sha256": "<64 uppercase hex>"
+        },
+        {
+          "extension": "jar",
+          "relativePath": "org/koikifw/koiki-starter-api/0.1.0-SNAPSHOT/koiki-starter-api-0.1.0-SNAPSHOT.jar",
+          "sizeBytes": 0,
+          "sha256": "<64 uppercase hex>"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "formalInventory": "PASS",
+    "forbiddenContent": "PASS",
+    "customerBuild": "PENDING",
+    "cleanup": "PENDING"
+  }
+}
+```
+
+`artifacts`には15 coordinateをartifactId昇順で格納する。Root aggregatorは`role=aggregator`かつ
+`consumerVisible=false`、Parent / BOMは`packaging=pom`、その他12 artifactは`packaging=jar`とする。
+各coordinateはPOM payloadを1件、JAR packagingはさらにJAR payloadを1件持つ。SHA-256はfile contentから計算し、
+relative pathはstage rootからの`/`区切りとする。
+
+次はmanifestへ記録しない。
+
+- stage root、Framework checkoutまたはCustomer checkoutの絶対path
+- user name、home directory、machine name、IP address
+- repository credential、token、Cookie、password、private key
+- Customer groupId / artifactIdが機密となる場合の実値
+- Customer source、dependency tree全文、業務dataまたはlog全文
+
+manifest自体は署名済みrelease証明ではない。local R2ではpayload SHA-256とsource commitの対応を検査するために使い、
+R1 managed repositoryへ移行する場合は、publish identity、resolved snapshot version、workflow run、署名、retentionを含む
+Phase 2 publish manifest相当の強い契約を別途設計する。
+
+#### 3.2.4 Customer invocation and POM boundary
+
+Customer POMにはstage directoryの絶対pathを記述しない。KOIKI artifactは通常の`groupId` / `artifactId` / `version`で宣言し、
+stage pathはFramework / Customerの実行wrapperまたはcommand parameterから`-Dmaven.repo.local`として渡す。
+
+Parent継承とCustomer-owned Parent + KOIKI BOM importのどちらを標準入口とするかはP4-AR6 decision pendingとする。
+R2 stageにはKOIKI ParentとBOMの両方を含め、実チームが選択候補を評価できるようにする。いずれの場合もStarterを
+個別versionでばらばらに指定せず、単一のKOIKI version identityへ揃える。
+
+Customer verificationで記録するdependency treeは`org.koikifw`座標だけへsanitizationし、manifest外version、
+`org.koikifw.*.internal`参照、Framework source directoryへの参照およびCustomer側で再installしたKOIKI artifactを拒否する。
+
+#### 3.2.5 Proposed Tooling ownership
+
+R2 Toolingを実装する場合は`build-support` Ownershipとし、正式Framework artifact、`koiki-testing`、Reference JARまたは
+Customer Repositoryへ含めない。候補interfaceは次の責務へ限定する。
+
+| Input | Contract |
+|---|---|
+| Expected Framework commit | 必須。40桁commitと`HEAD`の完全一致を検査する |
+| Stage root | 必須。Framework / Customer Repository外のsafe / empty directoryだけを許可する |
+| Manifest output | 必須。stage root外かつsource Repository外の明示file。親directoryだけを作成してよい |
+| Customer POM | Customer verify実行時だけ必須。read-onlyで受け取り、POMまたはsourceを変更しない |
+| Expected Framework version | 任意の二重確認。省略時は承認済みroot POMから取得し、manifestへ記録する |
+
+| Tooling responsibility | Required behavior |
+|---|---|
+| Prepare | expected commitとsafe / empty stage rootを検査する |
+| Stage | current formal release unitだけをbuild / installする |
+| Inspect | coordinate / packaging / forbidden contentを完全一致で検査する |
+| Manifest | §3.2.3のJSONとSHA-256 summaryを生成・検証する |
+| Consumer verify | 外部Customer POMを変更せず、明示parameterで`clean verify`する |
+| Cleanup | success / failureの双方でstageと一時resourceを削除する |
+
+Tooling実装は本設計review後のP4-AR6準備作業とし、Public API、Starter、dependency、migrationまたはworkflowを変更しない。
+Customer Repositoryを操作する場合は、対象path、実行commandおよび影響を示して別途承認を得る。
+
+R2では「同じIDE workspaceで開く」ことを、同じRepositoryまたは同じMaven reactorへ入ることと同一視しない。
+VS Codeではmulti-root workspaceとして両Repositoryを同時に開けるが、`.git`、POM、build lifecycleおよびcredential境界は
+それぞれ独立させる。想定するlocal配置は次のとおりである。これはProject Templateではなく、Repository Ownershipを
+説明するための概念図である。
+
+```text
+development-workspace/                 # Git Repositoryにはしない
+├── koiki-javaweb-fw/                   # Framework Git Repository
+│   └── .git/
+├── customer-application/               # Customer Git Repository
+│   └── .git/
+└── local-artifact-stage/               # isolated Maven repository / disposable / Git管理外
+```
+
+この図の`local-artifact-stage/`が、前述のisolated Maven repositoryに相当する。検証ごとに空で作成する専用の
+Maven local repositoryであり、常設repository serverやFramework sourceのbuild workspaceではない。
+FrameworkとCustomerの両buildから`-Dmaven.repo.local=<local-artifact-stage>`を指定し、検証終了後に破棄できる前提とする。
+
+- Framework側は承認済みcommitからformal release unit候補だけを`local-artifact-stage`へstageする。
+- Customer側は通常のPOM dependencyとして明示versionを参照し、Framework sourceへの`relativePath`、`systemPath`、source copyを使用しない。
+- stage manifestにはsource commit、Maven coordinates、version、checksum、JDKおよび生成時刻を記録する。
+- Customer buildが成功しても、そのartifactを正式releaseまたはsupport対象とは呼ばない。
+- framework sourceへのread accessは学習・診断・変更差分確認に利用できるが、Customer業務moduleの配置先にはしない。
+
+### 3.3 Customer Repository ownership layout
+
+次は、P4-AR6で配置責任を確認するための概念例であり、生成可能なProject Templateや固定package名ではない。
+
+```text
+customer-application/
+├── pom.xml                              # Customer-owned Parent / KOIKI BOM・Starter dependency
+├── src/main/java/<customer-base>/
+│   ├── <business-module-a>/             # 業務能力単位のmodule
+│   └── <business-module-b>/
+├── src/main/resources/
+│   └── db/migration/customer/           # Customer-owned migration
+├── src/test/java/<customer-base>/       # unit / application / architecture / integration test
+└── docs/                                # Customer設計、運用、判断記録
+```
+
+実際のMaven module分割、base package、frontend配置、deployment単位およびCIはCustomer要件を確認して決める。
+P4-AR6で空module、Project Templateまたは案件固有codeをKOIKI Repositoryへ先行生成しない。
+
+## 4. Artifact handoff contract worksheet
+
+実チームへ渡すものは、source treeの見え方ではなく、受取単位、identity、利用方法、非提供境界および問い合わせ先で定義する。
+
+| Handoff item | Identity / delivery candidate | Customer use | Not provided / caution | Decision status |
+|---|---|---|---|---|
+| Parent / BOM / Runtime Starters | Maven coordinates、version、source commit、checksum | Customer POMから依存 | 正式repository / support条件は未決定 | P4-AR6 decision pending |
+| Architecture Contract / ArchUnit Rules | test dependencyとrule version | Customer module境界をCIで検査 | 案件都合の暗黙除外は提供しない | P4-AR6 decision pending |
+| `koiki-testing` | test scope dependency | 公開契約のtest支援 | Reference fixture / production runtimeではない | P4-AR6 decision pending |
+| Framework source checkout | fixed commit / read access | 学習、診断、変更差分確認 | Customer codeの配置先またはsource dependencyではない | R2採用時に条件決定 |
+| Reference Application | source / package済みJAR / Local Run Guide | 利用例と統合動作の理解 | Project Template、業務codeのcopy元ではない | P4-AR5 approved input |
+| Consumer / verification Tooling | selected command / result | artifact利用経路と診断の理解 | Customer CIへaggregateを必須化しない | P4-AR6で提示範囲決定 |
+
+## 5. Actual-team reception session plan
+
+P4-AR6は一方向の説明会ではなく、実チームが入口を選び、実行し、判断を説明できるかを確認する。
+
+| Step | Activity | Evidence to retain | Stop / escalation condition |
+|---|---|---|---|
+| 1 | 参加role、KOIKI経験、利用可能なJDK / Maven / Docker / networkを非機密情報で確認する | 前提と不足だけを記録 | credential、個人情報、Customer sourceが必要になったら停止 |
+| 2 | Handoff Guide §1〜§6から提供物、非提供物、UI / auth profile、Starter候補を選ぶ | 選択理由と未決定事項 | 未実装profileを実装済みとして扱わない |
+| 3 | ReferenceまたはConsumerを30〜60分で起動する | 所要時間、成功観測点、迷った箇所、cleanup | 検査不能をPASSにしない |
+| 4 | Handoff Guide §8で最初のCustomer-owned moduleを説明する | Ownership、Tier、責務、永続化、公開境界 | Framework / Reference packageへ配置しようとしたら境界を再確認 |
+| 5 | R1〜R3からRepository / artifact handoff候補を評価する | 採否、理由、必要権限、再現手順、Owner | R4 / R5が必要ならArchitecture reviewへ戻す |
+| 6 | §6の責任分担表と§7のissue routingを確認する | Framework / Customer / joint、acceptance Evidence、次Gate | OwnerまたはEvidenceが曖昧なら決定を保留 |
+| 7 | resourceと一時credentialをcleanupし、findingsを分類する | residual 0、F1〜F6、priority、Owner | cleanup不能またはsecret非露出違反はblocking |
+
+## 6. Phase 4 responsibility allocation draft
+
+次の表は実チームreview用の初期案であり、P4-AR6の入力を得るまで確定しない。
+
+| Phase 4 area | Framework responsibility candidate | Customer responsibility candidate | Evidence / decision needed |
+|---|---|---|---|
+| Notification / Level 2 | event、idempotency、retry、purgeの共通契約と検証可能性 | 業務通知内容、provider、運用 | 採用trigger、実装Owner、Framework / Customer acceptance |
+| Accounting / MyBatis | adoption Gate、構造規約、Architecture Rules、共通error contract | 実schema、SQL、会計連携 | trigger成立前はRule 8拒否を維持 |
+| MVC / SPA coexistence | Security profile、Session / CSRF / CORS契約 | 実画面、frontend構成、UX | MVC / same-origin React / BFF / direct Tokenの選択 |
+| External API resilience | timeout、retry、concurrency、error translation契約 | 接続先固有Adapter、credential、SLA | protocol、障害責任、test環境 |
+| Batch / file / object storage | 単一実行、共通処理境界、検証指針 | 業務job、file format、storage設定 | deployable、再実行、運用Owner |
+| Observability | correlation、metric / trace契約、非露出 | 実監視基盤、alert、runbook | production観測点とretention |
+| Container / ECS / VT | Framework runtime要件、Reference Evidence | deployment、resource sizing、network | platform Ownerと非機能acceptance |
+
+## 7. Issue routing and finding treatment
+
+| Finding | Primary route | P4-AR6 treatment |
+|---|---|---|
+| F1 Framework defect | Framework Owner | P4-AR blocking。再現手順、source identity、期待契約を記録する |
+| F2 Developer-experience gap | Framework documentation / Tooling Owner | 優先度を決め、P4-AR7候補へ送る |
+| F3 Environment-specific issue | Customer development environment / organization Security | Framework既定を歪めず、環境Ownerの手順へ分離する |
+| F4 Customer requirement | Customer product / application Owner | Customer backlogへ置き、Framework昇格条件を別reviewする |
+| F5 Phase 4 feature | Phase 4 planning Owner | 見直し後Phase 4計画へ入力し、P4-AR中に先行実装しない |
+| F6 Optional Gate | Requesting project + Architecture Owner | 個別Gate承認前に開始しない |
+
+Frameworkへ戻すissueには、業務能力、選択profile、使用artifact identity、最小再現、期待するPublic contract、
+Security / Audit / migrationへの影響、Customer隔離の可否および希望時期を含める。Customer source、data、credentialまたは
+機密logを添付しない。
+
+## 8. P4-AR6 acceptance checklist
+
+- [ ] 実チームがHandoff Guideを単一入口として利用し、迷った箇所を記録している。
+- [ ] ReferenceまたはConsumerのbuild / run / representative operation / diagnosis / cleanupを実チーム条件で確認している。
+- [ ] R1〜R3のRepository topology候補を評価し、Customer業務codeをFramework Repositoryへ混在させていない。
+- [ ] Framework-owned R2 Toolingがsafe / empty stage、formal inventory、manifest、Customer verify、cleanupを一つの入口から実行できる。
+- [ ] Framework artifactのversion、source commit、checksumおよび解決経路を追跡できる。
+- [ ] 提供artifact、Reference、検証専用Tooling、非提供物を区別できる。
+- [ ] Phase 4成果物ごとのFramework / Customer / joint責任とacceptance Evidenceを合意している。
+- [ ] findingsにF1〜F6、priority、Owner、次Gateを割り当てている。
+- [ ] Customer機密情報を記録せず、P4-AR6で使用したresourceと一時credentialをcleanupしている。
+- [ ] Architecture OwnerがAR-D10の充足可否とP4-AR7 / Gate P4-ARへの進行可否を判断している。
+
+## 9. Preparation findings and open decisions
+
+| ID | Finding / decision | Current assessment | Required input / Owner |
+|---|---|---|---|
+| AR6-P1 | Customer RepositoryをKOIKI Root Reactorへ追加するか | Accepted Repository Architectureと競合するため通常案にはしない | 例外要求がある場合のみArchitecture Owner / ADR review |
+| AR6-P2 | 移行期にFramework変更をどう追跡するか | R2を暫定推奨。stage手順とmanifest契約は§3.2.2〜§3.2.5で設計済み、Tooling実装・実チーム検証は未実施 | Framework release Owner + actual application team |
+| AR6-P3 | managed Maven repository / version / support条件 | 未決定。R1移行のblocking decision | Framework release Owner + organization platform |
+| AR6-P4 | actual Customer repository構成 | Customer要件未取得。概念Ownershipだけを提示 | Customer application lead |
+| AR6-P5 | actual-team session schedule / participant | 未決定 | Project / application Owner |
+| AR6-P6 | R2 stage Toolingを実装するか | build-support Ownershipの候補interfaceまで設計。Public API変更なし | Architecture Owner / Tooling maintainer |
+
+## 10. Owner review boundary
+
+P4-AR6のclose reviewでは次を確認する。
+
+1. 実チーム受入をFramework開発者側rehearsalで代替していない。
+2. Repository topologyが別Repository / Maven artifact境界を維持し、R4 / R5を通常経路として採用していない。
+3. R2を採用する場合もsource commit、version、checksum、isolated repositoryおよびcleanupを追跡できる。
+4. manifestがformal unitの全coordinateとpayload SHA-256を持ち、絶対path、credentialまたはCustomer機密情報を持たない。
+5. Parent継承またはBOM importの入口と、Customer POMへstage pathを埋め込まない境界が明確である。
+6. Framework / Customer / joint責任分担とacceptance Evidenceが成果物ごとに明確である。
+7. Customer固有code、schema、credential、個人情報または機密logをKOIKI Repositoryへ持ち込んでいない。
+8. F1〜F6 findingのOwner、priority、次Gateが決まっている。
+9. AR-D10を満たし、P4-AR7またはGate P4-ARへ進める状態か。
+
+本書の骨格作成はRepository topology、artifact配布、実案件repository操作、P4-AR6完了、Gate P4-AR acceptanceまたは
+Phase 4開始を承認するものではない。
