@@ -7,5 +7,5 @@ classpath resourceを提供する。
 - Security、Identity、Sessionまたは業務routeを自動構成しない。
 - `/koiki-web/**`から共通styleを配布する。
 - `koiki/fragments`を共通head / navigation fragmentとして提供する。
-- HTMX 2.0.10はlocal assetとして固定するが、interactionとCSRF統合はP3-B3で実証する。
+- HTMX 2.0.10はlocal assetとして固定し、interactionとCSRF統合はP3-B3で実証済みである。
 - Customer固有theme、業務Form、Controller、View DTOを所有しない。

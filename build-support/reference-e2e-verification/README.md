@@ -14,9 +14,10 @@ P3-C2の非配布Toolingである。Root Reactorには含めず、同じpackage�
 - Playwright Java / Chromium `1.62.0`、Testcontainers、test-only OIDC / JWKSをToolingのtest scopeだけで使用する。
 - fixture userは使い捨てDB内だけに作成し、password、RSA key、Bearer token、Cookieおよびsource HMAC keyは
   各runのmemory内だけで生成する。
-- Framework / Reference production source、migration、Root Reactor、`koiki-testing`、Project Template、workflowへ含めない。
+- Framework / Reference production source、migration、Root Reactor、`koiki-testing`またはProject Templateへ含めない。
 - P3-B3 / B4とP3-C1のfocused negative matrixを複製せず、1本のhappy pathだけを検証する。
-- 本commandはCI候補のlocal entrypointであり、workflowまたはrequired checkを追加しない。
+- 本commandはlocal / CI共通entrypointである。main rulesetでは`Phase 3 Critical Journey E2E`として8件目の
+  required checkに登録済みだが、Toolingの非配布境界とRoot Reactor外の位置づけは変わらない。
 
 ## One-time browser setup
 

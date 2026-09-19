@@ -6,7 +6,7 @@ Phase 2 P2-B1のFramework-owned Audit contractと内部JPA永続化を提供す�
 - `SecurityAuditRecorder`は`REQUIRES_NEW`で独立commitする
 - Auditの正本はDB rowであり、Application log、ファイルまたは外部log backendへ依存しない
 - actor、event、resource等の値にPassword、token、secret、raw emailまたは外部subjectを渡さない
-- production Flyway MigrationはP2-C1で追加する。P2-B1は非配布fixture-owned schemaで実証する
+- production Flyway migration `V2026090300__create_koiki_audit.sql`を同梱し、非配布fixtureとは分離する
 - Spring transaction、JPA Entity / Repository、transaction分類enumをPublic APIへ露出しない
 
 Public APIとtransaction判断は

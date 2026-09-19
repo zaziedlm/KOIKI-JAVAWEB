@@ -23,8 +23,9 @@ Spring標準componentによる成立性を実証する。test identity、Permiss
 公開Java型、configuration property、Security error codeは引き続き0件とする。
 
 test user、test route、test keyは非配布fixtureだけに置き、正式Starterのproduction sourceには含めない。
-Customer固有Role / Permission、login UI、identity persistence、Spring Session JDBCおよびMigrationは
-Owning CPまで追加しない。Authorization ServerはPhase 2対象外とする。
+Customer固有Role / Permissionとlogin UIはApplicationが所有する。identity persistenceとSpring Session JDBCは
+それぞれ`koiki-starter-identity`と`koiki-starter-session-jdbc`へ分離し、本Starterへ混在させない。
+Authorization Serverは現行提供範囲に含めない。
 
 P2-A3ではSpring Boot標準のOAuth2 ClientとResource Server starterをdependencyとして提供する。
 Customerはbrowser / callback pathとBearer API pathを別の`SecurityFilterChain`で明示し、OIDC LoginのHTTP Sessionと

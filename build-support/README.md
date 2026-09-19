@@ -1,6 +1,12 @@
 # build-support
 
 KOIKI自身のBuild / Quality Gate検証を補助するTooling所有の資材を配置します。
+ここにあるConsumer、fixture、scriptおよびHarnessは、明記されたものを除きRoot Reactor外・非配布であり、
+Customer Applicationへコピーしたり、Customer CIへ一括導入したりしません。業務アプリ開発者は最初に
+[アプリ開発チーム向け引継ぎガイド](../docs/development/application-team-handoff-guide.md)を確認し、目的に合うToolingだけを選びます。
+
+共有source baselineのtag名と現在状態は[Repository Top README](../README.md)を正本とします。各Toolingでは、
+実際に検証したcommit、入力parameterおよび個別READMEに記載された実行境界を別途記録します。
 
 ## Pre-Phase 4 Adoption Readiness Verification
 
@@ -131,8 +137,9 @@ test-only OIDC / JWKSを使うBearer API focused Harnessです。Root Reactor、
 ## Reference Critical Journey E2E Verification
 
 `reference-e2e-verification/`はPhase 3 P3-C2のpackage済みReference JARに対し、Bearer API、Session browser、
-PostgreSQL、Audit、process logおよびcleanupを一連で突合するTooling所有の非配布Harnessです。Root Reactorや
-workflowへ暗黙追加せず、実行手順は`reference-e2e-verification/README.md`を参照してください。
+PostgreSQL、Audit、process logおよびcleanupを一連で突合するTooling所有の非配布Harnessです。Root Reactorには
+含めません。local entrypointとrequired check `Phase 3 Critical Journey E2E`は同じ検証を実行します。実行手順は
+`reference-e2e-verification/README.md`を参照してください。
 
 Maven Toolchains例は開発環境の再現用に保持します。Walking Skeleton専用のclass version確認と
 Java 25 runtime scriptは、C4のmanifest・hash・class major・Java 21 / 25検証へ置き換えたため除去しました。
