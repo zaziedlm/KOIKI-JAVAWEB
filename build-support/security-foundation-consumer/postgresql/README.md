@@ -19,7 +19,8 @@ pwsh -NoProfile -File build-support/security-foundation-verification/verify-p2-c
 
 - KOIKI Parentは`relativePath`なしで解決し、Starter versionをConsumer側で重複指定しない。
 - Session profileの入口は`koiki-starter-session-jdbc`で、WebMVC、PostgreSQL driver、Flyway PostgreSQL moduleは
-  Applicationが明示する。
+  Applicationが明示します。Data Starterも現行baselineのFlyway PostgreSQL moduleを推移提供しますが、このfixtureの
+  直接宣言はDB固有dependencyのCustomer OwnershipをPOM上で可視化するために維持します。
 - Customerは`SecurityFilterChain`、route、policy、credential供給および`db/migration/customer`を所有する。
 - Identity / Audit / Sessionは`org.koikifw`の公開契約だけから利用し、`internal`、Entity、Repositoryを参照しない。
 - Framework migrationはStarter JARから適用し、Customer側へcopyしない。

@@ -13,7 +13,7 @@
 
 ## Validation index
 
-実装で得た証拠の正本は`validation/`に置きます。2026年8月30日時点で、Phase 1aはMilestone A〜C、
+実装で得た証拠の正本は`validation/`に置きます。Phase 1aはMilestone A〜C、
 C1〜C5およびGate 1〜4を完了し、Architecture Ownerが最終CIを含むcloseoutを承認しています。
 Phase 1b Runtime FoundationはMilestone A〜C、CP1〜CP10、Gate 1〜2、main最終CIおよび
 9成果物のsnapshot remote Consumer検証を完了し、Architecture Ownerがcloseoutを承認しています。
@@ -57,9 +57,12 @@ Java Runtime Compatibility 2 / 2 jobsも成功しています。Phase 3 remote c
 | Post-merge Remote Closeout | COMPLETE / MERGED / MAIN CI PASS | `validation/phase3-post-merge-closeout.md` |
 
 Phase 3 post-merge closeoutで判明した実案件始動とPhase 4作業の一部移管見込みは、Phase 3を再オープンせず、
-Pre-Phase 4 Adoption Readiness（P4-AR）のtransition Gateで扱います。P4-AR0とAR-1〜AR-7は
-`COMPLETE / OWNER APPROVED`であり、正本は`../development/KOIKI-JavaWeb-FW_Pre-Phase4_Adoption_Readiness計画_v0.1.md`です。
-P4-AR1以降は本計画の`main`反映とclean-main同期後に開始し、Phase 4開始は別途判断します。
+Pre-Phase 4 Adoption Readiness（P4-AR）のtransition Gateで扱います。P4-AR0では計画とOwner review point
+`AR-1`〜`AR-7`を`COMPLETE / OWNER APPROVED`としました。これは下表の作業パッケージP4-AR1〜P4-AR7の
+一括完了を意味しません。正本は`../development/KOIKI-JavaWeb-FW_Pre-Phase4_Adoption_Readiness計画_v0.1.md`です。
+P4-AR1〜P4-AR5とP4-AR6のFramework側準備を完了し、README整合を含むsource milestoneで共有baselineを
+固定します。tag名と現在状態は[Repository Top README](../../README.md)を正本とします。P4-AR6の実チーム受入、
+P4-AR7、Gate P4-ARおよびPhase 4開始は別途判断します。
 
 | Work Package | 状態 | 検証記録 |
 |---|---|---|
@@ -68,7 +71,9 @@ P4-AR1以降は本計画の`main`反映とclean-main同期後に開始し、Phas
 | P4-AR3 Runtime / Security Consumer baseline | COMPLETE / READY FOR P4-AR4 | `validation/pre-phase4-p4-ar3-runtime-security-consumer-baseline.md` |
 | P4-AR4 Reference Application baseline | COMPLETE / READY FOR P4-AR5 | `validation/pre-phase4-p4-ar4-reference-application-baseline.md` |
 | P4-AR5 Developer Handoff Readiness | COMPLETE / OWNER APPROVED | `validation/pre-phase4-p4-ar5-developer-handoff-readiness.md` |
-| P4-AR6 Actual-project Handoff Contract | PREPARATION — ACTUAL-TEAM INPUT REQUIRED | `validation/pre-phase4-p4-ar6-actual-project-handoff-contract.md` |
+| P4-AR6 Actual-project Handoff | FRAMEWORK PREPARATION / OWNER APPROVED — ACTUAL-TEAM INPUT REQUIRED | `validation/pre-phase4-p4-ar6-actual-project-handoff-contract.md`、`../development/p4-ar6-actual-team-reception-worksheet.md` |
+| P4-AR7 Finding remediation | PENDING — P4-AR6 ACTUAL-TEAM INPUT REQUIRED | 本行の後続Evidenceは未作成 |
+| Gate P4-AR | PENDING / NOT APPROVED | P4-AR6 / P4-AR7完了後に判定 |
 
 ### Phase 2 Security Foundation
 
@@ -90,8 +95,10 @@ P4-AR1以降は本計画の`main`反映とclean-main同期後に開始し、Phas
 | P2-C3 Developer Journey / DoD | COMPLETE / OWNER APPROVED | `validation/phase2-p2-c3-contract-review.md`、`validation/phase2-p2-c3-c3-2-developer-journey.md`、`validation/phase2-p2-c3-c3-3-closeout.md` |
 | Gate C final remote closeout | COMPLETE / ACCEPTED | `validation/phase2-gate-c-c1-remote-plan-review.md`、`validation/phase2-gate-c-c2-publish-preflight-correction.md`、`validation/phase2-gate-c-c2-publish-capture-correction.md`、`validation/phase2-gate-c-c2-remote-evidence.md` |
 
-業務アプリケーション開発者向けの入口は
+Phase 2 Security契約、profileおよび診断の詳細入口は
 [`Phase 2 Security Foundation Developer Journey`](../development/phase2-developer-journey.md)とする。
+業務アプリ開発全体の第一入口は
+[`アプリ開発チーム向け引継ぎガイド`](../development/application-team-handoff-guide.md)を使用する。
 
 ### Phase 1b Runtime Foundation
 

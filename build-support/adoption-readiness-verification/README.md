@@ -4,6 +4,11 @@
 Tooling所有の非配布資材です。Root Reactor、BOM、formal release unit、Framework Public API、
 Starter、migrationおよびworkflowには含めません。
 
+共有source baselineのtag名と現在状態は[Repository Top README](../../README.md)を正本とします。本Toolingには
+tag名ではなく、検証対象checkoutで`git rev-parse HEAD`した40桁commitを`ExpectedFrameworkCommit`として渡し、
+検証対象のsource identityを実行前に固定します。tagを使用する場合は、実行者がcheckoutとの一致を確認します。
+source milestone tagは正式Maven release、managed repositoryまたは実チーム受入完了を意味しません。
+
 ## R2 handoff verification
 
 `invoke-p4-ar6-r2-handoff.ps1`は、cleanな固定Framework commitから現行formal release unitを

@@ -135,7 +135,8 @@ Architecture Ownerは次を確認し、ADR-001〜ADR-045をPhase 0 Architecture 
 ADR-046はP2-A1の実装Evidenceに基づき、2026年9月1日にArchitecture Ownerが承認した。
 ADR-047はP2-B1の実PostgreSQL Evidenceに基づき、2026年9月3日にArchitecture Ownerが承認した。
 ADR-048はP2-B3の実PostgreSQL、複数processおよびnon-web実行Evidenceに基づき、2026年9月8日にArchitecture Ownerが承認した。
-ADR-049はP3-A0 contract reviewに基づき、2026年9月13日にArchitecture Ownerが承認した。実装成立のEvidenceはP3-A1〜A4で追加する。
+ADR-049はP3-A0 contract reviewに基づき、2026年9月13日にArchitecture Ownerが承認した。実装成立はP3-A1〜A4と
+Gate AのEvidenceで確認済みである。
 
 今後、後から再判断し得る技術判断を追加・変更する場合も、手続きのためにADRを増やすのではなく、
 技術判断、理由、状態、再判断条件を残すために使用する。

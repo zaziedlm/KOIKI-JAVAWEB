@@ -48,15 +48,19 @@ KOIKI Parentを使用できるprojectは`org.koikifw:koiki-parent`をparentと�
 | local Identity、Role / Permission、外部identity link | `koiki-starter-identity` | reset token / mail、Customer属性 |
 | server-side Session共有、全Session失効、期限切れcleanup | `koiki-starter-session-jdbc` | Bearer-only applicationへのSession |
 
-`koiki-starter-session-jdbc`はIdentity、Audit、Security、Dataの必要なKOIKI依存を推移的に含む。Sessionを利用するApplicationでは、
-Application所有dependencyとして少なくともWebMVC、PostgreSQL driver、Flyway PostgreSQL moduleを用途に応じて追加する。
-Bearer-only APIはSession Starterを導入せず、Security StarterとApplicationが必要とするWeb / Data dependencyだけを選ぶ。
+`koiki-starter-session-jdbc`はIdentity、Audit、Security、Dataの必要なKOIKI依存を推移的に含みます。Data Starterは
+検証済みbaselineとしてFlyway PostgreSQL moduleを推移提供します。一方、DB固有moduleの選択責任、Customer migrationと
+PostgreSQL JDBC driverはApplicationが所有します。Phase 2 ConsumerではそのOwnershipをPOM上で明示するため、同じFlyway
+PostgreSQL moduleを直接宣言します。Bearer-only APIはSession Starterを導入せず、Security StarterとApplicationが必要とする
+Web / Data dependencyだけを選びます。
 
 各Starterの正確な責務は[Starter index](../../koiki-starters/README.md)から確認する。未使用Starterや将来用moduleを追加しない。
 
-Session / Identityを利用するApplicationの最小依存選択は次の形になる。これは完成POMやProject Templateではない。
-`0.1.0-SNAPSHOT`はGate Cで承認された内部GitHub Packages repositoryから解決できるが、この例にはrepository設定や
-credential設定を含めない。
+Session / Identityを利用するPhase 2時点のApplicationの最小依存選択は次の形になります。これは完成POMやProject Templateでは
+ありません。`0.1.0-SNAPSHOT`のPhase 2成果物はGate Cで承認された内部GitHub Packages repositoryから解決できますが、
+この例にはrepository設定やcredential設定を含めません。Phase 3で追加した`koiki-starter-web-mvc`はこのPhase 2 snapshotの
+説明対象に含めず、現行構成では[Starter index](../../koiki-starters/README.md)と
+[アプリ開発チーム向け引継ぎガイド](application-team-handoff-guide.md)から選択します。
 
 ```xml
 <parent>

@@ -19,9 +19,9 @@ KOIKIでは、CIとartifact公開を別の権限境界として扱います。
   `koiki-p3-c2-e2e-*.log`の残存を検査します。残存があればcleanupしたうえでjobを失敗させ、
   検査command自体が失敗した場合も成功扱いにしません。GitHub-hosted runnerの破棄だけを
   cleanup成功証拠にしません。
-- `Phase 3 Critical Journey E2E`はrequired checkへ未登録です。draft PRのfresh runner PASS、
-  cleanup・実行時間・secret非露出のOwner Reviewおよび別の明示承認後にだけ、
-  既存7 contextsを維持した8件目のrequired check候補として扱います。
+- `Phase 3 Critical Journey E2E`はdraft PRのfresh runner PASS、cleanup・実行時間・secret非露出の
+  Owner Reviewおよび明示承認を経て、既存7 contextsを維持した8件目のrequired checkとして
+  main rulesetへ登録済みです。登録後も非配布Tooling境界と`contents: read`だけの権限を維持します。
 - `Security Foundation Integration` jobは、隔離Maven repositoryへrelease unitをstageし、Root Reactor外の
   Customer-like Consumerをbuild／test／packageします。Java 21でbuildした同一JARをJava 21／25で実行し、
   Security依存、Public API fixture、secret non-exposureおよびcleanupを累積検証します。

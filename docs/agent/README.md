@@ -12,4 +12,5 @@ ArchUnitやNullAwayで機械検査できる規則をSkillsへ重複記述せず�
 `.agents/skills/`、`.claude/skills/`は正本への導線だけを持ちます。
 
 OpenSpec changeがRepositoryに存在する場合、OpenSpecが変更固有の要求、設計、タスクを管理し、
-KOIKI SkillsがRepository横断の設計判断を支援します。OpenSpecはPhase 1aの必須toolingではありません。
+KOIKI SkillsがRepository横断の設計判断を支援します。OpenSpecはKOIKIのMaven build、CI、Consumerまたは
+P4-ARの必須toolingではありません。
