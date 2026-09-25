@@ -75,6 +75,15 @@ P4-AR7、Gate P4-ARおよびPhase 4開始は別途判断します。
 | P4-AR7 Finding remediation | PENDING — P4-AR6 ACTUAL-TEAM INPUT REQUIRED | 本行の後続Evidenceは未作成 |
 | Gate P4-AR | PENDING / NOT APPROVED | P4-AR6 / P4-AR7完了後に判定 |
 
+### Adoption supplemental verification
+
+P4-ARまたはPhase 3を再オープンせず、現行ReferenceをCustomerに近い独立project境界へ一時的に置く
+補足Adoption検証を管理する。これはCustomer Application、Project Template、正式releaseまたはPhase 4開始ではない。
+
+| Verification | 状態 | 検証記録 |
+|---|---|---|
+| External Reference Boundary | COMPLETE / PASS — EXTERNAL REFERENCE BOUNDARY PROVEN | `validation/adoption-external-reference-boundary-validation.md` |
+
 ### Phase 2 Security Foundation
 
 | Work Package / Gate | 状態 | 検証記録 |
