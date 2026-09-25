@@ -83,6 +83,7 @@ P4-ARまたはPhase 3を再オープンせず、現行ReferenceをCustomerに近
 | Verification | 状態 | 検証記録 |
 |---|---|---|
 | External Reference Boundary | COMPLETE / PASS — EXTERNAL REFERENCE BOUNDARY PROVEN | `validation/adoption-external-reference-boundary-validation.md` |
+| Greenfield Bootstrap Smoke | COMPLETE / PASS — REFERENCE-INDEPENDENT GREENFIELD BOOTSTRAP PROVEN | `validation/adoption-greenfield-bootstrap-smoke.md` |
 
 ### Phase 2 Security Foundation
 

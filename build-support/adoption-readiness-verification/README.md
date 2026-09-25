@@ -115,3 +115,15 @@ pwsh -NoProfile -File build-support/adoption-readiness-verification/invoke-exter
 ```
 
 このwrapperはReferenceをformal release unit、BOM、Root Reactor、Customer成果物またはProject Templateへ追加しません。
+
+## Greenfield bootstrap smokeでの再利用
+
+Reference sourceを使わないInitializr生成projectも、専用wrapperを追加せずR2 handoff verificationの`CustomerPom`として
+検証できます。Customer POMはKOIKI Parentへ空の`<relativePath/>`で接続し、必要なStarterだけを選択し、
+`koiki-archunit-rules`を実行するtestを含めます。Data Starterを使う場合、Customer migrationは
+`classpath:db/migration/customer`へ配置します。
+
+`koiki-starter-api`のREST endpointはpath-segment API versioning契約へ適合させます。例えばversion 1は
+`/api/v1/...`へmappingし、handlerの`@GetMapping`等にも`version = "1"`を宣言します。
+このsmokeの結果とTemplateへ昇格させない境界は
+[`Greenfield Bootstrap Smoke Validation`](../../docs/architecture/validation/adoption-greenfield-bootstrap-smoke.md)に記録します。
