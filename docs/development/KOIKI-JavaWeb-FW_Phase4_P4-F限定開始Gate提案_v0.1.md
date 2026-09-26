@@ -125,11 +125,12 @@ Root Reactor・正式release unitから独立したTooling-owned fixtureを置�
 process、container、port、一時credentialを検証後にcleanupし、fixtureをFramework成果物へ自動昇格しない。
 本検証の結果をF-2〜F-4へ入力し、Gate P4-Fの採否は改めて判断する。
 
-**実施前preflight（2026-09-26）:** Maven Wrapper 3.9.16 / JDK 21.0.12.1を確認した。
-Docker APIは現在の実行権限では接続できず、権限要求も承認されなかった。local PostgreSQLの5433番portも未接続である。
-Maven dependency取得は通常の`~/.m2`への書込み権限で失敗した。fixtureはまだ作成しておらず、
-PostgreSQL依存の検証結果はない。再開時は、利用可能なDB接続とworkspace内の隔離Maven repositoryを
-preflightし、実行不能なら未検証としてEvidenceへ記録する。
+**実施preflightと進捗（2026-09-26）:** Maven Wrapper 3.9.16 / JDK 21.0.12.1を確認した。
+通常のsandbox権限ではDocker named pipeと`~/.m2`への書込みを拒否されるが、権限付き実行で
+Rancher Desktop Engine 29.5.3とMaven依存取得が成立した。`postgres:17-alpine`のTestcontainersで
+JDBC / JPAそれぞれSurefire 5件、Failsafe 2件がPASSした。未解決の再送競合、非同期相関、Rule 28 / 29、
+正式migration所有と方式選定は残す。詳細と未実施項目は
+[PL2 Level 2検証Evidence](../architecture/validation/phase4-pl2-level2-verification.md)に記録する。
 
 ## 5. Gate提案時の判定と停止条件
 
