@@ -26,15 +26,16 @@ Application配置にする場合は各Consumerのschema準備とversion整合が
 再送は認可・Audit付きの専用復旧processに集約し、CP8と同じPostgreSQL session advisory lockで
 復旧process同士を排他する。FAILEDは回数上限候補を適用し、PUBLISHED / PROCESSINGは前処理processの
 停止確認と対象IDを伴う手動復旧から始める。停止を確認できない対象は再送しない。
-自動化には生存中listenerを除外する仕組みかfencingが必要。lock接続だけの喪失時にも先行JVMが動き続けたため、
-fail-stop / fencingも別に必要。provider冪等性は維持する。これは
+自動化には生存中listenerを除外する仕組みかfencingが必要。Toolingでは元processの停止確認と
+対象publication ID・観測状態・試行回数の一致を要求する入口、およびlock接続喪失時に専用JVMを停止する候補を検証した。
+停止確認の真正性と検知までの競合窓は残るため、provider冪等性を維持し、fencingを別途判断する。これは
 [PL2 Evidence§3.1](../architecture/validation/phase4-pl2-level2-verification.md#31-再公開の排他方針候補toolingでの検証)で
 lock接続が維持された復旧worker間だけを実証した候補であり、A1 blocking review前にproductionへ採用しない。
 
 | 再公開方式 | PL2の評価 | A1判断 |
 |---|---|---|
 | 全instanceで起動時自動再公開 | 同一publicationのlistenerが2 JVMで同時実行された | 採用しない案 |
-| 専用復旧process＋CP8型lock | worker間の競合skip、強制停止後の再取得、完了後の解放をJDBC / JPAで実証。生存中の通常listenerとlock接続だけの喪失では重複実行を確認 | **条件付き推奨候補**。元processの停止確認、lock喪失時fail-stop / fencing、運用認可を解くまで採用保留 |
+| 専用復旧process＋CP8型lock | worker間の競合skip、強制停止後の再取得、完了後の解放をJDBC / JPAで実証。guarded入口の停止確認・状態照合とlock喪失時JVM停止をfixtureで確認。確認が虚偽なら生存中listenerと重複し、lock喪失の検知前も競合窓がある | **条件付き推奨候補**。停止確認の発行・検証、検知前の競合と外部送信のfencing、運用認可を解くまで採用保留 |
 | 外部schedulerの単一起動指定だけ | RepositoryのCP8判断ではDB側の競合保証・crash recoveryを満たさない | 単独保証に使わない案 |
 | publicationごとのclaim / lease / fencing | 生存中listenerとの競合やlock接続喪失への対策候補 | schema・migration・運用負担を含めて別review。現時点で固定しない |
 
@@ -43,7 +44,7 @@ lock接続が維持された復旧worker間だけを実証した候補であり�
 | DoD | 非配布fixtureで確認済み | production実演前に残ること |
 |---|---|---|
 | 4-1 | 元transactionの承認記録は、非同期listener失敗後も残る | `expense`承認状態・Business AuditとReference通知の結合 |
-| 4-2 | PROCESSING中に別JVMを送信前 / 送信受理後で強制停止し、再起動後にCOMPLETED。複数JVMの同時再公開では同一listenerへ入る競合を確認。専用復旧JVM同士のadvisory lock排他候補を確認 | PUBLISHED停止窓、通常listenerの生存判定・lock接続喪失、package済みReferenceでの再現 |
+| 4-2 | PUBLISHEDとPROCESSING中の別JVMを送信前 / 送信受理後で強制停止し、再起動後にCOMPLETED。複数JVMの同時再公開では同一listenerへ入る競合を確認。guarded再送入口とlock喪失時の専用JVM停止候補を確認 | 元processの停止確認の真正性、検知前の競合窓、外部送信fencing、package済みReferenceでの再現 |
 | 4-3 | provider stubに一意keyがあれば再配送でも受理1件。なければ2件 | 実providerの冪等契約または同等策、通知logと送信境界の一貫性 |
 | 4-4 | FAILED件数・publication年齢gauge、stale monitor、明示再送と試行回数filter | FAILED遷移からの経過時間の定義、運用者認可 / Audit、上限到達通知、複数instance競合 |
 | 4-5 | completed publicationだけの保持期限パージ | 単一実行基盤とretention / purgeの配備・権限・同時配信競合 |
@@ -88,7 +89,22 @@ P4-Fで許可する対象・期限・Owner・Evidenceと、停止後のrollback�
 
 ## 5. 次のPL2作業
 
-1. PL2-V1〜V5の残件を[検証記録](../architecture/validation/phase4-pl2-level2-verification.md#3-未実施と次の確認)に沿って埋める。検出した通常listenerとの競合とlock接続喪失への運用・fail-stop / fencing設計、PUBLISHED停止窓、非同期相関、Rule negative fixture、migration二階層の検証を優先する。
-2. A1のJDBC / JPAとschema ownership、完了record方式を比較表で選ぶ。未確定ならP4-Fは`REWORK`候補とする。
-3. package別の下限 / 上限を設計・実装・test・実演・文書に分け、Phase共通配賦、Owner稼働日、外部待ち、CI費用を記入する。
-4. P4-01〜11とoptional項目のPL2台帳も更新し、P4-F外の作業を消さない。P4-AR6依存のB2 / E1は未取得を維持する。
+以下は[PL2検証記録§3](../architecture/validation/phase4-pl2-level2-verification.md#3-未実施と次の確認)と
+本資料のF-2〜F-5を結ぶ継続台帳である。順序はFramework側で独立に進められる作業を先に示す。
+V1 / V2のTooling結果はDoD 4-2の正式PASSやP4-F通過を意味しない。
+
+| 順 | 継続タスク | 次に作るEvidence・終了条件 | 判断・待ち条件 |
+|---|---|---|---|
+| 0 | V1 / V2の作業差分を固定 | `PUBLISHED`停止窓、guarded再送・lock喪失のfixtureと検証記録を一組として差分確認し、検証済み状態をコミットする | 現在の作業ツリーは未コミット。production成果物への昇格ではない |
+| 1 | **PL2-V5：A1のstore / migration選定入力** | JDBC / JPAのschema・完了record・upgrade / rollback・運用差と、KOIKI / Application二階層Flyway配置の実証を比較表にする。選定または選定不能の理由を明記 | A1 blocking review前。Framework / Applicationのmigration所有とDB方言責任はOwner判断。性能値を得ないまま優劣を断定しない |
+| 2 | **PL2-V4：Rule 28 / 29の負例** | Level 0 / 1の拒否を維持しつつLevel 2を選択するArchUnit fixture、Rule 29の直接・間接I/O経路の検出限界を記録 | 正式Rules / Public API変更はA1 blocking review後。既存`businessModuleRules(String)`を先に変更しない |
+| 3 | **PL2-V3：D1の観測契約** | FAILED遷移からの滞留時間とpublication年齢を区別し、初回event・再送・job間の相関ID / trace / log、漏えい負例をfixtureで確認 | 滞留起点、alert sinkと運用OwnerはD1 review入力。exporter既定を先行固定しない |
+| 並行 | **PL2-V2：復旧運用の残件** | 停止確認の発行元・対象process識別・有効期限、複数運用者の競合、試行上限到達時の通知、認可・Audit、検知前の競合窓と外部送信fencingの選択肢をrunbook案にする | 現fixtureの確認ファイルは停止の真偽を証明しない。追加の安全性主張は運用方式とprovider契約を決めてから検証する。A1 blocking reviewへ提出 |
+| 続く | **F-2 / F-3 / F-4の判定資料完成** | A1 / A2 / D1のmodule・dependency・migration・Rules / Public API影響、DoD 4-1〜4-5 / 4-12のpackage済み実演手順、commit point / rollback、設計・実装・test・実演・文書別の工数とOwner / CI費用を記入 | V2〜V5の結果を入力する。A1 store・schema ownershipが選べなければP4-Fは`REWORK`候補 |
+| 続く | **Phase 4全体のPL2台帳とF-5** | P4-01〜11・optionalの採否条件、当初DoDとの対応、P4-F対象外の待ち条件を残す。P4-AR計画・`AGENTS.md`の改訂差分を提案形で用意 | P4-B1の4-8 / 4-9とCustomer主導P4-03Bを分離。現行Gate規定はP4-F判断まで変更しない |
+| 最後 | **P4-FのOwner判断** | F-1〜F-5を揃えて限定開始の採否、対象commit point、停止条件を判定する | 現時点でGate P4-Fは未設置・未通過。production開始は別承認 |
+
+[PL1差分台帳](KOIKI-JavaWeb-FW_Phase4_PL1_REST利用境界差分台帳_v0.1.md#3-p4-ar6へ渡す確認事項)の
+Q1〜Q5とP4-AR6実チーム受入は入力待ちとして並行管理する。Next.js/BFF＋REST以外の案件要件、
+外部IdP SSOの確定、P4-B2 / E1のEvidence・正式受渡しをFramework側の推測で埋めない。
+PL2-V1のpackage済みReferenceでの正式実演はproduction Gate後に扱う。

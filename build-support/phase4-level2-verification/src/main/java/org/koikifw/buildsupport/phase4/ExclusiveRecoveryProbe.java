@@ -55,6 +55,70 @@ public class ExclusiveRecoveryProbe {
         }
     }
 
+    /** Conservative fixture entry. The confirmation file is an operator input, not a liveness proof. */
+    public void recoverGuarded(
+            UUID publicationId, UUID eventId, String expectedStatus, int expectedAttempts,
+            Path stopConfirmation, Path statusFile)
+            throws SQLException, IOException, InterruptedException {
+        String expectedConfirmation = publicationId + "|" + eventId + "|"
+                + expectedStatus + "|" + expectedAttempts;
+        if (stopConfirmation == null || !Files.isRegularFile(stopConfirmation)
+                || !expectedConfirmation.equals(Files.readString(stopConfirmation).trim())) {
+            Files.writeString(statusFile, "STOP_UNCONFIRMED");
+            return;
+        }
+        try (Connection connection = dataSource.getConnection()) {
+            if (!lock(connection, "SELECT pg_try_advisory_lock(?, ?)")) {
+                Files.writeString(statusFile, "CONTENDED");
+                return;
+            }
+            try {
+                if (jdbc.queryForObject("""
+                        SELECT count(*) FROM event_publication
+                        WHERE id = ? AND serialized_event LIKE ?
+                          AND status = ? AND completion_attempts = ?
+                        """, Integer.class, publicationId, "%" + eventId + "%",
+                        expectedStatus, expectedAttempts) != 1) {
+                    Files.writeString(statusFile, "STALE_SELECTION");
+                    return;
+                }
+                Files.writeString(statusFile, "ACQUIRED");
+                incomplete.resubmitIncompletePublications(publication ->
+                        publication.getIdentifier().equals(publicationId)
+                                && publication.getStatus().name().equals(expectedStatus)
+                                && publication.getCompletionAttempts() == expectedAttempts
+                                && publication.getEvent() instanceof ProbeApproved event
+                                && event.eventId().equals(eventId));
+                while (publicationCount(eventId, "COMPLETED") == 0
+                        && publicationCount(eventId, "FAILED") == 0) {
+                    if (!connection.isValid(1)) {
+                        failStop(statusFile);
+                    }
+                    Thread.sleep(Duration.ofMillis(100));
+                }
+            } catch (SQLException | RuntimeException exception) {
+                failStop(statusFile);
+            } finally {
+                try {
+                    if (!connection.isValid(1)
+                            || !lock(connection, "SELECT pg_advisory_unlock(?, ?)")) {
+                        failStop(statusFile);
+                    }
+                } catch (SQLException exception) {
+                    failStop(statusFile);
+                }
+            }
+        }
+    }
+
+    private static void failStop(Path statusFile) throws IOException {
+        try {
+            Files.writeString(statusFile, "LOCK_LOST");
+        } finally {
+            Runtime.getRuntime().halt(70);
+        }
+    }
+
     private int publicationCount(UUID eventId, String status) {
         return jdbc.queryForObject("""
                 SELECT count(*) FROM event_publication

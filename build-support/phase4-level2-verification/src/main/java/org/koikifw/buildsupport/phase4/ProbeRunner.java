@@ -18,6 +18,11 @@ public class ProbeRunner implements ApplicationRunner {
     private final String approvalId;
     private final String recoveryId;
     private final String recoveryStatusFile;
+    private final boolean guardedRecovery;
+    private final String recoveryPublicationId;
+    private final String expectedStatus;
+    private final int expectedAttempts;
+    private final String stopConfirmationFile;
     private final String readyFile;
     private final boolean keepAlive;
 
@@ -27,6 +32,11 @@ public class ProbeRunner implements ApplicationRunner {
             @Value("${probe.approve.id:}") String approvalId,
             @Value("${probe.recover.id:}") String recoveryId,
             @Value("${probe.recover.status.file:}") String recoveryStatusFile,
+            @Value("${probe.recover.guarded:false}") boolean guardedRecovery,
+            @Value("${probe.recover.publication.id:}") String recoveryPublicationId,
+            @Value("${probe.recover.expected-status:}") String expectedStatus,
+            @Value("${probe.recover.expected-attempts:0}") int expectedAttempts,
+            @Value("${probe.recover.stop-confirmation.file:}") String stopConfirmationFile,
             @Value("${probe.ready.file:}") String readyFile,
             @Value("${probe.keep-alive:false}") boolean keepAlive) {
         this.approvals = approvals;
@@ -34,6 +44,11 @@ public class ProbeRunner implements ApplicationRunner {
         this.approvalId = approvalId;
         this.recoveryId = recoveryId;
         this.recoveryStatusFile = recoveryStatusFile;
+        this.guardedRecovery = guardedRecovery;
+        this.recoveryPublicationId = recoveryPublicationId;
+        this.expectedStatus = expectedStatus;
+        this.expectedAttempts = expectedAttempts;
+        this.stopConfirmationFile = stopConfirmationFile;
         this.readyFile = readyFile;
         this.keepAlive = keepAlive;
     }
@@ -47,7 +62,17 @@ public class ProbeRunner implements ApplicationRunner {
             if (recoveryStatusFile.isBlank()) {
                 throw new IllegalArgumentException("PL2 recovery status marker is required");
             }
-            recovery.recover(UUID.fromString(recoveryId), Path.of(recoveryStatusFile));
+            if (guardedRecovery) {
+                if (recoveryPublicationId.isBlank()) {
+                    throw new IllegalArgumentException("PL2 guarded recovery publication ID is required");
+                }
+                recovery.recoverGuarded(UUID.fromString(recoveryPublicationId), UUID.fromString(recoveryId),
+                        expectedStatus, expectedAttempts,
+                        stopConfirmationFile.isBlank() ? null : Path.of(stopConfirmationFile),
+                        Path.of(recoveryStatusFile));
+            } else {
+                recovery.recover(UUID.fromString(recoveryId), Path.of(recoveryStatusFile));
+            }
         }
         if (!readyFile.isBlank()) {
             try {

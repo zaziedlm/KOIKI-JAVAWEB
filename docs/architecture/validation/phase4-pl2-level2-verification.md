@@ -25,8 +25,8 @@ Framework Public API、Starter、正式migration、Reference業務code、remote�
 
 | 対象 | 操作 | 結果 |
 |---|---|---|
-| JDBC profile | `mvnw -f build-support/phase4-level2-verification/pom.xml -Pjdbc verify` | PASS。Surefire 7 tests、Failsafe 6 IT、ともにfailures / errors 0。競合testは重複listener実行を観測する性質の検査であり、安全性のPASSではない |
-| JPA profile | 同じコマンドの`-Pjpa` | PASS。Surefire 7 tests、Failsafe 6 IT、ともにfailures / errors 0。同上 |
+| JDBC profile | `mvnw -f build-support/phase4-level2-verification/pom.xml -Pjdbc verify` | PASS。Surefire 7 tests、Failsafe 9 IT、ともにfailures / errors 0。競合testは重複listener実行を観測する性質の検査であり、安全性のPASSではない |
+| JPA profile | 同じコマンドの`-Pjpa` | PASS。Surefire 7 tests、Failsafe 9 IT、ともにfailures / errors 0。同上 |
 | 元transactionとlistener失敗 | 承認をDBへ保存しevent発行後、provider stub送信成功直後にlistenerを失敗させる | 承認recordは残り、publicationはFAILED、provider stubのsend recordは1件 |
 | 再送と冪等key | `FailedEventPublications.resubmit`で再送 | 両profileでCOMPLETED。provider側にevent IDの一意keyがある場合、send recordは1件のまま |
 | 冪等keyがない場合 | 同じ失敗・再送を一意keyなしで繰り返す | 両profileでsend recordは2件。publication再送だけでは外部副作用の重複を防げない |
@@ -34,10 +34,13 @@ Framework Public API、Starter、正式migration、Reference業務code、remote�
 | 完了publication | `CompletedEventPublications.deletePublicationsOlderThan`を実行 | 両profileで対象のCOMPLETED recordが削除された |
 | 送信前のOS process強制停止・再起動 | 別JVMのlistenerがPROCESSINGへ入った時点で`destroyForcibly()`し、同じDBで別JVMを起動 | 両profileで停止前のprovider stub記録0件、再配信後1件、publicationがCOMPLETED。再起動時の再公開optionを明示指定 |
 | 送信受理直後のOS process強制停止・再起動 | provider stubが別transactionで送信受理を記録した直後、listener完了前に別JVMを`destroyForcibly()`し、同じDBで再起動 | 両profileで停止前の送信記録1件、再配信後も冪等keyにより1件、publicationがCOMPLETED |
+| PUBLISHEDのOS process強制停止・再起動 | fixture専用の条件付き`taskExecutor`で非同期listenerの実行前に停止。承認・publicationのDB保存とPUBLISHED、stub送信0件を確認してJVMを`destroyForcibly()`し、同じDBで自動再公開optionを明示した別JVMを単独起動 | 両profileで再公開後COMPLETED、stub送信1件。停止前の`completion_attempts`は1、再公開後は2だった。試行回数1をlistener実行済みの証拠とは扱えない。複数instanceでの自動再公開の安全性は示さない |
 | 複数JVMでの同一publication再公開 | 1つ目のJVMをPROCESSING中に強制停止。その後JVM-Aが同じpublicationを再公開してlistener内で停止している間に、JVM-Bを同じDBで起動 | 両profileでJVM-Bも同じlistenerへ入り、`completion_attempts`は少なくとも3。両listenerを強制停止してさらに再起動するとCOMPLETED / provider stub受理1件。**デフォルトの再起動時再公開optionだけでは複数instanceの排他を保証できない**。最初の安全性assertionは両instanceの同時処理を検出して失敗し、観測を固定したcharacterization testへ変更 |
 | 専用復旧JVMの排他候補 | 通常JVMの自動再公開を無効化。PROCESSING中に強制停止した記録を、専用復旧JVM-AがPostgreSQL session advisory lockを取得して明示再送し、listener内で停止。JVM-Bは同じlockへ競合。Aを強制停止してJVM-Cが復旧 | 両profileでAはACQUIRED / attempts 2、BはCONTENDED・listener未実行 / attempts 2。A停止後CがACQUIREDしてCOMPLETED / attempts 3、provider stub受理1件。終了後のlock解放も確認。**復旧worker同士**の排他候補として成立 |
 | 生存中の通常listenerと専用復旧JVM | 通常JVMのlistenerをPROCESSING中・送信前で停止させたまま、専用復旧JVMが同じevent IDを明示再送 | 両profileで専用JVMはlockをACQUIREDし、同じlistenerへ入った。`completion_attempts`は2、送信は停止位置のため0件。通常listenerと専用JVMの排他は成立しない。両JVM停止後の再復旧はCOMPLETED / stub受理1件 |
 | lock接続だけの喪失 | 専用復旧JVM-Aがlockを保持してlistener内で停止中、使い捨てPostgreSQLのlock保持backendだけを`pg_terminate_backend`で終了。AのJVM・listenerは生存したまま、専用復旧JVM-Bを起動 | 両profileでBもlockをACQUIREDし同じlistenerへ入った。`completion_attempts`は3以上、送信は停止位置のため0件。A・B停止後の再復旧はCOMPLETED / stub受理1件。**session lock喪失をprocess停止と同一視できない** |
+| 再送対象の保守的な選別候補 | Toolingのguarded入口へ対象publication ID・event ID、観測状態、試行回数を指定。元processの停止確認ファイルを付けず、生存中の通常listenerへ再送要求。元process停止後に古い試行回数、次に一致する確認情報で要求。同じeventの別publicationを検証用に追加 | 両profileで未確認はSTOP_UNCONFIRMED・再送なし、DB状態と合わない選択はSTALE_SELECTION・再送なし。一致したpublication IDだけ明示再送しCOMPLETED、別publicationはPROCESSINGのまま。停止確認ファイルは外部入力であり、内容の真偽をfixtureは証明しない |
+| guarded復旧中のlock接続喪失 | 元process停止を確認した対象をguarded入口で再送し、listenerを送信前で停止。lock保持backendだけ終了 | 両profileで復旧JVMはLOCK_LOSTを記録して終了コード70で停止し、送信は0件。古い確認情報は次の試行回数に使用不可。新しい停止確認で再復旧しCOMPLETED / stub受理1件。監視間隔中に新workerがlockを得る競合窓や外部provider送信中のfencingは解消していない |
 | FAILED観測候補 | fixture内にDB照会のMicrometer gaugeを置き、listener失敗・再送後の値を照合。FAILED recordの`publication_date`を人工的に5分前へずらす | 両profileでFAILED件数が1→0、最古FAILEDのpublicationからの経過時間が約5分以上→0。現行gaugeはpublicationからの年齢であり、FAILED状態へ入ってからの滞留時間を測るものではない。metric名・実装方式は未承認の候補 |
 | stale判定候補 | 失敗済みpublicationを検証用SQLで古い`PROCESSING`と新しい`PROCESSING`へ変更し、1分の閾値で`markStalePublicationsFailed`を実行 | 両profileで古い記録だけFAILED、新しい記録はPROCESSING。FAILEDを明示再送するとCOMPLETEDになり、冪等keyでprovider stub記録は1件のまま |
 | stale定期監視 | 失敗済みpublicationを検証用SQLで5分前の`PUBLISHED`と`PROCESSING`へ変更し、両状態の閾値1分・監視間隔200msをfixtureで設定 | 両profileでscheduled monitorが両記録をFAILEDへ移した。運用閾値として1分・200msを推奨する結果ではない |
@@ -57,8 +60,8 @@ FAILED gaugeが参照する`publication_date`は初回発行時刻であり、FA
 
 | ID | 確認事項 | 現在地 |
 |---|---|---|
-| PL2-V1 | publication保存後・listener中に実OS processを強制終了し、再起動後の未処理配信を確認 | PASS。両profileで送信前と送信受理直後のPROCESSINGから強制停止・再起動後にCOMPLETED。PUBLISHEDでの停止窓は未確認 |
-| PL2-V2 | stale PUBLISHED / PROCESSINGとFAILEDの運用手順、再送回数・同時実行を確認 | 古いPROCESSINGの手動判定・明示再送、PUBLISHED / PROCESSINGのscheduled monitor、`completionAttempts` filterによる2回上限候補は検証済み。複数JVMの自動再公開で重複listenerを確認。CP8型lockは復旧worker間で成立するが、生存中の通常listenerとlock接続喪失では重複実行を確認。安全な対象選別・fencing、複数運用者の明示再送、operator権限・監査は未解決 |
+| PL2-V1 | publication保存後・listener中に実OS processを強制終了し、再起動後の未処理配信を確認 | fixture範囲ではPASS。両profileでPUBLISHED、送信前PROCESSING、送信受理直後PROCESSINGから強制停止・再起動後にCOMPLETED。正式Referenceでの実演は別途必要 |
+| PL2-V2 | stale PUBLISHED / PROCESSINGとFAILEDの運用手順、再送回数・同時実行を確認 | 古いPROCESSINGの明示再送、PUBLISHED / PROCESSINGのscheduled monitor、試行回数filter、複数JVM競合を検証。guarded入口は停止確認と正確な状態・試行回数を要求し、不一致を拒否。lock喪失時のJVM停止も検証した。停止確認の真正性、検知前の競合窓・外部副作用fencing、複数運用者の再送、operator権限・監査は未解決 |
 | PL2-V3 | FAILED件数・滞留時間metric、event / retry / job間の相関IDとtrace / logを確認 | DB照会gaugeの件数とpublication年齢は検証済み。FAILED遷移からの時間、alert運用、非同期相関とtrace / logは未実施 |
 | PL2-V4 | Rule 28のLevel 1拒否を保ち、Level 2だけを許す条件とRule 29のnegative fixtureを設計・確認 | §4にsource照合と検証fixture案を記録。Registry記録対象設定の実動作は両方式でPASS。ArchUnit negative fixture実行と正式Rules変更は未実施・別review |
 | PL2-V5 | JDBC / JPAのdependency tree、migration配置、性能・運用差を比較して選定する | dependency treeと同じfixture Flyway schemaでの機能成立を確認。Framework / Referenceのmigration所有、性能・運用差は未確認。選定は保留 |
@@ -103,6 +106,26 @@ PUBLISHED / PROCESSINGは、発行時刻だけを根拠に自動再送しない�
 lock接続喪失でもJVMが継続する所見により、CP8型lockだけをA1の排他完成条件としない。
 送信境界の冪等keyはこの排他方針の下でも必須である。上記はToolingでの推薦案であり、正式運用契約・DoD PASSではない。
 
+### 3.2 再送対象選別とlock喪失の追加検証
+
+Toolingのguarded入口を追加し、対象publication ID・event ID、観測したpublication状態・`completion_attempts`、
+停止確認ファイルの組を要求した。確認ファイルは`publication ID|event ID|状態|試行回数`に結び、
+次の試行への使い回しを拒否する。さらに専用復旧lock取得後、DBの観測状態と試行回数が
+一致する記録1件だけを再送候補とし、再送predicateもpublication ID・状態・試行回数を照合する。
+同じevent IDを持つ別publicationを追加した試験では、対象だけCOMPLETEDとなり、別記録はPROCESSINGを維持した。
+欠落した停止確認は`STOP_UNCONFIRMED`、
+DBとの不一致は`STALE_SELECTION`として副作用なしで止める。これはoperatorや運用基盤が
+元processの停止を正しく確認したという**外部入力を前提**にした選別であり、
+ファイルを置いたこと自体は元processの停止証明にならない。
+
+guarded復旧は待機中にlock connectionを確認し、喪失時に`Runtime.halt(70)`で
+専用JVM全体を停止する。lock保持backendだけを終了した別JVM試験では、
+送信前の停止位置で`LOCK_LOST`、終了コード70、stub送信0件を両profileで確認した。
+ただしconnection喪失から検知までの間はlockを再取得したworkerと重なり得る。
+listenerが外部送信の実行中なら即時停止でも副作用を取り消せない。正しい停止確認の発行元、
+確認対象のprocess識別・有効期限、複数運用者の競合、provider側の冪等性またはfencing、
+認可・AuditをA1 blocking reviewで決める。このprobeをproductionの安全保証と扱わない。
+
 ## 4. Rule 28 / 29のsource照合と検証案（未採用）
 
 [グランドデザイン§21.3](../grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md#213-archunit--spring-modulith)では、
@@ -137,7 +160,7 @@ ArchUnitだけで証明したとは扱わない。上記fixtureと、呼出先Us
 
 ## 5. 暫定判断
 
-JDBC / JPAの両方式で、同じJPA業務transaction、Flyway schema、FAILED→再送→COMPLETED、パージ、送信前と送信受理直後のPROCESSING中の強制停止・再起動後配信、人工的なstale判定、Registry記録対象のannotation種別選択が成立した。
+JDBC / JPAの両方式で、同じJPA業務transaction、Flyway schema、FAILED→再送→COMPLETED、パージ、PUBLISHEDと送信前・送信受理直後のPROCESSING中の強制停止・再起動後配信、人工的なstale判定、Registry記録対象のannotation種別選択が成立した。
 運用filterで再送試行を抑制できること、fixtureのFAILED gaugeが測るのはpublicationからの年齢であることも確認した。
 複数JVMの同時再公開では同一publicationを別listener invocationが処理した。provider側の冪等性を前提にしても、
 同一eventの処理競合が許されるか、再公開を単一実行に制約するかをA1 blocking reviewで決める必要がある。
