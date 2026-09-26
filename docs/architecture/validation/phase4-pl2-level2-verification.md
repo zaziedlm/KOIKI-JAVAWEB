@@ -1,6 +1,6 @@
 # Phase 4 PL2 Level 2 非配布検証
 
-**状態:** IN PROGRESS — JDBC / JPAのDB内復旧、別JVMの強制停止・再起動、複数JVMでの同一publication再公開競合と専用復旧JVMの排他候補・限界、stale定期監視、FAILED gauge、再送回数filter、Registry記録対象設定を検証済み
+**状態:** IN PROGRESS — JDBC / JPAのDB内復旧、別JVMの強制停止・再起動、複数JVMでの同一publication再公開競合と専用復旧JVMの排他候補・限界、stale定期監視、FAILED gauge、再送回数filter、Registry記録対象設定、V5二階層migration候補を検証済み
 
 **開始baseline:** `7aa8669`（Phase 4 review decisions and planning baseline）
 
@@ -25,8 +25,8 @@ Framework Public API、Starter、正式migration、Reference業務code、remote�
 
 | 対象 | 操作 | 結果 |
 |---|---|---|
-| JDBC profile | `mvnw -f build-support/phase4-level2-verification/pom.xml -Pjdbc verify` | PASS。Surefire 7 tests、Failsafe 9 IT、ともにfailures / errors 0。競合testは重複listener実行を観測する性質の検査であり、安全性のPASSではない |
-| JPA profile | 同じコマンドの`-Pjpa` | PASS。Surefire 7 tests、Failsafe 9 IT、ともにfailures / errors 0。同上 |
+| JDBC profile | `mvnw -f build-support/phase4-level2-verification/pom.xml -Pjdbc verify` | PASS。Surefire 7 tests、Failsafe 11 IT、ともにfailures / errors 0。競合testは重複listener実行を観測する性質の検査であり、安全性のPASSではない |
+| JPA profile | 同じコマンドの`-Pjpa` | PASS。Surefire 7 tests、Failsafe 11 IT、ともにfailures / errors 0。同上 |
 | 元transactionとlistener失敗 | 承認をDBへ保存しevent発行後、provider stub送信成功直後にlistenerを失敗させる | 承認recordは残り、publicationはFAILED、provider stubのsend recordは1件 |
 | 再送と冪等key | `FailedEventPublications.resubmit`で再送 | 両profileでCOMPLETED。provider側にevent IDの一意keyがある場合、send recordは1件のまま |
 | 冪等keyがない場合 | 同じ失敗・再送を一意keyなしで繰り返す | 両profileでsend recordは2件。publication再送だけでは外部副作用の重複を防げない |
@@ -45,6 +45,7 @@ Framework Public API、Starter、正式migration、Reference業務code、remote�
 | stale判定候補 | 失敗済みpublicationを検証用SQLで古い`PROCESSING`と新しい`PROCESSING`へ変更し、1分の閾値で`markStalePublicationsFailed`を実行 | 両profileで古い記録だけFAILED、新しい記録はPROCESSING。FAILEDを明示再送するとCOMPLETEDになり、冪等keyでprovider stub記録は1件のまま |
 | stale定期監視 | 失敗済みpublicationを検証用SQLで5分前の`PUBLISHED`と`PROCESSING`へ変更し、両状態の閾値1分・監視間隔200msをfixtureで設定 | 両profileでscheduled monitorが両記録をFAILEDへ移した。運用閾値として1分・200msを推奨する結果ではない |
 | dependency tree | `mvnw -f build-support/phase4-level2-verification/pom.xml -Pjdbc/-Pjpa dependency:tree`をprofile別に取得 | 共通のSpring Boot JPA / JDBC / Flyway / Micrometerに加え、JDBC profileは`spring-modulith-starter-jdbc`と`spring-modulith-events-jdbc`、JPA profileは`spring-modulith-starter-jpa`と`spring-modulith-events-jpa`。いずれもSpring Modulith 2.1.1 |
+| V5二階層migration | `TwoTierMigrationIT`でKOIKI / Applicationの別履歴を使い、publication表をそれぞれの所有側に配置。KOIKI側の独立V2と失敗V3も実行 | 両profileでPASS。両配置でKOIKI先行・Application baseline 0・再実行0件。V2はKOIKI履歴だけ進み、失敗V3のDDLはPostgreSQLでrollback。詳細と限界は§3.3 |
 | Registry記録対象設定 | 同一eventへtest-onlyの通常`@TransactionalEventListener`と`@ApplicationModuleListener`を登録し、`spring.modulith.events.registry-trigger-annotation`の有無を比較 | 両profileで既定はCOMPLETED publication 2件。`@ApplicationModuleListener`へ限定すると1件。通常listenerは限定後も1回実行されるため、この設定は配信停止ではなく永続記録対象の選択 |
 
 このprovider stubは別transactionで送信受理を保存する模擬境界であり、送信直後のOS停止試験を含めても実mail providerの保証を証明しない。
@@ -64,7 +65,7 @@ FAILED gaugeが参照する`publication_date`は初回発行時刻であり、FA
 | PL2-V2 | stale PUBLISHED / PROCESSINGとFAILEDの運用手順、再送回数・同時実行を確認 | 古いPROCESSINGの明示再送、PUBLISHED / PROCESSINGのscheduled monitor、試行回数filter、複数JVM競合を検証。guarded入口は停止確認と正確な状態・試行回数を要求し、不一致を拒否。lock喪失時のJVM停止も検証した。停止確認の真正性、検知前の競合窓・外部副作用fencing、複数運用者の再送、operator権限・監査は未解決 |
 | PL2-V3 | FAILED件数・滞留時間metric、event / retry / job間の相関IDとtrace / logを確認 | DB照会gaugeの件数とpublication年齢は検証済み。FAILED遷移からの時間、alert運用、非同期相関とtrace / logは未実施 |
 | PL2-V4 | Rule 28のLevel 1拒否を保ち、Level 2だけを許す条件とRule 29のnegative fixtureを設計・確認 | §4にsource照合と検証fixture案を記録。Registry記録対象設定の実動作は両方式でPASS。ArchUnit negative fixture実行と正式Rules変更は未実施・別review |
-| PL2-V5 | JDBC / JPAのdependency tree、migration配置、性能・運用差を比較して選定する | dependency treeと同じfixture Flyway schemaでの機能成立を確認。Framework / Referenceのmigration所有、性能・運用差は未確認。選定は保留 |
+| PL2-V5 | JDBC / JPAのdependency tree、migration配置、性能・運用差を比較して選定する | 両storeの既存機能試験とdependency差を確認。二階層FlywayのKOIKI所有 / Application所有の両配置、KOIKI側だけのV2追加、失敗したV3のPostgreSQLでのDDL rollbackをToolingで確認（§3.3）。JDBC＋UPDATEをA1 review候補とする。正式schema所有者、成功済みmigrationのrollback、DB方言と性能差は未決定 |
 
 [Spring Modulith公式events文書](https://docs.spring.io/spring-modulith/reference/events.html)はpublication lifecycle、stale判定、再送・パージAPIを定義する。
 [公式設定一覧](https://docs.spring.io/spring-modulith/reference/appendix.html)ではstaleness閾値の既定は0で、monitorは既定で無効である。正式運用で閾値と再送方法を選ぶ必要がある。
@@ -125,6 +126,39 @@ guarded復旧は待機中にlock connectionを確認し、喪失時に`Runtime.h
 listenerが外部送信の実行中なら即時停止でも副作用を取り消せない。正しい停止確認の発行元、
 確認対象のprocess識別・有効期限、複数運用者の競合、provider側の冪等性またはfencing、
 認可・AuditをA1 blocking reviewで決める。このprobeをproductionの安全保証と扱わない。
+
+### 3.3 V5：storeと二階層migrationの比較
+
+既存のLevel 2 fixtureでは、JDBC / JPAの両profileが同じPostgreSQL schemaとJPA業務transactionで
+publication保存、復旧、再送、完了record削除まで通過した。dependency treeでは、共通のBoot JPA / JDBC / Flywayに対し、
+Modulith 2.1.1の`starter-jdbc` / `events-jdbc`と`starter-jpa` / `events-jpa`だけがprofile固有だった。
+[Spring Modulith公式events文書](https://docs.spring.io/spring-modulith/reference/events.html)によれば、
+JDBC storeはJPAを使うApplicationでもpublication永続化をJPA providerから分離できる。
+この性質と既存の機能試験から、**JDBC＋UPDATEをA1 blocking reviewの第一候補**とする。
+UPDATEは完了recordを保持し、検証済みの明示的な削除を運用設計へつなげられる。
+DELETE / ARCHIVE、性能、障害時の運用負荷を横並びで測定した結果ではないため、正式選定ではない。
+
+| store | PL2で確認した範囲 | A1で比較する残件 |
+|---|---|---|
+| JDBC | `events-jdbc`を追加し、JPA業務transactionと同じDBで復旧・再送・UPDATE完了recordの削除が成立 | publication SQLの所有者、DB方言、運用時の照会・更新負荷 |
+| JPA | `events-jpa`を追加し、同じ業務transaction・schema・復旧操作が成立 | JPA providerとの結合を採る理由、entity mapping変更とupgrade責任、運用時の負荷 |
+
+両storeの機能差や性能優劣を示す結果は得ていない。schema所有者の選択はstoreの選択から自動的には決まらない。
+
+追加した`TwoTierMigrationIT`はData Starterと同じKOIKI先行順、履歴表名、Application側baseline version 0を
+Flywayの直接呼び出しで再現した。`koiki_flyway_history`と`flyway_schema_history`は別表である。
+
+| 配置候補 | 実行順と確認結果 | 残る判断 |
+|---|---|---|
+| KOIKI所有 | KOIKI V1がpublication表を、Application V1が業務表を作成。各履歴にSQL 1件、Application履歴にbaseline 0が残る。再実行は両方0件。KOIKI V2でpublication indexを追加してもApplication履歴はV1のまま | Frameworkがschema / version / upgradeを共通契約として引き受けるか。DB方言と配布経路 |
+| Application所有 | KOIKI V1はmarkerのみ、Application V1がpublication表と業務表を作成。履歴は分離され、Application baseline 0と再実行0件を確認 | 各Consumerがschema準備とversion整合を負う契約にするか。ReferenceではApplication履歴名のoverrideも考慮 |
+
+KOIKI所有候補で、V3が表を作った直後に失敗するSQLを実行した。PostgreSQLではその表が残らず、
+KOIKIの成功済みV1 / V2とApplication V1の履歴は維持された。これは**失敗したDDLのtransaction rollback**であり、
+成功済みversionを戻す運用や他DB方言でのrollbackを証明しない。
+両配置のSQLはTooling専用であり、正式migrationではない。Data Starter自体を組み込んだ起動検証は
+[Phase 1b CP4](phase1b-cp4-data-runtime.md)の別Evidenceを参照する。
+V5はその実装を使ったA1 production統合試験でも、store性能比較でもない。
 
 ## 4. Rule 28 / 29のsource照合と検証案（未採用）
 

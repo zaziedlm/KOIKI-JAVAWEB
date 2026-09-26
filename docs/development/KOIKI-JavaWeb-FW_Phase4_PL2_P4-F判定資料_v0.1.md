@@ -12,13 +12,15 @@
 
 | 候補 | 変更する場所の案 | blocking reviewと未決定事項 |
 |---|---|---|
-| A1 publication基盤 | 最小案はSpring Modulith標準のJDBCまたはJPA storeを利用Applicationが構成する。共通化が必要ならFrameworkの既存Data Starter / migration境界を検討。Tooling fixtureは正式artifactへ移さない | JDBC / JPAは両方とも同一PostgreSQL / JPA業務transactionで復旧、再送、パージが成立。ただし両方式とも複数JVMの同時再公開で同一listenerへ入った。CP8型advisory lockを使う専用復旧JVM同士の排他は成立。通常listenerとの競合・lock接続喪失、storeの一方、完了record方式、自動schema作成の無効化、migrationのFramework / Application所有を選ぶ。Starter / Java Public API追加は別review |
+| A1 publication基盤 | 最小案はSpring Modulith標準のJDBC store＋UPDATEを第一候補とし、Applicationが構成する。共通化が必要ならFrameworkの既存Data Starter / migration境界を検討。Tooling fixtureは正式artifactへ移さない | JDBC / JPAは両方とも同一PostgreSQL / JPA業務transactionで復旧、再送、パージが成立。二階層FlywayのKOIKI所有 / Application所有をToolingで確認したが、正式schema所有者は未決定。両方式とも複数JVMの同時再公開で同一listenerへ入った。CP8型lockは専用復旧JVM同士に限定。通常listenerとの競合・lock接続喪失、完了record運用、DB方言と性能、migration所有をA1で判断。Starter / Java Public API追加は別review |
 | A2 `notification` Reference | 既存`koiki-reference-app`内の新しい業務packageを候補とし、`expense`承認eventを公開境界として使う。通知内容、log、provider AdapterとstubはReference / Toolingの責任に分ける | event payloadに個人情報を含めない設計、同期vetoと非同期side effectの分離、実providerの冪等key契約。providerが保証しない場合のDoD 4-3解釈をOwner判断 |
 | D1 非同期観測 | 既存Observability StarterのServlet `requestId` / `TaskDecorator`は再利用候補。event ID、publication ID、retry / job IDの表現とmetricはA1と同時設計し、業務語彙はApplication側 | HTTP requestを離れた再送・jobでの相関、trace / logの非露出とcardinality、FAILED状態に入ってからの経過時間、運用sink / alert Ownerを決める。exporter既定を先行固定しない |
 | Architecture Rules | `koiki-archunit-rules`の現行Rule 28はLevel 0 / 1の拒否を維持。Level 2選択時の規約とRule 29は別選択契約・negative fixture候補 | 既存`businessModuleRules(String)`の意味を変えずLevel指定をどう追加するか、Rule 29がRule 1と重複する範囲、間接I/O経路を静的に検査できるかをreview |
 
 現行Data StarterはKOIKI migrationを`db/migration/koiki` / `koiki_flyway_history`、Application側migrationを
-`db/migration/customer` / `flyway_schema_history`に分ける。fixtureの単一Flyway履歴はこの二階層の受入検証ではない。
+`db/migration/customer` / `flyway_schema_history`に分ける。既存のLevel 2 fixtureの単一Flyway履歴は
+この二階層の受入検証ではない。追加した[V5 Tooling試験](../architecture/validation/phase4-pl2-level2-verification.md#33-v5storeと二階層migrationの比較)は
+両所有配置の二階層実行とKOIKI側の独立upgradeを確認したが、Data Starterを用いたA1統合試験ではない。
 publication tableをFramework共通契約にする場合はKOIKI側migration・upgrade / rollback・DB方言責任が発生する。
 Application配置にする場合は各Consumerのschema準備とversion整合が必要になる。どちらも未選定。
 
@@ -95,8 +97,8 @@ V1 / V2のTooling結果はDoD 4-2の正式PASSやP4-F通過を意味しない。
 
 | 順 | 継続タスク | 次に作るEvidence・終了条件 | 判断・待ち条件 |
 |---|---|---|---|
-| 0 | V1 / V2の作業差分を固定 | `PUBLISHED`停止窓、guarded再送・lock喪失のfixtureと検証記録を一組として差分確認し、検証済み状態をコミットする | 現在の作業ツリーは未コミット。production成果物への昇格ではない |
-| 1 | **PL2-V5：A1のstore / migration選定入力** | JDBC / JPAのschema・完了record・upgrade / rollback・運用差と、KOIKI / Application二階層Flyway配置の実証を比較表にする。選定または選定不能の理由を明記 | A1 blocking review前。Framework / Applicationのmigration所有とDB方言責任はOwner判断。性能値を得ないまま優劣を断定しない |
+| 0 | V1 / V2の作業差分を固定 | `PUBLISHED`停止窓、guarded再送・lock喪失のfixtureと検証記録を一組として差分確認し、検証済み状態をコミットした | `96796e9`。production成果物への昇格ではない |
+| 1 | **PL2-V5：A1のstore / migration選定入力** | 両storeの機能・dependency差、KOIKI / Application二階層Flywayの両配置とKOIKI独立upgrade、失敗DDL rollbackを[検証記録§3.3](../architecture/validation/phase4-pl2-level2-verification.md#33-v5storeと二階層migrationの比較)へ記載。JDBC＋UPDATEをreview第一候補とした | Tooling試験は完了。A1 blocking review前。Framework / Applicationの正式migration所有、DB方言、成功済みmigrationのrollbackと性能・運用差はOwner判断。性能値を得ないまま優劣を断定しない |
 | 2 | **PL2-V4：Rule 28 / 29の負例** | Level 0 / 1の拒否を維持しつつLevel 2を選択するArchUnit fixture、Rule 29の直接・間接I/O経路の検出限界を記録 | 正式Rules / Public API変更はA1 blocking review後。既存`businessModuleRules(String)`を先に変更しない |
 | 3 | **PL2-V3：D1の観測契約** | FAILED遷移からの滞留時間とpublication年齢を区別し、初回event・再送・job間の相関ID / trace / log、漏えい負例をfixtureで確認 | 滞留起点、alert sinkと運用OwnerはD1 review入力。exporter既定を先行固定しない |
 | 並行 | **PL2-V2：復旧運用の残件** | 停止確認の発行元・対象process識別・有効期限、複数運用者の競合、試行上限到達時の通知、認可・Audit、検知前の競合窓と外部送信fencingの選択肢をrunbook案にする | 現fixtureの確認ファイルは停止の真偽を証明しない。追加の安全性主張は運用方式とprovider契約を決めてから検証する。A1 blocking reviewへ提出 |

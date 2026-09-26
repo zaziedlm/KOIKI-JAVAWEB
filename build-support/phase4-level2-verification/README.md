@@ -29,6 +29,13 @@ Correlation across async processing and the Rule 28 /
 proposed Rule 29 boundary remain open. Results belong in
 `docs/architecture/validation/phase4-pl2-level2-verification.md`.
 
+The V5 integration test compares two migration placements: KOIKI-owned publication schema followed
+by Application business schema, and Application-owned publication plus business schema after a KOIKI
+marker migration. It runs Flyway directly with the Data Starter's KOIKI-first order and separate
+history names, checks an independent KOIKI upgrade and PostgreSQL rollback of a failed migration.
+It does not run the Data Starter itself, define a production migration, benchmark stores, or select
+the schema owner.
+
 Run each profile independently using the repository Maven Wrapper:
 
 ```powershell
