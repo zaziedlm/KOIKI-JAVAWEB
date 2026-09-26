@@ -92,19 +92,23 @@ P4-Fで許可する対象・期限・Owner・Evidenceと、停止後のrollback�
 ## 5. 次のPL2作業
 
 以下は[PL2検証記録§3](../architecture/validation/phase4-pl2-level2-verification.md#3-未実施と次の確認)と
-本資料のF-2〜F-5を結ぶ継続台帳である。順序はFramework側で独立に進められる作業を先に示す。
-V1 / V2のTooling結果はDoD 4-2の正式PASSやP4-F通過を意味しない。
+本資料のF-1〜F-5を結ぶ継続台帳である。V1 / V2とV5のTooling結果はDoDの正式PASSやP4-F通過を意味しない。
+V4とV3は順に着手する作業上の目安であり、V2の運用案とPL1の実案件入力待ちは並行して管理する。
+新しいAIセッションでは[PL2継続作業・V4開始引継ぎ](phase4-pl2-v4-start-handoff-20260927.md)を入口にする。
 
-| 順 | 継続タスク | 次に作るEvidence・終了条件 | 判断・待ち条件 |
+| 順 | 状態・継続タスク | Evidenceと区切り | 判断・待ち条件 |
 |---|---|---|---|
-| 0 | V1 / V2の作業差分を固定 | `PUBLISHED`停止窓、guarded再送・lock喪失のfixtureと検証記録を一組として差分確認し、検証済み状態をコミットした | `96796e9`。production成果物への昇格ではない |
-| 1 | **PL2-V5：A1のstore / migration選定入力** | 両storeの機能・dependency差、KOIKI / Application二階層Flywayの両配置とKOIKI独立upgrade、失敗DDL rollbackを[検証記録§3.3](../architecture/validation/phase4-pl2-level2-verification.md#33-v5storeと二階層migrationの比較)へ記載。JDBC＋UPDATEをreview第一候補とした | Tooling試験は完了。A1 blocking review前。Framework / Applicationの正式migration所有、DB方言、成功済みmigrationのrollbackと性能・運用差はOwner判断。性能値を得ないまま優劣を断定しない |
-| 2 | **PL2-V4：Rule 28 / 29の負例** | Level 0 / 1の拒否を維持しつつLevel 2を選択するArchUnit fixture、Rule 29の直接・間接I/O経路の検出限界を記録 | 正式Rules / Public API変更はA1 blocking review後。既存`businessModuleRules(String)`を先に変更しない |
-| 3 | **PL2-V3：D1の観測契約** | FAILED遷移からの滞留時間とpublication年齢を区別し、初回event・再送・job間の相関ID / trace / log、漏えい負例をfixtureで確認 | 滞留起点、alert sinkと運用OwnerはD1 review入力。exporter既定を先行固定しない |
-| 並行 | **PL2-V2：復旧運用の残件** | 停止確認の発行元・対象process識別・有効期限、複数運用者の競合、試行上限到達時の通知、認可・Audit、検知前の競合窓と外部送信fencingの選択肢をrunbook案にする | 現fixtureの確認ファイルは停止の真偽を証明しない。追加の安全性主張は運用方式とprovider契約を決めてから検証する。A1 blocking reviewへ提出 |
-| 続く | **F-2 / F-3 / F-4の判定資料完成** | A1 / A2 / D1のmodule・dependency・migration・Rules / Public API影響、DoD 4-1〜4-5 / 4-12のpackage済み実演手順、commit point / rollback、設計・実装・test・実演・文書別の工数とOwner / CI費用を記入 | V2〜V5の結果を入力する。A1 store・schema ownershipが選べなければP4-Fは`REWORK`候補 |
-| 続く | **Phase 4全体のPL2台帳とF-5** | P4-01〜11・optionalの採否条件、当初DoDとの対応、P4-F対象外の待ち条件を残す。P4-AR計画・`AGENTS.md`の改訂差分を提案形で用意 | P4-B1の4-8 / 4-9とCustomer主導P4-03Bを分離。現行Gate規定はP4-F判断まで変更しない |
-| 最後 | **P4-FのOwner判断** | F-1〜F-5を揃えて限定開始の採否、対象commit point、停止条件を判定する | 現時点でGate P4-Fは未設置・未通過。production開始は別承認 |
+| 済 | **V1 / V2：復旧と排他のTooling検証** | `PUBLISHED`停止窓、guarded再送・lock喪失のfixtureと記録を`96796e9`で固定 | 停止確認の真正性、競合窓、外部送信fencingは残る。production成果物への昇格ではない |
+| 済 | **V5：storeと二階層migrationのTooling比較** | 両storeの機能・dependency差、KOIKI / Application所有の両配置、KOIKI独立upgrade、失敗DDL rollbackを[検証記録§3.3](../architecture/validation/phase4-pl2-level2-verification.md#33-v5storeと二階層migrationの比較)へ記載し、`00f5c29`で固定。JDBC＋UPDATEをreview第一候補とした | 正式schema所有者、DB方言、成功済みmigrationのrollback、性能・運用差はA1判断へ残す |
+| **次** | **V4：Rule 28 / 29の負例** | ToolingのArchUnit fixtureでLevel 0 / 1の拒否、Level 2の選択適用、同期listenerからの直接・間接I/O経路の検出可能範囲を試す。検証記録とRule変更案を一組にして差分確認・コミット | 現行`businessModuleRules(String)`、正式Rules / Public APIは変更しない。間接経路を検出できなければreview / 動作試験へ責任を割り当てる |
+| **次の次** | **V3：D1観測契約の検証** | publication年齢とFAILED遷移からの滞留を区別し、初回event・再送・job間の相関ID / trace / logと別requestへの漏えい負例をToolingで確認。結果と運用未決定を記録してコミット | metric起点、alert sink、運用Owner、個人情報・cardinalityはD1 reviewへ残す。exporter既定は固定しない |
+| 並行 | **V2残件：復旧runbook案** | 停止確認の発行元・process識別・有効期限、複数運用者、試行上限通知、認可・Audit、lock喪失検知前の競合窓、provider冪等性 / fencingを「確認方法・失敗時の停止・Owner」で整理しA1資料へ添付 | 現fixtureの確認ファイルは停止の真偽を証明しない。運用方式・provider契約のない部分は未検証として残す |
+| 統合 | **F-1〜F-4：P4-F判定資料の完成** | F-1でsource / accepted baselineとP4-AR側との差を再確認。F-2でA1 / A2 / D1のmodule・dependency・migration・Rules / Public API配置と選定理由、F-3でpackage済みReferenceのDoD 4-1〜4-5 / 4-12実演手順、F-4でcommit point / rollback、作業別工数・Owner / CI費用を記入する | V2〜V5を入力し、A1のschema所有・再公開安全性を未決定のままproductionへ送らない。判断材料が不足すればP4-Fは`REWORK`候補 |
+| 統合 | **Phase 4全体のPL2台帳とF-5** | P4-01〜11・optionalの採否条件と当初DoDの追跡、P4-F対象外の待ち条件を整理。P4-AR計画・`AGENTS.md`のGate改訂差分を提案として用意し、F-1〜F-5を一組でreviewできる区切りを作る | P4-B1の4-8 / 4-9とCustomer主導P4-03Bを分離。現行Gate規定はOwner判断まで変更しない |
+| 最後 | **P4-FのOwner判断** | F-1〜F-5を見て限定開始の採否、対象commit point、停止条件を判断する | Gate P4-Fは未設置・未通過。A1 blocking reviewとproduction開始の承認は別途必要 |
+
+V4 / V3の検証結果は各々の小さなコミットで固定し、V2 runbookとF-1〜F-5の資料改訂は
+判断単位で区切る。コミットはGateや正式Rules、migrationの採用を意味しない。
 
 [PL1差分台帳](KOIKI-JavaWeb-FW_Phase4_PL1_REST利用境界差分台帳_v0.1.md#3-p4-ar6へ渡す確認事項)の
 Q1〜Q5とP4-AR6実チーム受入は入力待ちとして並行管理する。Next.js/BFF＋REST以外の案件要件、

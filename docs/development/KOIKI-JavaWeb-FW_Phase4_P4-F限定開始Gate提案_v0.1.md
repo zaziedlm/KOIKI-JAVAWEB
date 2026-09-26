@@ -127,7 +127,7 @@ Root Reactor・正式release unitから独立したTooling-owned fixtureを置�
 process、container、port、一時credentialを検証後にcleanupし、fixtureをFramework成果物へ自動昇格しない。
 本検証の結果をF-2〜F-4へ入力し、Gate P4-Fの採否は改めて判断する。
 
-**実施preflightと進捗（2026-09-26）:** Maven Wrapper 3.9.16 / JDK 21.0.12.1を確認した。
+**実施preflightと進捗（2026-09-26時点の記録）:** Maven Wrapper 3.9.16 / JDK 21.0.12.1を確認した。
 通常のsandbox権限ではDocker named pipeと`~/.m2`への書込みを拒否されるが、権限付き実行で
 Rancher Desktop Engine 29.5.3とMaven依存取得が成立した。`postgres:17-alpine`のTestcontainersで
 JDBC / JPAそれぞれSurefire 7件、Failsafe 6件がPASSした。再送回数のfilter候補とFAILEDのpublication年齢も検証した。
@@ -136,6 +136,8 @@ JDBC / JPAそれぞれSurefire 7件、Failsafe 6件がPASSした。再送回数�
 FAILED遷移からの滞留時間、非同期相関、Rule 28 / 29、
 正式migration所有と方式選定は残す。詳細と未実施項目は
 [PL2 Level 2検証Evidence](../architecture/validation/phase4-pl2-level2-verification.md)に記録する。
+その後のV1 / V2 / V5の結果と最新の検証件数は同Evidenceを正本とし、
+[PL2 P4-F判定資料§5](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md#5-次のpl2作業)で継続順序を管理する。
 
 ## 5. Gate提案時の判定と停止条件
 
