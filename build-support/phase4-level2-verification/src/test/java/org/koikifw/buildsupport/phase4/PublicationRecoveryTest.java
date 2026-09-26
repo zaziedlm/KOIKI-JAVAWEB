@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Duration;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
@@ -112,6 +113,61 @@ class PublicationRecoveryTest {
         assertEquals(1, sendCount(recent));
     }
 
+    @Test
+    void resubmissionFilterCanStopAfterTwoCompletionAttempts() throws InterruptedException {
+        provider.useIdempotencyKey(true);
+        UUID eventId = failedSend();
+        assertEquals(1, completionAttempts(eventId));
+
+        AtomicInteger inspected = new AtomicInteger();
+        ResubmissionOptions limited = ResubmissionOptions.defaults().withFilter(publication -> {
+            if (!(publication.getEvent() instanceof ProbeApproved event)
+                    || !event.eventId().equals(eventId)) {
+                return false;
+            }
+            inspected.incrementAndGet();
+            return publication.getCompletionAttempts() < 2;
+        });
+
+        listener.failOnceAfterSend();
+        failed.resubmit(limited);
+        await(() -> publicationCount(eventId, "FAILED") == 1 && completionAttempts(eventId) == 2);
+        assertEquals(1, inspected.get());
+
+        failed.resubmit(limited);
+        assertEquals(2, inspected.get(), "The failed publication was evaluated again");
+        assertEquals(1, publicationCount(eventId, "FAILED"));
+        assertEquals(2, completionAttempts(eventId));
+        assertEquals(1, sendCount(eventId));
+
+        failed.resubmit(ResubmissionOptions.defaults().withFilter(publication ->
+                publication.getEvent() instanceof ProbeApproved event
+                        && event.eventId().equals(eventId)));
+        await(() -> publicationCount(eventId, "COMPLETED") == 1);
+        assertEquals(3, completionAttempts(eventId));
+        assertEquals(1, sendCount(eventId));
+    }
+
+    @Test
+    void failedAgeGaugeMeasuresAgeSincePublication() throws InterruptedException {
+        provider.useIdempotencyKey(true);
+        UUID eventId = failedSend();
+        jdbc.update("""
+                UPDATE event_publication
+                SET publication_date = CURRENT_TIMESTAMP - INTERVAL '5 minutes'
+                WHERE serialized_event LIKE ? AND status = 'FAILED'
+                """, "%" + eventId + "%");
+
+        double ageSeconds = meters.get("phase4.probe.publication.failed.oldest.seconds").gauge().value();
+        assertEquals(true, ageSeconds >= 290, "The gauge uses publication age for the FAILED row");
+
+        failed.resubmit(ResubmissionOptions.defaults().withFilter(publication ->
+                publication.getEvent() instanceof ProbeApproved event
+                        && event.eventId().equals(eventId)));
+        await(() -> publicationCount(eventId, "COMPLETED") == 1);
+        assertEquals(0.0, meters.get("phase4.probe.publication.failed.oldest.seconds").gauge().value());
+    }
+
     private UUID failedSend() throws InterruptedException {
         UUID eventId = UUID.randomUUID();
         listener.failOnceAfterSend();
@@ -128,6 +184,13 @@ class PublicationRecoveryTest {
     private int sendCount(UUID eventId) {
         return jdbc.queryForObject(
                 "SELECT count(*) FROM probe_provider_send WHERE event_id = ?", Integer.class, eventId);
+    }
+
+    private int completionAttempts(UUID eventId) {
+        return jdbc.queryForObject("""
+                SELECT completion_attempts FROM event_publication
+                WHERE serialized_event LIKE ?
+                """, Integer.class, "%" + eventId + "%");
     }
 
     private int publicationCount(UUID eventId, String status) {

@@ -8,7 +8,16 @@ business transaction. Production migration and API ownership are not decided by 
 Validation covers publication state and restart recovery, provider-side idempotency after a
 listener failure or a process kill after accepted send, FAILED metrics and resubmission,
 completed-publication purge, scheduled stale publication marking, and selection of publication
-registry trigger annotations.
+registry trigger annotations. A fixture-level resubmission filter demonstrates a completion-attempt
+limit. The FAILED age gauge measures time since original publication, not time since FAILED transition.
+The multi-JVM characterization test observes two processes entering the same listener for one
+publication during restart replay; a passing test records that gap, not an exclusive-delivery guarantee.
+A separate Tooling-only candidate disables automatic restart replay and runs explicit recovery under
+a PostgreSQL session advisory lock. Its integration test checks recovery-worker contention, process
+kill release, and clean release. It does not prove safety against a still-running ordinary listener.
+Separate characterization tests show that an explicit recovery can enter a live ordinary listener,
+and that losing only the lock's PostgreSQL session allows a second recovery while the first JVM
+continues. Passing characterization tests record those gaps; they do not certify safe delivery.
 Correlation across async processing and the Rule 28 /
 proposed Rule 29 boundary remain open. Results belong in
 `docs/architecture/validation/phase4-pl2-level2-verification.md`.
