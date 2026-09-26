@@ -220,7 +220,7 @@ flowchart LR
 |---|---|---|
 | P4-PL0 | §1.1と§3の棚卸し草案を作成 | Owner reviewで入力確度と当初DoDの扱いを確認 |
 | P4-PL1 | 上表のsource / Evidence照合と[REST利用境界差分台帳 v0.1](KOIKI-JavaWeb-FW_Phase4_PL1_REST利用境界差分台帳_v0.1.md)を作成 | 実チームのAPI / 認証 / Audit入力はP4-AR6で取得。未取得事項はOPENを維持 |
-| P4-PL2 | §4.1のwork packageと主要依存を仮置き。[P4-F提案 v0.1](KOIKI-JavaWeb-FW_Phase4_P4-F限定開始Gate提案_v0.1.md)にA1 / A2 / D1の技術選択肢と既存見積の再校正項目を記録 | package別のmodule・dependency・migration、実演手順、blocking review、再見積 |
+| P4-PL2 | §4.1のwork packageと主要依存を仮置き。[P4-F提案](KOIKI-JavaWeb-FW_Phase4_P4-F限定開始Gate提案_v0.1.md)、[非配布検証](../architecture/validation/phase4-pl2-level2-verification.md)、[P4-F判定資料 v0.1](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md)にA1 / A2 / D1の候補・実演差分・既存見積仮配賦を記録 | store・migration・運用Ownerの選定、未検証事項、Phase共通とAI支援Owner稼働の再見積、P4-01〜11全件のPL2台帳 |
 | P4-PL3 | 未開始 | P4-AR6の実チーム入力を加えた責任分担・工数・Gate提案 |
 
 ### 4.3 P4-AR6を待たないFramework限定開始Gate案

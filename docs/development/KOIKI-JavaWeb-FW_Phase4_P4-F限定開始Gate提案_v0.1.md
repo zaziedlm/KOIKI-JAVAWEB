@@ -86,7 +86,9 @@ F-3の実演単位は次のように分ける。失敗を注入する仕組み�
 | 4-5 | 単一実行のパージを起動し、completedだけがretention条件に従って消え、未処理・FAILEDは残る | Framework運用契約 + Tooling |
 | 4-12 | 承認request、非同期listener、再送時のlog / traceで相関を辿り、別requestへ相関値が漏れない | Framework観測契約 + Tooling |
 
-P4-PL2でF-2〜F-5を具体化する。現時点ではmodule配置、所要工数、検証コマンド、migration方式、運用Ownerが未確定であり、Gate P4-Fは判定不能である。
+P4-PL2でF-2〜F-5を具体化する。[PL2 P4-F判定資料 v0.1](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md)に
+配置候補、DoD実演とfixture Evidenceの差、既存見積の仮配賦、停止点を記録した。
+store・migration方式、Phase共通の再見積、運用Ownerなどは未確定であり、Gate P4-Fは判定不能である。
 
 ### 4.1 暫定規模と再見積もり
 
@@ -128,7 +130,10 @@ process、container、port、一時credentialを検証後にcleanupし、fixture
 **実施preflightと進捗（2026-09-26）:** Maven Wrapper 3.9.16 / JDK 21.0.12.1を確認した。
 通常のsandbox権限ではDocker named pipeと`~/.m2`への書込みを拒否されるが、権限付き実行で
 Rancher Desktop Engine 29.5.3とMaven依存取得が成立した。`postgres:17-alpine`のTestcontainersで
-JDBC / JPAそれぞれSurefire 5件、Failsafe 2件がPASSした。未解決の再送競合、非同期相関、Rule 28 / 29、
+JDBC / JPAそれぞれSurefire 7件、Failsafe 6件がPASSした。再送回数のfilter候補とFAILEDのpublication年齢も検証した。
+複数JVMで同一publicationのlistenerが同時実行される競合を確認した。CP8型advisory lockによる専用復旧JVM同士の排他候補は両方式で成立したが、
+通常listenerが生存中の明示再送とlock接続だけの喪失でも重複実行を再現した。安全な対象選別・fail-stop / fencingを未解決のblocking issueとする。
+FAILED遷移からの滞留時間、非同期相関、Rule 28 / 29、
 正式migration所有と方式選定は残す。詳細と未実施項目は
 [PL2 Level 2検証Evidence](../architecture/validation/phase4-pl2-level2-verification.md)に記録する。
 
@@ -138,4 +143,6 @@ Gate P4-Fの判定案は`APPROVE LIMITED START`、`REWORK`、`REJECT`のいず�
 Public API、dependency、migration、Starter、Security既定、workflow、remote push / PR / merge、snapshot publishは、それぞれ既存のblocking reviewと個別承認を要する。
 実案件要件への依存、P4-AR6で責任分担未決の変更、DoD変更、FrameworkへのCustomer / Reference codeの無審査昇格を検出した場合は、対象packageの開始を停止して再reviewする。
 
-**次の作業:** [見直し草案§7.2](KOIKI-JavaWeb-FW_Phase4実施計画_見直し草案_v0.1.md#72-次reviewに必要な資料)に沿ってPL1 / PL2の差分台帳・設計・概算を作り、本書のF-2〜F-5を埋める。Gate P4-Fの開催・採用はその後のOwner判断とする。
+**次の作業:** [見直し草案§7.2](KOIKI-JavaWeb-FW_Phase4実施計画_見直し草案_v0.1.md#72-次reviewに必要な資料)と
+[PL2 P4-F判定資料](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md#5-次のpl2作業)に沿って、
+未検証事項とF-2〜F-5の未確定部分を埋める。Gate P4-Fの開催・採用はその後のOwner判断とする。
