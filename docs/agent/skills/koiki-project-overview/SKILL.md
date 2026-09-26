@@ -95,7 +95,8 @@ Phase 0、Phase 1a Build Foundation、Phase 1b Runtime FoundationおよびPhase 
 - Phase 2: default deny、CSRF / Security Header既定、local Session、OIDC Client、Bearer Resource Server、
   Business / Security Audit、Identity、Spring Session JDBC、Framework migrationおよびReference `identity`
 - Spring Modulith 2.1.1のLevel 0はtest scopeだけで使用し、runtime依存を追加しない。
-- formal Framework release unitは14 projects / 11 JAR、Phase 2 publish unitはRoot aggregatorを除く13座標である。
+- Phase 2時点のformal Framework release unitは14 projects / 11 JAR、Phase 2 publish unitはRoot aggregatorを除く13座標である。
+  Phase 3で`koiki-starter-web-mvc`を追加した現行formal unit候補は15 projects / 12 JARである。
   Reference、Customer-like Consumer、fixture、性能harnessおよびOpenRewrite prototypeは配布しない。
 - Phase 2内部snapshotはaccepted manifestで固定済みだが、正式release、一般公開repositoryまたは
   Customer向けsupport付き配布ではない。
