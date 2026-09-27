@@ -129,6 +129,8 @@ guarded復旧は待機中にlock connectionを確認し、喪失時に`Runtime.h
 listenerが外部送信の実行中なら即時停止でも副作用を取り消せない。正しい停止確認の発行元、
 確認対象のprocess識別・有効期限、複数運用者の競合、provider側の冪等性またはfencing、
 認可・AuditをA1 blocking reviewで決める。このprobeをproductionの安全保証と扱わない。
+[V2復旧runbook案](../../development/phase4-pl2-publication-recovery-runbook-draft.md)に、
+実証した拒否結果と未検証の運用前提を「確認方法・停止条件・Owner候補」として整理した。
 
 ### 3.3 V5：storeと二階層migrationの比較
 
