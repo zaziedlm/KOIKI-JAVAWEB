@@ -20,6 +20,10 @@
 
 ## 2. 候補範囲とOwnership
 
+[PL2判定資料§1.1](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md#11-level-2の採用規模を先に選ぶ)で
+Level 2のS0見送り、S1用途限定、S2共通基盤を比較する。以下のA1 / A2 / D1はS1 / S2を選ぶ場合の
+候補範囲であり、Gate P4-Fの採用対象や復旧方式を先に確定するものではない。
+
 | 候補 | 成果物の範囲 | Ownershipと境界 |
 |---|---|---|
 | P4-A1 Level 2基盤 | event publicationの永続化、失敗状態・再送・パージの技術契約と運用入口。DoD 4-2・4-4・4-5・4-12の前提 | Frameworkが共通契約を判断。保存schema・runtime依存・配置moduleとPublic APIは未決定。Toolingが故障・復旧を検証 |

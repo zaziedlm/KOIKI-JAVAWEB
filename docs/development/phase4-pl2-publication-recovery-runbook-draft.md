@@ -6,6 +6,10 @@
 
 **Ownership:** 手順案はPL2 Architecture資料。実運用の担当者・権限・Audit・provider契約・実装配置は未決定。
 
+[P4-F判定資料§1.1](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md#11-level-2の採用規模を先に選ぶ)の
+S1 / S2で復旧を担う場合の検討材料とする。S0見送りでは本手順を導入しない。
+手順の複雑さと継続運用費用も採用判断の入力であり、本案の作成はLevel 2採用を意味しない。
+
 [PL2検証記録§3.1〜3.2](../architecture/validation/phase4-pl2-level2-verification.md#31-再公開の排他方針候補toolingでの検証)と
 [P4-F判定資料§1](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md#1-f-2-配置契約の選択肢)を根拠とする。
 Phase 1bの[CP8単一実行契約](../architecture/validation/phase1b-cp8-single-execution.md)は専用process同士の排他候補であり、
