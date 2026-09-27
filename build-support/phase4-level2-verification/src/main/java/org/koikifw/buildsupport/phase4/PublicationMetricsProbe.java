@@ -21,11 +21,21 @@ public class PublicationMetricsProbe {
         Gauge.builder("phase4.probe.publication.failed.oldest.seconds", jdbc,
                         source -> ageOfOldestFailed(source))
                 .register(registry);
+        Gauge.builder("phase4.probe.publication.failed.transition.oldest.seconds", jdbc,
+                        source -> ageOfOldestFailedTransition(source))
+                .register(registry);
     }
 
     private static long ageOfOldestFailed(JdbcTemplate jdbc) {
         Timestamp first = jdbc.queryForObject(
                 "SELECT min(publication_date) FROM event_publication WHERE status = 'FAILED'",
+                Timestamp.class);
+        return first == null ? 0 : Math.max(0, Duration.between(first.toInstant(), Instant.now()).toSeconds());
+    }
+
+    private static long ageOfOldestFailedTransition(JdbcTemplate jdbc) {
+        Timestamp first = jdbc.queryForObject(
+                "SELECT min(probe_failed_at) FROM event_publication WHERE status = 'FAILED'",
                 Timestamp.class);
         return first == null ? 0 : Math.max(0, Duration.between(first.toInstant(), Instant.now()).toSeconds());
     }

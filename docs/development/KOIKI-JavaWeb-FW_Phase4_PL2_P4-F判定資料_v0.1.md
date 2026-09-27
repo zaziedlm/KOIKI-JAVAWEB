@@ -48,9 +48,9 @@ lock接続が維持された復旧worker間だけを実証した候補であり�
 | 4-1 | 元transactionの承認記録は、非同期listener失敗後も残る | `expense`承認状態・Business AuditとReference通知の結合 |
 | 4-2 | PUBLISHEDとPROCESSING中の別JVMを送信前 / 送信受理後で強制停止し、再起動後にCOMPLETED。複数JVMの同時再公開では同一listenerへ入る競合を確認。guarded再送入口とlock喪失時の専用JVM停止候補を確認 | 元processの停止確認の真正性、検知前の競合窓、外部送信fencing、package済みReferenceでの再現 |
 | 4-3 | provider stubに一意keyがあれば再配送でも受理1件。なければ2件 | 実providerの冪等契約または同等策、通知logと送信境界の一貫性 |
-| 4-4 | FAILED件数・publication年齢gauge、stale monitor、明示再送と試行回数filter | FAILED遷移からの経過時間の定義、運用者認可 / Audit、上限到達通知、複数instance競合 |
+| 4-4 | FAILED件数・publication年齢gauge、Tooling限定のFAILED遷移時刻gauge、stale monitor、明示再送と試行回数filter | 滞留時間の正式起点とschema所有、alert運用、運用者認可 / Audit、上限到達通知、複数instance競合 |
 | 4-5 | completed publicationだけの保持期限パージ | 単一実行基盤とretention / purgeの配備・権限・同時配信競合 |
-| 4-12 | 既存Servlet request相関・TaskDecoratorのsourceを確認 | event / retry / jobを跨ぐtrace・log実測、別requestへの漏えい負例 |
+| 4-12 | 既存Servlet request相関・TaskDecoratorのsourceを確認。Toolingではevent / publication ID、job / retry ID、MDC logと別requestへの非漏えいを実測 | 実OpenTelemetry trace / exporter、別JVM・運用log sinkでの相関と個人情報境界 |
 
 正式実演はpackage済みReference、PostgreSQL、別process停止 / 再起動、通知stub、観測sinkを用い、
 成功・失敗・復旧時のDB / Audit / log / metricを突合する。各DoDのPASSはfixtureのPASSから自動判定しない。
@@ -93,16 +93,17 @@ P4-Fで許可する対象・期限・Owner・Evidenceと、停止後のrollback�
 
 以下は[PL2検証記録§3](../architecture/validation/phase4-pl2-level2-verification.md#3-未実施と次の確認)と
 本資料のF-1〜F-5を結ぶ継続台帳である。V1 / V2とV5のTooling結果はDoDの正式PASSやP4-F通過を意味しない。
-V4とV3は順に着手する作業上の目安であり、V2の運用案とPL1の実案件入力待ちは並行して管理する。
-新しいAIセッションでは[PL2継続作業・V4開始引継ぎ](phase4-pl2-v4-start-handoff-20260927.md)を入口にする。
+V4とV3のTooling検証は順に完了した。次はV2の運用案をまとめ、PL1の実案件入力待ちは並行して管理する。
+V4開始時点の履歴は[PL2継続作業・V4開始引継ぎ](phase4-pl2-v4-start-handoff-20260927.md)に残す。
+現在の作業順と待ち条件は以下の台帳を使う。
 
 | 順 | 状態・継続タスク | Evidenceと区切り | 判断・待ち条件 |
 |---|---|---|---|
 | 済 | **V1 / V2：復旧と排他のTooling検証** | `PUBLISHED`停止窓、guarded再送・lock喪失のfixtureと記録を`96796e9`で固定 | 停止確認の真正性、競合窓、外部送信fencingは残る。production成果物への昇格ではない |
 | 済 | **V5：storeと二階層migrationのTooling比較** | 両storeの機能・dependency差、KOIKI / Application所有の両配置、KOIKI独立upgrade、失敗DDL rollbackを[検証記録§3.3](../architecture/validation/phase4-pl2-level2-verification.md#33-v5storeと二階層migrationの比較)へ記載し、`00f5c29`で固定。JDBC＋UPDATEをreview第一候補とした | 正式schema所有者、DB方言、成功済みmigrationのrollback、性能・運用差はA1判断へ残す |
 | 済 | **V4：Rule 28 / 29の負例** | ToolingのArchUnit 4件がPASSし、JDBC / JPA各profileの全体`verify`もSurefire 11件・Failsafe 11件ずつPASS。[検証記録§4.1](../architecture/validation/phase4-pl2-level2-verification.md#41-v4非配布archunit-fixtureの実行結果2026-09-27)にLevel選択、Rule 1重複、間接I/O経路の限界を記録 | 現行`businessModuleRules(String)`、正式Rules / Public APIは変更していない。間接経路はreview / 動作試験へ割り当て、正式案はA1 blocking reviewへ渡す |
-| **次の次** | **V3：D1観測契約の検証** | publication年齢とFAILED遷移からの滞留を区別し、初回event・再送・job間の相関ID / trace / logと別requestへの漏えい負例をToolingで確認。結果と運用未決定を記録してコミット | metric起点、alert sink、運用Owner、個人情報・cardinalityはD1 reviewへ残す。exporter既定は固定しない |
-| 並行 | **V2残件：復旧runbook案** | 停止確認の発行元・process識別・有効期限、複数運用者、試行上限通知、認可・Audit、lock喪失検知前の競合窓、provider冪等性 / fencingを「確認方法・失敗時の停止・Owner」で整理しA1資料へ添付 | 現fixtureの確認ファイルは停止の真偽を証明しない。運用方式・provider契約のない部分は未検証として残す |
+| 済 | **V3：D1観測契約の検証** | [検証記録§3.4](../architecture/validation/phase4-pl2-level2-verification.md#34-v3failed滞留と非同期相関のtooling検証)でpublication年齢とFAILED遷移滞留、初回event・job再送・別requestのMDC logを比較。JDBC / JPA各profileの全体`verify`でSurefire 12件・Failsafe 11件ずつPASS | 実tracer / exporterと別JVM相関、metric起点の正式契約、alert sink、運用Owner、個人情報・cardinalityはD1 / A1 reviewへ残す |
+| **次** | **V2残件：復旧runbook案** | 停止確認の発行元・process識別・有効期限、複数運用者、試行上限通知、認可・Audit、lock喪失検知前の競合窓、provider冪等性 / fencingを「確認方法・失敗時の停止・Owner」で整理しA1資料へ添付 | 現fixtureの確認ファイルは停止の真偽を証明しない。運用方式・provider契約のない部分は未検証として残す |
 | 統合 | **F-1〜F-4：P4-F判定資料の完成** | F-1でsource / accepted baselineとP4-AR側との差を再確認。F-2でA1 / A2 / D1のmodule・dependency・migration・Rules / Public API配置と選定理由、F-3でpackage済みReferenceのDoD 4-1〜4-5 / 4-12実演手順、F-4でcommit point / rollback、作業別工数・Owner / CI費用を記入する | V2〜V5を入力し、A1のschema所有・再公開安全性を未決定のままproductionへ送らない。判断材料が不足すればP4-Fは`REWORK`候補 |
 | 統合 | **Phase 4全体のPL2台帳とF-5** | P4-01〜11・optionalの採否条件と当初DoDの追跡、P4-F対象外の待ち条件を整理。P4-AR計画・`AGENTS.md`のGate改訂差分を提案として用意し、F-1〜F-5を一組でreviewできる区切りを作る | P4-B1の4-8 / 4-9とCustomer主導P4-03Bを分離。現行Gate規定はOwner判断まで変更しない |
 | 最後 | **P4-FのOwner判断** | F-1〜F-5を見て限定開始の採否、対象commit point、停止条件を判断する | Gate P4-Fは未設置・未通過。A1 blocking reviewとproduction開始の承認は別途必要 |

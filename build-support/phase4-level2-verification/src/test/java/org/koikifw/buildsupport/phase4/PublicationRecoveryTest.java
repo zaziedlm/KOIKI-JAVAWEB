@@ -160,12 +160,26 @@ class PublicationRecoveryTest {
 
         double ageSeconds = meters.get("phase4.probe.publication.failed.oldest.seconds").gauge().value();
         assertEquals(true, ageSeconds >= 290, "The gauge uses publication age for the FAILED row");
+        double transitionSeconds = meters.get("phase4.probe.publication.failed.transition.oldest.seconds")
+                .gauge().value();
+        assertEquals(true, transitionSeconds < 60,
+                "An old publication is still a recent FAILED transition");
+
+        jdbc.update("""
+                UPDATE event_publication
+                SET probe_failed_at = CURRENT_TIMESTAMP - INTERVAL '2 minutes'
+                WHERE serialized_event LIKE ? AND status = 'FAILED'
+                """, "%" + eventId + "%");
+        assertEquals(true, meters.get("phase4.probe.publication.failed.transition.oldest.seconds")
+                .gauge().value() >= 110);
 
         failed.resubmit(ResubmissionOptions.defaults().withFilter(publication ->
                 publication.getEvent() instanceof ProbeApproved event
                         && event.eventId().equals(eventId)));
         await(() -> publicationCount(eventId, "COMPLETED") == 1);
         assertEquals(0.0, meters.get("phase4.probe.publication.failed.oldest.seconds").gauge().value());
+        assertEquals(0.0, meters.get("phase4.probe.publication.failed.transition.oldest.seconds")
+                .gauge().value());
     }
 
     private UUID failedSend() throws InterruptedException {

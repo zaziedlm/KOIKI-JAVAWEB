@@ -11,15 +11,18 @@ public class ApprovalProbe {
 
     private final JdbcTemplate jdbc;
     private final ApplicationEventPublisher events;
+    private final CorrelationProbe correlation;
 
-    public ApprovalProbe(JdbcTemplate jdbc, ApplicationEventPublisher events) {
+    public ApprovalProbe(JdbcTemplate jdbc, ApplicationEventPublisher events, CorrelationProbe correlation) {
         this.jdbc = jdbc;
         this.events = events;
+        this.correlation = correlation;
     }
 
     @Transactional
     public void approve(UUID eventId) {
         jdbc.update("INSERT INTO probe_approval(event_id) VALUES (?)", eventId);
+        correlation.record("publish-request", eventId);
         events.publishEvent(new ProbeApproved(eventId));
     }
 }

@@ -1,6 +1,6 @@
 # Phase 4 PL2 Level 2 非配布検証
 
-**状態:** IN PROGRESS — JDBC / JPAのDB内復旧、別JVMの強制停止・再起動、複数JVMでの同一publication再公開競合と専用復旧JVMの排他候補・限界、stale定期監視、FAILED gauge、再送回数filter、Registry記録対象設定、V5二階層migration候補を検証済み
+**状態:** IN PROGRESS — JDBC / JPAのDB内復旧、別JVMの強制停止・再起動、複数JVMでの同一publication再公開競合と専用復旧JVMの排他候補・限界、stale定期監視、V3観測候補、Rule 28 / 29候補、V5二階層migration候補を非配布Toolingで検証済み
 
 **開始baseline:** `7aa8669`（Phase 4 review decisions and planning baseline）
 
@@ -18,15 +18,15 @@ Framework Public API、Starter、正式migration、Reference業務code、remote�
 | Docker | Rancher Desktop Engine 29.5.3。通常のsandbox権限ではnamed pipe接続を拒否されるが、権限付き実行ではDocker Serverへ接続できる |
 | PostgreSQL | Testcontainers 2.0.5、local image `postgres:17-alpine`。テストごとに使い捨てcontainer |
 | Spring | Repository BOMのBoot 4.1.1 / Spring Modulith 2.1.1。JDBC / JPAをMaven profileで切替 |
-| migration | fixture内のFlyway `V1__probe_schema.sql`がevent publication、承認状態、provider stub記録を作成。Spring Modulith JDBCの自動schema作成は無効 |
+| migration | fixture内のFlyway V1がevent publication、承認状態、provider stub記録を作成。V3用Tooling限定V2はFAILED遷移時刻のcolumnとPostgreSQL triggerを追加。Spring Modulith JDBCの自動schema作成は無効 |
 | cleanup | JDBC / JPAの`verify`後の`docker ps`は0件。Testcontainers containerの残存なし |
 
 ## 2. 実施済み検証
 
 | 対象 | 操作 | 結果 |
 |---|---|---|
-| JDBC profile | `mvnw -f build-support/phase4-level2-verification/pom.xml -Pjdbc verify` | PASS。Surefire 7 tests、Failsafe 11 IT、ともにfailures / errors 0。競合testは重複listener実行を観測する性質の検査であり、安全性のPASSではない |
-| JPA profile | 同じコマンドの`-Pjpa` | PASS。Surefire 7 tests、Failsafe 11 IT、ともにfailures / errors 0。同上 |
+| JDBC profile | `mvnw -f build-support/phase4-level2-verification/pom.xml -Pjdbc verify` | 2026-09-27再実行PASS。Surefire 12 tests、Failsafe 11 IT、ともにfailures / errors 0。競合testは重複listener実行を観測する性質の検査であり、安全性のPASSではない |
+| JPA profile | 同じコマンドの`-Pjpa` | 2026-09-27再実行PASS。Surefire 12 tests、Failsafe 11 IT、ともにfailures / errors 0。同上 |
 | 元transactionとlistener失敗 | 承認をDBへ保存しevent発行後、provider stub送信成功直後にlistenerを失敗させる | 承認recordは残り、publicationはFAILED、provider stubのsend recordは1件 |
 | 再送と冪等key | `FailedEventPublications.resubmit`で再送 | 両profileでCOMPLETED。provider側にevent IDの一意keyがある場合、send recordは1件のまま |
 | 冪等keyがない場合 | 同じ失敗・再送を一意keyなしで繰り返す | 両profileでsend recordは2件。publication再送だけでは外部副作用の重複を防げない |
@@ -42,6 +42,8 @@ Framework Public API、Starter、正式migration、Reference業務code、remote�
 | 再送対象の保守的な選別候補 | Toolingのguarded入口へ対象publication ID・event ID、観測状態、試行回数を指定。元processの停止確認ファイルを付けず、生存中の通常listenerへ再送要求。元process停止後に古い試行回数、次に一致する確認情報で要求。同じeventの別publicationを検証用に追加 | 両profileで未確認はSTOP_UNCONFIRMED・再送なし、DB状態と合わない選択はSTALE_SELECTION・再送なし。一致したpublication IDだけ明示再送しCOMPLETED、別publicationはPROCESSINGのまま。停止確認ファイルは外部入力であり、内容の真偽をfixtureは証明しない |
 | guarded復旧中のlock接続喪失 | 元process停止を確認した対象をguarded入口で再送し、listenerを送信前で停止。lock保持backendだけ終了 | 両profileで復旧JVMはLOCK_LOSTを記録して終了コード70で停止し、送信は0件。古い確認情報は次の試行回数に使用不可。新しい停止確認で再復旧しCOMPLETED / stub受理1件。監視間隔中に新workerがlockを得る競合窓や外部provider送信中のfencingは解消していない |
 | FAILED観測候補 | fixture内にDB照会のMicrometer gaugeを置き、listener失敗・再送後の値を照合。FAILED recordの`publication_date`を人工的に5分前へずらす | 両profileでFAILED件数が1→0、最古FAILEDのpublicationからの経過時間が約5分以上→0。現行gaugeはpublicationからの年齢であり、FAILED状態へ入ってからの滞留時間を測るものではない。metric名・実装方式は未承認の候補 |
+| V3 FAILED遷移時刻候補 | fixture専用のPostgreSQL triggerでstatusがFAILEDへ変わった時刻を記録。publication日付だけ5分前へずらし、さらに遷移時刻だけ2分前へずらして2つのgaugeを比較 | 両profileでpublication年齢は約5分、FAILED遷移年齢は当初1分未満、遷移時刻を動かすと約2分、COMPLETED後は0。trigger / column / metric名はTooling限定 |
+| V3 async / job相関候補 | 初回eventを意図的にFAILEDとし、別の復旧jobで同じpublicationを再送。event ID、publication ID、job ID、retry ID、MDCのrequest / trace markerとfixture logを突合。単一worker threadを再利用して別requestを発行 | 両profileで同じevent / publicationが初回・再送を結び、job / retry IDは復旧時だけ現れた。初回request / trace markerは初回listenerのlog MDCにあり、復旧jobには引き継がれず、次requestへも漏れなかった。実OpenTelemetry span / exporterは未検証 |
 | stale判定候補 | 失敗済みpublicationを検証用SQLで古い`PROCESSING`と新しい`PROCESSING`へ変更し、1分の閾値で`markStalePublicationsFailed`を実行 | 両profileで古い記録だけFAILED、新しい記録はPROCESSING。FAILEDを明示再送するとCOMPLETEDになり、冪等keyでprovider stub記録は1件のまま |
 | stale定期監視 | 失敗済みpublicationを検証用SQLで5分前の`PUBLISHED`と`PROCESSING`へ変更し、両状態の閾値1分・監視間隔200msをfixtureで設定 | 両profileでscheduled monitorが両記録をFAILEDへ移した。運用閾値として1分・200msを推奨する結果ではない |
 | dependency tree | `mvnw -f build-support/phase4-level2-verification/pom.xml -Pjdbc/-Pjpa dependency:tree`をprofile別に取得 | 共通のSpring Boot JPA / JDBC / Flyway / Micrometerに加え、JDBC profileは`spring-modulith-starter-jdbc`と`spring-modulith-events-jdbc`、JPA profileは`spring-modulith-starter-jpa`と`spring-modulith-events-jpa`。いずれもSpring Modulith 2.1.1 |
@@ -50,12 +52,13 @@ Framework Public API、Starter、正式migration、Reference業務code、remote�
 
 このprovider stubは別transactionで送信受理を保存する模擬境界であり、送信直後のOS停止試験を含めても実mail providerの保証を証明しない。
 DoD 4-3を実providerに対して主張するには、providerの冪等key契約または同等の外部副作用抑止策が必要である。
-fixtureは単一packageの最小構成であり、Referenceのmodule間イベント境界やArchUnit Rule 28 / 29の成立を証明しない。
+fixtureは単一packageの最小構成であり、Referenceのmodule間イベント境界や正式ArchUnit Rule 28 / 29の成立を証明しない。
 stale判定と定期監視のtestはDB状態と時刻を人工的に設定したもので、実process停止からの自動判定までの連続操作、運用閾値の妥当性を検証していない。
 複数instanceで同時に再公開した場合の重複listener実行は再現した。送信前で止めたため、実providerの二重副作用を示す試験ではない。
 専用復旧JVM同士の正常なlock排他は、既に停止したpublisherからの回復を対象にした。生存中の通常listener、lock接続だけの喪失では重複実行を再現した。送信前の停止なので実providerへの二重送信は測っていない。
 再送filterは`completionAttempts`に基づくfixture上の選別である。専用復旧worker間の排他以外の競合、複数運用者からの明示再送、operator認可、上限到達時の通知・監査は未確認。
-FAILED gaugeが参照する`publication_date`は初回発行時刻であり、FAILED遷移時刻ではない。DoD 4-4の「滞留」をどの起点で定義するかを運用Ownerと決め、必要なら別の遷移時刻記録を設計する。
+従来のFAILED gaugeが参照する`publication_date`は初回発行時刻であり、FAILED遷移時刻ではない。
+V3のTooling候補では別の遷移時刻を記録できたが、DoD 4-4の「滞留」の正式起点は運用Ownerと決める。
 
 ## 3. 未実施と次の確認
 
@@ -63,8 +66,8 @@ FAILED gaugeが参照する`publication_date`は初回発行時刻であり、FA
 |---|---|---|
 | PL2-V1 | publication保存後・listener中に実OS processを強制終了し、再起動後の未処理配信を確認 | fixture範囲ではPASS。両profileでPUBLISHED、送信前PROCESSING、送信受理直後PROCESSINGから強制停止・再起動後にCOMPLETED。正式Referenceでの実演は別途必要 |
 | PL2-V2 | stale PUBLISHED / PROCESSINGとFAILEDの運用手順、再送回数・同時実行を確認 | 古いPROCESSINGの明示再送、PUBLISHED / PROCESSINGのscheduled monitor、試行回数filter、複数JVM競合を検証。guarded入口は停止確認と正確な状態・試行回数を要求し、不一致を拒否。lock喪失時のJVM停止も検証した。停止確認の真正性、検知前の競合窓・外部副作用fencing、複数運用者の再送、operator権限・監査は未解決 |
-| PL2-V3 | FAILED件数・滞留時間metric、event / retry / job間の相関IDとtrace / logを確認 | DB照会gaugeの件数とpublication年齢は検証済み。FAILED遷移からの時間、alert運用、非同期相関とtrace / logは未実施 |
-| PL2-V4 | Rule 28のLevel 1拒否を保ち、Level 2だけを許す条件とRule 29のnegative fixtureを設計・確認 | §4にsource照合と検証fixture案を記録。Registry記録対象設定の実動作は両方式でPASS。ArchUnit negative fixture実行と正式Rules変更は未実施・別review |
+| PL2-V3 | FAILED件数・滞留時間metric、event / retry / job間の相関IDとtrace / logを確認 | §3.4のTooling fixtureで両profile PASS。FAILED遷移時刻と初回・job再送・別requestのMDC logを確認。実trace / exporter、alert運用はD1 reviewへ残す |
+| PL2-V4 | Rule 28のLevel 1拒否を保ち、Level 2だけを許す条件とRule 29のnegative fixtureを設計・確認 | §4.1のArchUnit negative fixtureは両profileでPASS。正式Rules変更とLevel選択Public APIはA1 reviewへ残す |
 | PL2-V5 | JDBC / JPAのdependency tree、migration配置、性能・運用差を比較して選定する | 両storeの既存機能試験とdependency差を確認。二階層FlywayのKOIKI所有 / Application所有の両配置、KOIKI側だけのV2追加、失敗したV3のPostgreSQLでのDDL rollbackをToolingで確認（§3.3）。JDBC＋UPDATEをA1 review候補とする。正式schema所有者、成功済みmigrationのrollback、DB方言と性能差は未決定 |
 
 [Spring Modulith公式events文書](https://docs.spring.io/spring-modulith/reference/events.html)はpublication lifecycle、stale判定、再送・パージAPIを定義する。
@@ -160,6 +163,33 @@ KOIKIの成功済みV1 / V2とApplication V1の履歴は維持された。これ
 [Phase 1b CP4](phase1b-cp4-data-runtime.md)の別Evidenceを参照する。
 V5はその実装を使ったA1 production統合試験でも、store性能比較でもない。
 
+### 3.4 V3：FAILED滞留と非同期相関のTooling検証
+
+`V2__failed_transition_probe.sql`は`event_publication`にfixture専用`probe_failed_at`を追加し、
+statusが別状態からFAILEDへUPDATEされたときにPostgreSQLの`clock_timestamp()`を記録する。
+FAILED以外へ移ったときは時刻を消す。Spring Modulith標準schema、正式migration、DB方言共通契約の案ではない。
+`PublicationMetricsProbe`の従来gaugeは`publication_date`を起点とし、追加gaugeは
+`probe_failed_at`を起点とする。testで前者を5分前に変更しても後者は1分未満だった。
+後者だけ2分前へ変更すると約2分を示し、再送完了後は両方0になった。
+triggerはfixtureで通したUPDATE経路を測っており、他のpublication storeやstatus書込経路を網羅しない。
+
+`CorrelationObservationTest`は初回listener失敗後、Toolingの復旧jobから同じeventを再送した。
+初回と再送のevent ID・DB上のpublication IDが一致し、復旧側だけにjob ID / retry IDを付けた。
+fixture専用のMDC task decoratorで初回request / trace markerをasync listenerへ渡し、
+jobではrequest文脈を消してjob / retry IDから相関を再構成した。
+Logbackで実際に出たlog eventのMDCを検査し、単一worker threadを再利用した次requestに
+前requestのID、trace marker、job IDが残らない負例を確認した。
+
+この`traceId`はtestがMDCへ入れた**模擬marker**で、OpenTelemetry tracerのspan / trace IDではない。
+再送jobへ元requestのtraceを連続伝播した結果でもない。実際の別JVM復旧、exporter / collector、
+traceの親子関係、log sink、metric alert、retentionとoperator対応は未検証である。
+event / publication / retry / job IDをmetric tagへ入れる案は高cardinalityになるため固定しない。
+失敗滞留の正式な起点、DB方言とmigration所有、許容遅延、alert閾値・運用Owner、
+相関IDと個人情報の扱いをD1 / A1 blocking reviewで決める。
+
+JDBC / JPAそれぞれで`verify`を実行し、Surefire 12件・Failsafe 11件ずつPASSした。
+この結果はTooling内の観測契約候補を示すもので、DoD 4-4 / 4-12の正式PASSではない。
+
 ## 4. Rule 28 / 29のsource照合と検証案（未採用）
 
 [グランドデザイン§21.3](../grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md#213-archunit--spring-modulith)では、
@@ -240,7 +270,9 @@ OwnerがRancher Desktop未起動を確認した。起動後、通常権限の`do
 ## 5. 暫定判断
 
 JDBC / JPAの両方式で、同じJPA業務transaction、Flyway schema、FAILED→再送→COMPLETED、パージ、PUBLISHEDと送信前・送信受理直後のPROCESSING中の強制停止・再起動後配信、人工的なstale判定、Registry記録対象のannotation種別選択が成立した。
-運用filterで再送試行を抑制できること、fixtureのFAILED gaugeが測るのはpublicationからの年齢であることも確認した。
+運用filterで再送試行を抑制できること、従来のFAILED gaugeが測るのはpublicationからの年齢であることも確認した。
+V3ではFAILED遷移時刻の別gaugeと、初回・復旧job・再送listenerのMDC log相関をToolingで確認した。
+実trace / exporterとalert運用はD1 reviewへ残る。
 複数JVMの同時再公開では同一publicationを別listener invocationが処理した。provider側の冪等性を前提にしても、
 同一eventの処理競合が許されるか、再公開を単一実行に制約するかをA1 blocking reviewで決める必要がある。
 どちらをKOIKIの正式基盤に置くかは、残る停止窓、通常listenerとの再送競合、運用・migration ownershipのEvidence後に判断する。

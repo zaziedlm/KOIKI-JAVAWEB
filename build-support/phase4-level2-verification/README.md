@@ -25,12 +25,20 @@ event ID, observed status, and attempt count. It rejects missing confirmation an
 While waiting for completion, it polls its lock connection and halts its own JVM on loss.
 The file is an operator assertion, not proof that the original listener stopped; polling also leaves
 a short interval before halt. These fixture checks do not establish distributed fencing.
-Correlation across async processing remains open. `Rule28And29CandidateTest` compares the current
+Production tracing and exporter correlation remain open. `Rule28And29CandidateTest` compares the current
 distributed Rule 28 / Rule 1 behavior with Tooling-only Level 2 Rule 28 and direct-dependency Rule 29
 candidates. It requires no Docker; the candidate does not define a Framework rule-selection API.
 The indirect listener to Use Case to Port to outbound Adapter route remains a review and runtime-test
 responsibility. Results belong in
 `docs/architecture/validation/phase4-pl2-level2-verification.md`.
+
+V3 adds a Tooling-only Flyway V2 marker for the time a publication enters FAILED. It compares
+FAILED transition age with publication age, and checks event/publication IDs across the initial
+async listener and a job-triggered retry. A single reused listener thread and captured Logback MDC
+events verify that one request's context does not leak into the next. The trace ID in this fixture
+is a synthetic MDC marker; the test does not exercise an OpenTelemetry tracer, exporter, alert, or
+separate-JVM correlation. The marker column, PostgreSQL trigger, executor, and metric names are
+not production migration or Framework contracts.
 
 The V5 integration test compares two migration placements: KOIKI-owned publication schema followed
 by Application business schema, and Application-owned publication plus business schema after a KOIKI

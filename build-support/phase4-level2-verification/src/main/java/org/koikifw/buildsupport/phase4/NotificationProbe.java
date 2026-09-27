@@ -12,15 +12,18 @@ import org.springframework.stereotype.Component;
 public class NotificationProbe {
 
     private final ProviderStub provider;
+    private final CorrelationProbe correlation;
     private final String pauseFile;
     private final String pauseAfterSendFile;
     private final AtomicBoolean failAfterSend = new AtomicBoolean();
 
     public NotificationProbe(
             ProviderStub provider,
+            CorrelationProbe correlation,
             @Value("${probe.pause.file:}") String pauseFile,
             @Value("${probe.pause.after-send.file:}") String pauseAfterSendFile) {
         this.provider = provider;
+        this.correlation = correlation;
         this.pauseFile = pauseFile;
         this.pauseAfterSendFile = pauseAfterSendFile;
     }
@@ -31,6 +34,7 @@ public class NotificationProbe {
 
     @ApplicationModuleListener
     public void on(ProbeApproved event) {
+        correlation.record("listener", event.eventId());
         pauseAt(pauseFile, event);
         provider.send(event.eventId());
         pauseAt(pauseAfterSendFile, event);
