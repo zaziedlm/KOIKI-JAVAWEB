@@ -6,9 +6,11 @@
 ## 現在の入口
 
 - [アプリ開発チーム向け引継ぎガイド](application-team-handoff-guide.md): Phase履歴を知らない開発者が、提供物／非提供物、構成・Starter選択、Reference実行、最初のCustomer-owned module、copy禁止、拡張分類、診断およびFramework側への戻し条件を一本道で確認する第一入口
+- [P4-AR6 業務アプリチーム向け説明・対話資料](p4-ar6-application-team-briefing-20260928.md): Frameworkの現実装、frontendとSecurityの案件責任、VS Code / Maven構成案、外部project試行の証拠を9月28日の対話順に整理
 - [UI / Authentication Profile Selection Guide](frontend-authentication-profile-guide.md): MVC単一JAR、same-origin React、Next.js BFF、direct Token SPAおよびALB edge認証のUI / Session / Token / SSO責任選択
 - [Phase 2 Developer Journey](phase2-developer-journey.md): Security Starter、認証profile、Ownership、診断および検証入口の詳細
 - [P4-AR6 実チーム受入worksheet](p4-ar6-actual-team-reception-worksheet.md): 実行前承認、環境、journey、Repository topology、Customer-owned module、責任分担、findingおよびcleanupを非機密情報だけで記録する様式
+- [P4-PL1 REST利用境界差分台帳](KOIKI-JavaWeb-FW_Phase4_PL1_REST利用境界差分台帳_v0.1.md): Framework契約とReference例の区別、未取得の実案件入力、P4-AR6打ち合わせ用の確認票
 - [Pre-Phase 4 Adoption Readiness計画](KOIKI-JavaWeb-FW_Pre-Phase4_Adoption_Readiness計画_v0.1.md): Framework、Consumer、Reference、開発環境およびDeveloper Handoffを実案件連携前に確認するtransition Gateの正本
 
 共有source baselineのtag名と現在状態は[Repository Top README](../../README.md)を正本とします。source milestoneは
