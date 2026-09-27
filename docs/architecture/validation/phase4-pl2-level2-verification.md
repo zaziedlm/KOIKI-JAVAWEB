@@ -192,6 +192,51 @@ Rule 29の静的検査が直接依存に留まる場合、同期listenerで外�
 ArchUnitだけで証明したとは扱わない。上記fixtureと、呼出先Use Caseのreview・失敗経路testを組み合わせる。
 ここでは正式Rules、Public API、Reference moduleを変更していない。
 
+### 4.1 V4：非配布ArchUnit fixtureの実行結果（2026-09-27）
+
+`docs/phase4-execution-plan-review`の`def1f58`を開始点とし、cleanな作業ツリーから
+`build-support/phase4-level2-verification/`へTooling専用のArchUnit fixtureを追加した。
+現行の`koiki-archunit-rules`をtest依存として公開`businessModuleRules(String)`を評価し、
+同じtest内の局所的なLevel選択Rule 28候補・直接依存Rule 29候補と比較した。
+候補は正式artifactへ含めていない。
+
+| fixture | 現行Ruleと候補の観測結果 | 解釈 |
+|---|---|---|
+| Level 0 / 1の同期`@EventListener`、直接・meta transactional、`@ApplicationModuleListener` | 現行Rule 28は同期を拒否せず、残る3種を拒否。候補もLevel 0 / 1の拒否を維持 | 既存`businessModuleRules(String)`の意味を保持する必要がある |
+| Level 2のinbound event `@ApplicationModuleListener`と直接・meta transactional | Tooling候補はmodule listenerを許容し、直接・meta transactionalを拒否。現行Rule 28はmodule listenerも拒否 | Level選択契約とdirect listenerの許容条件をA1でreviewする。現行Rule 38は正しい配置を拒否せず、application内の誤配置を拒否 |
+| 同期listener→`adapter.outbound.external`の直接参照 | 現行Rule 1と候補Rule 29の両方が検出 | 現行Rule 1と対象が重なる。Rule 29には同期listener固有の説明・診断以上の検出範囲が現状ない |
+| 同期listener→Application Use Case→Port→外部Adapter | Rule 1も直接依存Rule 29候補も拒否せず | listenerからの静的な直接参照を禁じても、この経路の外部I/O禁止は証明できない |
+
+実行コマンドは
+`.\mvnw.cmd -f build-support/phase4-level2-verification/pom.xml -Pjdbc -Dtest=Rule28And29CandidateTest test`。
+JDK 21.0.12.1 / Maven WrapperでSurefire **4件PASS**。DBやDockerは使わない規約検証であり、
+JDBC / JPA store差の検証ではない。最初の試行では合成Ruleの`FailureReport.toString()`に
+全Ruleの説明が入るため、説明中のRule IDを違反IDと誤認した。違反detailだけを読むよう修正して再実行した。
+この経緯は合成Ruleを使うtestでの誤判定を防ぐため残す。
+
+Rule 29候補はlistenerを持つ**class単位**の直接依存だけを走査するため、listener以外のmethodが
+同じclass内で外部Adapterを参照しても検出し得る。一方、Use Case / Portの実行先はBean構成や
+分岐にも依存し、単純なclass依存グラフからlistener実行時のI/Oを断定できない。
+正式案ではRule 1との重複、method単位の精度、同期listenerの識別、Level指定のPublic APIと
+後方互換をA1 blocking reviewへ渡す。間接経路はUse Caseの呼出先とPort実装をreviewし、
+同期listenerを実行する動作testで外部送信・File・Messagingの呼出有無を確認する。
+このToolingのPASSを正式Rule採用、DoD 4-1〜4-5 / 4-12のPASS、Gate P4-F通過と扱わない。
+
+全体回帰の`-Pjdbc verify`は通常権限、権限付き実行の順に試したが、両方とも
+TestcontainersがDocker Engineへ接続できずSurefireで停止した。権限付きの`docker version`は
+Client 29.5.3-rdのみを返し、`npipe:////./pipe/docker_engine`は「指定されたファイルが見つかりません」。
+OwnerがRancher Desktop未起動を確認した。起動後、通常権限の`docker version`はnamed pipeへの
+接続を拒否したが、権限付きでServer 29.5.3の応答を確認した。AGENTS.mdの承認済み手順に従い、
+同じTooling fixtureの全体検証を権限付きで再実行した。
+
+| profile / 実行コマンド | Surefire | Failsafe | 結果 |
+|---|---:|---:|---|
+| `-Pjdbc verify` | 11件PASS（V4の4件を含む） | 11件PASS | `BUILD SUCCESS` |
+| `-Pjpa verify` | 11件PASS（V4の4件を含む） | 11件PASS | `BUILD SUCCESS` |
+
+両profileともTestcontainersがRancher Desktop Engine 29.5.3と`postgres:17-alpine`へ接続した。
+初回のDocker停止による失敗は検証環境の未起動が原因で、fixtureの失敗ではない。
+
 ## 5. 暫定判断
 
 JDBC / JPAの両方式で、同じJPA業務transaction、Flyway schema、FAILED→再送→COMPLETED、パージ、PUBLISHEDと送信前・送信受理直後のPROCESSING中の強制停止・再起動後配信、人工的なstale判定、Registry記録対象のannotation種別選択が成立した。

@@ -25,8 +25,11 @@ event ID, observed status, and attempt count. It rejects missing confirmation an
 While waiting for completion, it polls its lock connection and halts its own JVM on loss.
 The file is an operator assertion, not proof that the original listener stopped; polling also leaves
 a short interval before halt. These fixture checks do not establish distributed fencing.
-Correlation across async processing and the Rule 28 /
-proposed Rule 29 boundary remain open. Results belong in
+Correlation across async processing remains open. `Rule28And29CandidateTest` compares the current
+distributed Rule 28 / Rule 1 behavior with Tooling-only Level 2 Rule 28 and direct-dependency Rule 29
+candidates. It requires no Docker; the candidate does not define a Framework rule-selection API.
+The indirect listener to Use Case to Port to outbound Adapter route remains a review and runtime-test
+responsibility. Results belong in
 `docs/architecture/validation/phase4-pl2-level2-verification.md`.
 
 The V5 integration test compares two migration placements: KOIKI-owned publication schema followed
@@ -41,6 +44,19 @@ Run each profile independently using the repository Maven Wrapper:
 ```powershell
 .\mvnw.cmd -f build-support/phase4-level2-verification/pom.xml -Pjdbc verify
 .\mvnw.cmd -f build-support/phase4-level2-verification/pom.xml -Pjpa verify
+```
+
+Run the V4 architecture candidate alone without Docker:
+
+```powershell
+.\mvnw.cmd -f build-support/phase4-level2-verification/pom.xml -Pjdbc -Dtest=Rule28And29CandidateTest test
+```
+
+The V4 test uses the locally installed `koiki-archunit-rules` snapshot. On a clean Maven cache,
+install the current Root Reactor artifact before running this standalone Tooling module:
+
+```powershell
+.\mvnw.cmd -pl koiki-archunit-rules -am -DskipTests install
 ```
 
 Tests use a disposable `postgres:17-alpine` Testcontainers instance. Docker access is required.
