@@ -23,6 +23,10 @@
 [PL2判定資料§1.1](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md#11-level-2の採用規模を先に選ぶ)で
 Level 2のS0見送り、S1用途限定、S2共通基盤を比較する。以下のA1 / A2 / D1はS1 / S2を選ぶ場合の
 候補範囲であり、Gate P4-Fの採用対象や復旧方式を先に確定するものではない。
+CP-F0では、[業務向け説明資料](phase4-pl2-level1-level2-business-guide.md)と
+[F-5の判断材料](phase4-pl2-f5-integration-and-gate-delta-draft.md)に沿って、
+コミット後の通知・耐久配信が必要な業務上の理由を採用規模より先に判定する。
+現時点の実案件確定入力はNext.js/BFF＋RESTだけであり、Level 2の実案件需要は未取得である。
 
 | 候補 | 成果物の範囲 | Ownershipと境界 |
 |---|---|---|
@@ -76,7 +80,7 @@ OpenTelemetry exporterの配布既定はこの段階で固定しない。
 | F-1 | clean source identity、Phase 3 accepted baseline、P4-AR1〜AR5とFramework側P4-AR6準備の差分 | 実チーム入力とFrameworkで再現した結果を混同しない |
 | F-2 | A1 / A2 / D1の責任分担、module・dependency・migration・Public API / ArchUnit Rule影響、代替案と選定理由 | 各変更をFramework / Reference / Toolingへ配置できる |
 | F-3 | DoD 4-1〜4-5・4-12の実演手順。process kill、再起動後配信、重複配信、外部送信失敗、FAILED観測、再送、パージ、相関を含む | 成功・失敗・復旧をpackage済みReferenceと独立した検証手段で再現できる計画がある |
-| F-4 | commit pointとrollback方針、module別見積、環境・CI費用、実施Owner、Evidence保管先 | 工数をDoD実演単位へ追跡できる。見積が未記入ならGateを開催しない |
+| F-4 | commit pointとrollback方針、Framework / Reference / Tooling限定作業のmodule別概算範囲または上限、実施Owner、検証環境・Evidence保管先 | 対象と工数をDoD実演単位へ追跡できる。限定作業のOwner・上限が未記入ならGateを開催しない。実案件固有のprovider・運用・CI総額は各Application採用時へ分ける案 |
 | F-5 | P4-AR計画・`AGENTS.md`の改訂差分、P4-AR6 / AR-D10 / Gate P4-ARとの関係、停止条件 | 現行承認との衝突と残す義務が見える |
 
 F-3の実演単位は次のように分ける。失敗を注入する仕組みはToolingまたは非配布fixtureに置き、正式Framework artifactへ含めない。
@@ -92,7 +96,10 @@ F-3の実演単位は次のように分ける。失敗を注入する仕組み�
 
 P4-PL2でF-2〜F-5を具体化する。[PL2 P4-F判定資料 v0.1](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md)に
 配置候補、DoD実演とfixture Evidenceの差、既存見積の仮配賦、停止点を記録した。
-store・migration方式、Phase共通の再見積、運用Ownerなどは未確定であり、Gate P4-Fは判定不能である。
+store・migration方式、限定作業の実施Ownerと概算範囲または上限、復旧安全条件は未確定であり、
+Gate P4-Fは判定不能である。実案件ごとに変わるprovider・当番・SLA・CI / platform費は
+[F-4見積境界案](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md#3-f-4-暫定工数とcommit-point)に従い、
+P4-Fの必須総額から分離する提案とする。各Applicationの採用前には別途確認が必要である。
 
 ### 4.1 暫定規模と再見積もり
 
@@ -104,11 +111,12 @@ Phase共通25〜40標準人日はSAML、Storage、ECS等も含むため、全額
 |---|---|
 | A1 / A2 / D1への帰属 | DoD 4-1〜4-5・4-12と共有作業を二重計上せず、設計・実装・test・実演・文書へ分解 |
 | Phase共通からの配賦 | Modulith採用review、migration、Rule 28 / 29、CI、運用文書のP4-F分だけを計上 |
-| 検証環境 | PostgreSQL、package済みReference、mail stub、process kill / restart、観測sinkの必要資源とCI費用 |
-| 不確実性 | provider冪等性、publication復旧・schema方式、非同期相関の試験結果を受けてrangeを更新 |
+| 検証環境 | PostgreSQL、package済みReference、mail stub、process kill / restart、観測sinkのP4-F限定作業。workflow / required check追加は別review |
+| 不確実性 | publication復旧・schema方式、非同期相関の試験結果を受けて限定作業のrangeを更新。実providerと案件運用費はConsumer採用時へ分ける |
 
-Ownerの判定資料には、再校正後の標準人日、AI支援Owner稼働日、外部待ち時間を別々に記録する。
-上記47〜80をそのままGate P4-Fの実行予算として承認しない。
+Ownerの判定資料には、P4-F限定作業の概算範囲または上限、実施Ownerと停止点を示す。
+AI支援Owner稼働日と外部待ち時間は把握できる範囲を別記し、実案件固有の待ち・継続費を
+Gate P4-Fの前提としない。上記47〜80をそのまま実行予算として承認しない。
 
 ### 4.2 PL2の非配布検証案（実施承認済み）
 

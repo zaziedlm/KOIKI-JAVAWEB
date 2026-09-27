@@ -89,6 +89,8 @@ Reference、Consumer、browser / API harness、demo seedおよびFeature Templat
 - production deployment、ECS、network、secret managerまたは監視runbook
 - 正式Upgrade / Migration Guideまたは正式OpenRewrite recipe
 
+Level 1 / Level 2を業務要件から選ぶ際は、[PL2の業務向け説明資料（DRAFT）](phase4-pl2-level1-level2-business-guide.md)を参照してください。この資料はLevel 2の提供開始を意味しません。
+
 未提供物が案件に必要な場合も、ReferenceやFramework内部実装をコピーして穴埋めすることは避けてください。
 §10の分類を行い、§11のOwnerへ相談します。
 
