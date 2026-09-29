@@ -16,6 +16,11 @@ KOIKIでの作業位置を最初に確定し、所有権やPhaseを越えた実�
 5. 適用するSkill、設計文書、検証手段を決めてから編集する。
 
 判断に必要な情報が不足し、選択により成果物の所有者やPublic APIが変わる場合は、推測せず確認する。
+検証環境の権限エラーは、`AGENTS.md`の「検証環境の権限エラーと承認済み手順」に従い、
+作業の承認範囲と実行環境の承認手順を照合する。
+ローカルDocker / Testcontainers検証でnamed pipeへの接続を拒否された場合は、
+同節の「ローカルDocker検証」に従って権限付き実行を確認する。
+接続拒否だけからDocker Engine停止と判断しない。
 
 ## 正本を使い分ける
 
@@ -95,7 +100,8 @@ Phase 0、Phase 1a Build Foundation、Phase 1b Runtime FoundationおよびPhase 
 - Phase 2: default deny、CSRF / Security Header既定、local Session、OIDC Client、Bearer Resource Server、
   Business / Security Audit、Identity、Spring Session JDBC、Framework migrationおよびReference `identity`
 - Spring Modulith 2.1.1のLevel 0はtest scopeだけで使用し、runtime依存を追加しない。
-- formal Framework release unitは14 projects / 11 JAR、Phase 2 publish unitはRoot aggregatorを除く13座標である。
+- Phase 2時点のformal Framework release unitは14 projects / 11 JAR、Phase 2 publish unitはRoot aggregatorを除く13座標である。
+  Phase 3で`koiki-starter-web-mvc`を追加した現行formal unit候補は15 projects / 12 JARである。
   Reference、Customer-like Consumer、fixture、性能harnessおよびOpenRewrite prototypeは配布しない。
 - Phase 2内部snapshotはaccepted manifestで固定済みだが、正式release、一般公開repositoryまたは
   Customer向けsupport付き配布ではない。

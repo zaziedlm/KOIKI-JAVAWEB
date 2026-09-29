@@ -48,6 +48,35 @@ Phase 3では、承認済みbaselineを維持し、次を優先する。
 17. Repository内の作業を位置づけるときは、`docs/agent/skills/koiki-project-overview/SKILL.md`を読む。
 18. 業務機能を設計・実装・レビューするときは、加えて`docs/agent/skills/koiki-business-feature-work/SKILL.md`を読む。
 
+## 検証環境の権限エラーと承認済み手順
+
+Architecture Ownerは、今後のAIセッションで検証実行が権限エラーに妨げられた場合、
+承認済みの解決手順をAgent guidanceと関連Skillへ記録することを許可している。
+記録前に、実行を許可された作業範囲、失敗した操作とエラー、承認済みの再実行方法、
+実際の検証結果を確認する。汎用的な判断手順はここへ、作業固有の条件と結果は
+`docs/architecture/validation/`へ記録し、Skillには正本への導線だけを置く。
+この記録許可は、新しい権限回避策や対象外の操作を実行する許可ではない。
+実行環境が権限付き実行の承認を要求する場合はその手順に従い、拒否された操作を迂回しない。
+
+### ローカルDocker検証
+
+Architecture Ownerは、Repository内の承認済み検証に必要なローカルDocker診断と
+Testcontainers実行について、Docker named pipeへ接続できる権限付き実行を許可している。
+この許可には、read-onlyの`docker version` / `docker info` / `docker ps` / `docker images`と、
+承認済みTooling fixtureのMaven test / verifyが使う使い捨てcontainerの起動・停止を含む。
+現時点の対象はP4-PL2の`build-support/phase4-level2-verification/`である。
+
+通常のsandboxで`npipe:////./pipe/docker_engine`への接続を拒否された場合は、
+それだけでRancher DesktopまたはDocker Engineの障害と判定しない。
+対象作業の承認範囲を確認し、実行環境が提供する権限付き実行・承認手順を使って
+最小限の同じ診断または検証を再試行する。Mavenの`~/.m2`書込み拒否も同様に扱う。
+権限付き実行で`docker version`のServer応答と検証結果を確認し、Evidenceへ記録する。
+実行環境側で権限付き実行を拒否された場合は迂回せず、その理由を報告する。
+
+この記載はOSやAI実行環境の権限設定を変更しない。また、未承認のproduction実装、
+任意のcontainer操作、image配布、remote操作、Gate通過を許可するものではない。
+検証範囲が変わる場合は対応するOwner判断に従う。
+
 `docs/agent/skills/`をKOIKI固有Skillの正本とする。`.agents/skills/`と`.claude/skills/`は、
 各エージェントから正本を発見するための薄い導線とし、設計規則を複製しない。
 
