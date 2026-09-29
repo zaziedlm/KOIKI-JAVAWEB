@@ -66,7 +66,8 @@ pwsh -NoProfile -File build-support/adoption-readiness-verification/invoke-p4-ar
 
 ## Safety and non-impact boundary
 
-- 既存の検証scriptを変更、wrapまたはcleanup無効化していません。
+- stage / manifest / cleanup契約を維持し、cleanupを無効化しません。JDKがCDS警告を先行出力する環境でも
+  manifestへ実際のJava / Maven version行を記録するようversion取得を防御しています。
 - stage rootはfilesystem root、home、通常の`.m2/repository`、Framework / Customer Repository配下、
   非空directoryを拒否します。stage rootとmanifest出力先は、既存の祖先directoryを含めてlink / reparse pointを拒否します。
 - cleanupはToolingが作成したmarker、canonical pathおよびexpected commitが一致した場合だけ実行します。
@@ -76,3 +77,53 @@ pwsh -NoProfile -File build-support/adoption-readiness-verification/invoke-p4-ar
 - manifestのcleanup PASSはTooling所有stage rootだけを対象とします。Customer process、port、containerおよび
   一時credentialのcleanupは、実チーム受入セッションで別途確認・記録する必要があります。
 - 本Toolingは正式release、managed Maven repository、P4-AR6完了、Gate P4-ARまたはPhase 4開始を証明しません。
+
+## External Reference boundary verification
+
+`invoke-external-reference-boundary-verification.ps1`は、Git未管理のInitializr生成projectを一時的な
+外部Referenceへ変換して検証する補足wrapperです。既存のR2 stage / manifest / cleanup契約を複製せず、
+full modeでは`invoke-p4-ar6-r2-handoff.ps1`へ委譲します。
+
+POM変換前は`BaselinePreflight`で、source Repository外に保存したInitializr baseline manifest、sidecar、
+外部projectのfile count / size / SHA-256およびFramework commitを再照合します。このmodeはMavenを実行せず、
+stage rootを作成しません。
+
+```powershell
+pwsh -NoProfile -File build-support/adoption-readiness-verification/invoke-external-reference-boundary-verification.ps1 `
+  -Mode BaselinePreflight `
+  -ExpectedFrameworkCommit '<40-character-framework-commit>' `
+  -ExternalProject 'C:\KOIKI-JAVAWEB-BIZ-APP\EXT-REFERENCE' `
+  -BaselineManifest 'C:\KOIKI-JAVAWEB-BIZ-APP\evidence\initializr-baseline-20260925.json' `
+  -BaselineManifestSha256 'C:\KOIKI-JAVAWEB-BIZ-APP\evidence\initializr-baseline-20260925.json.sha256'
+```
+
+Reference source materialize、POM変換および外部Reference固有testのPublic / internal境界補正後は、`Full`で
+変換済みPOM、production sourceのinternal参照0件を先に検査し、R2 Toolingへstage / build / dependency / Architecture
+Rules / artifact不変 / cleanup検証を委譲します。`StageRoot`はFramework、外部project、通常の`.m2/repository`の
+外側にある空または未作成のrun専用pathを指定します。
+
+```powershell
+pwsh -NoProfile -File build-support/adoption-readiness-verification/invoke-external-reference-boundary-verification.ps1 `
+  -Mode Full `
+  -ExpectedFrameworkCommit '<40-character-framework-commit>' `
+  -ExternalProject 'C:\KOIKI-JAVAWEB-BIZ-APP\EXT-REFERENCE' `
+  -BaselineManifest 'C:\KOIKI-JAVAWEB-BIZ-APP\evidence\initializr-baseline-20260925.json' `
+  -BaselineManifestSha256 'C:\KOIKI-JAVAWEB-BIZ-APP\evidence\initializr-baseline-20260925.json.sha256' `
+  -StageRoot 'C:\KOIKI-JAVAWEB-BIZ-APP\local-artifact-stages\run-<timestamp>' `
+  -ManifestOutput 'C:\KOIKI-JAVAWEB-BIZ-APP\evidence\external-reference-run-<timestamp>.json' `
+  -ExternalSourceIdentity '<approved-non-path-source-identity>'
+```
+
+このwrapperはReferenceをformal release unit、BOM、Root Reactor、Customer成果物またはProject Templateへ追加しません。
+
+## Greenfield bootstrap smokeでの再利用
+
+Reference sourceを使わないInitializr生成projectも、専用wrapperを追加せずR2 handoff verificationの`CustomerPom`として
+検証できます。Customer POMはKOIKI Parentへ空の`<relativePath/>`で接続し、必要なStarterだけを選択し、
+`koiki-archunit-rules`を実行するtestを含めます。Data Starterを使う場合、Customer migrationは
+`classpath:db/migration/customer`へ配置します。
+
+`koiki-starter-api`のREST endpointはpath-segment API versioning契約へ適合させます。例えばversion 1は
+`/api/v1/...`へmappingし、handlerの`@GetMapping`等にも`version = "1"`を宣言します。
+このsmokeの結果とTemplateへ昇格させない境界は
+[`Greenfield Bootstrap Smoke Validation`](../../docs/architecture/validation/adoption-greenfield-bootstrap-smoke.md)に記録します。
