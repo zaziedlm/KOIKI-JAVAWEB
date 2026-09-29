@@ -29,6 +29,20 @@ P4-AR7の実チーム由来finding、Gate P4-AR、Phase 4開始判断は未完�
 REST連携という情報からBearer JWT、KOIKI Session共有、特定IdP、SAML、CognitoまたはALB採用を確定しない。
 認証・認可を含む実際のrequest topologyは、実案件チームの設計結果を受けて判定する。
 
+**2026-09-28 説明会後の更新:** [説明会の実施結果](p4-ar6-application-team-briefing-20260928.md#8-実施結果2026年9月28日)で、
+次の入力が加わった。R1の承認記録は変更せず、入力の確度だけを更新する。
+
+| 区分 | 更新された入力 | 計画での扱い |
+|---|---|---|
+| 合意した方向性 | 認証にJWTを使い、BFFがtokenを管理し、backendが検証する | BFF→KOIKIのBearer JWTをKOIKIがResource Serverとして検証する構成（§3.1の候補）を方向性として扱う。issuer、audience、claim、Subject対応は未確定 |
+| 顧客確認待ち | IdPの方式（OpenID ConnectかSAMLか等） | P4-04の判断入力。確認まで外部IdPの方式を推定しない |
+| 未対話 | AWS ALBでの認証（authenticate-oidc / authenticate-cognito）、Cognitoを介したSAML連携の採否 | 説明会で扱っていないが、現実的にあり得る。BFF→KOIKIの検証方式を大きく変えるため、§8の観点で顧客に確認する |
+| 合意した方向性 | VS Code workspaceでFramework / 業務アプリRepositoryを並列配置し、WSL等のUnix系環境を推奨する | P4-AR6のR2構成と一致。Linux上でのR2 build Evidenceを採用支援の残件とする |
+| 新しい論点 | 開発者が`pom.xml`へ依存関係を追加するとFrameworkの制約を回避できる | 現行§3の棚卸しに対応項目がない。Phase 4入口の再整理で扱いを判断する |
+| 日程 | 実案件は2026年11月開始の予定 | 採用支援の期限の目安。Framework本来のPhase 4 Gateの判断基準にはしない |
+
+Level 2の非同期通知について、実案件側からの需要は説明会でも示されなかった。
+
 ## 2. 判断に用いる入力と境界
 
 - [グランドデザイン§27.8](../architecture/grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md)の成果物・DoD 4-1〜4-12を当初baselineとする。
@@ -51,7 +65,8 @@ blocking reviewと開始判断後に行う。「共同Evidence」は実案件で
 | P4-02 | `accounting`、MyBatis分離、楽観lockと共通error / 4-6 | Architecture / Framework: adoption triggerの判定基準、延期したRule 25〜27 / 30〜37とfixture案の再review準備。Reference: Tier 2の模擬既存schema、`ExpenseSettled`受信、仕訳生成・外部連携を実証する候補。 | 明示triggerまたは`accounting`開始判断。`PersistenceModel.SEPARATED`、MyBatis依存・fixture・規約を事前承認。trigger前はRule 8拒否を維持。実案件のschema / SQL / 会計連携はCustomer Ownership。 |
 | P4-03S | `expense` SPA最小参照実装とMVC / SPA併用、KOIKI Session / CSRF / CORS / 4-8・4-9 | Framework: Session APIと既存Security chainの契約確認。Reference: same-origin Session SPAとMVC併用の実証候補。 | 当初DoDはSession SPAであり、実案件BFFのREST経路だけでは充足しない。Referenceで維持するか、DoDを変更するかをOwnerが明示判断。 |
 | P4-03B | 実案件Next.js/BFF + KOIKI RESTのCustomer主導integration track | Customer: topology、Next.js/BFF、KOIKI側の案件設定、REST結合の設計・実装・検証を主導。Framework: 既存API / Security / Identity / Permission / Audit契約の説明、再現可能なgapの審査。 | API path / DTO / error / version、認証profile、権限、logout等は実案件設計で具体化する。Reference実装やtest issuerを正式契約として流用しない。KOIKI側で受け入れるEvidenceと変更要求はP4-AR6の責任分担へ入力する。 |
-| P4-04 | SAML Extensionと外部IdP SSOの関係 | Architecture / Framework: OIDC優先との適合、Adapter境界、threatと運用Ownerの論点整理。 | 外部IdPがOIDCを提供するか、SAMLを上流brokerがOIDCへ変換するか、KOIKI / BFFがSAMLを直接処理する要件かを確認。前二者なら直接SAML Extensionの必要性を再判定し、当初成果物からの変更はOwner決定を記録。 |
+| P4-04 | SAML Extensionと外部IdP SSOの関係 | Architecture / Framework: OIDC優先との適合、Adapter境界、threatと運用Ownerの論点整理。 | 外部IdPがOIDCを提供するか、SAMLを上流brokerがOIDCへ変換するか、KOIKI / BFFがSAMLを直接処理する要件かを確認。前二者なら直接SAML Extensionの必要性を再判定し、当初成果物からの変更はOwner決定を記録。IdPの方式だけでなく、認証をどこが終端し、KOIKIに何が届くかで判定する（§8）。Cognito等のbrokerがSAMLを受ける場合、KOIKIからSAMLは見えず、代わりにP4-EDGEが必要になり得る。 |
+| P4-EDGE | Edge認証（ALB＋Cognito / 外部OIDC）のcloud固有Adapterと実ALB環境の検証。Grand Design §13は「後続Phase」、Phase 2 test designは「Phase 4」へ割り当てたが、§27.8の成果物と本棚卸しに行がなかった | Architecture / Framework: 署名済みedge claim、期待するALB ARN、直接到達の防止、identity link、Auditの契約整理。Phase 2のfixture否定テスト（N-04）を起点にする。 | 実案件がALB認証を採用するかの確認。採用しない場合も、後続Phaseへの割当をOwnerが明示する。当初DoD番号はないため、採否と受入条件をOwner判断で記録する。 |
 | P4-05 | External API Resilience / 4-7 | Framework: 既存timeout、`@Retryable`、`@ConcurrencyLimit`契約とResilience4j採用基準の評価計画。 | 接続先、失敗semantics、冪等性、SLA、秘密情報のOwner。Circuit Breakerの追加は第三者library review後。Customer固有AdapterはCustomerに置く。 |
 | P4-06 | Spring Batch / 4-10 | Framework: 単一実行・二重起動防止・再実行・診断の共通境界を評価。Reference: 未処理申請リマインドと月次締めの実証候補。Tooling: 起動・重複実行の検証。 | job起動基盤、metadata schema、運用Owner。実案件jobはCustomer Ownership。Framework汎用Batch Public APIを先行確定しない。 |
 | P4-07 | File / Object Storage | Framework: Spring標準と既存Port / Adapterでの実現可能性、Security / Audit / cleanup観点を整理。 | 実format、保存先、retention、access policyはCustomer入力。AWS固有Adapterは個別reviewまで作らない。 |
@@ -314,3 +329,58 @@ production開始、DoD変更、P4-AR6 / Gate P4-AR完了、正式受渡しおよ
 **次のreview blocker:** R6のP4-F開始可否はPL2の設計・工数・検証計画が揃うまで判定しない。
 R1〜R5 / R7はこの草案の方向性として判断できるが、work packageのproduction開始やPhase 4全体の
 DoD変更を含めて承認しない。
+
+## 8. 新しい入口へ引き継ぐ設計観点: 認証の終端とBFF→KOIKI間の検証
+
+**位置付け:** 2026-09-29の文書点検で確認した観点の記録であり、設計判断ではない。詳細な設計記述は
+Phase 4入口の再整理（新しい作業）で、[UI / Authentication Profile Selection Guide](frontend-authentication-profile-guide.md)等へ行う。
+それまで、以下の観点を失わないようにここへ残す。
+
+### 8.1 判定の軸
+
+BFF→KOIKI間の検証方式は、IdPがOIDCかSAMLかだけでは決まらない。次の2点で決まる。
+
+1. 認証をどこが終端するか（ALB、BFF、KOIKIのどれか）
+2. KOIKIに何が届くか（IdPが発行したJWT、opaque token、ALBが署名したclaim、BFF自身の認証情報のどれか）
+
+### 8.2 ALBがNext.js/BFFの前で認証する組み合わせ（Profile E＋B）
+
+認証profileガイドのProfile Eは、ALBの後ろにKOIKIを直接置く図である。ALBがBFFの前で利用者を認証し、
+BFFがKOIKIを呼ぶ組み合わせは記述がない。この場合、BFF→KOIKIに渡すものの候補と影響は次のとおりである。
+
+| BFF→KOIKIに渡すもの | KOIKI側で必要な検証 | 影響 |
+|---|---|---|
+| ALBが転送する`x-amzn-oidc-accesstoken`（IdPのAccess Token）をBearerとして渡す | Cognito等のJWTなら、issuerのJWKSでSpring標準のResource Serverとして検証できる | headerはALBが署名しない平文。token自体はIdPの署名で検証できる。外部OIDC IdPのtokenがopaqueなら検証できない |
+| ALBが署名した`x-amzn-oidc-data`を渡す | ES256署名、JWT headerの`signer`（ALB ARN）、`exp`。公開鍵は`kid`ごとに地域別endpointから取得し、JWKSではない | Spring標準のJWKS検証では扱えない。Grand Design §13のcloud固有Adapter（P4-EDGE）が必要 |
+| BFF自身の認証情報と利用者識別子を渡す | BFFを信頼する設計になる | §3.1とprofileガイド§6の「KOIKIはBFFを特権的に信頼しない」に反する。採る場合はArchitecture reviewが必要 |
+
+ALB側の条件として、ALBはID Tokenをtargetへ渡さない。tokenのrefreshはALBが行い、ALBの認証sessionの既定は7日である。
+`OnUnauthenticatedRequest=deny`ではAjaxの未認証requestに401を返す。BFF→KOIKIのserver間通信はbrowserのcookieを
+持たないため、KOIKIの前にALB認証の規則を置いてもこの経路の認証にはならないと考えられる（未検証の推論）。
+
+### 8.3 CognitoのAccess TokenとReferenceの検証設定の差
+
+ReferenceのBearer検証（`ReferenceApiSecurityConfiguration`）は、`aud`、`token_use=access`、独自claim`koiki_user_id`を必須にしている。
+CognitoのAccess Tokenでは次の差がある。
+
+| 項目 | CognitoのAccess Token | 影響 |
+|---|---|---|
+| `aud` | resource bindingを要求した場合だけ入る。常に入るのは`client_id` | audience検証をそのまま流用すると拒否される。`client_id`、custom scope、resource bindingのどれで検証するかを決める |
+| 独自claim | Pre token generation Lambdaで追加する。Access Tokenのcustomizeはfeature plan（Essentials / Plus）の機能 | `koiki_user_id`を前提にできない。`issuer + sub`からFramework userを引く設計が必要 |
+| `sub` | Cognitoが採番する値。企業SAML IdPから連携した利用者でも同じ | SAML側の識別子と、Framework userとの対応を案件側で設計する |
+
+### 8.4 sessionとlogout
+
+ALBの認証session、Cognitoのsession、企業SAML IdPのsession、KOIKIへ渡るAccess Tokenの残存時間は別々に存在する。
+ALBのlogoutは、認証cookieを失効させてIdPのlogout endpointへredirectする手順になる。KOIKI側では、logout後も
+既に発行されたAccess Tokenが期限まで有効な時間帯があることを前提に、残存時間の方針を決める。
+
+### 8.5 新しい入口の作業で行うこと
+
+1. 認証profileガイドに、Profile E＋Bの組み合わせ、§8.2の比較、§8.3のclaim条件、§8.4のsessionとlogoutを記載する。
+2. 同ガイド§12の判断記録の様式に「ALBをBFFの前に置く場合、BFF→KOIKIに渡す認証情報」を追加する。
+3. P4-EDGEとP4-04の採否と受入条件を、顧客への確認結果（[PL1-Q6](KOIKI-JavaWeb-FW_Phase4_PL1_REST利用境界差分台帳_v0.1.md#3-p4-ar6へ渡す確認事項)）を踏まえてOwnerが判断する。
+
+根拠: [Amazon Cognito — Understanding the access token](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-access-token.html)、
+[AWS — Authenticate users using an Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html)
+（いずれも2026-09-29に参照）。

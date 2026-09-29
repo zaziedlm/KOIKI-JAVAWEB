@@ -85,6 +85,16 @@ P4-ARまたはPhase 3を再オープンせず、現行ReferenceをCustomerに近
 | External Reference Boundary | COMPLETE / PASS — EXTERNAL REFERENCE BOUNDARY PROVEN | `validation/adoption-external-reference-boundary-validation.md` |
 | Greenfield Bootstrap Smoke | COMPLETE / PASS — REFERENCE-INDEPENDENT GREENFIELD BOOTSTRAP PROVEN | `validation/adoption-greenfield-bootstrap-smoke.md` |
 
+### Phase 4 planning（計画作業の途中記録）
+
+Phase 4開始前の計画見直しと非配布検証を管理する。Architecture Ownerが承認したのはP4-PL1 / PL2の調査・設計までであり、
+Gate P4-F、Phase 4 production開始、DoD変更、正式配布は未承認である。計画と判断の入口は
+`../development/README.md`の「Phase 4計画作業（途中記録）」を参照する。
+
+| Work Package | 状態 | 検証記録 |
+|---|---|---|
+| P4-PL2 Level 2 非配布検証（V1〜V5） | IN PROGRESS — TOOLING EVIDENCE RECORDED / NOT ADOPTED | `validation/phase4-pl2-level2-verification.md` |
+
 ### Phase 2 Security Foundation
 
 | Work Package / Gate | 状態 | 検証記録 |

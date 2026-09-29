@@ -1,6 +1,6 @@
-# P4-AR6 業務アプリチーム向け説明・対話資料（2026年9月28日 予定）
+# P4-AR6 業務アプリチーム向け説明・対話資料（2026年9月28日 実施）
 
-**状態:** 打ち合わせ準備資料。実チームの受入結果・採用判断は未記入。  
+**状態:** 2026年9月28日に実施済み。Frameworkの概要説明と方針共有までで、実チーム環境でのbuild / run再現と受入判定は未実施。結果の要約は§8。  
 **対象:** KOIKI-JavaWeb-FWを利用する可能性がある業務アプリ開発チーム。  
 **説明の軸:** 業務アプリが必要とする機能、KOIKIから利用できる契約、案件側で実装する範囲、最初の開発環境。
 
@@ -96,6 +96,7 @@ VS Codeでは、FrameworkとCustomer backendのfolderを別rootとして追加�
 両Repositoryの外へ置く案です。Java / MavenのbuildはCustomer backendのroot POMから実行します。
 Next.js/BFFの開発・buildはCustomer frontend側で行います。Framework checkoutは契約確認と固定commitの
 artifact stageに使い、Customer業務codeの保存先やCustomer buildの親Reactorにはしません。
+説明会後、この構成案を実際の手順として[開発環境構築手順](application-team-development-environment-guide.md)にまとめました。
 
 ### JAR参照の考え方
 
@@ -136,14 +137,13 @@ artifact stageに使い、Customer業務codeの保存先やCustomer buildの親R
 
 ## 5. 外部projectで試したこと
 
-次の2件は`verification/external-reference-bootstrap-smoke`の**検証ブランチだけ**に記録されています。
-この説明資料のブランチへ取り込んでいません。GitHubのcommit `4f086fda5e0a388b10c33be6eac5c56dadf378dc`に
-固定したリンクから参照できます。
+次の2件は説明会の時点では検証ブランチだけに記録されていました。その後PR #39で`main`へ取り込み、
+同じ手順を業務アプリチーム向けに並べ直した[開発環境構築手順](application-team-development-environment-guide.md)を追加しました。
 
 | 試行 | 結果と当日の説明点 | 証拠 |
 |---|---|---|
-| 外部Reference境界 | Initializr生成の独立projectへ既存Referenceを一時的にmaterializeし、KOIKI Parent・Maven座標から99 test、packageをPASS。Framework sourceや通常`.m2`の偶発依存を排除した。Reference sourceを使う検証であり、Customer業務アプリの雛形ではない | [External Reference Boundary Validation](https://github.com/zaziedlm/KOIKI-JAVAWEB/blob/4f086fda5e0a388b10c33be6eac5c56dadf378dc/docs/architecture/validation/adoption-external-reference-boundary-validation.md) |
-| 新規greenfield bootstrap | Reference sourceを使わないInitializr生成projectにKOIKI Parent、API / Data / Data JPA Starter、Architecture Rules、Customer所有migrationを追加。3 test、package済みJAR起動、PostgreSQL接続、Customer FlywayとREST応答をPASS。Securityは検証対象外。versioning path不適合による最初の400は契約へ合わせて修正した | [Greenfield Bootstrap Smoke Validation](https://github.com/zaziedlm/KOIKI-JAVAWEB/blob/4f086fda5e0a388b10c33be6eac5c56dadf378dc/docs/architecture/validation/adoption-greenfield-bootstrap-smoke.md) |
+| 外部Reference境界 | Initializr生成の独立projectへ既存Referenceを一時的にmaterializeし、KOIKI Parent・Maven座標から99 test、packageをPASS。Framework sourceや通常`.m2`の偶発依存を排除した。Reference sourceを使う検証であり、Customer業務アプリの雛形ではない | [External Reference Boundary Validation](../architecture/validation/adoption-external-reference-boundary-validation.md) |
+| 新規greenfield bootstrap | Reference sourceを使わないInitializr生成projectにKOIKI Parent、API / Data / Data JPA Starter、Architecture Rules、Customer所有migrationを追加。3 test、package済みJAR起動、PostgreSQL接続、Customer FlywayとREST応答をPASS。Securityは検証対象外。versioning path不適合による最初の400は契約へ合わせて修正した | [Greenfield Bootstrap Smoke Validation](../architecture/validation/adoption-greenfield-bootstrap-smoke.md) |
 
 これで確認できたのは、外部projectからFramework artifactを利用してbackendをbuild / runする技術的な入口です。
 Next.js/BFFとの結合、案件の認証・認可、実チームの環境での再現、正式release / supportはまだ確認していません。
@@ -171,4 +171,44 @@ P4-AR6実チーム受入、AR-D10、Gate P4-AR、Phase 4開始および正式art
 | REST / BFFで未確定の点 | [PL1 REST利用境界差分台帳](KOIKI-JavaWeb-FW_Phase4_PL1_REST利用境界差分台帳_v0.1.md) |
 | Frontend・認証方式の比較 | [UI / Authentication Profile Selection Guide](frontend-authentication-profile-guide.md)、[Phase 2 Developer Journey](phase2-developer-journey.md) |
 | 利用可能なStarterとReference | [Starter一覧](../../koiki-starters/README.md)、[Reference index](../reference/README.md) |
-| 外部project試行の証拠 | [外部Reference試行](https://github.com/zaziedlm/KOIKI-JAVAWEB/blob/4f086fda5e0a388b10c33be6eac5c56dadf378dc/docs/architecture/validation/adoption-external-reference-boundary-validation.md)、[greenfield試行](https://github.com/zaziedlm/KOIKI-JAVAWEB/blob/4f086fda5e0a388b10c33be6eac5c56dadf378dc/docs/architecture/validation/adoption-greenfield-bootstrap-smoke.md) |
+| 開発環境の構築 | [開発環境構築手順](application-team-development-environment-guide.md) |
+| 外部project試行の証拠 | [外部Reference試行](../architecture/validation/adoption-external-reference-boundary-validation.md)、[greenfield試行](../architecture/validation/adoption-greenfield-bootstrap-smoke.md) |
+
+## 8. 実施結果（2026年9月28日）
+
+Frameworkの概要説明と方針共有で終わり、P4-AR6の受入判定に使える実チーム環境でのbuild / run / diagnosisは
+行っていない。以下は会議要約から非機密の範囲で転記した。担当は役割名で記載する。
+[P4-AR6 worksheet](p4-ar6-actual-team-reception-worksheet.md)の実チーム受入セッションは`PENDING`のまま維持する。
+
+### 8.1 合意した方向性
+
+| 項目 | 合意内容 | Phase 4計画での扱い |
+|---|---|---|
+| 開発構成 | frontend（React / Next.js等）とbackendを分離し、BFFを介して連携する | 既存の確定入力（Next.js/BFF + KOIKI REST）と一致 |
+| 認証方式 | JWTを利用する。BFFでtokenを管理し、backend側で検証する | BFF→KOIKIのBearer JWTをKOIKIがResource Serverとして検証する方向。issuer、audience、claim、IdP方式は未確定 |
+| 開発環境 | VS Codeのworkspace機能で、Framework Repositoryと業務アプリRepositoryを並列配置する | P4-AR6のR2構成と一致。[開発環境構築手順](application-team-development-environment-guide.md)で提供 |
+| OS環境 | WSL等のUnix系環境を推奨する | 開発環境構築手順のLinux付記は未検証。Linux上でのR2 build Evidenceが必要 |
+| 基盤 | Java 21（実行はJava 25も想定）、Spring Boot、Maven。構造検査にArchUnitを使う | 既存baseline（Spring Boot 4.1.1）と一致。会議要約の版表記はbaselineで読み替える |
+| 非提供 | モダンfrontend向けのproduction ReferenceとProject Templateは現時点で提供しない | 既存の境界（Phase 4 R4、Phase 5）と一致 |
+
+### 8.2 未確定事項とリスク
+
+| 論点 | 内容 | 扱い |
+|---|---|---|
+| IdPの方式 | token発行元がOpenID ConnectかSAMLか等で実装負荷が変わる | 顧客確認待ち。Phase 4のP4-04と同じ論点 |
+| 認証の終端（説明会では未対話） | AWS ALBの認証機能やCognitoを介したSAML連携は現実的にあり得るが、説明会では扱っていない。どこが認証を終端するかで、BFF→KOIKIの検証方式が大きく変わる | 顧客へ確認する（[PL1-Q6](KOIKI-JavaWeb-FW_Phase4_PL1_REST利用境界差分台帳_v0.1.md#3-p4-ar6へ渡す確認事項)）。観点は[見直し草案§8](KOIKI-JavaWeb-FW_Phase4実施計画_見直し草案_v0.1.md#8-新しい入口へ引き継ぐ設計観点-認証の終端とbffkoiki間の検証) |
+| 依存関係の制御 | 開発者が個別に`pom.xml`へ依存関係を追加すると、Frameworkの制約を回避できる可能性がある | 継続検討。現行計画に対応する項目がないため、Phase 4棚卸しへの追加候補 |
+
+### 8.3 アクション
+
+| 担当（役割） | アクション | 状態（2026-09-29時点） |
+|---|---|---|
+| Framework Owner | 最新のFrameworkソースを社内リポジトリに公開する | 対応済み（2026-09-28、`main` / `f7ad141`）。PR #39以降の反映は別途同期する |
+| Framework Owner | ArchUnitで定義している構造ルールを日本語で文書化する | 未着手 |
+| Framework Owner | VS Code workspaceの具体的な設定手順を提示する | 対応済み。[開発環境構築手順](application-team-development-environment-guide.md)（PR #39） |
+| 業務アプリチーム | 公開ソースを基に開発環境のセットアップを進める | 業務アプリチーム側で進行 |
+| 業務アプリチーム / Framework Owner | 認証まわりの詳細設計を相談する | 未着手。IdP方式の顧客確認が入力 |
+
+### 8.4 日程
+
+実案件の開始は顧客都合により1か月後ろ倒しとなり、2026年11月開始の予定である。

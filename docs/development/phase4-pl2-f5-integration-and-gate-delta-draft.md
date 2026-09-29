@@ -20,7 +20,8 @@ Phase 4全体開始は未完了。以下の採否・延期・DoD変更は未承�
 | P4-02 / C0・C1 | `accounting`、MyBatis分離、4-6。`ExpenseSettled`の非同期受信も当初Reference構成 | P4-F対象外。C1は当初A1にも依存 | C0 adoption triggerを先に判定。S0なら非同期連携の範囲とC1順序を再計画し、Rule 8拒否を維持 |
 | P4-03S / B1 | Reference Session SPAとMVC併用、4-8・4-9 | P4-F対象外 | 当初DoDを維持するかOwner判断。実案件BFFの成果では代替しない |
 | P4-03B / B2 | 実案件Next.js/BFF＋KOIKI REST接続。独立した当初DoD番号なし | P4-F対象外、Customer主導 | API・認証・非機密Evidence・Framework gapの責任をP4-AR6 / AR-D10で決める |
-| P4-04 / X | SAML Extension。当初成果物、DoD番号なし | P4-F対象外 | 外部IdPの方式は見込み。OIDC / broker / KOIKI直接SAMLの要否を確認し、採否変更はOwner判断 |
+| P4-04 / X | SAML Extension。当初成果物、DoD番号なし | P4-F対象外 | 外部IdPの方式は見込み。OIDC / broker / KOIKI直接SAMLの要否を確認し、採否変更はOwner判断。認証の終端とKOIKIに届く認証情報で判定する（[見直し草案§8](KOIKI-JavaWeb-FW_Phase4実施計画_見直し草案_v0.1.md#8-新しい入口へ引き継ぐ設計観点-認証の終端とbffkoiki間の検証)） |
+| P4-EDGE / X | Edge認証（ALB＋Cognito / 外部OIDC）のcloud固有Adapterと実ALB環境検証。Grand Design §13とPhase 2 test designから送られたが、当初棚卸しに行がなかった。DoD番号なし | P4-F対象外 | 実案件のALB認証採否を確認（PL1-Q6）。採用しない場合も後続Phaseへの割当をOwnerが明示 |
 | P4-05 / C2 | External API Resilience、4-7 | P4-F対象外 | 接続先・失敗semantics・冪等性が必要。Resilience4jは別library review |
 | P4-06 / C3 | Spring Batch、4-10 | P4-F対象外。単一実行契約はA1パージと比較対象 | Reference job・運用Owner・metadata所有を決める。S0時はpublicationパージ需要がなくなるがBatchの4-10は残る |
 | P4-07 / C4 | File / Object Storage、DoD番号なし | P4-F対象外 | Reference代表use caseを選ぶ。実保存先・format・権限はCustomer入力。AWS固有Adapterを先行しない |

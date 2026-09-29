@@ -38,6 +38,7 @@
 | PL1-Q3 | BFF Session、Cookie / CSRF、KOIKI側SessionまたはBearerとの境界、logout | OPEN |
 | PL1-Q4 | correlation ID、Security / Business Audit、機密情報非露出、障害時の問い合わせOwner | OPEN |
 | PL1-Q5 | package済みartifactの受入、build / run / diagnosisとjoint Evidenceの再現条件 | OPEN |
+| PL1-Q6 | 認証をどこが終端するか（AWS ALBの認証機能、Cognito、BFF、KOIKIのどれか）、Cognitoを介した企業SAML連携の有無、BFF→KOIKIに渡す認証情報（IdPのAccess Token、ALBの署名claim等） | OPEN。2026-09-29の点検で追加。説明会では未対話。観点は[見直し草案§8](KOIKI-JavaWeb-FW_Phase4実施計画_見直し草案_v0.1.md#8-新しい入口へ引き継ぐ設計観点-認証の終端とbffkoiki間の検証) |
 
 この台帳はCustomer API仕様や認証profileを確定しない。PL1-Q1〜Q5が未取得の間も、
 Frameworkの既存契約とReference例の差分整理をPL2の技術設計へ渡せる。
