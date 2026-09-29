@@ -148,6 +148,10 @@ UI topologyが未決定でも、§7のReference MVC journeyはFrameworkの現在
 | 45〜55分 | Referenceのmasterとexpenseを見て、Tier 1 / 2、Controller / Use Case / Domain / Adapterを区別します | 自案件へコピーせず、責務配置を説明できます |
 | 55〜60分 | §8のworksheetで最初のCustomer moduleを仮設計します | Ownership、Tier、入口、永続化、検証を言語化できます |
 
+Referenceの確認後、自チームのCustomer projectの開発環境を作るときは、
+[開発環境構築手順](application-team-development-environment-guide.md)に従って
+Framework / Customerの別Repositoryを同じ作業directoryへ並べ、R2 isolated stageでbuildします。
+
 Bearer APIやBrowser / API / DB / Audit aggregateを確認する場合は[Reference index](../reference/README.md)から
 focused Toolingを選びます。これらは理解・回帰検証用であり、Customerの日常build commandへそのまま移植しません。
 
@@ -310,6 +314,7 @@ P4-AR6では理解不足を開発者の責任にせず、文書、配布、環�
 本書は入口であり、詳細な契約の正本ではありません。構成や実装方針を決めるときは、該当する次の文書へ進んでください。
 記述が競合して見える場合は、本書だけで解釈を固定せず、上位Architecture、ADRおよび最新Evidenceを確認してください。
 
+- [開発環境構築手順](application-team-development-environment-guide.md): 端末準備、Repository配置、Customer POM接続、R2 build、ローカル起動、VS Code採用時の設定例
 - [Phase 2 Developer Journey](phase2-developer-journey.md): Starter、Security profile、Public seam、診断、検証
 - [UI / Authentication Profile Selection Guide](frontend-authentication-profile-guide.md): MVC / React / BFF / Token / ALBの選択
 - [Reference index](../reference/README.md): 業務仕様、Local Run Guide、focused / critical verification
