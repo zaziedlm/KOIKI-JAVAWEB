@@ -199,7 +199,13 @@ function Get-JavaRuntime {
     if ($versionText -notmatch '(?m)version "21(?:[.]|\")') {
         throw 'P4-AR6 R2 staging requires JDK 21.'
     }
-    return (($versionText -split "`r?`n")[0]).Trim()
+    $versionLine = @($versionOutput | ForEach-Object { [string]$_ } |
+        Where-Object { $_.Trim() -match '^(?:openjdk|java) version ' } |
+        Select-Object -First 1)
+    if ($versionLine.Count -ne 1) {
+        throw 'Unable to identify the Java runtime version line.'
+    }
+    return $versionLine[0].Trim()
 }
 
 function Invoke-KoikiMaven {
@@ -834,7 +840,13 @@ try {
     $javaRuntime = Get-JavaRuntime
     $mavenVersionOutput = @(& $wrapper --version 2>&1)
     if ($LASTEXITCODE -ne 0) { throw 'Unable to read the Maven Wrapper version.' }
-    $mavenWrapperVersion = (($mavenVersionOutput | Select-Object -First 1) | Out-String).Trim()
+    $mavenVersionLine = @($mavenVersionOutput | ForEach-Object { [string]$_ } |
+        Where-Object { $_.Trim() -match '^Apache Maven ' } |
+        Select-Object -First 1)
+    if ($mavenVersionLine.Count -ne 1) {
+        throw 'Unable to identify the Maven Wrapper version line.'
+    }
+    $mavenWrapperVersion = $mavenVersionLine[0].Trim()
 
     $currentStep = 'formal-release-unit-discovery'
     $formal = Get-FormalReleaseUnit -Repository $frameworkRoot
