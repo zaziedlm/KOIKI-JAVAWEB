@@ -153,6 +153,8 @@ UI topologyが未決定でも、§7のReference MVC journeyはFrameworkの現在
 Referenceの確認後、自チームのCustomer projectの開発環境を作るときは、
 [開発環境構築手順](application-team-development-environment-guide.md)に従って
 Framework / Customerの別Repositoryを同じ作業directoryへ並べ、R2 isolated stageでbuildします。
+初回build後に業務機能を1つ実装・検証する手順は[アプリケーション開発者ガイド（草案）](application-developer-guide.md)、
+buildが`KOIKI-ARCH-nnn`で失敗したときの読み方と直し方は[Architecture Rules説明（草案）](architecture-rules-developer-guide.md)を参照してください。
 
 Bearer APIやBrowser / API / DB / Audit aggregateを確認する場合は[Reference index](../reference/README.md)から
 focused Toolingを選びます。これらは理解・回帰検証用であり、Customerの日常build commandへそのまま移植しません。
