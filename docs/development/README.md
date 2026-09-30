@@ -21,6 +21,10 @@
 
 ## Phase 4計画作業（途中記録）
 
+2026年9月30日時点のFramework側の現在地と、実案件チームの回答待ちと並行して進める作業の順序案は
+[Pre-Phase 4 Framework側の現在地と作業順序案](pre-phase4-framework-independent-work-review-20260930.md)（2026-09-30 OWNER APPROVED）に
+まとめています。下記「次の着手順（2026年9月29日時点）」の表との対応は同文書§5にあります。
+
 2026年9月26〜29日にPhase 4の計画見直しと非配布検証を行った途中記録です。Architecture Ownerが承認したのは
 P4-PL1 / PL2の調査・設計までで、Gate P4-F、Phase 4 production開始、DoD変更、正式配布は未承認です。
 Phase 4の入口は、[説明会の実施結果](p4-ar6-application-team-briefing-20260928.md#8-実施結果2026年9月28日)を受けて再整理する予定です。
@@ -34,6 +38,11 @@ Phase 4の入口は、[説明会の実施結果](p4-ar6-application-team-briefin
 - [PL2 V4開始引継ぎ](phase4-pl2-v4-start-handoff-20260927.md): 2026年9月27日時点の作業再開記録
 
 ### 次の着手順（2026年9月29日時点）
+
+> **2026-09-30 移行済み:** この表の作業と順序は、Owner承認済みの
+> [Pre-Phase 4 Framework側の現在地と作業順序案](pre-phase4-framework-independent-work-review-20260930.md)へ移行しました。
+> 現在の作業順、待ち事項、Phase 4完遂までの見通しは同文書を正本とします。各行の移行先は同文書§5の対応表にあります。
+> 以下の表は2026年9月29日時点の記録として残します。
 
 Phase 4の次の作業は、実案件の開始（2026年11月予定）に合わせる**採用支援**と、Grand Design §27.8に基づく
 **Phase 4本体**の2本に分けて進めます。次の表を着手順の入口とし、詳細は各リンク先を正本とします。
