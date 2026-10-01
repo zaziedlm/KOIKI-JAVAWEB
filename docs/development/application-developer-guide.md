@@ -1,6 +1,6 @@
 # KOIKI アプリケーション開発者ガイド
 
-**状態:** REVIEW DRAFT。2026-09-30時点のFramework実装と照合済みです。実チームによる試用と、案件固有の設計（認証方式、API仕様等）の反映は未実施です。
+**状態:** OWNER APPROVED / 2026-09-30（Architecture Owner review完了）。2026-09-30時点のFramework実装と照合済みです。実チームによる試用と、案件固有の設計（認証方式、API仕様等）の反映は未実施です。
 **対象:** [開発環境構築手順](application-team-development-environment-guide.md)でCustomer projectの初回buildを通し、これから業務機能を実装する開発者。
 
 ## この文書の位置付け
@@ -325,3 +325,8 @@ Frameworkの変更が必要な場合は、Framework側のreviewを経て対応�
 - [ ] Architecture Rules testの2つの検査が成功している。
 - [ ] Framework / Referenceのcode、migration、fixtureをコピーしていない。
 - [ ] 未決定の認証・API・運用事項に、担当と確認先を書いた。
+
+## 8. FAQ
+
+問い合わせへの回答は本節へ蓄積します。問い合わせが増えたら独立文書へ分け、本節から参照します（2026-10-01 Architecture Owner判断）。
+§5.2に沿って受けた問い合わせのうち、回答で繰り返し現れた論点を追加します。現在、FAQ項目は未登録です。
