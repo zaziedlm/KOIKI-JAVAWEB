@@ -18,6 +18,9 @@ Phase 3 Reference Vertical Sliceでは、master / expense業務、MVC / Thymelea
 
 業務アプリケーション開発の第一入口は
 [アプリ開発チーム向け引継ぎガイド](docs/development/application-team-handoff-guide.md)です。
+続いて、[開発環境構築手順](docs/development/application-team-development-environment-guide.md)でCustomer projectを
+初回build・起動し、[アプリケーション開発者ガイド](docs/development/application-developer-guide.md)で業務機能を実装・検証します。
+buildが`KOIKI-ARCH-nnn`で失敗した場合は[Architecture Rules説明](docs/development/architecture-rules-developer-guide.md)を参照してください。
 Security profileの詳細は[Phase 2 Developer Journey](docs/development/phase2-developer-journey.md)、
 MVC／React／Next.js／外部IdPの構成判断は
 [UI / Authentication Profile Selection Guide](docs/development/frontend-authentication-profile-guide.md)を参照してください。
@@ -37,7 +40,8 @@ MVC／React／Next.js／外部IdPの構成判断は
 - P4-AR5 Developer Handoff Readiness: COMPLETE / OWNER APPROVED
 - P4-AR6: Framework側の契約、R2 Tooling、rehearsal、worksheetを準備・承認済み。実チーム受入は情報待ち
 - P4-AR7 / Gate P4-AR / Phase 4開始: PENDING / NOT APPROVED
-- Source milestone tag name: `v0.1.0-pre-phase4-readme-docs`（README整合後のmerge commitへ付与。正式Maven releaseではありません）
+- Phase 4計画: 見直し草案R1〜R7 OWNER APPROVED（2026-09-26）。[Pre-Phase 4作業順序案](docs/development/pre-phase4-framework-independent-work-review-20260930.md) OWNER APPROVED（2026-09-30）。CP-F0、Gate P4-F、DoD変更は未承認
+- Source milestone tag name: `v0.1.0-pre-phase4-developer-guides`（README整合後のmerge commitへ付与。正式Maven releaseではありません）。前回は`v0.1.0-pre-phase4-readme-docs`
 - 正式groupId / Java base package: `org.koikifw`
 - Build JDK / target bytecode: Java 21
 - Runtime compatibility target: Java 21 / Java 25
@@ -57,8 +61,10 @@ Phase 1bでは9成果物の内部snapshotを公開し、fresh remote repository�
 独立Customer-like Consumerをbuild／testする配布経路まで実証しました。
 Phase 3ではReference Applicationの業務・Web・REST・E2Eを完了しました。P4-ARではclean `main`から
 15 projects / 12 JARの現行formal unit候補、Consumer、package済みReferenceおよび開発者引継ぎを再検証しています。
-`v0.1.0-pre-phase4-readme-docs`はPR #37後のREADME整合までを含むmerge commitを固定するsource milestone
-tagとして使用します。正式artifact repository、正式version、support条件またはPhase 4開始を確定するものではありません。
+`v0.1.0-pre-phase4-developer-guides`は、PR #41で追加した開発者向けガイドとOwner承認済みのPre-Phase 4作業順序案、
+およびその後のREADME整合までを含むmerge commitを固定するsource milestone tagとして使用します。
+前回の`v0.1.0-pre-phase4-readme-docs`は、PR #37後のREADME整合までを含むmerge commitを固定しています。
+いずれも正式artifact repository、正式version、support条件またはPhase 4開始を確定するものではありません。
 
 ## 正本
 
@@ -73,7 +79,11 @@ tagとして使用します。正式artifact repository、正式version、suppor
 - [Phase 2実行計画](docs/development/KOIKI-JavaWeb-FW_Phase2実行計画_v0.1.md)
 - [Phase 3実行計画](docs/development/KOIKI-JavaWeb-FW_Phase3実行計画_v0.1.md)
 - [Pre-Phase 4 Adoption Readiness計画](docs/development/KOIKI-JavaWeb-FW_Pre-Phase4_Adoption_Readiness計画_v0.1.md)
+- [Pre-Phase 4 Framework側の現在地と作業順序案](docs/development/pre-phase4-framework-independent-work-review-20260930.md)
 - [アプリ開発チーム向け引継ぎガイド](docs/development/application-team-handoff-guide.md)
+- [開発環境構築手順](docs/development/application-team-development-environment-guide.md)
+- [アプリケーション開発者ガイド](docs/development/application-developer-guide.md)
+- [Architecture Rules説明](docs/development/architecture-rules-developer-guide.md)
 - [Reference Applicationローカル手動起動ガイド](docs/reference/KOIKI-JavaWeb-FW_Reference_Application_Local_Run_Guide_v0.1.md)
 - [Phase 2 Developer Journey](docs/development/phase2-developer-journey.md)
 - [Phase 2 Gate C remote Evidence](docs/architecture/validation/phase2-gate-c-c2-remote-evidence.md)
