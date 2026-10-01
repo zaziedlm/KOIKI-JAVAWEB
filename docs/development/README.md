@@ -21,6 +21,8 @@
 
 ## Phase 4計画作業（途中記録）
 
+- [作業2：日常開発の反復方式の比較・推奨案](daily-development-workflow-options-20261001.md): IDEとCLIの依存解決、日常用stageの所有権・更新・破棄、R2との使い分けを整理（2026-10-01 文書承認済み。方式採用・Tooling実装は別承認）
+
 2026年9月30日時点のFramework側の現在地と、実案件チームの回答待ちと並行して進める作業の順序案は
 [Pre-Phase 4 Framework側の現在地と作業順序案](pre-phase4-framework-independent-work-review-20260930.md)（2026-09-30 OWNER APPROVED）に
 まとめています。下記「次の着手順（2026年9月29日時点）」の表との対応は同文書§5にあります。
