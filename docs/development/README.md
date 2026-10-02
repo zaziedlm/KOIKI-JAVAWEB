@@ -24,6 +24,10 @@
 2026-10-02の今後の作業は[作業順序案§11](pre-phase4-framework-independent-work-review-20260930.md#11-作業3の区切りと今後の作業一覧2026-10-02)に一覧化しています。作業4aは[認証profileガイド](frontend-authentication-profile-guide.md)への文書反映 COMPLETE / OWNER APPROVED（2026-10-02、[承認範囲](pre-phase4-framework-independent-work-review-20260930.md#12-作業4aの文書反映とreview範囲2026-10-02)）。次の計画整理は作業4b・5・7です。依存関係制御の検証は保留し、日常開発方式の実装は別判断待ちです。
 
 - [作業2：日常開発の反復方式の比較・推奨案](daily-development-workflow-options-20261001.md): IDEとCLIの依存解決、日常用stageの所有権・更新・破棄、R2との使い分けを整理（2026-10-01 文書承認済み。方式採用・Tooling実装は別承認）
+- [作業4b：Phase 4入口・Framework先行範囲の整理案](phase4-entry-and-forward-scope-options-20261002.md): 全packageの必要入力・Owner候補・DoD、現行Gate維持と先行範囲再定義の比較、作業5・7へ渡す材料（DRAFT。分類・先行範囲・開始は未承認）
+- [S1計画方針・案件協働とnon-Web境界の決定記録](phase4-s1-completion-direction-decision-20261002.md): S1検証完遂を目指す進め方の候補化はDECIDED / OWNER APPROVED（2026-10-02）。対話の経緯、承認範囲、S2別判断と並走協働、non-Web推奨 / Web同居非推奨、Batch点検材料と作業7への入力。具体的実行・Gate / 開始は別判断
+- [S1方針承認後の次回作業引継ぎ](phase4-s1-next-session-handoff-20261002.md): 上記決定記録の内容はOwner承認済み。commit pointで区切り、次回は作業7のS1実行条件・Evidence・担当 / 環境 / 上限の具体化から再開するための入力と未決事項
+- [作業5：CP-F0判断材料・S0時の再計画案](phase4-cpf0-and-s0-replan-options-20261002.md): Framework実証と案件導入を分けたS0 / S1 / S2比較、S1成立条件、S0の未達DoD保持、accounting / Batch依存と再計画（DRAFT。S1候補化は上記承認済み。具体的採用・DoD変更・開始は未承認）
 - [作業3：依存関係の制御の論点整理](dependency-control-issues-20261001.md): Parent / BOMとArchitecture Rulesの検出範囲、誤選択防止とアプリ型による構成選択の候補、作業4bへ渡す判断事項（2026-10-02 文書承認済み。方式採用・実装は未決定）
 - [依存関係制御：構成宣言・検査の比較と検証方式案](dependency-control-design-options-20261002.md): A案を有力候補として保持。案の共有・認識合わせを進め、検証作業は保留する方針をOwnerが了解（2026-10-02）。最初のPOM構成・Starter選択を具体化する前段で再開。方式案はDRAFT、検証実行は未承認
 - [依存関係制御：次回作業引継ぎ](dependency-control-next-session-handoff-20261002.md): 作業1〜3の経緯、別端末での再開手順、実効性のある構成選択・制約案へ深掘りする検討順序と承認境界
@@ -32,13 +36,13 @@
 [Pre-Phase 4 Framework側の現在地と作業順序案](pre-phase4-framework-independent-work-review-20260930.md)（2026-09-30 OWNER APPROVED）に
 まとめています。下記「次の着手順（2026年9月29日時点）」の表との対応は同文書§5にあります。
 
-2026年9月26〜29日にPhase 4の計画見直しと非配布検証を行った途中記録です。Architecture Ownerが承認したのは
-P4-PL1 / PL2の調査・設計までで、Gate P4-F、Phase 4 production開始、DoD変更、正式配布は未承認です。
+以下は2026年9月26〜29日にPhase 4の計画見直しと非配布検証を行った途中記録です。当時の承認は
+P4-PL1 / PL2の調査・設計までです。2026-10-02のS1候補化判断は上記決定記録を参照してください。Gate P4-F、Phase 4 production開始、DoD変更、正式配布は未承認です。
 Phase 4の入口は、[説明会の実施結果](p4-ar6-application-team-briefing-20260928.md#8-実施結果2026年9月28日)を受けて再整理する予定です。
 
 - [Phase 4実施計画 見直し草案](KOIKI-JavaWeb-FW_Phase4実施計画_見直し草案_v0.1.md): 当初成果物・DoD 4-1〜4-12の棚卸し、work package案、Owner判断R1〜R7の記録
 - [P4-F限定開始Gate提案](KOIKI-JavaWeb-FW_Phase4_P4-F限定開始Gate提案_v0.1.md): P4-AR6を待たずにFramework範囲へ限定して開始するGateの提案（DRAFT）
-- [PL2 P4-F判定資料](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md): F-1〜F-5、Level 2採用規模S0 / S1 / S2の比較、暫定基準S0、次のPL2作業
+- [PL2 P4-F判定資料](KOIKI-JavaWeb-FW_Phase4_PL2_P4-F判定資料_v0.1.md): F-1〜F-5、Level 2採用規模S0 / S1 / S2の比較、当時の暫定基準S0、次のPL2作業。後続のS1候補化判断は上記決定記録に分けて保存
 - [PL2 F-5全件台帳・Gate改訂差分案](phase4-pl2-f5-integration-and-gate-delta-draft.md): P4-01〜11の採否・DoD・待ち条件、CP-F0の判断材料
 - [Level 1 / Level 2 業務向け説明資料](phase4-pl2-level1-level2-business-guide.md): 業務要件からLevel 2の要否を判断するための説明（DRAFT）
 - [event publication復旧runbook案](phase4-pl2-publication-recovery-runbook-draft.md): 非配布検証に基づく復旧手順案（productionの手順ではない）
