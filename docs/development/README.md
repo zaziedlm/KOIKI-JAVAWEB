@@ -21,6 +21,8 @@
 
 ## Phase 4計画作業（途中記録）
 
+2026-10-02の今後の作業は[作業順序案§11](pre-phase4-framework-independent-work-review-20260930.md#11-作業3の区切りと今後の作業一覧2026-10-02)に一覧化しています。作業4aは[認証profileガイド](frontend-authentication-profile-guide.md)への文書反映 COMPLETE / OWNER APPROVED（2026-10-02、[承認範囲](pre-phase4-framework-independent-work-review-20260930.md#12-作業4aの文書反映とreview範囲2026-10-02)）。次の計画整理は作業4b・5・7です。依存関係制御の検証は保留し、日常開発方式の実装は別判断待ちです。
+
 - [作業2：日常開発の反復方式の比較・推奨案](daily-development-workflow-options-20261001.md): IDEとCLIの依存解決、日常用stageの所有権・更新・破棄、R2との使い分けを整理（2026-10-01 文書承認済み。方式採用・Tooling実装は別承認）
 - [作業3：依存関係の制御の論点整理](dependency-control-issues-20261001.md): Parent / BOMとArchitecture Rulesの検出範囲、誤選択防止とアプリ型による構成選択の候補、作業4bへ渡す判断事項（2026-10-02 文書承認済み。方式採用・実装は未決定）
 - [依存関係制御：構成宣言・検査の比較と検証方式案](dependency-control-design-options-20261002.md): A案を有力候補として保持。案の共有・認識合わせを進め、検証作業は保留する方針をOwnerが了解（2026-10-02）。最初のPOM構成・Starter選択を具体化する前段で再開。方式案はDRAFT、検証実行は未承認
