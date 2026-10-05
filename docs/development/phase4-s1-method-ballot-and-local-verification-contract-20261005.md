@@ -127,7 +127,7 @@ L1 classと専用DDLは作成・実行済み（11必須method、全件成功）�
 
 ## 8. Tier・認可／Audit・正式Reference接続の残条件
 
-Owner reviewでは、以下の「方針候補」と「具体化／検証が必要な条件」を分けて確認する。現時点の判定は全行**未判定（review入力）**。方向性の了解だけでST-C〜Eの開始へ進めない。
+以下の4項目は**方針候補の継続・残条件の具体化についてOWNER APPROVED（2026-10-05）**。具体化／検証が必要な条件は維持し、正式Tier採用・追加検証実行・正式Reference実装開始は後続の証拠と個別判断に委ねる。承認記録は§8.3を参照。ST-C〜Eの開始承認ではない。
 
 | 論点 | 推奨する方針候補 | 正式接続前に具体化する条件・証拠 |
 |---|---|---|
@@ -146,9 +146,22 @@ Tier 2の理由は、少数の可否規則と不変条件をModelに置くため
 
 ### 8.2 後続の具体化順
 
-1. 上表の方針候補をOwner reviewし、未決事項と開始前必須条件を記録する。既存の人による総合判断・最小構成の方針を維持する。
-2. Tierの配置図、permission／scope・失効条件、Auditイベント対応、mode別Bean／DB権限表をまとめる。Reference code／POM／migrationの変更一覧と必要dependencyを差分として示す。
-3. 実JPA／制限role、実Identity／Recorder、実Reference mode境界をどの順に検証するか定め、test・実行手順・資源／上限・失敗時の戻り先を次の個別開始票にする。今回の16〜32時間枠を追加検証の承認済み予算として流用しない。
+1. 上表の方針候補継続・残条件具体化のOwner承認を§8.3へ記録済み。既存の人による総合判断・最小構成の方針と開始前必須条件を維持する。
+2. [責務・認可／失効・Audit・mode／DB権限の具体化案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)を作成済み。具体案をreviewし、Reference code／POM／migrationの必要差分と追加検証契約へ渡す。正式採用・物理名固定・開始判断は残る。
+3. [追加局所検証契約・再見積案](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md)を作成済み。A：JPA保存、B：Identity／Audit、C：Web／modeの順とtest・command・資源／上限・戻り先を提示。追加作成／実行は未承認で、まずAを個別開始判断へ戻す。初回16〜32時間枠は流用しない。
 4. 個別開始と既存Gate経路の判断に従って実施する。実provider／trace／OS crash・E01〜21／DoDの不足は、その後の統合実演へ追跡する。
 
 今回の更新は方式票への結果反映と残条件の整理まで。Tier正式採用・正式Reference変更・追加fixture作成／実行・Gate判定は行っていない。
+
+### 8.3 Owner方針レビュー承認記録（2026-10-05）
+
+Ownerは「4項目の方針候補を継続し、記載された残条件の具体化へ進める。正式Tier採用・追加検証実行・正式Reference実装開始は、後続の証拠と個別判断に委ねる」の方針を承認した。
+
+| 対象 | Owner判定 | 維持する残条件 |
+|---|---|---|
+| Tier・保存 | 狭いRICH／JPA共有モデルの優先候補継続、残条件具体化を承認 | 最小2種類記録と不変条件配置、実JPAと制限roleの適合。正式Tierは未確定 |
+| 認可・許可引渡し | Web本人認証による許可発行・non-Webの真正性／現在権限確認の方針継続、具体化を承認 | permission／scope・環境・期限／失効・拒否条件と実認証の証拠 |
+| Audit | 業務／Security分類と既存Recorder接続の方針継続、具体化を承認 | actor・イベント対応、実transactionでの原子性・記録失敗時送信拒否 |
+| 正式Reference接続 | 目的別Bean構成と通常Web維持の方針継続、具体化を承認 | scan／Security／DB権限・migration・起動副作用、通常Web回帰 |
+
+承認対象は文書・source照合による残条件の具体化。追加fixture作成／実行、正式Reference code／POM／migration、Framework Public API／Rule・依存の採用、DoD／Gate・remote操作はこの承認に含めない。結果不明の再起動引継ぎ、人による総合判断、将来管理機能との分離を維持する。次は§8.2の2へ進む。

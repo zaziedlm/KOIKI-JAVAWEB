@@ -21,7 +21,11 @@
 
 ## Phase 4計画作業（途中記録）
 
-**S1の現在の再開入口（2026-10-05）:** [最小候補・初回局所検証開始の引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)。局所候補と初回ST-Bのfixture作成・実行はOwner承認済み。preflight / 初回L1〜4はLOCAL PASS（11 / 9 / 8 / 12 tests、各failures / errors / skipped 0）。次は局所結果とTier／認可／Audit・正式接続／追加範囲のreview。正式Reference実装・Tier確定・DoD / Gateは後続判断です。以下の一覧は検討順の履歴を含み、各文書冒頭の現在参照先と[方式票](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)を優先してください。
+**追加検証契約案（2026-10-05）:** [S1追加局所検証契約・再見積](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md)。A：JPA保存、B：実Identity／Audit、C：Web／modeの順次契約と技術量36〜72標準時間の低確度案。開始／上限は未承認。最初はPOM変更なしのAの作成・実行を個別reviewする。
+
+**接続条件の具体化案（2026-10-05）:** [S1責務・認可／失効・Audit・mode／DB権限案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)。承認済み方針をもとに文書案を作成。観察と確認終了、通知読取とSession／Auditの必要更新、権限失効窓・不明保全を分けて整理。具体案はreview待ち、追加検証・正式実装は未開始。
+
+**S1の現在の再開入口（2026-10-05）:** [初回局所検証後の後続タスク](phase4-s1-follow-up-tasks-after-local-verification-20261005.md)。commit `5252124`にpreflight / 初回L1〜4のLOCAL PASS（11 / 9 / 8 / 12 tests）と方式票への結果反映を記録済み。Tier・認可・Audit・正式Reference接続の4項目の候補継続・残条件具体化はOwner承認済み（[方式票§8.3](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#83-owner方針レビュー承認記録2026-10-05)）。次は接続条件の具体化、その後に追加検証契約へ進みます。正式実装・Tier確定・DoD / Gateは後続判断です。初回の経緯は[開始引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)を参照してください。以下の一覧は検討順の履歴を含みます。
 
 2026-10-02の今後の作業は[作業順序案§11](pre-phase4-framework-independent-work-review-20260930.md#11-作業3の区切りと今後の作業一覧2026-10-02)に一覧化しています。作業4aは[認証profileガイド](frontend-authentication-profile-guide.md)への文書反映 COMPLETE / OWNER APPROVED（2026-10-02、[承認範囲](pre-phase4-framework-independent-work-review-20260930.md#12-作業4aの文書反映とreview範囲2026-10-02)）。当時の次の計画整理は作業4b・5・7でした。現在の局所検証開始範囲は上記引継ぎを参照してください。依存関係制御の検証は保留し、日常開発方式の実装は別判断待ちです。
 

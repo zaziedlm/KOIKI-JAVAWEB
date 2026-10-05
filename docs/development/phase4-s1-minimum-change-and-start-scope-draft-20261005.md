@@ -2,7 +2,7 @@
 
 **状態:** DRAFT / 統合票。下記はレビュー提示時の候補・残条件。2026-10-05に局所検証候補とST-B初回fixture作成・実行がOwner承認済みとなった。現在の個別判定は[方式採用票§1.1](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#11-owner判定記録2026-10-05)を正本とする。正式Tier・Reference実装・Gateは後続判断。
 **合意済み方針:** S1実証に必要な最小構成と将来の運用管理機能を分離し、Tierは最小構成後に判断する。人の総合判断とOwner一人＋Codexの順次協働を維持する。
-**baseline:** `docs/daily-development-workflow` / `e75a70a`＋未commit設計文書。文書・source照合のみ。新しいtest / DB / process実行は未実施。
+**作成時baseline（履歴）:** `docs/daily-development-workflow` / `e75a70a`＋当時未commitの設計文書。現在はcommit `5252124`で初回ST-B・L1〜4のLOCAL PASSを記録済み。[後続タスク一覧](phase4-s1-follow-up-tasks-after-local-verification-20261005.md)を再開入口とする。
 **入力:** [Tier・保存 / 権限・V0〜7](phase4-s1-minimum-tier-storage-verification-review-20261005.md)、[成立性確認](phase4-s1-minimum-boundary-feasibility-review-20261005.md)、[初回対象・Gate / J1〜8](phase4-initial-scope-gate-and-open-decisions-draft-20261005.md)、[RV票](phase4-s1-preimplementation-review-preflight-estimate-draft-20261005.md)。
 
 ## 1. 一つに絞る推奨候補
@@ -44,7 +44,7 @@ Reference・Toolingは正式Framework配布物にしない。BOM管理値は採�
 | 範囲 | 許可対象として提示する作業 | 現在の状態・次へ進む条件 |
 |---|---|---|
 | ST-A 文書 / read-only | K票・変更一覧・局所検証契約、既存source / API / POM宣言の照合とリンク整備 | **今回の指示範囲で実施。** code / POM / migration・環境起動へ広げない |
-| ST-B Tooling局所検証 | 非配布fixtureで2種類recordの権限 / transaction / 競合、標準再送とexecutor相関、mode契約の検証。V1〜4に対応 | **未開始・個別判断待ち。** まず具体的test対象・変更pathと実行command / Docker資源・必要権限・上限を確定。Framework API / Reference production変更を含めない |
+| ST-B Tooling局所検証 | 非配布fixtureで2種類recordの権限 / transaction / 競合、標準再送とexecutor相関、mode契約の検証。V1〜4に対応 | **初回B6承認範囲は完了・L1〜4 LOCAL PASS。** 追加範囲は未開始で、対象path・test／command・資源／上限を個別判断。Framework API / Reference production変更を含めない |
 | ST-C 正式規約 / 保存・起動基盤 | CH-01〜04 / CH-07のreview済み部分をReference / Frameworkへ実装し、局所回帰・fresh / upgradeを行う | **未開始。** 対象 / Tier採用、必要な正式開始GateとCP・Public API / DDL / Security blocking review成立、ST-B不足の解消。復旧入口は必要条件未成立なら送信拒否 |
 | ST-D A2・実観測 / harness | CH-05 / 06 / 08の承認範囲。固定JARをpackageし通常通知・観測を成立させる | **未開始。** A1の安全条件 / EvidenceとA2・D1 review、依存 / stub・sink・環境を固定 |
 | ST-E 統合復旧・運用 / 保持実演 | V5〜7、E01〜21・不足枝、人の判断、runbook・DoD判定材料 | **未開始。** ST-C / Dの局所条件、隔離資源・時間 / 回数 / retention等の個別上限、Owner確認稼働、故障注入方法が成立 |
@@ -70,7 +70,7 @@ permission code、Audit分類、正式Level選択、migration / role物理名、
 **具体的な票・初回契約:** [方式採用票・初回局所検証契約](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)にB1〜6とST-B初回の予定4 test・実行command・資源上限をまとめた。初回は既存Tooling / JDBCを利用するtest-only範囲で、正式Web / Security・実trace / 別JVM / 独立providerは後続。2026-10-05に局所候補と初回作成・実行をOwner承認。preflightと初回L1〜4はLOCAL PASS（11 / 9 / 8 / 12 tests、各failures / errors / skipped 0）。次は正式接続・残条件のreview。
 
 1. **方式採用票:** K1〜5の候補・条件・代案への戻り条件を個別に判定する。K2のTierとCH-07のFramework契約変更は独立して確認する。
-2. **局所開始票:** ST-Bのfixture変更一覧・必要test / command・資源台帳 / 上限・Evidence先を具体化し、許可対象をreviewできる形にする。今回の資料だけでは作成 / 実行を開始しない。
+2. **追加局所開始票:** 初回ST-Bは完了。残る実JPA／認可／Audit／起動境界の検証について、変更一覧・必要test / command・資源台帳 / 上限・Evidence先を具体化する。初回B6を追加範囲へ拡張しない。
 3. **正式開始票:** J1 / J8・OR・CP-F0 / P4-Fと各blocking reviewを整合し、ST-C以降の対象・停止点・再見積を提示する。Gateを迂回するための小分けにはしない。
 
 採用候補と残条件を絞り、変更一覧・個別開始範囲を統合した。後続の方式採用票レビューにより、局所候補とST-B初回作成・実行は承認済みとなった。正式方式は未採用。ST-B初回のpreflight / L1〜4はLOCAL PASS、ST-C以降は未実施。次は局所結果とTier／認可／Audit・正式Reference接続・追加範囲をreviewする。承認記録時点でcode・POM・migration・DB権限・環境実行・remoteは変更していない。

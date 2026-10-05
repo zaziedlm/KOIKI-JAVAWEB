@@ -842,3 +842,27 @@ Ownerの継続指示により[方式票§7・8](phase4-s1-method-ballot-and-loca
 L2の結果不明はtest入力であり別process再起動後の保全を実証せず、L4の復旧runnerはID準備までで実復旧を実行しない点を明記した。実JPAの列権限適合、認証済み許可と現在権限／失効、Business Audit同一transactionとSecurity Audit別transaction、正式modeのscan／Security／DB副作用が残条件である。管理機能一式へ拡張せず、人の総合判断と最小構成を維持する。
 
 次は上記の方針候補をOwner reviewし、配置・permission／scope・Audit対応・mode別Bean／権限表、変更一覧、追加検証の個別開始票へ具体化する。今回文書のみ更新し、正式Tier採用・Reference code／POM／migration・追加fixture／検証実行・環境／remote・Gate判定は行っていない。
+
+## 43. 初回局所検証コミット後の後続タスク整理（2026-10-05）
+
+Ownerが初回検証成果をcommitした。`docs/daily-development-workflow` / `5252124`、整理開始時cleanを確認し、[後続タスク一覧](phase4-s1-follow-up-tasks-after-local-verification-20261005.md)を作成した。Owner方針レビュー、接続条件、追加局所契約／検証、正式開始判断／基盤実装、通知／観測、統合実演、DoD／Gate判断の順に成果物と開始条件を整理した。
+
+READMEと旧引継ぎへ現在の入口を置き、変更一覧の初回ST-B未開始表記を完了へ更新した。追加範囲・ST-C〜Eの未開始を維持し、過去の工数／上限を残作業へ流用しない。次は方式票§8の4論点のOwner方針レビュー。今回文書整理のみで、追加test／正式実装・環境／remote・Gate判断は行っていない。
+
+## 44. 4項目の方針候補継続・残条件具体化のOwner承認（2026-10-05）
+
+OwnerはTier・認可・Audit・正式Reference接続の4項目の方針候補を継続し、記載された残条件の具体化へ進める方針を承認した。[方式票§8.3](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#83-owner方針レビュー承認記録2026-10-05)を承認記録の正本とし、後続タスク・README・引継ぎを更新した。
+
+正式Tier採用・追加検証実行・正式Reference実装開始は後続の証拠と個別判断に委ねる。追加fixture作成、Framework Public API／Rule、依存／migration採用・Gate／remoteも承認へ含めない。最小構成、人の総合判断、結果不明の保全を維持する。次は責務配置・認可条件・Audit対応・mode別Bean／DB権限表の文書具体化。今回承認記録と導線のみ更新し、検証実行・正式実装・環境／remote操作は行っていない。
+
+## 45. 責務・認可／失効・Audit・mode／DB権限の具体化案（2026-10-05）
+
+Ownerの指示により[正式接続条件の具体化案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)を作成した。notification候補のDomain／Application／Adapter／Configurationと人の判断を分け、既存IdentityQuery・Audit Public契約・Security構成と局所SQLから能力別の認可、失効・拒否、Audit分類／actor・原子性、mode別Beanと論理DB権限を整理した。
+
+観察用確認と確認終了の更新を分け、通知読取modeでもSession／認証Auditの必要更新がある点、Identity再照会だけで失効窓が消えない点、復旧listenerの登録／通常経路抑止、結果不明の再起動保全を残条件へ明記した。具体案review後に追加検証契約・必要差分／再見積へ渡す。正式名称・permission／Auditコード・期限値・資源上限は未固定。文書のみ変更し、fixture作成／実行・正式code／POM／migration・環境／remote・Gate判断は行っていない。
+
+## 46. 追加局所検証契約・再見積案（2026-10-05）
+
+Ownerは具体化案を確認し、追加検証契約・再見積への継続を指示した。[追加契約案](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md)を作成し、A：実JPA／制限role、B：実Identity／Audit、C：実Web／DB mode・context再起動保全に分けた。現行ToolingのJPA利用と、Identity追加時のSecurity依存を照合し、B／Cのtest依存profile・前置条件を別判断へ残した。
+
+必須枝・順次command・資源／待機／停止・Evidenceと回帰条件を提示。A8〜16、B16〜32、C12〜24の合計36〜72標準時間は追加局所の低確度技術量案で、全S1残量・予算・納期ではない。最初はAだけの作成／実行／上限を個別reviewする。全class未作成、POM・正式source／migration・診断／検証実行・環境／remoteは変更していない。
