@@ -626,3 +626,43 @@ Architecture Ownerは「S1を完遂する進め方を、候補とすることは
 今回の承認は候補化の判断に限る。具体的対象・担当・上限・環境、CP-F0残項目、先行Gate・blocking review・production開始、S2共通提供、Batch正式依存、DoD変更およびremote操作は別判断である。作業4b / 5 / 7全体の承認やS1完了とは扱わない。
 
 その後Ownerは決定記録の内容を確認し、問題なしとして文書承認した。大きな決定事項のcommit pointとして作業を区切り、[次回作業引継ぎ](phase4-s1-next-session-handoff-20261002.md)を作成した。文書承認によって上記の実行・Gate等の承認範囲は拡張しない。次回は作業7の具体化から再開する。
+
+## 16. 作業7のA1 / A2 / D1照合（2026-10-05）
+
+Ownerの着手指示により、[A1 / A2 / D1とS1限定範囲の照合](phase4-s1-a1-a2-d1-scope-mapping-20261005.md)を作成した。状態はDRAFT / 作業7の第一段階。S1対象・成果物Ownership・現行sourceとの差分・DoDとreview論点を整理した。
+
+Referenceの現行migrationは`db/migration/kkref` / `kkref_flyway_history`であり、既存PL2のApplication配置案との整合をA1 reviewへ渡す。承認event / notification / Level 2 runtimeは未実装。既存requestId伝播と、永続event・別process復旧・実traceの差分も後続設計へ残した。
+
+次は安全性・復旧条件、実演単位、担当・環境・上限を具体化し、他package分解と合わせて作業4b・5のOR入力を揃える。今回の文書化で作業7全体・S1・ORを完了扱いにしない。production code、POM、Rules、migration、Gate規定とremoteは変更していない。
+
+## 17. 作業7の安全性・復旧条件具体化（2026-10-05）
+
+Ownerは前段の照合文書を確認し、次段階への継続を指示した。[S1安全性・復旧条件の具体化](phase4-s1-safety-and-recovery-conditions-20261005.md)をDRAFT / blocking review入力として作成した。前段への確認・継続指示を、具体的な復旧方式や実装開始の承認へ拡張しない。
+
+停止証拠の真正性、通常listener / 復旧者の競合、lock喪失窓、同じ論理通知の冪等keyとprovider受理不明、DB確定順、非HTTP主体の認可 / Audit、上限・監視・保持をS-01〜11へ整理した。FAILEDでも元実行の停止は状態だけでは判断できないこと、再送操作の識別子と外部重複抑止keyを同一視しないことを明示した。
+
+次は各条件をDoD実演単位・構成・証拠・PASS / FAIL / BLOCKED条件へ対応付ける。新しい実行検証、方式採用、blocking review通過、作業7 / S1完了、Gate・production開始は行っていない。
+
+## 18. 人の総合判断を前提とするDoD実演分解（2026-10-05）
+
+Ownerは、DB状態だけで再送要否・処理到達点を捉えることには限界があり、実運用担当者による確認と総合判断を前提に、Framework機能と組み合わせて非同期復旧を運用として成立させる方針を示した。この方向での継続指示に従い、安全条件文書へ方針を反映し、[S1 DoD実演計画・人による確認判断](phase4-s1-dod-demonstration-plan-20261005.md)をDRAFTとして作成した。
+
+21 caseで正常配信・停止後復旧・重複・競合・受理不明・認可 / Audit・パージ・相関を分解し、担当者の確認材料、判断理由、保留・調査・エスカレーションと証拠を組み込んだ。安全な保留のcase PASSと、核心DoDの配信完遂を区別する。全caseは未実施であり、具体的方式・担当・環境・上限・Gate開始の承認ではない。
+
+次は実施 / review / 復旧担当、検証環境・cleanup、作業分解・概算 / 上限、順序と停止点を揃える。作業7全体・OR・S1・DoD判定は未完了。production codeとremoteは変更していない。
+
+## 19. DoD実演caseのOwner了解（2026-10-05）
+
+Ownerは[DoD実演計画§3](phase4-s1-dod-demonstration-plan-20261005.md#3-caseとdodの対応)のcase構成を了解した。caseが多様・複雑であり、この時点のOwner reviewでは網羅判定を言い切れないため、以降の検証で十分に確認されていくことへOwnerも注視・集中する方針を記録した。
+
+case構成の了解を網羅性の確定、全文の一括承認、検証実行開始、blocking review・Gate通過、DoD PASSへ拡張しない。後続検証の結果・証拠、不足case・未検証枝・残るリスクを継続確認し、必要なcaseを見直す。次の担当・環境・作業量 / 上限の具体化と、作業7全体の未完了状態を維持する。
+
+## 20. S1担当・環境・残作業概算と実施順の具体化（2026-10-05）
+
+Ownerの継続指示により、[S1担当・検証環境・作業量／上限・実施順案](phase4-s1-execution-resources-and-sequence-draft-20261005.md)をDRAFTとして作成した。担当責務・兼務条件、人による復旧判断、ローカル隔離環境とcleanup、残作業10単位、段階別の出口・停止点を整理した。
+
+Agentによる低確度の残技術作業概算は176〜344標準作業時間。既存47〜80標準人日の換算やAI所要時間ではなく、作成済み計画を除いた今回のWBSからの提案である。Owner / 他担当のreview参加・人の実演参加時間と外部待ちを分離し、担当者・稼働・実環境・費用・上限承認・運用数値はOPENとして保持する。予算・完了保証・Gate提出条件成立を意味しない。
+
+次は他packageを同様に分解し、作業4b・5と合わせて先行対象・優先順・Gate差分のOR材料へ統合する。S1の担当・環境・上限取得は並行管理する。今回、production / Tooling実装、新しいMaven / Docker検証、commit・remote操作は行っていない。
+
+**担当実体の注記（2026-10-05）:** Ownerは上記資料§2の責務整理に合意した。実際はOwner一人＋Codexの協働で各責務を兼務し、本計画も同じ陣容で進める。サブエージェントは現時点で使わず、タスクを順次・同期的に進め、Ownerが理解を保つ方針を利点とする。役割表は維持して軽い注記を追加し、別担当者の配置待ちとは扱わない。各作業の分担・稼働・権限、環境・上限・開始の個別判断は残る。
