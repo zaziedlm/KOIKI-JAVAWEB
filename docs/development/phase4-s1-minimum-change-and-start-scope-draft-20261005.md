@@ -67,10 +67,10 @@ permission code、Audit分類、正式Level選択、migration / role物理名、
 
 ## 5. Owner判定に提示する単位と直近作業
 
-**具体的な票・初回契約:** [方式採用票・初回局所検証契約](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)にB1〜6とST-B初回の予定4 test・実行command・資源上限をまとめた。初回は既存Tooling / JDBCを利用するtest-only範囲で、正式Web / Security・実trace / 別JVM / 独立providerは後続。2026-10-05に局所候補と初回作成・実行をOwner承認。fixture未作成・実行未開始。
+**具体的な票・初回契約:** [方式採用票・初回局所検証契約](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)にB1〜6とST-B初回の予定4 test・実行command・資源上限をまとめた。初回は既存Tooling / JDBCを利用するtest-only範囲で、正式Web / Security・実trace / 別JVM / 独立providerは後続。2026-10-05に局所候補と初回作成・実行をOwner承認。preflightと初回L1〜4はLOCAL PASS（11 / 9 / 8 / 12 tests、各failures / errors / skipped 0）。次は正式接続・残条件のreview。
 
 1. **方式採用票:** K1〜5の候補・条件・代案への戻り条件を個別に判定する。K2のTierとCH-07のFramework契約変更は独立して確認する。
 2. **局所開始票:** ST-Bのfixture変更一覧・必要test / command・資源台帳 / 上限・Evidence先を具体化し、許可対象をreviewできる形にする。今回の資料だけでは作成 / 実行を開始しない。
 3. **正式開始票:** J1 / J8・OR・CP-F0 / P4-Fと各blocking reviewを整合し、ST-C以降の対象・停止点・再見積を提示する。Gateを迂回するための小分けにはしない。
 
-採用候補と残条件を絞り、変更一覧・個別開始範囲を統合した。後続の方式採用票レビューにより、局所候補とST-B初回作成・実行は承認済みとなった。正式方式は未採用、ST-B以降は未実施。次は承認範囲のpreflight・fixture作成から順次進める。承認記録時点でcode・POM・migration・DB権限・環境実行・remoteは変更していない。
+採用候補と残条件を絞り、変更一覧・個別開始範囲を統合した。後続の方式採用票レビューにより、局所候補とST-B初回作成・実行は承認済みとなった。正式方式は未採用。ST-B初回のpreflight / L1〜4はLOCAL PASS、ST-C以降は未実施。次は局所結果とTier／認可／Audit・正式Reference接続・追加範囲をreviewする。承認記録時点でcode・POM・migration・DB権限・環境実行・remoteは変更していない。

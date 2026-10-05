@@ -1,7 +1,7 @@
 # S1最小候補・初回局所検証開始の引継ぎ（2026-10-05）
 
 **目的:** S1の文書検討から、承認済み初回Tooling検証へ進む入口を一本化する。
-**状態:** 初回ST-Bのfixture作成・実行はOWNER APPROVED（2026-10-05）。fixture未作成・preflight / test未実行。正式Reference実装・Tier確定・DoD / Gateは後続判断。
+**状態:** 初回ST-Bのfixture作成・実行はOWNER APPROVED（2026-10-05）。preflightと初回L1〜4はLOCAL PASS（11 / 9 / 8 / 12 tests、各failures / errors / skipped 0）。[Evidence](../architecture/validation/phase4-s1-minimum-local-verification-20261005.md)を参照。初回4 classの局所契約は揃った。正式Reference実装・Tier確定・DoD / Gateは後続判断。
 **作業位置:** `docs/daily-development-workflow`。整理開始時HEADは`e75a70a`。本書を含む文書コミット後、再開時に実際のHEADと作業treeを確認する。
 
 ## 1. 最初に読む文書と適用範囲
@@ -42,6 +42,8 @@ Owner一人＋Codexで順次・同期的に進める。サブエージェント�
 安全条件とDoDの目的は維持する。過去の本文は理由・代案の履歴として残し、古い機能一覧から将来管理機能を再び必須化しない。
 
 ## 4. 次に行う作業
+
+**現在の再開点:** 下記の初回L1〜4とEvidence記録は実施済み。[方式票§7・8](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#7-局所結果の方式票への反映2026-10-05)へ結果を反映済み。次はTier・認可／Audit・正式Reference接続の4論点をOwner reviewし、具体化と追加個別開始票へつなぐ。L2の結果不明はtest入力、L4の復旧runnerはID準備までで、再起動後の不明保全・実復旧実行は残条件。局所PASSを本人認証・正式Audit・実OS crash・Gateへ拡張しない。
 
 1. branch / HEAD / statusと承認票を確認し、初回の対象pathを固定する。
 2. Java 21・Wrapper / artifact・Docker接続・端末資源をpreflightする。Maven / Dockerの権限エラーはAGENTS.mdと実行環境の承認手順に従う。
