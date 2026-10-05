@@ -65,6 +65,12 @@ E04〜07は停止後の実配信を完遂するcaseである。E09〜14等の拒
 
 ## 4. 安全条件のcoverage
 
+**最小方式の検証順（2026-10-05）:** [Tier・保存／権限・検証手順§4](phase4-s1-minimum-tier-storage-verification-review-20261005.md)で許可＋append-only消費候補のV0〜7を本caseへ対応付けた。局所DB / role・起動・実相関を先に検証し、通常通知から停止復旧・運用負例・保持へ順次進む。候補・手順の具体化であり、caseの実施・Tier採用・DoD判定ではない。
+
+**運用 / Audit・観測条件の具体化（2026-10-05）:** [方式・DoD・運用条件案](phase4-s1-method-dod-operations-observation-draft-20261005.md)に従い、E04〜07では全体復旧時間と人が許可してからの操作時間を区別し、E16では送信前の必要記録commitと送信後Audit失敗時のprovider副作用を突合、E20では操作台帳 / DB正本Auditと別processの実trace関連を採取する。許容時間・分類・主体・実構成はreview待ちであり、未実施のまま保持する。
+
+**詳細source照合からの追加枝（2026-10-05）:** [W01 / W02照合§4](phase4-s1-w01-w02-source-design-review-draft-20261005.md#4-w02復旧fixtureの正式設計への差分)の指摘により、E13へ「同じeventの非対象publicationが既にCOMPLETED / FAILEDの場合、対象publicationの今回の試行が処理中でも復旧を終端扱いしない」負例を追加する。再送前FAILEDをそのまま今回の再送終端と誤認しない枝も確認する。sourceからのリスク推論であり、新しい実演結果・Ownerの網羅判定ではない。
+
 | 条件 | 主な実演case |
 |---|---|
 | S-01 停止確認の真正性 | E04〜07、E12 |

@@ -1,5 +1,7 @@
 # 初回S1対象・Gate経路・残判断の具体化案（2026-10-05）
 
+> **現在の参照先（2026-10-05）:** 本書のGate・正式開始判断は引き続き残条件。後続方式票B6で承認された初回Tooling局所作成／実行とは分ける。現在の次作業はpreflightとL1作成であり、下記のread-only調査順は当時の記録。 [最新引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)／[承認済み方式票](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)。
+
 **状態:** DRAFT / OR-1〜6の判断案。統合順序案の受領と本段階への継続指示を記録。対象・Gate経路の正式採用、Gate設置 / 通過、blocking review・実装開始は未承認。
 **Ownership:** Framework側の計画資料。Owner一人＋Codexで、サブエージェントを使わず順次・同期的に進める。
 **確認baseline:** `docs/daily-development-workflow` / `eaf944d`。他package分解・統合判断材料等は未commit差分。文書照合のみで、新しい実行検証・環境確認はない。
@@ -51,6 +53,8 @@ P4-AR6・AR-D10・Gate P4-AR、Phase 4全体開始、正式受渡しは未完了
 J4 / J5 / J7の数値・稼働は未取得。便宜的な分・回数や日程を作って埋めない。必要な実環境調査・試行は対象と承認範囲を別途照合してから行う。
 
 ## 4. 次に行う具体的作業
+
+**後続の最小構成材料（2026-10-05）:** [採用候補・変更一覧・個別開始範囲](phase4-s1-minimum-change-and-start-scope-draft-20261005.md)で許可 / 消費の最小方式・Tier等をK票、変更をCH票、開始範囲をST-A〜Eへ統合した。ST番号は既存CP / Gateの改訂ではない。J1 / J8・OR・正式開始判断は未成立で、今回資料作成からTooling / Reference実装開始を認定しない。
 
 まずJ2 / J3の**read-only詳細設計材料**を揃える。W01の現行source・依存宣言・migration履歴・Rule互換を調べ、W02の停止確認・通常listener競合・key / 受理不明・DB確定順の候補を比較する。候補採用・復旧条件の最終判断はOwnerへ戻す。
 

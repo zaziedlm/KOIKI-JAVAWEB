@@ -1,5 +1,7 @@
 # 作業7：S1担当・検証環境・作業量／上限・実施順案（2026-10-05）
 
+> **現在の参照先（2026-10-05）:** 本書は元WBS・低確度概算の履歴。176〜344時間を現在の確定残量・予算へ転用しない。Owner一人＋Codexの役割合意を維持し、初回局所検証の開始・資源上限は承認済み方式票に従う。 [最新引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)／[承認済み方式票](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)。
+
 **状態:** DRAFT / 作業7の実施可能性整理。担当者の指名、予算・上限、環境確保、実装・実演開始、Gateは未承認。
 **Ownership:** Framework側の計画資料。Framework / Reference / Toolingの成果物と、運用担当者の総合判断を分けて追跡する。
 **確認baseline:** `docs/daily-development-workflow` / `781a6a2`。作業7の先行文書とREADME・作業一覧は未commit差分。今回は文書・既存fixture sourceの読み取り照合であり、環境稼働や新しい実行結果は確認していない。

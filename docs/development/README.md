@@ -21,19 +21,33 @@
 
 ## Phase 4計画作業（途中記録）
 
-2026-10-02の今後の作業は[作業順序案§11](pre-phase4-framework-independent-work-review-20260930.md#11-作業3の区切りと今後の作業一覧2026-10-02)に一覧化しています。作業4aは[認証profileガイド](frontend-authentication-profile-guide.md)への文書反映 COMPLETE / OWNER APPROVED（2026-10-02、[承認範囲](pre-phase4-framework-independent-work-review-20260930.md#12-作業4aの文書反映とreview範囲2026-10-02)）。次の計画整理は作業4b・5・7です。依存関係制御の検証は保留し、日常開発方式の実装は別判断待ちです。
+**S1の現在の再開入口（2026-10-05）:** [最小候補・初回局所検証開始の引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)。局所候補と初回ST-Bのfixture作成・実行はOwner承認済み。次はpreflightとL1作成。正式Reference実装・Tier確定・DoD / Gateは後続判断です。以下の一覧は検討順の履歴を含み、各文書冒頭の現在参照先と[方式票](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)を優先してください。
+
+2026-10-02の今後の作業は[作業順序案§11](pre-phase4-framework-independent-work-review-20260930.md#11-作業3の区切りと今後の作業一覧2026-10-02)に一覧化しています。作業4aは[認証profileガイド](frontend-authentication-profile-guide.md)への文書反映 COMPLETE / OWNER APPROVED（2026-10-02、[承認範囲](pre-phase4-framework-independent-work-review-20260930.md#12-作業4aの文書反映とreview範囲2026-10-02)）。当時の次の計画整理は作業4b・5・7でした。現在の局所検証開始範囲は上記引継ぎを参照してください。依存関係制御の検証は保留し、日常開発方式の実装は別判断待ちです。
 
 - [作業2：日常開発の反復方式の比較・推奨案](daily-development-workflow-options-20261001.md): IDEとCLIの依存解決、日常用stageの所有権・更新・破棄、R2との使い分けを整理（2026-10-01 文書承認済み。方式採用・Tooling実装は別承認）
 - [作業4b：Phase 4入口・Framework先行範囲の整理案](phase4-entry-and-forward-scope-options-20261002.md): 全packageの必要入力・Owner候補・DoD、現行Gate維持と先行範囲再定義の比較、作業5・7へ渡す材料（DRAFT。分類・先行範囲・開始は未承認）
 - [S1計画方針・案件協働とnon-Web境界の決定記録](phase4-s1-completion-direction-decision-20261002.md): S1検証完遂を目指す進め方の候補化はDECIDED / OWNER APPROVED（2026-10-02）。対話の経緯、承認範囲、S2別判断と並走協働、non-Web推奨 / Web同居非推奨、Batch点検材料と作業7への入力。具体的実行・Gate / 開始は別判断
-- [S1方針承認後の次回作業引継ぎ](phase4-s1-next-session-handoff-20261002.md): 上記決定記録の内容はOwner承認済み。commit pointで区切り、次回は作業7のS1実行条件・Evidence・担当 / 環境 / 上限の具体化から再開するための入力と未決事項
+- [S1方針承認後の次回作業引継ぎ](phase4-s1-next-session-handoff-20261002.md): 上記決定記録の内容はOwner承認済み。10月2日時点の履歴。現在の再開は上記の10月5日引継ぎを参照
 - [作業7：A1 / A2 / D1とS1限定範囲の照合](phase4-s1-a1-a2-d1-scope-mapping-20261005.md): S1の対象・成果物Owner、現行Reference / Rules / Observabilityとの差分、DoDとschema / 依存 / APIのreview論点（DRAFT。安全方式・担当 / 環境 / 上限・実行開始は未確定）
 - [作業7：S1安全性・復旧条件の具体化](phase4-s1-safety-and-recovery-conditions-20261005.md): 停止確認、通常listener / 複数復旧者の競合、lock喪失窓、通知識別・provider受理不明、認可 / Audit、観測・パージの条件と必要Evidence（DRAFT / blocking review入力。方式採用・実装開始は未承認）
 - [作業7：S1 DoD実演計画・人による確認判断](phase4-s1-dod-demonstration-plan-20261005.md): 実運用担当者の総合判断を前提とする21 case、DoD / S-01〜11対応、証拠とPASS / FAIL / BLOCKED条件、保留・調査・エスカレーションの記録（DRAFT。実演・DoD判定は未実施）
-- [作業7：S1担当・検証環境・作業量／上限・実施順案](phase4-s1-execution-resources-and-sequence-draft-20261005.md): 責務別担当案、ローカル隔離環境、残作業10単位の低確度概算・上限案、段階出口とOPEN入力（DRAFT。担当指名・予算 / 上限・開始は未承認）
+- [作業7：S1担当・検証環境・作業量／上限・実施順案](phase4-s1-execution-resources-and-sequence-draft-20261005.md): 責務別担当案、ローカル隔離環境、残作業10単位の低確度概算・上限案、段階出口とOPEN入力（元WBSの履歴。Owner一人＋Codexの役割合意済み。初回局所上限・開始は方式票を参照）
 - [作業7：S1以外のpackage分解・比較材料](phase4-other-packages-breakdown-draft-20261005.md): B1 / C2 / C3 / C4 / D2 / D3 / D1同期、trigger・顧客入力待ち全件の対象・review・実演・低確度概算と共有費 / 未算定範囲（DRAFT。先行対象・Gate・実装は未承認）
 - [作業4b・5・7：先行範囲／CP-F0統合判断材料](phase4-forward-scope-cpf0-integrated-review-draft-20261005.md): S1中心の初回限定案、独立候補・先行順序、Gate経路比較、共通費 / 未取得とOR論点を統合（DRAFT。採用・上限・開始経路・OR完了は未承認）
 - [初回S1対象・Gate経路・残判断の具体化案](phase4-initial-scope-gate-and-open-decisions-draft-20261005.md): 初回S1限定・既存Level 2限定P4-F経路の推奨案、前置 / 後続reviewの整合、残判断J1〜8と次の詳細設計材料（DRAFT。対象・経路採用・Gateは未承認）
+- [S1 W01 / W02：保存・配置・規約と復旧安全性のsource照合](phase4-s1-w01-w02-source-design-review-draft-20261005.md): Data Starterとkkref履歴・最小依存 / Rule互換、停止 / key・provider確定順、対象publicationの当該試行と誤終端の追加論点（DRAFT。read-only調査、方式・実装は未承認）
+- [S1方式候補・DoD解釈・運用／Audit・観測条件案](phase4-s1-method-dod-operations-observation-draft-20261005.md): 限定環境停止方式、復旧時間の測定、人の判断、Audit分類 / actor・操作台帳・記録失敗、別process trace・alert / 保持の条件（DRAFT。方式・数値・実装は未承認）
+- [S1非HTTP復旧主体・専用process・実観測構成review案](phase4-s1-nonhttp-process-observation-review-draft-20261005.md): Servlet条件 / 認証source protectionの制約、認証済み要求から非Web復旧する候補、単発process・tracing / exporter・隔離sinkと残判断（DRAFT。方式採用・依存・実装は未承認）
+- [S1実装前review票・環境preflight案・再見積差分](phase4-s1-preimplementation-review-preflight-estimate-draft-20261005.md): IdentityQueryによる現在user / permission再確認の接続、RV-1〜7、PF-1〜6、要求 / nonWeb / 観測のWBS差分（DRAFT。票未判定・preflight未実施・新総額未算定）
+- [S1方式候補・復旧要求の保存構造・依存構成・検証環境上限案](phase4-s1-request-storage-dependencies-environment-draft-20261005.md): 要求 / 試行 / 実行権 / 判断履歴、JPA・JDBC publication・OTLP候補、環境数値仮値と作業量差分（DRAFT。方式・数値未採用、実測 / 実装未実施）
+- [S1実証の最小構成と将来の運用管理機能の分離](phase4-s1-minimum-demonstration-scope-review-20261005.md): 分離方針・最小構成後のTier判断はOwner了解。必須安全能力と将来管理機能を再整理し、前段のTier 2 / 台帳一式・追加見積を採用前提から外す（具体方式・実装は未決定）
+- [S1最小方式：non-Web許可引渡し・対象試行識別案](phase4-s1-minimum-permission-and-attempt-review-20261005.md): 1件の許可recordを優先比較、Modulith 2.1.1公開APIの署名確認、publication / operation / 通知keyの識別と不明時保全（DRAFT。DB保護・実相関・起動条件とTierは未判定）
+- [S1最小方式：許可DB保護・executor相関・結果確認起動条件](phase4-s1-permission-db-executor-startup-review-20261005.md): role / 列権限と巻戻し防止の区別、requestId限定decoratorへの追加相関、送信機能を持たない確認Webとmigration分離（DRAFT。保護方式・実executor・mode実動は未判定）
+- [S1最小方式：保護方式・相関経路・起動境界の成立性確認](phase4-s1-minimum-boundary-feasibility-review-20261005.md): 許可＋append-only消費記録を優先比較、標準再送overload / executor経路のbytecode照合、Reference Web Security・scan境界の不足（DRAFT。実動PASS・方式 / Tier採用は未判定）
+- [S1最小候補：Tier・保存／権限・検証手順の整理](phase4-s1-minimum-tier-storage-verification-review-20261005.md): 残る不変条件から狭いRICHを優先review、2種類recordとrow lockの修正権限、V0〜7とE01〜21対応（DRAFT。Tier / schema / 開始未採用、全段階未実施）
+- [S1最小候補：採用候補・残条件・変更一覧と個別開始範囲](phase4-s1-minimum-change-and-start-scope-draft-20261005.md): K1〜6・CH-01〜08・ST-A〜Eへ統合。Tooling局所検証と正式実装 / Gateを分けた判定材料（正式方式は未採用。初回局所作成・実行は承認済み、未実施）
+- [S1方式採用票・初回局所検証契約案](phase4-s1-method-ballot-and-local-verification-contract-20261005.md): B1〜6、予定4 testの枝 / 合格条件、順次実行commandと局所資源 / 上限。局所候補と初回fixture作成・実行はOWNER APPROVED（2026-10-05）。Tier正式確定・Web認証・実trace / OS crash等は後続。test未作成・実行なし
 - [作業5：CP-F0判断材料・S0時の再計画案](phase4-cpf0-and-s0-replan-options-20261002.md): Framework実証と案件導入を分けたS0 / S1 / S2比較、S1成立条件、S0の未達DoD保持、accounting / Batch依存と再計画（DRAFT。S1候補化は上記承認済み。具体的採用・DoD変更・開始は未承認）
 - [作業3：依存関係の制御の論点整理](dependency-control-issues-20261001.md): Parent / BOMとArchitecture Rulesの検出範囲、誤選択防止とアプリ型による構成選択の候補、作業4bへ渡す判断事項（2026-10-02 文書承認済み。方式採用・実装は未決定）
 - [依存関係制御：構成宣言・検査の比較と検証方式案](dependency-control-design-options-20261002.md): A案を有力候補として保持。案の共有・認識合わせを進め、検証作業は保留する方針をOwnerが了解（2026-10-02）。最初のPOM構成・Starter選択を具体化する前段で再開。方式案はDRAFT、検証実行は未承認

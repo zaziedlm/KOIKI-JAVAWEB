@@ -1,5 +1,7 @@
 # S1計画方針承認後の次回作業引継ぎ（2026-10-02）
 
+> **現在の参照先（2026-10-05）:** 本書は10月2日時点の引継ぎ履歴。現在は作業7の方式具体化を経て初回ST-Bの作成・実行が承認済み。再開は最新引継ぎから行い、本書の未承認表示・次作業を現在へ転用しない。 [最新引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)／[承認済み方式票](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)。
+
 **目的:** S1検証完遂を目指す計画方向の承認と文書reviewを区切りに、次回は作業7の具体化から再開する。
 **状態:** 引継ぎ記録。新しい実装開始・Gate承認ではない。
 **作業位置:** `docs/daily-development-workflow`。作成時HEADは`dbee2bf`、今回の文書差分はcommit前。次回はOwnerが行うcommit後のHEADと作業treeを再確認する。

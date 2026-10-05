@@ -1,5 +1,7 @@
 # 作業7：A1 / A2 / D1とS1限定範囲の照合（2026-10-05）
 
+> **現在の参照先（2026-10-05）:** 本書のTier 1第一候補は当初案。現在は許可＋append-only消費の2種類を局所検証し、狭いRICH / JPA共有モデルをTier候補として継続する。正式Tierは未確定。 [最新引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)／[承認済み方式票](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)。
+
 **状態:** DRAFT / 作業7の第一段階。S1検証完遂を目指す進め方の候補化はOWNER APPROVED。今回の照合は具体的採用・実装開始・Gate承認ではない。
 **Ownership:** Framework側の計画文書。成果物の所有者はFramework / Reference / Toolingへ分けて記載する。
 **確認baseline:** `docs/daily-development-workflow` / `781a6a2`、着手時の作業treeはclean。ローカル文書・sourceを読み取り照合。remote同期、Maven / Docker実行、新しい動作Evidenceは未取得。
