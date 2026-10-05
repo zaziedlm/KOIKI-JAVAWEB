@@ -866,3 +866,15 @@ Ownerの指示により[正式接続条件の具体化案](phase4-s1-responsibil
 Ownerは具体化案を確認し、追加検証契約・再見積への継続を指示した。[追加契約案](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md)を作成し、A：実JPA／制限role、B：実Identity／Audit、C：実Web／DB mode・context再起動保全に分けた。現行ToolingのJPA利用と、Identity追加時のSecurity依存を照合し、B／Cのtest依存profile・前置条件を別判断へ残した。
 
 必須枝・順次command・資源／待機／停止・Evidenceと回帰条件を提示。A8〜16、B16〜32、C12〜24の合計36〜72標準時間は追加局所の低確度技術量案で、全S1残量・予算・納期ではない。最初はAだけの作成／実行／上限を個別reviewする。全class未作成、POM・正式source／migration・診断／検証実行・環境／remoteは変更していない。
+
+## 47. A単位の作成・実行・上限のOwner承認（2026-10-05）
+
+Ownerのcommit `f145e37`と判断記録開始時cleanを確認した。OwnerはA単位のfixture作成・実行・契約記載の上限を承認し、開始前preflight・必須枝対応・証拠固定、不成立／上限到達／範囲拡大時の再判断を条件とした。[追加契約§6.1](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md#61-a単位のowner開始判定記録2026-10-05)へ対象path・A1〜5・単独実行・資源／8〜16標準時間枠・4時間時点の確認・除外を記録した。
+
+B／C・正式Tier採用・正式Reference実装を含めない。本日は判断記録まで、実作業は次回開始する指示を維持。README・方式票・引継ぎ・後続タスクを次回preflightの入口へ更新した。今回fixture作成・SQL／POM変更・preflight／検証実行・環境／remote操作は行っていない。
+
+## 48. 本日の区切りと次回A開始の引継ぎ（2026-10-05）
+
+Ownerは本日の区切りとし、必要な引継ぎを作成して承認記録と一緒にcommit、remote pushまで予定すると指示した。[次回用引継ぎ](phase4-s1-additional-a-next-session-handoff-20261005.md)へ経過・現在branch／HEAD・追跡先・承認範囲・preflightからの順序・上限／停止条件をまとめた。整理時HEADは`f145e37`、追跡先は`origin/docs/daily-development-workflow`。
+
+引継ぎ作成時点で今回のcommit／pushは未実行。次回はOwnerの実結果と実際のGit状態を確認する。文書のみ更新し、Aの作成／検証・環境起動・remote操作は行っていない。

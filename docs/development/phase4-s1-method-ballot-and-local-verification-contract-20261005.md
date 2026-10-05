@@ -148,7 +148,7 @@ Tier 2の理由は、少数の可否規則と不変条件をModelに置くため
 
 1. 上表の方針候補継続・残条件具体化のOwner承認を§8.3へ記録済み。既存の人による総合判断・最小構成の方針と開始前必須条件を維持する。
 2. [責務・認可／失効・Audit・mode／DB権限の具体化案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)を作成済み。具体案をreviewし、Reference code／POM／migrationの必要差分と追加検証契約へ渡す。正式採用・物理名固定・開始判断は残る。
-3. [追加局所検証契約・再見積案](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md)を作成済み。A：JPA保存、B：Identity／Audit、C：Web／modeの順とtest・command・資源／上限・戻り先を提示。追加作成／実行は未承認で、まずAを個別開始判断へ戻す。初回16〜32時間枠は流用しない。
+3. [追加局所検証契約・再見積案](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md)の§6.1でA：JPA保存の作成・実行・契約上限をOwner承認済み（2026-10-05）。本日は記録まで、次回preflightから開始。B：Identity／Audit、C：Web／modeは未承認。初回16〜32時間枠は流用しない。
 4. 個別開始と既存Gate経路の判断に従って実施する。実provider／trace／OS crash・E01〜21／DoDの不足は、その後の統合実演へ追跡する。
 
 今回の更新は方式票への結果反映と残条件の整理まで。Tier正式採用・正式Reference変更・追加fixture作成／実行・Gate判定は行っていない。

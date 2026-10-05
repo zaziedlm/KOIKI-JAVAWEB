@@ -21,7 +21,9 @@
 
 ## Phase 4計画作業（途中記録）
 
-**追加検証契約案（2026-10-05）:** [S1追加局所検証契約・再見積](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md)。A：JPA保存、B：実Identity／Audit、C：Web／modeの順次契約と技術量36〜72標準時間の低確度案。開始／上限は未承認。最初はPOM変更なしのAの作成・実行を個別reviewする。
+**次回用引継ぎ（2026-10-05）:** [追加局所検証A・次回開始](phase4-s1-additional-a-next-session-handoff-20261005.md)。経過・branch／commit・Aの承認範囲と上限・停止条件を集約。本日は判断記録まで、次回preflightから開始。
+
+**追加検証の再開入口（2026-10-05）:** [S1追加契約§6.1](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md#61-a単位のowner開始判定記録2026-10-05)。A：JPA保存のfixture作成・実行・契約上限はOWNER APPROVED。本日は判断記録まで、次回preflightから開始。POM変更なし、B／C・正式Tier／Referenceは未承認。A8〜16標準時間は再判断枠、4時間時点で成立性確認。
 
 **接続条件の具体化案（2026-10-05）:** [S1責務・認可／失効・Audit・mode／DB権限案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)。承認済み方針をもとに文書案を作成。観察と確認終了、通知読取とSession／Auditの必要更新、権限失効窓・不明保全を分けて整理。具体案はreview待ち、追加検証・正式実装は未開始。
 

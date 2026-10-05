@@ -1,6 +1,6 @@
 # S1追加局所検証契約・再見積案（2026-10-05）
 
-**状態:** DRAFT / 個別開始判断待ち。Ownerは[接続条件具体化案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)を確認し、追加検証契約・再見積の作成へ進むよう指示した。具体化案を入力として受領した記録であり、正式Tier採用・追加fixture作成／実行・正式Reference変更の承認ではない。
+**状態:** A単位のfixture作成・実行・契約上限はOWNER APPROVED（2026-10-05、§6.1）。B／CはDRAFT・個別開始判断待ち。正式Tier採用・正式Reference変更の承認ではない。本日は判断記録まで、実作業は次回開始する。
 **位置:** [後続タスク](phase4-s1-follow-up-tasks-after-local-verification-20261005.md)順3、ST-B追加のTooling-owned検証候補。既存[方式票§8.3](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#83-owner方針レビュー承認記録2026-10-05)の方針承認、commit `5252124`の初回L1〜4を入力とする。
 **目的:** 実JPA／制限role、既存Identity／Audit Public契約、目的別構成の不足を小さな順次単位で確かめ、正式接続の判断材料にする。局所PASSから正式Reference・DoD／Gateを認定しない。
 **Owner確認（2026-10-05）:** 本書の確認と、実装前コミットの区切り・残作業確認の指示を受領。契約案の確認をA／B／Cの作成・実行・上限の開始承認へ読み替えない。次の判断対象は§6のA単位。
@@ -67,7 +67,7 @@ Bのprofile名は仮に`s1-contract`とする候補で、`koiki-starter-audit`�
 
 ## 4. 資源・時間・停止条件案
 
-全数値は追加検証用の**未承認候補上限**。初回と同規模を起点にし、B／Cの実効依存・端末preflightで成立を再確認する。
+下表のAに適用する資源・待機・再試行・保持・費用条件は**OWNER APPROVED（2026-10-05）**。4class確認枠40分は全体の案であり、今回のA単独は1class10分を適用する。B／Cへの適用は未承認候補。開始前preflightで成立を再確認する。
 
 | 項目 | 候補上限／採取 | 超過・不足時 |
 |---|---|---|
@@ -99,3 +99,22 @@ Bのprofile名は仮に`s1-contract`とする候補で、`koiki-starter-audit`�
 判定時には対象単位、作成／実行、開始前必須条件、上限、停止点、理由・日付を記録する。AのPASSはJPA最小保存候補の成立性に戻し、正式Tierを自動確定しない。B／CのPASSも本人認証全profile・正式Reference回帰・実OS crash・DoD／Gateへ広げない。
 
 今回は追加検証契約・再見積案と入力確認の文書化のみ。全4 classは未作成、予定command／診断は未実行、POM・正式source／migration・環境／remoteは変更していない。
+
+### 6.1 A単位のOwner開始判定記録（2026-10-05）
+
+OwnerはA単位の判断内容を了解し、次の方針を承認した。
+
+> A単位のfixture作成・実行と契約記載の上限を承認する。開始前preflight・必須枝対応・証拠固定を条件とし、不成立・上限到達・範囲拡大時は再判断する。B／C・正式Tier採用・正式Reference実装は含めない。本日は判断記録までとし、実作業は次回開始する。
+
+| 項目 | 承認対象・条件 |
+|---|---|
+| baseline | `docs/daily-development-workflow` / `f145e37`。判定記録開始時clean。次回は実際のHEAD／statusと本承認を照合 |
+| 作成 | §1のA：`S1JpaPermitBoundaryTest`、test専用モデル／明示Configuration／SQL、Evidenceと関連導線。test／resources／docsの記載path内 |
+| 実行 | §3のA preflight・実効設定／artifact確認・source checksum固定・必須枝対応、A単独のoffline Maven test、当該使い捨てDBの準備／終了・証拠採取 |
+| 検証 | §2のA1〜A5すべて。method／invocation期待件数を作成前に固定。skip／未作成をPASSにしない |
+| 資源・待機 | §4のA適用条件：fork1／DB1＋Ryuk、heap768 MiB、DB1 GiB／CPU1、pool最大4・同時接続8以内・max_connections16、lock10秒・1class10分等 |
+| 作業量 | §5のA8〜16標準時間を再判断枠として承認。4時間時点でflush／列権限の成立を確認。16時間以内の完了保証ではない |
+| 停止／再判断 | 制限roleで不成立、資源不足・上限到達・範囲拡大時は原因／差分／残量をreview。権限を強めてPASSにしない |
+| 除外 | B／C、POM変更・追加依存／artifact install／publish、正式Tier・Reference実装／migration・Framework API／Rule・Gate／remote |
+
+実行環境の権限承認手順は本承認後も適用する。本日のpreflight・test／SQL作成・Maven／Docker実行は未実施。次回は承認範囲を再確認してpreflightから順次開始する。

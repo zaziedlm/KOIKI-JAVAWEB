@@ -44,7 +44,7 @@ Owner一人＋Codexで順次・同期的に進める。サブエージェント�
 
 ## 4. 次に行う作業
 
-**現在の再開点:** 下記の初回L1〜4とEvidence記録は実施済み。4項目の候補継続・残条件具体化は[方式票§8.3](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#83-owner方針レビュー承認記録2026-10-05)でOwner承認済み。接続条件案・追加検証契約案はOwner確認済み。次は[追加契約§6](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md#6-owner判定へ提示する最初の単位)のA単位について、作成・実行・上限を個別判断する。L2の結果不明はtest入力、L4の復旧runnerはID準備までで、再起動後の不明保全・実復旧実行は残条件。局所PASSを本人認証・正式Audit・実OS crash・Gateへ拡張しない。
+**現在の再開点:** 初回L1〜4は実施済み。A単位のfixture作成・実行・契約上限は[追加契約§6.1](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md#61-a単位のowner開始判定記録2026-10-05)でOwner承認済み（2026-10-05）。本日は記録まで、次回は同承認とHEAD／statusを照合してpreflightから開始する。B／C・正式Tier／Referenceは未承認。L2の結果不明はtest入力、L4のrunnerはID準備までで、不明引継ぎ・実復旧は残条件。
 
 1. branch / HEAD / statusと承認票を確認し、初回の対象pathを固定する。
 2. Java 21・Wrapper / artifact・Docker接続・端末資源をpreflightする。Maven / Dockerの権限エラーはAGENTS.mdと実行環境の承認手順に従う。
