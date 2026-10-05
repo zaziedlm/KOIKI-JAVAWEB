@@ -31,6 +31,9 @@
 - [作業7：S1安全性・復旧条件の具体化](phase4-s1-safety-and-recovery-conditions-20261005.md): 停止確認、通常listener / 複数復旧者の競合、lock喪失窓、通知識別・provider受理不明、認可 / Audit、観測・パージの条件と必要Evidence（DRAFT / blocking review入力。方式採用・実装開始は未承認）
 - [作業7：S1 DoD実演計画・人による確認判断](phase4-s1-dod-demonstration-plan-20261005.md): 実運用担当者の総合判断を前提とする21 case、DoD / S-01〜11対応、証拠とPASS / FAIL / BLOCKED条件、保留・調査・エスカレーションの記録（DRAFT。実演・DoD判定は未実施）
 - [作業7：S1担当・検証環境・作業量／上限・実施順案](phase4-s1-execution-resources-and-sequence-draft-20261005.md): 責務別担当案、ローカル隔離環境、残作業10単位の低確度概算・上限案、段階出口とOPEN入力（DRAFT。担当指名・予算 / 上限・開始は未承認）
+- [作業7：S1以外のpackage分解・比較材料](phase4-other-packages-breakdown-draft-20261005.md): B1 / C2 / C3 / C4 / D2 / D3 / D1同期、trigger・顧客入力待ち全件の対象・review・実演・低確度概算と共有費 / 未算定範囲（DRAFT。先行対象・Gate・実装は未承認）
+- [作業4b・5・7：先行範囲／CP-F0統合判断材料](phase4-forward-scope-cpf0-integrated-review-draft-20261005.md): S1中心の初回限定案、独立候補・先行順序、Gate経路比較、共通費 / 未取得とOR論点を統合（DRAFT。採用・上限・開始経路・OR完了は未承認）
+- [初回S1対象・Gate経路・残判断の具体化案](phase4-initial-scope-gate-and-open-decisions-draft-20261005.md): 初回S1限定・既存Level 2限定P4-F経路の推奨案、前置 / 後続reviewの整合、残判断J1〜8と次の詳細設計材料（DRAFT。対象・経路採用・Gateは未承認）
 - [作業5：CP-F0判断材料・S0時の再計画案](phase4-cpf0-and-s0-replan-options-20261002.md): Framework実証と案件導入を分けたS0 / S1 / S2比較、S1成立条件、S0の未達DoD保持、accounting / Batch依存と再計画（DRAFT。S1候補化は上記承認済み。具体的採用・DoD変更・開始は未承認）
 - [作業3：依存関係の制御の論点整理](dependency-control-issues-20261001.md): Parent / BOMとArchitecture Rulesの検出範囲、誤選択防止とアプリ型による構成選択の候補、作業4bへ渡す判断事項（2026-10-02 文書承認済み。方式採用・実装は未決定）
 - [依存関係制御：構成宣言・検査の比較と検証方式案](dependency-control-design-options-20261002.md): A案を有力候補として保持。案の共有・認識合わせを進め、検証作業は保留する方針をOwnerが了解（2026-10-02）。最初のPOM構成・Starter選択を具体化する前段で再開。方式案はDRAFT、検証実行は未承認
