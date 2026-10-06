@@ -22,6 +22,8 @@
 
 ## Phase 4計画作業（途中記録）
 
+**別端末・次回実装開始の入口（2026-10-06）:** [S1 Reference基盤の次回引継ぎ](phase4-s1-reference-foundation-next-session-handoff-20261006.md)。承認文書commit `371f024`をclean確認済み。preflight・実装・正式検証は未開始。別端末のsource／offline artifact／Docker／Chromium／資源確認と、検証専用設定→baseline→初回実装の順序、登録／migration／権限／Auditの初期確認点を案内する。
+
 **引継ぎの入口（2026-10-06）:** [追加局所検証A・引継ぎ](phase4-s1-additional-a-next-session-handoff-20261005.md)、[狭いJPA共有モデル候補の継続検討](phase4-s1-jpa-candidate-continuation-after-a-20261006.md)。A／B受入とCの開始承認・実行結果を反映済み。
 
 - [追加局所検証B・専用開始票](phase4-s1-additional-b-start-review-20261006.md): 候補文書確認後のB進行指示を受け、test限定依存・Spring transaction・認可／actor／失効・schema／grant・31件案と回帰／上限を具体化。作成／実行の具体条件review用

@@ -223,3 +223,9 @@ Ownerは「文書のコミット・clean source固定後、preflightを実施し
 sourceが未固定、資源・artifact不足、制限不適合・安全条件不成立なら、その時点で停止し原因・必要差分を提示して再判断する。未実施preflightをPASSとせず、条件成立時の作成検証を承認済みとして扱い、同じ範囲の開始許可を再要求しない。
 
 現在のHEADはf9ea06aで、承認・正本改訂・実行資料の文書差分は未commit。今回の承認を文書commit済み・clean source固定済み・preflight成立済みとは記録しない。コミットはOwnerの操作または明示指示に従う。
+
+## 9. 承認文書commit・別端末引継ぎ（2026-10-06）
+
+Ownerのcommit `371f0245af0f1c4b58f93fbd6287961a502d9b12`で§8までの承認・正本改訂・実行資料を固定した。branchは`feature/phase4-s1-reference-foundation`、引継ぎ作成前のworktreeはcleanである。§8末尾のf9ea06a／未commit記載は承認記録作成時の履歴として保持する。
+
+Ownerはここを作業区切りとし、再開を別タイミング・別端末へ移す。[次回引継ぎ](phase4-s1-reference-foundation-next-session-handoff-20261006.md)に再開時のsource確認・別端末preflight・初期実装リスクをまとめた。preflight・正式code／test／SQL作成・Maven／Docker検証は未実施。承認の再取得は不要だが、移送後のsource確認・環境成立は実証する。
