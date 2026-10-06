@@ -1,6 +1,6 @@
 # A承認後の狭いJPA共有モデル候補：継続検討（2026-10-06）
 
-**状態:** 候補検討の継続、A18件とB31件／回帰58件の受入はOWNER APPROVED。[B受入承認](../architecture/validation/phase4-s1-additional-b-identity-audit-20261006.md#6-owner受入承認2026-10-06)。次は[C専用開始票](phase4-s1-additional-c-start-review-20261006.md)の具体条件・個別開始判断。正式配置／契約の採用は未判断。
+**状態:** 候補検討継続とA18件・B31件・C38件の受入はOWNER APPROVED（§7）。[初回採用判断表D1〜D6](phase4-s1-reference-foundation-adoption-decisions-20261006.md#8-owner採用判断2026-10-06)の経路方針・条件区分・Audit／DDL設計もOwner採用済み。次は必要なJ1／J8提出物・正本差分準備。Gate／正本整合・正式開始票の残判断・実装開始は未成立。
 **入力:** [A結果とOwner承認](../architecture/validation/phase4-s1-additional-a-jpa-20261006.md)、[責務／認可／Audit案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)、[追加検証契約](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md)。正本の境界を変更せず、A後の残条件を具体化する。
 **位置:** Tooling検証結果をReference-owned notification候補の検討へ戻す文書。正式Reference / Framework codeは変更しない。Owner一人＋Codexの順次協働。
 
@@ -77,3 +77,9 @@ OwnerはC専用開始票のfixture作成・実行・test限定POM差分と上限
 OwnerはCの検証結果・受入レビュー点4項目を確認し、ここまでの結果と理解について問題なしとして承認した。[C Evidence§6](../architecture/validation/phase4-s1-additional-c-web-mode-20261006.md#6-owner受入承認2026-10-06)を正本とする。A18件・B31件・C38件の局所検証結果がすべてCOMPLETE / OWNER APPROVEDとなった。§6の受入未判断は承認前の履歴とする。
 
 次の検討入力は、Aの保存・競合境界、Bの現在Identity／permission・Audit／失効保全、Cの実Web主体・mode分離・実registry限定再送・UNKNOWN引継ぎ。これらを使い、Domainの可否規則、Applicationの認可・transaction・Audit・実行順序、AdapterのSQL／lock／registry版依存と正式接続時の残条件を整理する。正式provider／旧worker停止の真正性、I/Oまでの失効窓、正式TTL／scope／配置／Reference回帰は引き続き残し、fixtureを正式成果物へ昇格しない。
+
+## 8. 既存Reference保護を共通条件とする検討（2026-10-06）
+
+Ownerは、現在のReferenceの機能・品質を阻害せず、安全側へ倒した機能反映・拡張とするよう指示した。責務、正式配置／接続条件、初回実装範囲／受入を連続する検討軸として扱う。[検討案](phase4-s1-reference-safe-integration-design-draft-20261006.md)へ現行sourceの登録／Security／migration条件と、3軸を結ぶ責務・接続・検証表をまとめた。
+
+最初は通常起動から登録を外した保存・認可・Audit基盤を候補とし、Web受付、復旧／通常通知、expense承認連携を順次判断する。追加機能の既定無効だけでEntity／migration／依存の影響が消えると見なさず、通常構成の未適用／適用済みDB起動と既存回帰を受入条件にする。推奨順序・具体配置はDRAFTであり、正式開始承認へ読み替えない。

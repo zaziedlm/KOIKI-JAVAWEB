@@ -28,6 +28,12 @@
 
 **追加検証の再開入口（2026-10-06）:** A18件・B31件・[C38件＋同profile回帰89件はすべてCOMPLETE / OWNER APPROVED](../architecture/validation/phase4-s1-additional-c-web-mode-20261006.md#6-owner受入承認2026-10-06)。次はA／B／Cを入力として狭いJPA共有モデル候補の責務・正式接続条件を整理する。正式Tier／Reference／DoD／Gateは未採用。
 
+**実装前の検討入口（2026-10-06）:** [既存Referenceを保護する責務・正式接続・初回実装範囲](phase4-s1-reference-safe-integration-design-draft-20261006.md)。Ownerの安全側の拡張指示を共通前提とし、通常構成の登録／migration／Security／依存影響と既存回帰を各段階の受入へ結ぶ。DRAFT、正式開始票へ具体化する入力。
+
+**正式開始の審査入口（2026-10-06）:** [S1 Reference保存・認可・Audit基盤の正式開始票](phase4-s1-reference-foundation-formal-start-review-20261006.md)。`feature/phase4-s1-reference-foundation`で初回対象・条件付き登録・追加migration・55件／既存25 class＋E2E回帰・上限・判断欄を具体化したDRAFT。J1／J8と現行Gateの整合・採用事項・実行開始は未判断。
+
+**具体採用の判断入口（2026-10-06）:** [初回採用判断表D1〜D6はOWNER APPROVED](phase4-s1-reference-foundation-adoption-decisions-20261006.md#8-owner採用判断2026-10-06)。経路・正本差分準備方針、scope／TTLの初回契約・拒否と運用供給元／値の後段化、Audit／DDL設計を採用済み。次はJ1／J8の提出物・正本差分準備。Gate判定・具体正本改訂・実装／実行開始は別判断。
+
 **接続条件の具体化案（2026-10-05）:** [S1責務・認可／失効・Audit・mode／DB権限案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)。承認済み方針をもとに文書案を作成。観察と確認終了、通知読取とSession／Auditの必要更新、権限失効窓・不明保全を分けて整理。具体案はreview待ち、追加検証・正式実装は未開始。
 
 **S1の現在の再開入口（2026-10-05）:** [初回局所検証後の後続タスク](phase4-s1-follow-up-tasks-after-local-verification-20261005.md)。commit `5252124`にpreflight / 初回L1〜4のLOCAL PASS（11 / 9 / 8 / 12 tests）と方式票への結果反映を記録済み。Tier・認可・Audit・正式Reference接続の4項目の候補継続・残条件具体化はOwner承認済み（[方式票§8.3](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#83-owner方針レビュー承認記録2026-10-05)）。次は接続条件の具体化、その後に追加検証契約へ進みます。正式実装・Tier確定・DoD / Gateは後続判断です。初回の経緯は[開始引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)を参照してください。以下の一覧は検討順の履歴を含みます。

@@ -55,4 +55,12 @@ Owner一人＋Codexで順次進める。下表の順番号は作業整理用で�
 
 **次回の再開点:** commit／branch／status、A／B／Cの受入承認と[C Evidence§6](../architecture/validation/phase4-s1-additional-c-web-mode-20261006.md#6-owner受入承認2026-10-06)を確認する。次は狭いJPA共有モデル候補の責務・正式接続条件の整理。正式Referenceへの進行は別判断とする。
 
+**3軸の具体化（2026-10-06）:** `f5e2672`でA／B／C code・Evidence・受入をcommit済み。Ownerの既存Reference保護指示に基づき、[責務・接続・初回実装範囲の検討案](phase4-s1-reference-safe-integration-design-draft-20261006.md)を作成した。通常起動への登録／migration／Security／依存影響と既存回帰を共通受入条件にする。次は同案§6の正式開始票具体化。今回の作業はdocs／read-only source確認まで、正式実装は未開始。
+
+**正式開始票の具体化（2026-10-06）:** Owner了承で`feature/phase4-s1-reference-foundation`へbranch／switchし、引継ぎ4文書のhash一致を確認した。[正式開始票案](phase4-s1-reference-foundation-formal-start-review-20261006.md)を作成。次は技術範囲・採用事項／検証上限とJ1／J8の開始経路を同票§6・7で審査する。文書化指示を正式code・POM・DDL・環境実行の開始承認へ拡張しない。
+
+**採用判断表の整理（2026-10-06）:** Owner指示により[初回採用判断表D1〜D6](phase4-s1-reference-foundation-adoption-decisions-20261006.md)を作成し、正式開始票へ対応付けた。初回のscope／TTL契約・未接続拒否と、運用受付前の供給元・運用値を分ける案、Audit code／actor・DDL column／制約案とmigration履歴validationを提示。次は項目ごとの採否・条件変更を記録し、J1／J8の必要提出物／正本差分へ渡す。現在は全項目未判断。
+
+**D1〜D6の採用（2026-10-06）:** Ownerは表を確認し「問題ないと判断します」と示した。[採用記録§8](phase4-s1-reference-foundation-adoption-decisions-20261006.md#8-owner採用判断2026-10-06)に、推奨案と初回／後段条件区分を採用済みとして反映した。上記の未判断は表作成時の履歴。次はJ1／J8の必要提出物・正本改訂差分を準備する。Gate通過、未提示の正本改訂、Tier／具体登録方式・検証上限・実装／実行開始は自動認定しない。
+
 経過・具体的な再開順・停止条件は[次回用引継ぎ](phase4-s1-additional-a-next-session-handoff-20261005.md)へ集約した。
