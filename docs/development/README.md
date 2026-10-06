@@ -5,6 +5,7 @@
 
 ## 現在の入口
 
+- [Frameworkローカル開発のartifact準備・整備検討案](framework-local-artifact-readiness-options-20261006.md): 共通／用途別資材、取得・local install・offline確認、cache更新／復旧の検討案。選択Toolingの不足解消とoffline再開は最小実証済み。恒常方式の実装・採用は未完了
 - [アプリ開発チーム向け引継ぎガイド](application-team-handoff-guide.md): Phase履歴を知らない開発者が、提供物／非提供物、構成・Starter選択、Reference実行、最初のCustomer-owned module、copy禁止、拡張分類、診断およびFramework側への戻し条件を一本道で確認する第一入口
 - [開発環境構築手順](application-team-development-environment-guide.md): 端末前提、社内Proxy証明書、Framework / Customer別Repositoryの配置、KOIKI Parent接続、R2 isolated stage build、ローカル起動までの共通手順。VS Codeを採用する場合の設定例と、Dev Container / Linux環境で想定される事項の付記を含む
 - [アプリケーション開発者ガイド](application-developer-guide.md): 初回build後に業務機能を1つ完成させるための、package構成、`@KoikiModule`、migration、Use Case / Controller / eventの置き方、test、詰まったときの相談方法とFAQ。2026-09-30 Owner review完了
@@ -21,9 +22,11 @@
 
 ## Phase 4計画作業（途中記録）
 
-**次回用引継ぎ（2026-10-05）:** [追加局所検証A・次回開始](phase4-s1-additional-a-next-session-handoff-20261005.md)。経過・branch／commit・Aの承認範囲と上限・停止条件を集約。本日は判断記録まで、次回preflightから開始。
+**引継ぎの入口（2026-10-06）:** [追加局所検証A・引継ぎ](phase4-s1-additional-a-next-session-handoff-20261005.md)、[狭いJPA共有モデル候補の継続検討](phase4-s1-jpa-candidate-continuation-after-a-20261006.md)。A／B受入とCの開始承認・実行結果を反映済み。
 
-**追加検証の再開入口（2026-10-05）:** [S1追加契約§6.1](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md#61-a単位のowner開始判定記録2026-10-05)。A：JPA保存のfixture作成・実行・契約上限はOWNER APPROVED。本日は判断記録まで、次回preflightから開始。POM変更なし、B／C・正式Tier／Referenceは未承認。A8〜16標準時間は再判断枠、4時間時点で成立性確認。
+- [追加局所検証B・専用開始票](phase4-s1-additional-b-start-review-20261006.md): 候補文書確認後のB進行指示を受け、test限定依存・Spring transaction・認可／actor／失効・schema／grant・31件案と回帰／上限を具体化。作成／実行の具体条件review用
+
+**追加検証の再開入口（2026-10-06）:** A18件・B31件・[C38件＋同profile回帰89件はすべてCOMPLETE / OWNER APPROVED](../architecture/validation/phase4-s1-additional-c-web-mode-20261006.md#6-owner受入承認2026-10-06)。次はA／B／Cを入力として狭いJPA共有モデル候補の責務・正式接続条件を整理する。正式Tier／Reference／DoD／Gateは未採用。
 
 **接続条件の具体化案（2026-10-05）:** [S1責務・認可／失効・Audit・mode／DB権限案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)。承認済み方針をもとに文書案を作成。観察と確認終了、通知読取とSession／Auditの必要更新、権限失効窓・不明保全を分けて整理。具体案はreview待ち、追加検証・正式実装は未開始。
 

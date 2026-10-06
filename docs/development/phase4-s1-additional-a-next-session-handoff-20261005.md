@@ -1,6 +1,10 @@
 # S1追加局所検証A：次回開始の引継ぎ（2026-10-05）
 
+**2026-10-06の最新結果:** A18件・B31件・[C38件＋同profile回帰89件はすべてCOMPLETE / OWNER APPROVED](../architecture/validation/phase4-s1-additional-c-web-mode-20261006.md#6-owner受入承認2026-10-06)。OwnerはCのここまでの結果と理解について問題なしとして承認した。次は狭いJPA共有モデル候補の責務・正式接続条件の整理。以下の日付付き開始・受入待ち記録は履歴として維持する。
+
 **次回の開始点:** 承認済みA単位のpreflight → 必須枝対応・証拠固定 → fixture作成・単独実行。
+
+**追記・現在の次段階（2026-10-06）:** A／B fixture／profile／EvidenceとC開始票・承認反映docsは未commit、HEADは`6a76b81`のまま。CのPOM／Java／SQL変更・実行は未実施。C開始判定後、承認範囲を照合してartifact／資源／Bean条件のpreflightから進む。下記のA開始案内は履歴として維持する。
 **状態:** Aの作成・実行・契約上限はOWNER APPROVED。本日は判断記録までで終了し、Aのpreflight・test／SQL作成・Maven／Docker検証は未開始。
 **正本:** [追加検証契約§6.1](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md#61-a単位のowner開始判定記録2026-10-05)。本書は再開案内であり、承認範囲を追加しない。
 

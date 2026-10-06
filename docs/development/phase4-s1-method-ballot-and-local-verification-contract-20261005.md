@@ -2,6 +2,7 @@
 
 **状態:** OWNER APPROVED（2026-10-05）/ 局所検証候補・初回作成／実行契約。preflight・初回L1〜4はLOCAL PASS（11 / 9 / 8 / 12 tests、各failures / errors / skipped 0）。正式方式・Tier・Reference接続は後続review。
 **今回の範囲:** 承認済みpreflight・初回L1〜4の作成・実行結果を反映。[Evidence](../architecture/validation/phase4-s1-minimum-local-verification-20261005.md)を参照。数値は開始条件・上限であり、未実測部分を含む。
+**追加検証の最新結果（2026-10-06）:** A18件・B31件・[C38件＋同profile回帰89件はすべてCOMPLETE / OWNER APPROVED](../architecture/validation/phase4-s1-additional-c-web-mode-20261006.md#6-owner受入承認2026-10-06)。次はA／B／Cを入力として狭いJPA共有モデル候補の責務と正式接続条件を整理する。正式方式／Tier／Reference／DoD／Gateは未採用。
 **入力:** [K票・CH変更一覧・ST開始範囲](phase4-s1-minimum-change-and-start-scope-draft-20261005.md)、[Tier・保存 / 権限・V0〜7](phase4-s1-minimum-tier-storage-verification-review-20261005.md)、[成立性確認](phase4-s1-minimum-boundary-feasibility-review-20261005.md)。
 
 ## 1. 方式採用票
@@ -154,6 +155,8 @@ Tier 2の理由は、少数の可否規則と不変条件をModelに置くため
 今回の更新は方式票への結果反映と残条件の整理まで。Tier正式採用・正式Reference変更・追加fixture作成／実行・Gate判定は行っていない。
 
 ### 8.3 Owner方針レビュー承認記録（2026-10-05）
+
+**2026-10-06 A結果:** preflightの必須artifact欠落は、Owner指示による[環境整備の最小実地検証](../architecture/validation/framework-local-artifact-readiness-20261006.md)として解消した。A1〜A5は18 invocationすべてLOCAL PASS、**COMPLETE / OWNER APPROVED**。[A Evidence／受入承認](../architecture/validation/phase4-s1-additional-a-jpa-20261006.md)。限定INSERT、version／確認列だけのUPDATE、append-only・一意制約・lock競合・rollback・reader拒否が制限roleで成立した。Ownerは結果受入と狭いJPA共有モデル候補の検討継続を承認。正式Tier／Reference採用ではなく、B／Cの個別開始は残る。次の文書入力は[候補継続・B前置条件](phase4-s1-jpa-candidate-continuation-after-a-20261006.md)。
 
 Ownerは「4項目の方針候補を継続し、記載された残条件の具体化へ進める。正式Tier採用・追加検証実行・正式Reference実装開始は、後続の証拠と個別判断に委ねる」の方針を承認した。
 

@@ -1,6 +1,6 @@
 # S1追加局所検証契約・再見積案（2026-10-05）
 
-**状態:** A単位のfixture作成・実行・契約上限はOWNER APPROVED（2026-10-05、§6.1）。B／CはDRAFT・個別開始判断待ち。正式Tier採用・正式Reference変更の承認ではない。本日は判断記録まで、実作業は次回開始する。
+**状態:** A18件、B31件・回帰58件、C38件・同profile回帰89件はCOMPLETE / OWNER APPROVED（2026-10-06、§6.3・6.7・6.9）。狭いJPA共有モデル候補の検討継続を承認済み。正式Tier採用・正式Reference変更の承認ではない。
 **位置:** [後続タスク](phase4-s1-follow-up-tasks-after-local-verification-20261005.md)順3、ST-B追加のTooling-owned検証候補。既存[方式票§8.3](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#83-owner方針レビュー承認記録2026-10-05)の方針承認、commit `5252124`の初回L1〜4を入力とする。
 **目的:** 実JPA／制限role、既存Identity／Audit Public契約、目的別構成の不足を小さな順次単位で確かめ、正式接続の判断材料にする。局所PASSから正式Reference・DoD／Gateを認定しない。
 **Owner確認（2026-10-05）:** 本書の確認と、実装前コミットの区切り・残作業確認の指示を受領。契約案の確認をA／B／Cの作成・実行・上限の開始承認へ読み替えない。次の判断対象は§6のA単位。
@@ -58,16 +58,16 @@ Bのprofile名は仮に`s1-contract`とする候補で、`koiki-starter-audit`�
 
 ```powershell
 .\mvnw.cmd -o -f build-support/phase4-level2-verification/pom.xml -Pjdbc "-Dtest=S1JpaPermitBoundaryTest" "-DforkCount=1" "-DargLine=-Xmx768m" "-Djunit.jupiter.execution.parallel.enabled=false" "-Dsurefire.failIfNoSpecifiedTests=true" test
-.\mvnw.cmd -o -f build-support/phase4-level2-verification/pom.xml -Pjdbc,s1-contract "-Dtest=S1IdentityAuditBoundaryTest" "-DforkCount=1" "-DargLine=-Xmx768m" "-Djunit.jupiter.execution.parallel.enabled=false" "-Dsurefire.failIfNoSpecifiedTests=true" test
-.\mvnw.cmd -o -f build-support/phase4-level2-verification/pom.xml -Pjdbc,s1-contract "-Dtest=S1AuthenticatedPermitWebTest" "-DforkCount=1" "-DargLine=-Xmx768m" "-Djunit.jupiter.execution.parallel.enabled=false" "-Dsurefire.failIfNoSpecifiedTests=true" test
-.\mvnw.cmd -o -f build-support/phase4-level2-verification/pom.xml -Pjdbc,s1-contract "-Dtest=S1DatabaseModeBoundaryTest" "-DforkCount=1" "-DargLine=-Xmx768m" "-Djunit.jupiter.execution.parallel.enabled=false" "-Dsurefire.failIfNoSpecifiedTests=true" test
+.\mvnw.cmd -o -f build-support/phase4-level2-verification/pom.xml "-Pjdbc,s1-contract" "-Dtest=S1IdentityAuditBoundaryTest" "-DforkCount=1" "-DargLine=-Xmx768m" "-Djunit.jupiter.execution.parallel.enabled=false" "-Dsurefire.failIfNoSpecifiedTests=true" test
+.\mvnw.cmd -o -f build-support/phase4-level2-verification/pom.xml "-Pjdbc,s1-contract" "-Dtest=S1AuthenticatedPermitWebTest" "-DforkCount=1" "-DargLine=-Xmx768m" "-Djunit.jupiter.execution.parallel.enabled=false" "-Dsurefire.failIfNoSpecifiedTests=true" test
+.\mvnw.cmd -o -f build-support/phase4-level2-verification/pom.xml "-Pjdbc,s1-contract" "-Dtest=S1DatabaseModeBoundaryTest" "-DforkCount=1" "-DargLine=-Xmx768m" "-Djunit.jupiter.execution.parallel.enabled=false" "-Dsurefire.failIfNoSpecifiedTests=true" test
 ```
 
 実効argLine／javaagentが変われば上書きせず合成して票を更新する。`test`は既存Failsafe IT／別JVM実演を実行しない。B／Cでprofileによるtest compile／既存contextへの影響があるため、L1〜4と影響する既存testを回帰対象として開始前に列挙する。不要なmodule全体verifyを無条件に追加しない。Docker pipe／Maven cache権限エラーはAGENTS.mdと実行環境の同じ最小操作の承認手順に従う。
 
 ## 4. 資源・時間・停止条件案
 
-下表のAに適用する資源・待機・再試行・保持・費用条件は**OWNER APPROVED（2026-10-05）**。4class確認枠40分は全体の案であり、今回のA単独は1class10分を適用する。B／Cへの適用は未承認候補。開始前preflightで成立を再確認する。
+下表のAに適用する資源・待機・再試行・保持・費用条件は**OWNER APPROVED（2026-10-05）**。4class確認枠40分は全体の案であり、A単独は1class10分を適用する。Bは専用開始票の回帰・上限・停止点を2026-10-06に承認済み。Cへの適用は未承認候補。開始前preflightで成立を再確認する。
 
 | 項目 | 候補上限／採取 | 超過・不足時 |
 |---|---|---|
@@ -118,3 +118,51 @@ OwnerはA単位の判断内容を了解し、次の方針を承認した。
 | 除外 | B／C、POM変更・追加依存／artifact install／publish、正式Tier・Reference実装／migration・Framework API／Rule・Gate／remote |
 
 実行環境の権限承認手順は本承認後も適用する。本日のpreflight・test／SQL作成・Maven／Docker実行は未実施。次回は承認範囲を再確認してpreflightから順次開始する。
+
+### 6.2 2026-10-06の再開結果
+
+A preflightは必須artifact欠落で一度停止した。Ownerの別の環境整備指示（不足解消を実地検証しながら進める）に基づき、既存Tooling POM / jdbcで外部artifact・pluginのonline準備→offline解決→既存L1を実証した。[環境整備Evidence](../architecture/validation/framework-local-artifact-readiness-20261006.md)。本操作を§6.1の元承認へ遡って含めず、POM変更・KOIKI install・publish・全profile取得は行っていない。
+
+前置条件成立後、元承認範囲の専用test / Configuration / model / SQLを作成し、A1〜A5の18 invocationがLOCAL PASS。最終modelは専用ORM XMLで明示登録し、既存scanへ混入させない。[A Evidence](../architecture/validation/phase4-s1-additional-a-jpa-20261006.md)。AのOwner受入は§6.3へ記録し、B／C・正式Tier／Reference・DoD／Gateへ拡張しない。
+
+### 6.3 A結果のOwner受入（2026-10-06）
+
+OwnerはA検証結果を通読し、保存方式、DB保護／競合、検証完結／隔離、適用範囲の4点をreviewして、A結果の受入と狭いJPA共有モデル候補の検討継続を承認した。AはCOMPLETE / OWNER APPROVED。承認の正本は[A EvidenceのOwner受入承認](../architecture/validation/phase4-s1-additional-a-jpa-20261006.md#owner受入承認2026-10-06)。
+
+次は[候補継続・B前置条件](phase4-s1-jpa-candidate-continuation-after-a-20261006.md)に従い、B専用開始票を具体化する。B／Cのfixture作成・実行・POM変更、正式Tier／Reference採用は本受入承認に含めない。
+
+### 6.4 B専用開始票の具体化（2026-10-06）
+
+Ownerは候補継続文書を確認し、B専用開始への進行を指示した。[B開始票](phase4-s1-additional-b-start-review-20261006.md)でtest限定依存profile、schema / grant、Spring管理transaction、test専用permission / scope / actor / attempt拘束 / 失効再確認、31 invocation案、回帰と上限を提示した。
+
+既存Identity／Audit関連POM／JARのcache存在とhashをread-onlyで確認済み。POM変更・B fixture作成・Maven解決／DB testは未実施。進行指示を、未reviewの具体条件や正式Reference契約の包括承認へ読み替えず、個別開始判断はB開始票§7へ集約する。
+
+### 6.5 B具体条件の開始承認とpreflight停止（2026-10-06）
+
+Ownerは[B専用開始票](phase4-s1-additional-b-start-review-20261006.md)を確認し、「具体条件で、Bのfixture作成・実行・test限定POM変更と記載上限を承認いたします」と判断した。同票§1・4・5・6の範囲を承認済みとする。§6.4の未実施状態はこの承認前の履歴である。
+
+選択profileを追加してoffline preflightを実施したが、cached BOMとsourceの不整合によりIdentityの推移依存が展開されず停止した。[B preflight Evidence／BOMのみのlocal install対処案](../architecture/validation/phase4-s1-additional-b-preflight-20261006.md)。B fixture作成／31件実行は未着手。B開始承認を維持し、再installを包括許可しない開始票§2・6に従って必要差分を個別判断へ提示する。
+
+### 6.6 BOM単独修復承認・B実行結果（2026-10-06）
+
+Ownerは「現在sourceのBOMだけをlocal installする対処を承認します」と判断した。offline・単独moduleのinstallは成功し、更新前BOMを保存、更新後source hash一致と依存警告解消を確認した。§6.5のBLOCKEDは解消済み。
+
+既存artifact内容を照合・hash固定してB fixtureを作成・実行し、[B Evidence](../architecture/validation/phase4-s1-additional-b-identity-audit-20261006.md)の31 invocationはLOCAL PASS。A18件＋L1〜L4計40件の同profile回帰も成功した。B結果のOwner受入は未判断。B専用scope／actor／Clock／attempt列／Modulith registry除外はTooling条件として保持し、C・正式Tier／Reference／DoD／Gateへ拡張しない。
+
+### 6.7 B結果のOwner受入とC条件具体化（2026-10-06）
+
+OwnerはB検証結果・レビュー点4項目を確認し、「承認し次へ進めましょう」と判断した。BはCOMPLETE / OWNER APPROVED。正本は[B Evidence§6](../architecture/validation/phase4-s1-additional-b-identity-audit-20261006.md#6-owner受入承認2026-10-06)。§6.6の受入未判断は承認前の履歴とする。
+
+次は[C専用開始票](phase4-s1-additional-c-start-review-20261006.md)。実local Web認証／Session／CSRFと、実registry／proxy・mode分離／不明context再起動の具体条件、test限定4座標、38 invocation、回帰89件、上限を提示した。Cの具体条件・fixture作成／実行／POM差分と上限は個別判断待ち。B受入を正式Tier／Reference／DoD／Gateへ拡張しない。
+
+### 6.8 C具体条件の開始承認・実行結果（2026-10-06）
+
+OwnerはC専用開始票を確認し、「Cのfixture作成・実行・test限定POM変更と記載上限について承認いたします」と判断した。同票§1〜5の具体条件を承認範囲とし、§6.7の判断待ちは承認前の履歴とする。
+
+offline preflightは成立し、追加取得／installなしで実行した。[C Evidence](../architecture/validation/phase4-s1-additional-c-web-mode-20261006.md)は38 invocation・同profile回帰89件LOCAL PASS。実Web本人認証／Session／CSRF・actor、観察／復旧modeのDB権限と実registry／proxy、UNKNOWNのcontext再起動時保留が成立した。C結果受入は未判断。正式provider／停止証拠、I/Oまでの失効窓、正式TTL／scope／配置／Reference接続は維持し、次はCのレビュー点4項目の受入判断。
+
+### 6.9 C結果のOwner受入（2026-10-06）
+
+Ownerは検証結果・レビュー点4項目を確認し、検証経路上は安心できる結果との理解を示した後、「検証C は、ここまでの結果、理解で、問題なしとして、承認いたします」と明示した。C38件・同profile回帰89件を受け入れ、CはCOMPLETE / OWNER APPROVED。正本は[C Evidence§6](../architecture/validation/phase4-s1-additional-c-web-mode-20261006.md#6-owner受入承認2026-10-06)。§6.8の受入未判断は承認前の履歴とする。
+
+A／B／Cの局所成立証拠を揃え、次は狭いJPA共有モデル候補の責務と正式接続条件を整理する。Tooling専用条件、provider／停止証拠の真正性、I/Oまでの失効窓、正式TTL／scope／配置／Reference接続を保持する。正式採用・実装開始・DoD／Gate／remoteの変更承認へ拡張しない。
