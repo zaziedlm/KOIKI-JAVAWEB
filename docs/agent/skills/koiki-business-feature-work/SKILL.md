@@ -145,6 +145,9 @@ Problem Details、API Versioning、Security、SPAの具体的実装は該当Phas
 
 ## 9. 検証する
 
+S1初回Reference基盤に該当する場合は、[正式開始票](../../../development/phase4-s1-reference-foundation-formal-start-review-20261006.md)と
+[正本改訂承認記録](../../../development/phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#9-正本改訂のowner承認反映記録2026-10-06)から対象・現在の開始条件を確認する。
+
 - 対象moduleのDomain、Application、MVC、Persistence、Eventの成功・拒否経路をテストする。
 - Repository、transaction、Lazy Loading、rollbackが重要ならTestcontainersの実DBで検証する。
 - リポジトリが指定するMaven検証とアーキテクチャ検証を実行する。

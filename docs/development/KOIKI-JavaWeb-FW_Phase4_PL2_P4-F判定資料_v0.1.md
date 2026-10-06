@@ -89,6 +89,12 @@ Application配置にする場合は各Consumerのschema準備とversion整合が
 
 ### 1.3 S1 / S2でLevel 2を採用する場合の復旧候補
 
+**2026-10-06の限定範囲:** [正本改訂承認・反映記録](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#9-正本改訂のowner承認反映記録2026-10-06)に基づき、
+初回は[正式開始票](phase4-s1-reference-foundation-formal-start-review-20261006.md)のReference保存・認可・Audit基盤に限定する。
+notificationの初回はRICH／JPA SHAREDを採用済み。以下のTier 1通知案は当時の候補として保持し、
+後段通知追加時にmodule全体のTierを再照合する。許可・消費はV4別location／既存kkref履歴の成立確認付き第一案、
+publication migrationは後段未採用事項として分離する。Gate設置／限定判定・実行開始は未成立。
+
 **A1再公開の条件付き候補（Owner未判定）:** 全通常instanceで起動時自動再公開を無効にする。
 再送は認可・Audit付きの専用復旧processに集約し、CP8と同じPostgreSQL session advisory lockで
 復旧process同士を排他する。FAILEDは回数上限候補を適用し、PUBLISHED / PROCESSINGは前処理processの
@@ -236,9 +242,9 @@ Phase 0のPhase共通25〜40標準人日にはSAML、Storage、ECSなども含�
 
 | 点 | 対象・Evidence | 停止条件と戻し方の案 |
 |---|---|---|
-| CP-F0 採用規模 | S0 / S1 / S2の選択、Reference対象event、DoDへの影響、限定作業のOwner・復旧条件を記録 | 限定範囲が曖昧なら`REWORK`。実案件需要は未取得として保持。S0ならLevel 2のproduction開始は行わず、DoD・依存packageの見直しへ戻す |
-| CP-F1 A1 blocking review | store、schema所有、Flyway二階層、dependency、Rules / Public API、複数instance復旧の安全条件 | 設計不成立ならA1を開始しない。既存Level 1構成を維持し、未承認migration / APIを作らない |
-| CP-F2 A1検証 | Toolingと正式候補を分け、保存・故障・認可・Audit・パージ・相関のEvidenceを固定 | 同時再送・lock喪失・受理不明の停止条件が契約化できなければ後続A2を開始しない。候補設定とschemaはOwnerが前進migration / cleanup方法をreview |
+| CP-F0 採用規模 | D1／D2のS1経路方針採用を記録し、正式対象・Gate判定と分ける。Reference対象event、DoD影響、Owner・復旧条件は後段も追跡 | 限定範囲が曖昧ならREWORK。初回基盤の了承をS1全体開始・実案件需要確定にしない。S0／S2再評価と対象外条件は維持 |
+| CP-F1 A1 blocking review | 初回保存基盤部分はP4-F提案§3のモデル／登録／DDL・grant／認可・Audit／検証上限を前置。store／Rules／依存／複数instance復旧安全条件は当該後段接続前に審査 | 初回部分の成立をCP-F1全体完了にしない。未成立の接続を開始せず、既存Level 1構成を維持。未承認migration／APIを作らない |
+| CP-F2 A1検証 | Toolingと正式候補を分け、初回保存基盤・認可／Audit・既存Reference保護の部分Evidenceを固定。故障・復旧・パージ・相関は後段で検証 | 初回部分だけでCP-F2全体完了にしない。同時再送・lock喪失・受理不明が未解決なら後続A2を開始しない。schema／cleanupのreviewを維持 |
 | CP-F3 A2実証 | Reference `notification`をpackageし、stubの冪等key・送信受理不明・再送を実演 | Reference実演が成立しなければ通知候補を有効化しない。実案件providerの契約・費用は当該Applicationの採用前に判断 |
 | CP-F4 D1観測 | metric / alert / trace / logをReference検証sinkで照合し、cardinalityと非露出を確認 | 検証sinkで相関不能なら次へ進めない。実運用sink・alert体制は各Application採用前に判断 |
 | CP-F5 統合判定 | F-3のReference 4-1〜4-5・4-12実演、runbookの利用条件、未達と適用外の記録 | 未達DoDは未達として次Gateへ渡す。実案件CI費用、provider、当番体制を確定済みと扱わない |
@@ -251,6 +257,10 @@ forward migration、機能停止、残存publicationの保全と再開条件をA
 
 ## 4. F-5 Gate関係と停止点
 
+**正本整合の反映（2026-10-06）:** 初回限定範囲・前置／後段区分をP4-AR計画／AGENTS／P4-F提案／
+見直し草案へ反映した。詳細と現在の未成立条件は[改訂承認記録§9](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#9-正本改訂のowner承認反映記録2026-10-06)を参照。
+新しいCP番号は作らず、CP-F3〜5の出口・停止点は維持する。
+
 [F-5全件台帳・Gate改訂差分案](phase4-pl2-f5-integration-and-gate-delta-draft.md)に
 P4-01〜11・optionalのDoD / P4-F範囲 / 待ち条件と、P4-AR計画・`AGENTS.md`・
 Phase 4実施計画の提案文案を記載した。これはreview資料であり、現行規定の改訂ではない。
@@ -258,7 +268,8 @@ Phase 4実施計画の提案文案を記載した。これはreview資料であ�
 P4-Fを採用する場合でも、P4-AR6実チーム受入、AR-D10責任分担、Gate P4-ARは未完了のまま残す。
 現行[P4-AR計画](KOIKI-JavaWeb-FW_Pre-Phase4_Adoption_Readiness計画_v0.1.md)と`AGENTS.md`の
 「Gate P4-AR後にPhase 4開始を別判断」という規定に、Framework限定の例外Gateを追加する改訂が必要である。
-改訂本文はP4-F採用判断と同時にOwner reviewし、現時点で規定を変更しない。
+上記は従来の改訂前の課題として保持する。2026-10-06に初回限定条件の正本改訂本文をOwner承認・反映済み。
+Gate設置／限定判定は別途未成立であり、改訂の実施とGate判定を分ける。
 
 | 改訂候補 | 追加する内容 | 維持する条件 |
 |---|---|---|

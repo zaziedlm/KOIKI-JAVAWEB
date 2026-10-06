@@ -34,6 +34,16 @@
 
 **具体採用の判断入口（2026-10-06）:** [初回採用判断表D1〜D6はOWNER APPROVED](phase4-s1-reference-foundation-adoption-decisions-20261006.md#8-owner採用判断2026-10-06)。経路・正本差分準備方針、scope／TTLの初回契約・拒否と運用供給元／値の後段化、Audit／DDL設計を採用済み。次はJ1／J8の提出物・正本差分準備。Gate判定・具体正本改訂・実装／実行開始は別判断。
 
+**正本改訂・残条件の審査入口（2026-10-06）:** [S1 Reference基盤の正本改訂差分・残条件](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md)。commit `f9ea06a`を入力に、P4-AR／AGENTS／P4-F等への具体文案、初回前置と後段接続前review、Tier／登録／grant案を整理。既存DB fixture／E2Eの資源制限未設定を残条件として明示。改訂採用・正本反映・Gate／実行開始は未成立。
+
+**最新状態:** 上記文案は対話で初回技術・検証・管理条件を採用し、限定条件の正本改訂をOwner承認して[§9の対象へ反映済み](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#9-正本改訂のowner承認反映記録2026-10-06)。Gate設置／限定判定・正式実行開始、method対応・具体実行手順・source固定／preflightは残る。Docker対象拡大は環境実行承認時に反映する。
+
+**残判断の入口:** [S1 Reference基盤・初回実行資料](phase4-s1-reference-foundation-execution-review-20261006.md)。6 class／55件のmethod対応、classごとのMaven実行とDB停止確認、設定・接続配分・cleanup・F-1〜F-5を具体化。実行資料採用／Gate初回限定判定／source固定・preflight条件付き正式開始を審査する。
+
+**後続承認:** 初回実行資料§6の手順採用と§7のGate P4-F設置・初回限定APPROVE LIMITED STARTをOwner承認済み。正式作成検証開始だけを残る判断とし、文書source固定／preflightは未実施。後段・Phase 4全体・remoteを開始しない。
+
+**正式開始の最終承認:** [初回実行資料§8](phase4-s1-reference-foundation-execution-review-20261006.md#8-source固定preflight条件付き正式開始承認2026-10-06)で文書commit・clean source固定後のpreflightと、成立時の採用済み初回作成・検証をOwner承認済み。AGENTSのDocker対象追加も反映済み。次は文書commit・source固定→preflight。未成立条件や対象外の変更は停止・差分提示する。
+
 **接続条件の具体化案（2026-10-05）:** [S1責務・認可／失効・Audit・mode／DB権限案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)。承認済み方針をもとに文書案を作成。観察と確認終了、通知読取とSession／Auditの必要更新、権限失効窓・不明保全を分けて整理。具体案はreview待ち、追加検証・正式実装は未開始。
 
 **S1の現在の再開入口（2026-10-05）:** [初回局所検証後の後続タスク](phase4-s1-follow-up-tasks-after-local-verification-20261005.md)。commit `5252124`にpreflight / 初回L1〜4のLOCAL PASS（11 / 9 / 8 / 12 tests）と方式票への結果反映を記録済み。Tier・認可・Audit・正式Reference接続の4項目の候補継続・残条件具体化はOwner承認済み（[方式票§8.3](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#83-owner方針レビュー承認記録2026-10-05)）。次は接続条件の具体化、その後に追加検証契約へ進みます。正式実装・Tier確定・DoD / Gateは後続判断です。初回の経緯は[開始引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)を参照してください。以下の一覧は検討順の履歴を含みます。

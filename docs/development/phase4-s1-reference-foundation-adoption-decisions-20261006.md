@@ -4,6 +4,10 @@
 **baseline:** `feature/phase4-s1-reference-foundation`／`f5e2672`＋未commitの検討・正式開始票・関連導線。今回もdocs／read-only source確認まで。
 **対応:** [正式開始票§6・7](phase4-s1-reference-foundation-formal-start-review-20261006.md#6-開始経路blocking-review残条件)、[安全側の接続検討](phase4-s1-reference-safe-integration-design-draft-20261006.md)、[J1／J8正本](phase4-initial-scope-gate-and-open-decisions-draft-20261005.md)。番号D1〜D6は本表の判断IDであり、新Gateではない。
 
+**後続の具体差分（2026-10-06）:** 本表を含む文書はOwnerのcommit `f9ea06a`で固定済み。作成時のbaselineは履歴として保持する。[正本改訂差分・残条件の審査案](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md)をD1／D2の次の提出物とする。前置review区分変更・追加技術案・検証上限の採用は本表の承認とは別判断。
+
+**後続の対話採用・正本反映:** [対話確認§6・改訂承認記録§9](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md)で初回の技術・検証・管理条件と、限定条件での§2正本改訂をOwner承認済み。計画・AGENTS・正本Skillへ反映した。下記のD1〜D6採用時点の未達は履歴として維持し、Gate設置／限定判定・正式実行開始は引き続き未成立。
+
 ## 1. 採用判断表
 
 「後段へ残す」は、条件・閉じる時点・未成立時の拒否を採用する判断。初回で未接続の運用Adapterを実装済み／PASSと認定するものではない。肯定側integration testに使う有限scope・Clock・対象／運用証拠はtest所有として識別する。

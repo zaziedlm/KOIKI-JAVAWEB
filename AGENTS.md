@@ -22,6 +22,22 @@ post-merge closeoutでFramework採用実案件の始動とPhase 4作業の一部
 Phase 3を再オープンせず、Pre-Phase 4 Adoption Readiness（P4-AR）をtransition Gateとして追加した。
 P4-AR0とAR-1〜AR-7は`COMPLETE / OWNER APPROVED`である。承認記録をRepositoryへ反映してから、同期済みclean `main`で
 P4-AR1以降のFramework検証を開始する。Phase 4開始は未承認である。
+Phase 4全体開始は未承認のまま維持する。Gate P4-Fの設置・限定開始と必要正本改訂が
+Architecture Ownerにより明示承認された場合だけ、承認記録のsource、Ownership、対象、
+検証上限と停止条件に従ってS1初回Reference基盤を作成・検証できる。初回はnotificationの
+許可・append-only消費の保存／認可／Auditと条件付き登録、Reference-owned追加migrationに限定する。
+通常起動では無効とし、既存identity／master／expenseとSecurityを保護する。
+Web／CLI受付、sender、listener、復旧runner、publication schema、Modulith runtime、
+Framework API／Rules／依存変更は含めない。後段は必要reviewと個別開始判断を経る。
+この限定条件の正本改訂は2026-10-06にOwner承認済みである。改訂承認はGate設置／限定判定・
+実行開始の承認ではない。[承認記録](docs/development/phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#9-正本改訂のowner承認反映記録2026-10-06)と
+[正式開始票](docs/development/phase4-s1-reference-foundation-formal-start-review-20261006.md)に従う。
+後続判断でGate P4-Fを設置し、ST-C初回Reference保存・認可・Audit基盤だけを
+`APPROVE LIMITED START`とした（2026-10-06、[Gate判定記録](docs/development/phase4-s1-reference-foundation-execution-review-20261006.md#7-gate-p4-f設置初回限定判定2026-10-06)）。
+正式作成・検証開始は別判断であり、文書source固定・承認済みpreflight成立前に開始しない。
+後続の[正式開始承認記録](docs/development/phase4-s1-reference-foundation-execution-review-20261006.md#8-source固定preflight条件付き正式開始承認2026-10-06)で、
+文書commit・clean source固定後のpreflightと、成立時の採用済み初回code／test／V4／検証専用設定の作成・
+Maven／隔離Docker検証をOwner承認済み（2026-10-06）。条件未成立で作成・検証を先行しない。
 P4-ARではFramework本体だけでなく、Customer-like Consumer、package済みReference Application、検証Toolingおよび
 Developer Journeyを受渡し候補として棚卸しし、業務アプリ開発チームの受入側視点でbuild / run / operation / diagnosisを実証する。
 正式な受渡し対象はP4-AR Evidenceを入力とする見直し後Phase 4準備で判断し、Project TemplateはPhase 5境界を維持する。
@@ -42,6 +58,7 @@ Phase 3では、承認済みbaselineを維持し、次を優先する。
 11. APIと自動testを回帰の主軸とし、操作面が成立するP3-B2以降は実browserでの目視・手動操作とlog / Audit / DB突合を組み合わせる。
 12. 個別のPublic API、property、migration SQL、Starter、外部library、cacheまたはREST契約は、実行計画が指定するblocking reviewとEvidenceより前に固定・追加しない。
 13. Project Template、SPA、Spring Modulith Level 2、MyBatis accounting、Oracle、AWS固有Adapter、Authorization Server、SAML、Redis、WebFluxおよびPhase 5成果物を先行しない。
+    Gate P4-Fで個別承認された初回Reference基盤には上記限定条件を適用する。Spring Modulith Level 2そのもの、通知・復旧の接続、MyBatis等の対象外開始制限は維持する。
 14. Security acceptance fixture、test user、test route、test key、failure switch、browser harnessを正式artifact、`koiki-testing`、Project TemplateまたはFramework Public APIへ自動昇格させない。
 15. 実装で確認できる事項は文書上の推測より実装検証を優先し、結果を`docs/architecture/validation/`へ記録する。
 16. Ownerの個別承認なしにremote push / PR / merge、ruleset変更、workflow dispatchまたはsnapshot publishを行わない。
@@ -65,6 +82,11 @@ Testcontainers実行について、Docker named pipeへ接続できる権限付�
 この許可には、read-onlyの`docker version` / `docker info` / `docker ps` / `docker images`と、
 承認済みTooling fixtureのMaven test / verifyが使う使い捨てcontainerの起動・停止を含む。
 現時点の対象はP4-PL2の`build-support/phase4-level2-verification/`である。
+2026-10-06の[S1初回正式開始承認](docs/development/phase4-s1-reference-foundation-execution-review-20261006.md#8-source固定preflight条件付き正式開始承認2026-10-06)により、
+文書commit・clean source固定後のpreflightと、成立後の`koiki-reference-app`および
+`build-support/reference-e2e-verification/`の承認済み隔離DB検証・既存回帰に必要な
+使い捨てcontainerの起動・停止も対象に含む。実行環境の権限付き承認手順と、採用済み資源・
+cleanup・停止条件に従う。既存P4-PL2許可の流用ではなく、この個別承認に基づく対象追加である。
 
 通常のsandboxで`npipe:////./pipe/docker_engine`への接続を拒否された場合は、
 それだけでRancher DesktopまたはDocker Engineの障害と判定しない。

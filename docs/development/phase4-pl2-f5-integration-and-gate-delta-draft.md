@@ -37,6 +37,11 @@ S0で4-1〜4-5・4-12が未達となる場合や、S1の手動復旧で4-2の意
 
 ## 2. Gate P4-Fの改訂差分案
 
+**2026-10-06の具体化・反映:** 以下は9月27日時点の文案履歴。S1初回をReference保存・認可・Audit基盤に
+限定する具体差分は[正本改訂§2・Owner承認§9](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md)に基づき
+P4-AR計画／AGENTS／見直し草案／P4-F資料へ反映した。全件台帳の対象外・当初DoD・Customer入力待ちは維持する。
+Gate設置／限定判定・実行開始は未成立であり、下記履歴の「この文書の作成では改訂しない」と今回の別承認による反映を分ける。
+
 以下はOwnerがS1 / S2を選び、F-4のFramework / Reference / Tooling限定作業の
 実施Owner・概算範囲または上限・安全条件が揃った場合に
 reviewする**文案**である。現行の[P4-AR計画](KOIKI-JavaWeb-FW_Pre-Phase4_Adoption_Readiness計画_v0.1.md)、

@@ -35,6 +35,17 @@ Phase 3 Reference Vertical SliceはGate Cで`COMPLETE / ACCEPTED`となり、PR 
   対応するblocking reviewより前に行わない。
 - Phase 4開始、remote push / PR / merge、workflow dispatch、ruleset変更およびsnapshot publishは個別承認を要する。
 
+**S1初回の限定経路（正本改訂Owner承認：2026-10-06）:** Architecture OwnerがGate P4-Fの設置・
+対象範囲の限定開始を明示承認し、必要正本反映・個別blocking review・検証上限が成立した場合は、
+承認対象commit pointに限りP4-AR6／AR-D10／Gate P4-ARより前に作業を開始できる。
+S1初回はReference-owned notificationの許可・消費保存、認可、Auditとその検証に限定し、
+Level 2 runtime・通知・復旧の運用経路は開始しない。P4-AR6／AR-D10／Gate P4-AR、
+Phase 4全体開始、正式受渡しとremoteは別判断のまま維持する。
+[承認・反映記録](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#9-正本改訂のowner承認反映記録2026-10-06)と
+[正式開始票](phase4-s1-reference-foundation-formal-start-review-20261006.md)に従う。
+今回の改訂はGate設置／限定判定・実行開始を認定しない。P4-ARのclean-main検証経路は維持し、
+限定作業のsource・branchは個別開始記録で指定する。
+
 ## 3. Ownership
 
 | 対象 | Primary ownership | Boundary |
@@ -63,6 +74,7 @@ Phase 3 Reference Vertical SliceはGate Cで`COMPLETE / ACCEPTED`となり、PR 
 ### 4.2 Excluded until separately approved
 
 - Phase 4の`notification`、`accounting`、SPA、SAML、Batch、External API、File / Object Storage等のproduction実装
+  （Gate P4-Fによる別承認は§2の対象範囲だけに適用する。対象外の除外は維持する。）
 - `PersistenceModel.SEPARATED`、Rule 25〜27 / 30〜37、MyBatis fixtureまたはdependencyの追加
 - KOIKI-hosted Authorization Server、Oracle、AWS固有AdapterおよびCustomer固有cloud資材
 - Project Template、正式release、一般公開repository、snapshot publishおよびCustomer repositoryへの書込み
@@ -81,6 +93,7 @@ Phase 3 Reference Vertical SliceはGate Cで`COMPLETE / ACCEPTED`となり、PR 
 | P4-AR6 | Actual-project handoff contract | Framework / Customer / joint Evidence責任分担表、artifact受渡し、issue routing | Customer固有実装をFramework成果物へ自動昇格しない |
 | P4-AR7 | Finding remediation | defect / DX gap / Customer requirement / Phase 4 feature分類と承認済み修正 | Public API等のblocking reviewを省略しない |
 | Gate P4-AR | Adoption Readiness acceptance | accepted baseline、blocking 0、Phase 4再計画への入力 | Phase 4開始は別承認 |
+| Gate P4-F | S1初回Reference保存基盤の限定開始審査 | 2026-10-06設置・初回のみAPPROVE LIMITED START。F-1〜F-5、Owner・検証上限・停止点は初回実行資料へ追跡 | 後段は個別開始判断。正式作成検証開始とsource固定／preflightは残る |
 
 ## 6. Planned verification matrix
 
@@ -347,6 +360,7 @@ Framework acceptanceへ昇格させない。
 | AR-CP3 | Developer handoff rehearsal、environment gapと必要な補正 | code / docs / ToolingをOwnership別に分離 |
 | AR-CP4 | 実案件handoff contract / Phase 4責任分担 | Customer機密情報を含めない |
 | Gate P4-AR | final acceptance | Phase 4開始、publish、workflow変更は別承認 |
+| Gate P4-F／CP-F0〜CP-F5（条件付き） | 初回基盤の部分Evidenceと全体Evidenceを分離。未完了CP／DoDを完了扱いにしない | remote・配布は別承認。後段条件と個別開始を維持 |
 
 実行Evidenceは`docs/architecture/validation/`へ置く。長大なprocess log、secret、token、Cookie、password、key、
 Customer source、個人情報またはSQL値をEvidenceへ貼付しない。
@@ -376,6 +390,11 @@ Customer source、個人情報またはSQL値をEvidenceへ貼付しない。
 9. **WAITING FOR ACTUAL-TEAM INPUT:** P4-AR6のhandoff契約、R2 Tooling、Framework rehearsalおよび実チーム受入worksheetは`OWNER APPROVED`である。実チーム受入セッション、AR-D10の責任分担判断および最終handoff承認は、実案件情報を入手してから実施する。
 10. **PENDING:** Gate P4-ARでAdoption Readinessを判定する。
 11. **PENDING:** accepted inputを用いてPhase 4実行計画を見直し、Phase 4開始可否を別途判断する。
+
+**条件付き分岐:** 実チーム入力待ちの間も、F-1〜F-5が承認対象範囲について審査可能になれば
+Gate P4-Fを別途判定できる。初回基盤のみの限定判定では、後段の計画・未達・追加reviewと
+再審査点を明記し、S1全体の実行予算・開始を認定しない。
+既存P4-AR6→AR-D10→Gate P4-AR経路と§10のDoDは維持する。
 
 ## 14. Architecture Owner review points
 

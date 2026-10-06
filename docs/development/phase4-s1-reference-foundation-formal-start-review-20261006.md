@@ -1,10 +1,12 @@
 # S1正式開始票：Reference保存・認可・Audit基盤（2026-10-06）
 
-**状態:** DRAFT / OWNER REVIEW。D1〜D6の経路方針・scope／TTL区分・Audit／DDL設計は採用済み。必要Gate／正本整合・残るblocking review・上限・実行開始は未承認、実装未開始。
+**状態:** 初回条件・実行資料・限定正本改訂採用、Gate P4-F初回限定APPROVE LIMITED START、文書commit・clean source固定／preflight成立を条件とする正式作成検証開始OWNER APPROVED（2026-10-06）。source固定／preflightは未実施。実装未開始。
 **baseline:** branch `feature/phase4-s1-reference-foundation`／HEAD `f5e2672`。A／B／C受入を含むcommitから分岐し、Reference保護の検討文書と関連導線4ファイルを未commitで引継ぎ。本票を含む文書差分を固定するcommitを、実装開始前のsource baselineとして別途記録する。
 **正本入力:** [安全側の接続検討案](phase4-s1-reference-safe-integration-design-draft-20261006.md)、[CH-01〜08／ST-C](phase4-s1-minimum-change-and-start-scope-draft-20261005.md)、[J1〜8・開始経路](phase4-initial-scope-gate-and-open-decisions-draft-20261005.md)、[P4-F提案](KOIKI-JavaWeb-FW_Phase4_P4-F限定開始Gate提案_v0.1.md)、[C受入§6](../architecture/validation/phase4-s1-additional-c-web-mode-20261006.md#6-owner受入承認2026-10-06)。
 
 **具体採用の判断先:** [初回採用判断表§8](phase4-s1-reference-foundation-adoption-decisions-20261006.md#8-owner採用判断2026-10-06)。D1〜D6の推奨案と初回／後段条件区分をOwner採用済み。scope／TTLは初回契約と運用供給元／値の採用時点を分ける。Gate／正本整合と実行開始は別判断。
+
+**文書baseline固定・後続審査（2026-10-06）:** Ownerのcommit `f9ea06a`で本票・採用判断表・安全接続案を固定済み。上記`f5e2672`＋未commitの記述は作成時の履歴。[正本改訂差分・残条件の審査案](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md)にJ1／J8の具体文案、前置／後続review区分、Tier／登録／grant、J7の既存harness資源不整合を整理した。新文案の採用・正本反映・Gate／実行開始は未成立。
 
 ## 1. 判断対象・初回の出口
 
@@ -31,6 +33,8 @@ Ownerの「既存Referenceの機能・品質を阻害せず、安全側へ倒し
 
 Permitを可否規則の中心とし、Consumptionは一度性の証拠記録とする。両方を一つの巨大Entityへまとめず、同じApplication transactionとDB制約で整合させる。`@DynamicUpdate`／column mapping／lockはAの知見を踏まえて新しい正式mappingで検証する。fixture classや専用ORM XMLをproductionへコピーしない。
 
+**対話採用済みの期限精度:** 発行時刻・期限をDBのmicrosecond精度へ切り捨て、調整後の期限が発行時刻以下なら発行を拒否する。保存・再読取後も期限ちょうどで消費を拒否し、精度調整による期限延長を許容しない。mapping・実DBの境界検証で確認する。正式TTL値・最大TTLの後段判断は維持する。
+
 **認可・Audit案:** 能力を`NOTIFICATION:PERMIT:ISSUE`／`READ`／`EXECUTE`／`CLOSE`へ分ける採用候補。自moduleのscope契約でenvironmentとpublication範囲を先に拘束し、Identityへ業務属性を追加しない。発行・確認終了のactorは将来の実認証主体、消費actorは真正な許可発行者USER、workerは別相関。初回testでPublic principalを作る経路はApplication境界の検証であり、本人認証成立の追加証拠とはしない。
 
 Businessは発行／消費／確認終了＋同一transaction、resourceはpermit ID、actionは能力名とは別の操作分類とする。具体コード／actor／resource／失敗時の対応は[採用判断表§4](phase4-s1-reference-foundation-adoption-decisions-20261006.md#4-d5初回audit対応表)を採用候補とする。scope／TTLは初回の照合・期限規則・未接続拒否を必須とし、運用供給元／割当・正式Duration／時計差は運用受付前に閉じる案。後段化自体もOwner判断事項であり、testの固定Clock／有限値から正式値を推定しない。
@@ -54,7 +58,11 @@ Businessは発行／消費／確認終了＋同一transaction、resourceはpermi
 
 ## 4. 必須検証の作成計画
 
-予定6 class／55 invocationを以下で固定する案。実装前にmethod一覧へ展開し、結果XMLと照合する。未作成・skip・必要Adapter未接続をPASSにしない。test代替はscope／対象／運用証拠の有限入力に限定し、Query／Recorder／DB／transactionをmockにしない。
+**method対応・後続実行資料:** [残判断・初回実行資料§2](phase4-s1-reference-foundation-execution-review-20261006.md#2-新規6-class55-invocationのmethod対応案)に6 class／55件をmethod対応へ展開した。§3でclassごとのMaven実行・DB停止確認・証拠保全と設定名／用途別接続配分を提示する。資料採用・Gate・作成実行開始は別判断。
+
+**後続採用:** [初回実行資料§6](phase4-s1-reference-foundation-execution-review-20261006.md#6-初回実行資料のowner採用2026-10-06)で提示したmethod対応・設定／接続配分・実行／cleanup手順をOwner採用済み。Gate設置／限定判定と正式作成検証開始は残る。
+
+予定6 class／55 invocationを初回の作成・検証計画としてOwner採用済み（対話確認）。実装前にmethod一覧へ展開し、結果XMLと照合する。必要な追加・変更が判明したら差分を提示する。未作成・skip・必要Adapter未接続をPASSにしない。test代替はscope／対象／運用証拠の有限入力に限定し、Query／Recorder／DB／transactionをmockにしない。
 
 | 新規test（notification配下） | 件数案 | 必須枝 |
 |---|---:|---|
@@ -64,7 +72,7 @@ Businessは発行／消費／確認終了＋同一transaction、resourceはpermi
 | `NotificationFoundationPersistenceTest` | 12 | 不変列UPDATE拒否3、消費UPDATE／DELETE／TRUNCATE拒否3、permit／operation一意競合2、消費競合／閉鎖競合2、commit／rollback可視性2 |
 | `NotificationFoundationRegistrationTest` | 7 | 未設定／false時の登録不在2、設定不正1、有効時のscope／対象証拠未接続による拒否2、有効時の必要Entity／Adapter登録1、sender／runner／registry／scheduler不在1 |
 | `NotificationFoundationMigrationTest` | 5 | fresh1、upgradeと既存row保持1、適用失敗保全1、追加無効＋旧schema1、追加無効＋適用済みschema1 |
-| **合計** | **55** | **件数採用とmethod対応確認後に実装** |
+| **合計** | **55** | **件数採用済み。method対応確認と正式開始条件成立後に実装** |
 
 実運用の停止／provider証拠は未成立のままなので、肯定側の有限test proofと、productionで未接続なら拒否する経路を別caseで検証する。UNKNOWN消費を削除しない、未閉鎖対象の次許可を禁止する規則は永続化・競合caseへ含める。生のJPA transactionではなくSpring管理transactionを使う。
 
@@ -86,13 +94,33 @@ $referenceBaselineTests='ReferenceArchitectureTest,ReferenceBusinessUrlSecurityT
 .\mvnw.cmd -o -f build-support/reference-e2e-verification/pom.xml "-DforkCount=1" "-DargLine=-Xmx768m" test
 ```
 
+上記は初期command案の履歴。採用済みclass単位終了・DB停止確認を実行する具体案は[後続実行資料§3](phase4-s1-reference-foundation-execution-review-20261006.md#3-検証設定接続配分実行cleanupの具体化)を優先し、既存25 classを一括指定せずclassごとに呼び出して停止確認後に次へ進む。まだ実行しない。
+
 回帰class一覧は[Reference test directory](../../koiki-reference-app/src/test/java/org/koikifw/reference/)から固定し、実行する正確な引数と期待件数をpreflight Evidenceへ記録する。25 classを任意の少数testへ縮めない。新規・既存・E2Eは逐次、途中の環境／compile障害を無条件rerunしない。offline未準備なら取得・installの必要差分で停止する。Chromium installは本票の承認候補へ含めない。
 
 資源上限案はMaven1／fork1／heap768 MiB、DB1＋Ryuk／DB1 GiB・CPU1／max_connections16、pool最大4、同時connection8以内。lock10秒・DB statement／transaction10秒・各新規DB class10分を候補とする。baseline／既存test／E2Eの既存timeout・pool条件も調査し、変更せず上限を満たせなければ検証方式へ戻す。E2EはDB1と追加application／issuer process・Chromium1を必要とし、通常のDB testと同時起動しない。
 
-available memory4 GiB／disk10 GiB以上を開始・終了で確認する案。raw1 GiB以内、原因未変更rerun1回まで。Reference全回帰＋E2Eの確認枠は合計60分を初回案とし、超過時は残量と実測を提示して再判断する。既存E2E processのheap等を未調査のまま制限成立とは認定しない。
+**source調査による補正:** E2Eのissuerはtest JVM内HttpServerであり、別issuer JVMではない。別processはReference JARとPlaywright／Chromium側。既存実DB testのcontext保持、DB資源未設定、別Reference JVMのheap未指定を[上限調査§7](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#7-検証上限のsource調査対話確認後2026-10-06)に記録した。逐次実行・上限調査・到達／不整合時停止の方針はOwner採用済み。数値・具体方式と必要な検証専用変更の採用は残る。
 
-技術量は初回基盤のみ24〜40標準時間の低確度案：モデル／契約4〜6、条件付き構成・保存／認可／Audit8〜14、migration／grant・実DB6〜10、既存回帰／package・Evidence6〜10。12時間時点で通常無効構成と登録／migration条件を確認し、40時間で未完なら残量を再判断する案。Owner review稼働・環境待ち・Gate整合は別枠で未算定。A／B／Cの短時間PASSや過去の見積を承認予算へ流用しない。
+**検証専用設定の後続案:** Ownerは明示選択時だけ資源制限を適用する設定の具体化を了承した。[具体案§8](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#8-検証専用設定の具体案)で既存test fixture／E2E／READMEの変更対象、fork寿命・子JVM・pool／DB制限とavailable memory8 GiBへの増額案を提示する。上記memory4 GiB案を承認済みとせず、新旧数値・具体方式は審査後に一本化する。code／POM変更・実行は未開始。
+
+**対象範囲の対話採用:** 既存Reference DB fixture・E2Eへ、明示選択時だけ制限を適用する設定を追加し、通常の検証設定を維持する対象範囲はOwner採用済み。具体設定名・数値・fork寿命とcode変更／環境実行開始は残る。
+
+**対話採用済みの資源条件:** 開始時available memory8 GiB／disk10 GiB以上、DB同時1／memory1 GiB／CPU1／max_connections16、Maven・test・E2E子Referenceの各heap768 MiB、既存回帰／E2Eのpool最大4。資源不足・制限下不成立なら停止して再判断する。従来available memory4 GiB案は8 GiBへ改訂する。heapを全processの総memory上限とは扱わず、実効設定と開始・終了時の利用状況を確認する。
+
+**対話採用済みの検証時間:** 新規DB testは各class10分、既存25 class＋E2Eはbaseline／実装後それぞれ合計60分。上限到達時は追加実行を止め、進行中処理を安全に終了・cleanupする。未実施分・原因・実測時間を示して再判断し、未実施をPASSにしない。
+
+**対話採用済みの記録量・再実行管理:** raw合計1 GiB以内、同じ原因・条件でのrerun最大1回。再実行前に原因と条件を確認して継続理由を記録する。上限到達時は必要証拠を保持して停止・再判断し、証拠を消して続行しない。
+
+**残る具体手順:** 採用済みのclass単位終了・minimum idle・新規接続総予算・DB待ち条件の具体設定／command・cleanup手順は残る。採用済みの条件だけで設定実装・実行開始や全process制限成立を認定しない。
+
+**対話採用済みの既存回帰方式:** 並列化せず、classごとにtest JVM・DBを終了し、DB停止確認後に次へ進む。DB残存時は次を起動せず停止する。baseline／実装後を同条件で比較する。fork1／reuseForks=falseは具体command候補であり、それだけでDB停止確認が成立したとは扱わず、実行・cleanup手順を具体化する。
+
+**対話採用済みの新規DB操作上限:** 新規DB testのロック待ち・SQL実行・transactionは各10秒。超過した操作は失敗として扱い、rollback・記録保全を確認する。既存回帰／E2Eの待ち時間は維持し、新規testへの具体適用方式・実効上限は実装／検証で確認する。
+
+**対話採用済みの接続数管理:** 既存回帰／E2Eはpool最大4／minimum idle1。新規testは発行・消費・観察の用途別poolと管理接続の同時合計8以内。用途別配分・実効値を具体構成と検証で確認する。
+
+**対話採用済みの作業管理条件:** 初回基盤のみ24〜40標準時間の低確度概算を採用。内訳はモデル／契約4〜6、条件付き構成・保存／認可／Audit8〜14、migration／grant・実DB6〜10、既存回帰／package・Evidence6〜10。12時間相当で通常無効構成と登録／migration成立状況を確認し、40時間相当で未完なら停止して残作業・見積を再提示する。標準作業量であり、経過時間・AI実行時間や完了期限を約束する値ではない。Owner review稼働・環境待ち・Gate整合は別枠で未算定。A／B／Cの短時間PASSや過去の見積を承認予算へ流用しない。
 
 Evidence先は`docs/architecture/validation/phase4-s1-reference-foundation-<実行日>.md`、rawはReference／E2Eのtarget配下へrunごとに保存する案。source・artifact・schema hash、実効POM、baseline／変更後XML、55件対応、Bean／metamodel／route／task、DB／Audit突合、資源・cleanup・警告・未達を記録する。test user／password／Cookie／key／Session bytesを出力しない。
 
@@ -100,10 +128,10 @@ Evidence先は`docs/architecture/validation/phase4-s1-reference-foundation-<実�
 
 | 判断 | 初回で必要な採用・記録 | 現在 |
 |---|---|---|
-| J1／J8、OR・CP-F0／P4-F | 現行Gateと限定開始経路の正式判断、正本差分、初回保存基盤の開始位置。P4-F提案の設置・通過と本票開始判断を混同しない | D1／D2の経路・準備方針は採用済み。必要な正本反映・Gate判定は**未成立** |
-| CH-01／Tier | §2のnotification／RICH／JPA SHARED、2記録の責務・契約 | 採用判断待ち |
-| CH-02／DDL・権限 | V4／location・既存履歴整合、field／制約／索引、用途別role／必要grantのOwnership・fresh／upgrade | D6の設計・grant方針採用済み。具体grant実行表・正式開始判断は残る |
-| CH-03／Security・登録 | §3の明示登録・既定無効、認可／Audit分類、scope供給・TTL未決の拒否条件、既存Security保護 | D3〜D5採用済み。具体登録方式・正式開始票全体の採用は残る |
+| J1／J8、OR・CP-F0／P4-F | 現行Gateと限定開始経路の正式判断、正本差分、初回保存基盤の開始位置。P4-F提案の設置・通過と本票開始判断を混同しない | D1／D2と限定正本改訂をOwner承認、対象正本へ反映済み（改訂記録§9）。Gate設置／限定判定・正式実行開始は**未成立** |
+| CH-01／Tier | §2のnotification／RICH／JPA SHARED、2記録の責務・契約 | 配置・Domain／Application／Adapter責務・RICH／JPA SHAREDをOwner採用済み（[対話確認§6](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#6-対話による確認記録2026-10-06)）。具体field／signature・mapping適合は実装前照合／検証で確認 |
+| CH-02／DDL・権限 | V4／location・既存履歴整合、field／制約／索引、用途別role／必要grantのOwnership・fresh／upgrade | D6と対話による用途別最小DB権限・DDL管理分離・観察の拒否Audit記録を採用し、提示操作・必要Identity参照／Audit INSERTの内容で具体grant表を確定。V4別location／既存履歴は成立確認付き第一案を採用。履歴validation・通常起動・実効権限は未実証、正式開始判断は残る |
+| CH-03／Security・登録 | §3の明示登録・既定無効、認可／Audit分類、scope供給・TTL未決の拒否条件、既存Security保護 | D3〜D5と対話による設定別動作・専用Configurationでの処理／DB Adapter／JPA Entity明示登録を採用済み。既存登録を維持し、無効時の追加Bean／Entity不在を検証。具体実装の適合・正式開始票全体の採用は残る |
 | J7／実行上限 | §4・5の55件・25 class／E2E、reactor／資源／作業量と調査後の未適合時停止 | 本票の新しい提案。既存PL2 Docker許可をReference全検証へ自動拡張しない |
 | CH-04／05／06／07 | registry・復旧runner・expense event・sender／観測・Level／Rules・依存追加 | **初回対象外**。後段の独立reviewと開始条件を維持 |
 
@@ -111,15 +139,19 @@ Evidence先は`docs/architecture/validation/phase4-s1-reference-foundation-<実�
 
 ## 7. Owner判定欄・停止点
 
+**最新Gate判断:** [初回実行資料§7](phase4-s1-reference-foundation-execution-review-20261006.md#7-gate-p4-f設置初回限定判定2026-10-06)でGate P4-F設置・初回限定APPROVE LIMITED STARTをOwner承認済み。下記の未成立記載はそれぞれ作成時点の履歴として区別し、現在残る判断はsource固定・preflight条件付き正式作成検証開始。
+
 | 判定単位 | 求める判断 | 記録 |
 |---|---|---|
-| 技術範囲 | §1〜3の初回対象・責務／登録方式、残るscope／TTL／Audit／DDL採用事項の閉じ方 | D1〜D6の対象・条件区分・Audit／DDL設計採用済み。Tier／具体登録方式等は未判断 |
-| 検証・上限 | §4・5の作成／実行／回帰／Evidence、資源・工数・停止条件 | 未判断 |
-| 正式開始経路 | §6のJ1／J8・現行Gate／正本整合、必要な個別blocking review成立 | D1／D2の方針採用済み。正本改訂・Gate判定・必要review成立は未判断 |
+| 技術範囲 | §1〜3の初回対象・責務／登録方式、残るscope／TTL／Audit／DDL採用事項の閉じ方 | D1〜D6と対話による初回範囲・順序、通常無効・専用検証・新旧DB確認、配置・責務・RICH／JPA SHARED、TTL精度調整・専用Configuration明示登録、提示操作範囲の具体grant表を確認／採用済み。実装適合・実効権限の照合／検証等は残る |
+| 検証・上限 | §4・5の作成／実行／回帰／Evidence、資源・工数・停止条件 | 対話で受入三本柱と未実施／失敗時不受入、提示した資源数値・検証時間上限・初回24〜40標準時間の管理条件、新規6 class／55件計画を採用。method対応確認・具体command／残る実行方式・環境実行開始は残る |
+| 正式開始経路 | §6のJ1／J8・現行Gate／正本整合、必要な個別blocking review成立 | D1／D2と対話の初回前置／後段接続前区分を採用済み。§2正本改訂はOwner承認・反映済み（[改訂記録§9](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#9-正本改訂のowner承認反映記録2026-10-06)）。Gate設置／限定判定・作成実行開始と必要な具体資料は残る |
 | 実行開始 | 上記の必要判断と文書baseline固定、preflight成立後に初回を開始すること | 未判断 |
 
-上記の技術範囲・正式開始経路は[採用判断表D1〜D6・§6／7](phase4-s1-reference-foundation-adoption-decisions-20261006.md)へ追跡する。初回と後段の区分を採用しても、J1／J8・Gate整合、Tier／登録方式、検証上限の採用と実行開始判断は省略しない。
+**最終開始判断:** [初回実行資料§8](phase4-s1-reference-foundation-execution-review-20261006.md#8-source固定preflight条件付き正式開始承認2026-10-06)で、文書commit・clean source固定後のpreflightと、成立時の採用済み初回code／test／V4／検証専用設定の作成・Maven／隔離Docker検証をOwner承認済み。上記判定欄の未判断は各審査時点の履歴として保持する。残る開始前提は文書source固定と実際のpreflight成立であり、承認の再取得ではない。
+
+上記の技術範囲・正式開始経路は[採用判断表D1〜D6・§6／7](phase4-s1-reference-foundation-adoption-decisions-20261006.md)と[対話確認§6](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#6-対話による確認記録2026-10-06)へ追跡する。Tier採用後も、J1／J8・Gate整合、具体登録方式、検証上限の採用と実行開始判断は省略しない。
 
 既存回帰失敗、無効時の追加登録／DDL／通信、追加schema未適用で通常起動不能、意図しない既存row更新、権限拡大・dependency／Framework変更、UNKNOWN保全不能、資源／時間上限に達した場合は停止して原因・必要差分・残量を提示する。拒否枝の削除、Rule除外、既存認可の緩和、証拠欠落の安全扱いでPASSにしない。
 
-今回は文書化とD1〜D6採用記録の反映まで。次の出口は採用済み方針によるJ1／J8の必要提出物・正本改訂差分の準備と、本票の残る技術・検証上限・実行開始判断。条件が揃うまで正式code／POM／DDL作成・Maven／Docker実行を開始しない。remote push／PR／merge／CI変更／publishは別操作とする。
+現在はD1〜D6と対話の初回条件採用、限定正本改訂の承認・反映まで完了。次の出口はmethod対応・具体実行／cleanup手順・F-1〜F-5の提出状態を整え、Gate設置／初回限定判定・正式作成実行開始を判断できる資料にすること。条件が揃うまで正式code／POM／DDL作成・Maven／Docker実行を開始しない。remote push／PR／merge／CI変更／publishは別操作とする。
