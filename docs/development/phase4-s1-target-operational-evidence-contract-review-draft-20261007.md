@@ -141,3 +141,9 @@ Ownerは本書を確認し、「次へ進めましょう」と指示した。こ
 Ownerは[限定開始票§9](phase4-s1-operational-evidence-harness-limited-start-review-20261007.md#9-owner承認条件付き限定開始2026-10-08)で、段階Aのtest所有ハーネスによる方式・限定範囲と、具体test集合・検証上限・開始条件を承認した。§10等の未判断記載は作成時の履歴とし、今回採用されたtest内の契約と実運用供給元の未達を区別する。段階B、実停止方式／provider／証拠保管の運用採用、歴史対象閉鎖・次permit抑止・原子的保護の解決は未成立。実装・環境実行は同票の文書commit・clean source固定・preflight条件に従う。
 
 **D11訂正の承認（2026-10-08）：** preflightで確認した同一environment・publicationの未閉鎖許可一意制約を§6へ反映し、[開始票§11](phase4-s1-operational-evidence-harness-limited-start-review-20261007.md#11-d11訂正のowner承認2026-10-08)でOwner承認済み。既存の次許可拒否保証を未達と扱わず、歴史対象閉鎖・別publication間の同じ論理通知の横断抑止・照合後競合を区別する。段階Aの対象・48件・上限を維持し、訂正文書commit後のclean source再固定・source／環境差分確認を経て進める。
+
+## 13. 段階A結果の承認・commit固定と段階B追加整理（2026-10-08）
+
+段階Aのtest所有ハーネスと検証結果は[検証記録§10](../architecture/validation/phase4-s1-operational-evidence-harness-20261007.md#10-実装検証結果のowner承認2026-10-08)で`COMPLETE / OWNER APPROVED`。Owner操作により`08f47402e470d72dc8538452f5766331bb4dc323`へ7ファイルをcommitし、clean sourceを確認した。
+
+Ownerの「段階B（実運用接続）の追加契約と限定範囲の整理 へ進めましょう」を受け、[段階Bの追加契約・限定範囲案](phase4-s1-stage-b-operational-integration-contract-review-draft-20261008.md)を作成した。供給元確認・限定読取・肯定操作接続を分け、D11／D12の未達と実供給元のOPEN項目を開始条件へ対応付ける。今回の継続指示は文書整理の範囲で、段階Bの方式採用・Adapter作成・外部通信・実停止・送信の開始承認ではない。

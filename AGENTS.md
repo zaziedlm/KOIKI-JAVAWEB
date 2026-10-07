@@ -56,6 +56,17 @@ test所有の可変現在対象・停止制御model・provider観測stub・証�
 preflightで判明したD11の前提誤りは同開始票§10へ記録し、§11でOwner訂正承認済み（2026-10-08）。
 訂正・承認文書commit後のclean source再固定と成立済みpreflightからのsource／環境差分確認を経て、
 訂正後D11を含む承認済みtest作成・48件検証へ進む。同じ範囲の開始承認を再要求しない。
+2026-10-08の[B-1読取接続の条件付き限定開始承認](docs/development/phase4-s1-stage-b1-read-connection-limited-start-review-20261008.md#11-owner承認条件付き限定開始2026-10-08)により、
+承認文書commit・clean source固定後のpreflightと、成立時のTooling test所有の読取契約／collector／process台帳／
+独立schema証拠保管／SELECT専用JDBC reader、専用test SQL・新規6 class／52件・Evidenceを作成・検証できる。
+対象は`build-support/phase4-level2-verification/`。本票の使い捨てDB／専用schema・role、有限fixture準備、当該子JVMの
+起動・イベント発行・stub受理・当該終了待機・観測／証拠保存・cleanupを限定副作用として含む。
+Ownerが限定環境管理責任を兼務し、Agentへ開始条件成立後の本票内操作を委任する。
+選択PL2回帰6件・Reference関連143件・既存99件＋E2E、資源・時間・作業量・raw／再実行上限は同票に従う。
+Reference／Tooling main・既存test／migration・POM／依存・Root Reactor・Security・通常構成・CIは変更しない。
+B-2のReference Adapter／肯定Port登録・許可操作、外部送信／復旧runner／Reference Level 2・Phase 4全体・
+DoD／正式受渡し・remoteへ拡張せず、D11／D12と網羅性懸念・未達を保持する。副Agentは使用しない。
+local commitはOwner操作または操作前のOwner確認とし、実装結果の受入は別判断とする。
 P4-ARではFramework本体だけでなく、Customer-like Consumer、package済みReference Application、検証Toolingおよび
 Developer Journeyを受渡し候補として棚卸しし、業務アプリ開発チームの受入側視点でbuild / run / operation / diagnosisを実証する。
 正式な受渡し対象はP4-AR Evidenceを入力とする見直し後Phase 4準備で判断し、Project TemplateはPhase 5境界を維持する。
@@ -109,6 +120,9 @@ cleanup・停止条件に従う。既存P4-PL2許可の流用ではなく、こ�
 同票の対象・資源・cleanup・停止条件と実行環境の権限付き承認手順に従う。
 2026-10-08の対象・運用証拠ハーネス限定開始票§9で承認された条件成立後のMaven／隔離Docker検証も、
 同票の対象・資源・cleanup・停止条件と実行環境の権限付き承認手順に従う。
+2026-10-08のB-1読取接続限定開始票§11で承認された条件成立後のMaven／隔離Docker・当該子JVM検証も、
+同票の専用schema／role・fixture準備副作用、検証集合・上限・cleanup・停止条件に限定して対象に含む。
+文書commit・clean source固定前に実行せず、環境の権限付き承認要求を迂回しない。
 
 通常のsandboxで`npipe:////./pipe/docker_engine`への接続を拒否された場合は、
 それだけでRancher DesktopまたはDocker Engineの障害と判定しない。
