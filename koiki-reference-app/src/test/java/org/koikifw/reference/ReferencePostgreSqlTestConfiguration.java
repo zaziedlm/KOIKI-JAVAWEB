@@ -60,7 +60,7 @@ public class ReferencePostgreSqlTestConfiguration {
                 }
             }
         }.withCommand("postgres", "-c", "max_connections=16")
-                .withCreateContainerCmdModifier(command -> command.getHostConfig()
+                .withCreateContainerCmdModifier(command -> java.util.Objects.requireNonNull(command.getHostConfig())
                         .withMemory(1073741824L).withNanoCPUs(1000000000L));
     }
 

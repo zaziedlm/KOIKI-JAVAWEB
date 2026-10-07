@@ -150,3 +150,13 @@ run証拠はReference／E2E各targetのrun別directoryへ保存し、classごと
 - 11:30:19 JSTの確認で空きmemory18.62 GiB／disk48.14 GiB、既存postgres:15の2 containerだけが残存。
 
 設定確認用の2件＋E2E1件を既存baseline成功へ加算しない。次は検証用変更をlocal commitで固定し、25 class／99 invocationとE2E1件を同じ条件で取得する。通知の業務code／DDL追加・新規55件は未開始。baseline結果は次節に追記する。
+
+## 7. baseline初回停止とclean source再固定
+
+設定確認済み変更を`d6b014e26653e711d6d7d046bb8b00720f12adac`へlocal commitし、clean worktreeからbaselineを開始した。最初のReferenceArchitectureTestは2件中1件が失敗し、後続を停止した。
+
+違反15件は旧package `org.koikifw.reference.web.ReferenceBusinessUrlSecurityTest`が業務moduleとしてimportされた内容。現sourceは`org.koikifw.referenceacceptance.web`であり、target/test-classesには移動前後の両classが残存していた。non-cleanの既存出力が原因で、Rules／test assertion／production sourceを変更せず、必要証拠を保全してclean buildへ切り替えた。失敗XML・manifest・資源記録はE2E targetの`s1-baseline-20261007/`へ保持している。
+
+clean buildでは追加fixtureの`command.getHostConfig()`へのNullable参照をNullAwayが拒否した。IDE既存compile出力による先の実行だけではMaven再compile適合を保証できていなかった。Reference／E2EともObjects.requireNonNullで欠落を明示的に拒否する修正を追加した。cleanで旧出力を除去した後のMaven packageは9.634秒で成功し、Reference26 test sourceを実再compileしている。NullAway除外・Rules緩和・失敗assertionの削除はしていない。
+
+初回停止の結果を上書きせず、修正をlocal commitで再固定してから、別directory `s1-baseline-20261007-clean/`へ25 class＋E2Eを最初から取得する。初回ArchUnit失敗のtest2件を成功baselineへ加算しない。原因・条件を変えた再取得であり、同条件の無条件反復はしない。

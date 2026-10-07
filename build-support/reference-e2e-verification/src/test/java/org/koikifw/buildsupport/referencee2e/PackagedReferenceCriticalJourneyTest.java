@@ -90,7 +90,7 @@ class PackagedReferenceCriticalJourneyTest {
         if (resourceLimitsEnabled()) {
             assertEquals(805306368L, Runtime.getRuntime().maxMemory(), "Test JVM heap differs from 768 MiB");
             postgres.withCommand("postgres", "-c", "max_connections=16")
-                    .withCreateContainerCmdModifier(command -> command.getHostConfig()
+                    .withCreateContainerCmdModifier(command -> java.util.Objects.requireNonNull(command.getHostConfig())
                             .withMemory(1073741824L).withNanoCPUs(1000000000L));
         }
 
