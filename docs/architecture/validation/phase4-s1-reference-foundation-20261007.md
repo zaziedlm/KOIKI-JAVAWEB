@@ -1,5 +1,7 @@
 # S1初回Reference基盤：端末preflight（2026-10-07）
 
+**最新結果：§8の既存25 class／99件＋E2E1件baselineはPASS。検証専用設定の実効確認・baseline取得まで完了。通知の業務基盤実装・新規55件は未開始。** §1〜7の未実施／停止記載は各確認時点の履歴として保持する。
+
 ## 1. 結論・source・承認範囲
 
 **判定：検証専用設定の作成へ進むための端末・source・offline準備preflightは成立。** 設定作成後の実効pool／子JVM／Testcontainers制限、既存baseline、新規55件、通常無効構成・migration互換、正式受入は未実施である。本結果はそれらのPASSを意味しない。
@@ -160,3 +162,37 @@ run証拠はReference／E2E各targetのrun別directoryへ保存し、classごと
 clean buildでは追加fixtureの`command.getHostConfig()`へのNullable参照をNullAwayが拒否した。IDE既存compile出力による先の実行だけではMaven再compile適合を保証できていなかった。Reference／E2EともObjects.requireNonNullで欠落を明示的に拒否する修正を追加した。cleanで旧出力を除去した後のMaven packageは9.634秒で成功し、Reference26 test sourceを実再compileしている。NullAway除外・Rules緩和・失敗assertionの削除はしていない。
 
 初回停止の結果を上書きせず、修正をlocal commitで再固定してから、別directory `s1-baseline-20261007-clean/`へ25 class＋E2Eを最初から取得する。初回ArchUnit失敗のtest2件を成功baselineへ加算しない。原因・条件を変えた再取得であり、同条件の無条件反復はしない。
+
+## 8. 既存25 class＋E2E baseline結果（2026-10-07）
+
+**PASS：既存25 class／99 invocation＋PackagedReferenceCriticalJourneyTest 1件。失敗0／error0／skip0。** §4の全class・期待件数と一致。新規通知testは追加していない。
+
+| 項目 | 結果 |
+|---|---|
+| 実行source | `884c2b83b521e4a29b412ccbd03046627c2ed5fc`、開始・続行前clean worktree |
+| 方法 | class別Maven／fork1／reuseForks=false／並列無効／heap768 MiB、DB停止後に次class |
+| 実効DB | 各DB class・E2EのS1_RESOURCEでmemory1073741824／nanoCpus1000000000／max_connections16を確認 |
+| 実効pool | 各Reference DB contextとE2E childで最大4／idle1を確認 |
+| E2E child | PID7964、heap805306368。process終了・port解放・issuer／browser終了・temp log削除の既存assertion成功 |
+| clean JAR SHA-256 | `054028B8511F72C8E5E85E61A47B22F7FD23CF5ABBDD9FC64DFE602463FFA592` |
+| 比較区間 | 2026-10-07 11:42:40〜11:54:42 JST、722.08秒（約12分）。開始時刻は最初のresource sampleより前の保守的な記録時刻 |
+| 時間上限 | 続行時も元の開始時刻を保持。調査・環境承認待ち・clean packageを含む区間で60分以内 |
+| 観測資源 | 最小available memory17.03 GiB／disk47.89 GiB、DB同時数最大1。5秒間隔を基本に観測（Docker stats所要時間を加算） |
+| 記録量 | preflight・設定確認・途中停止を含むE2E targetのs1-*合計1,512,798 bytes（集計時）。1 GiB以内 |
+| 残存 | classごとの当該DB削除・Testcontainers補助container終了、E2E child終了を確認。最終当該DB `3b7a160a31e2b74e645f070d213a812e3dd78f02008a202ff72753ac8ce19894`も残存なし |
+
+### cleanup待機による一時停止と続行
+
+clean sourceでArchitecture2件とExpenseAuditRollbackPostgreSqlIntegrationTest1件が成功した後、実行用scriptの10秒待機ではRyukの終了を確認できず停止した。業務DBは削除済みであり、11:44:20 JSTのread-only再確認では補助containerも自動終了していた。test失敗や残存無視で続行したものではない。
+
+補助containerの待機は最大60秒へ補正し、残存0確認は維持。phase全体の60分上限は元の開始時刻から計測した。同じsource・同じheap／DB／pool／test集合で成功済み2 classのXMLとcleanup確認を保持し、残り23 classとE2Eを続行した。既存testのrerunは行わず、確認済みの全25 classを一つのmanifestへ照合した。Audit classのMaven時間は24.211秒、後続の終了確認時刻を別記し、未測定の外側経過秒数はnullとした。
+
+### 保存先・終了時確認
+
+- 統合manifest：`build-support/reference-e2e-verification/target/s1-baseline-20261007-clean-cleanup/baseline-manifest.json`。26結果行／合計100件、class別期待件数・exit code・cleanupを照合済み。
+- 同directoryのclass別`result.xml`／`manifest.json`／`sanitized-maven.log`と`sanitized-process.log`を保存。XMLのsystem-properties／out／errと失敗payloadを除去し、環境・秘密をrawへ転記しない。
+- 初回停止は`s1-baseline-20261007/`、clean後の途中停止は`s1-baseline-20261007-clean/`へ保持。成功結果で失敗記録を上書きしていない。
+- resource-samples.jsonlは途中停止側と続行側の両方を保存。最終確認11:57:05 JSTの空きmemory18.27 GiB／disk47.95 GiB、E2E child残存なし。
+- 開始時にrunningだった既存postgres:15の2 containerは最終確認でexited（削除なし）となっていた。inspectの終了時刻は`f4dde4ab972f`が11:45:02 JST、`80f8cead3230`が11:45:08 JST。本作業のcommandに両IDの停止・削除はなく、停止主体・理由は未確認。自動再起動は行わない。資源観測のhost環境変化として記録する。
+
+**今回の出口は完了：検証専用設定の作成・実効制限の確認・既存baseline取得。** 次は承認済み順序に従う通常無効構成／登録・Reference-owned migration互換の最小確認から初回保存・認可・Audit基盤へ進む。新規6 class／55件、通常無効の新旧DB保護、初回基盤のOwner受入は未実施。Phase 4全体開始／非同期通知・復旧の接続／DoD／正式受渡し・remoteの判定へ拡張しない。
