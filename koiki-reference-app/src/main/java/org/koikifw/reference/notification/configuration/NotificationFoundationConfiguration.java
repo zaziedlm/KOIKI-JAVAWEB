@@ -27,12 +27,14 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /** Explicit foundation registration. Unconnected operational ports deny every required operation. */
 @Configuration(proxyBeanMethods = false)
 @Conditional(NotificationFoundationConfiguration.Enabled.class)
 @EntityScan(basePackageClasses = RecoveryPermit.class)
+@Import(ManagedRecoveryConfiguration.class)
 public class NotificationFoundationConfiguration {
     @Bean
     RecoveryPermitRepository notificationPermits(EntityManager entityManager) {
@@ -51,12 +53,14 @@ public class NotificationFoundationConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(RecoveryScopePort.class)
+    @Conditional(ManagedRecoveryConfiguration.DisabledMode.class)
     RecoveryScopePort notificationUnconnectedScope() {
         return (actor, capability, environment, publication) -> RecoveryScopePort.Decision.UNAVAILABLE;
     }
 
     @Bean
     @ConditionalOnMissingBean(RecoveryTtlPolicyPort.class)
+    @Conditional(ManagedRecoveryConfiguration.DisabledMode.class)
     RecoveryTtlPolicyPort notificationUnconnectedTtl() { return target -> Optional.empty(); }
 
     @Bean

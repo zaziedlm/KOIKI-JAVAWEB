@@ -109,6 +109,11 @@ public final class NotificationFoundationDbHarness implements AutoCloseable {
     }
 
     public ConfigurableApplicationContext open(Mode mode, boolean finitePorts) {
+        return open(mode, finitePorts, Map.of(), false);
+    }
+
+    public ConfigurableApplicationContext open(Mode mode, boolean finitePorts, Map<String, Object> overrides, boolean finiteEvidence,
+            Class<?>... extraSources) {
         Map<String, Object> properties = new HashMap<>();
         properties.put("spring.datasource.url", url);
         properties.put("spring.datasource.username", role(mode));
@@ -117,10 +122,22 @@ public final class NotificationFoundationDbHarness implements AutoCloseable {
         properties.put("spring.datasource.hikari.minimum-idle", "0");
         properties.put("spring.datasource.hikari.connection-timeout", "10000");
         properties.put("spring.main.banner-mode", "off");
-        var builder = new SpringApplicationBuilder(Bootstrap.class).properties(properties);
+        properties.putAll(overrides);
+        var builder = new SpringApplicationBuilder(Bootstrap.class).sources(extraSources).properties(properties);
         builder.initializers(context -> {
             context.getBeanFactory().registerSingleton("s1TestClock", clock);
             if (finitePorts) context.getBeanFactory().registerSingleton("s1FinitePorts", ports);
+            if (finiteEvidence) {
+                context.getBeanFactory().registerSingleton("s1ManagedTestTargets", (RecoveryTargetPort) ports::current);
+                context.getBeanFactory().registerSingleton("s1ManagedTestEvidence", new RecoveryEvidencePort() {
+                    @Override public Optional<ConsumptionProof> consumption(UUID permit, RecoveryTarget target, UUID operation, String worker) {
+                        return ports.consumption(permit, target, operation, worker);
+                    }
+                    @Override public Optional<ClosureProof> closure(UUID permit, RecoveryTarget target, UUID actor, String result) {
+                        return ports.closure(permit, target, actor, result);
+                    }
+                });
+            }
         });
         var context = builder.run("--spring.main.web-application-type=none", "--spring.flyway.enabled=false",
                 "--koiki.data.flyway.enabled=false", "--koiki.identity.local-authentication.enabled=false",
@@ -228,6 +245,10 @@ public final class NotificationFoundationDbHarness implements AutoCloseable {
         public final Map<UUID, ClosureProof> closureProofs = new ConcurrentHashMap<>();
         @Override public Decision check(UUID user, String capability, String environment, UUID publication) { return decision; }
         @Override public Optional<Duration> durationFor(RecoveryTarget target) { return ttl; }
+        @Override public boolean allowsIssuanceAt(RecoveryTarget target, Instant issued, Instant expires) {
+            return snapshots.containsKey(target.publicationId()) && ttl.filter(value -> !value.isNegative() && !value.isZero())
+                    .filter(value -> issued.plus(value).equals(expires)).isPresent();
+        }
         @Override public Optional<RecoveryTarget> current(String environment, UUID publication) {
             return Optional.ofNullable(snapshots.get(publication)).filter(target -> target.environmentId().equals(environment));
         }

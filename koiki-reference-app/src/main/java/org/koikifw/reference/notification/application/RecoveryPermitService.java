@@ -65,8 +65,10 @@ public class RecoveryPermitService {
             if (ttl.isNegative() || ttl.isZero()) throw hold("TTL policy invalid");
             requireSafeReference(reasonCode, 128);
             var issued = clock.instant();
+            var expires = issued.plus(ttl);
+            if (!policy.allowsIssuanceAt(target, issued, expires)) throw hold("Issuance policy unavailable or expired");
             var permit = RecoveryPermit.issue(UUID.randomUUID(), target.environmentId(), target.publicationId(),
-                    target.eventId(), target.listenerId(), target.expectedAttempt(), actor, reasonCode, issued, issued.plus(ttl));
+                    target.eventId(), target.listenerId(), target.expectedAttempt(), actor, reasonCode, issued, expires);
             permits.insert(permit);
             permits.flush();
             audit("PERMIT_ISSUED", actor, permit.permitId());
