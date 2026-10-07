@@ -87,9 +87,29 @@ class PackagedReferenceCriticalJourneyTest {
         int applicationPort = -1;
         int issuerPort = -1;
         var postgres = new PostgreSQLContainer("postgres:17-alpine");
+        if (resourceLimitsEnabled()) {
+            assertEquals(805306368L, Runtime.getRuntime().maxMemory(), "Test JVM heap differs from 768 MiB");
+            postgres.withCommand("postgres", "-c", "max_connections=16")
+                    .withCreateContainerCmdModifier(command -> command.getHostConfig()
+                            .withMemory(1073741824L).withNanoCPUs(1000000000L));
+        }
 
         try {
             postgres.start();
+            if (resourceLimitsEnabled()) {
+                var host = postgres.getContainerInfo().getHostConfig();
+                assertEquals(Long.valueOf(1073741824L), host.getMemory());
+                assertEquals(Long.valueOf(1000000000L), host.getNanoCPUs());
+                try (var connection = DriverManager.getConnection(
+                                postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+                        var statement = connection.createStatement();
+                        var result = statement.executeQuery("SHOW max_connections")) {
+                    assertTrue(result.next());
+                    assertEquals(16, result.getInt(1));
+                }
+                System.out.println("S1_RESOURCE dbId=" + postgres.getContainerId()
+                        + " memory=1073741824 nanoCpus=1000000000 maxConnections=16 heap=805306368");
+            }
             issuer = new IssuerFixture(keyPair);
             issuerPort = issuer.port();
             applicationPort = availablePort();
@@ -102,6 +122,16 @@ class PackagedReferenceCriticalJourneyTest {
                     sourceHmacKey);
             String baseUrl = "http://127.0.0.1:" + applicationPort;
             waitUntilReady(process, baseUrl);
+            if (resourceLimitsEnabled()) {
+                String startupLog = Files.readString(processLog);
+                assertTrue(startupLog.contains("Max. Heap Size: 768.00M"), "Child JVM heap evidence missing");
+                assertTrue(Pattern.compile("maximumPoolSize\\s*\\.+4").matcher(startupLog).find(),
+                        "Effective child pool maximum evidence missing");
+                assertTrue(Pattern.compile("minimumIdle\\s*\\.+1").matcher(startupLog).find(),
+                        "Effective child pool minimum evidence missing");
+                System.out.println("S1_RESOURCE childPid=" + process.pid()
+                        + " childHeap=805306368 poolMaximum=4 poolMinimumIdle=1");
+            }
             seed(postgres, loginPassword);
 
             String token = token(keyPair, issuer.issuer());
@@ -125,6 +155,14 @@ class PackagedReferenceCriticalJourneyTest {
             String log = Files.readString(processLog);
             assertSanitizedLog(
                     log, token, loginPassword, sessionId, sourceHmacKey, APPLICANT_EMAIL, APPROVER_EMAIL);
+            if (resourceLimitsEnabled()) {
+                Path evidence = Path.of("target", "s1-resource-limits", "sanitized-process.log");
+                Files.createDirectories(evidence.getParent());
+                // Save only checked, non-secret diagnostics, before the original temporary log is deleted.
+                Files.writeString(evidence, log.lines().filter(line ->
+                        line.contains("Max. Heap Size:") || line.contains("maximumPoolSize")
+                                || line.contains("minimumIdle")).reduce("", (a, b) -> a + b + "\n"));
+            }
         } finally {
             stop(process);
             if (issuer != null) {
@@ -245,7 +283,9 @@ class PackagedReferenceCriticalJourneyTest {
             int port,
             String sourceHmacKey) throws IOException {
         String java = Path.of(System.getProperty("java.home"), "bin", "java").toString();
-        ProcessBuilder builder = new ProcessBuilder(java, "-jar", jar.toString());
+        ProcessBuilder builder = resourceLimitsEnabled()
+                ? new ProcessBuilder(java, "-Xmx768m", "-XshowSettings:vm", "-jar", jar.toString())
+                : new ProcessBuilder(java, "-jar", jar.toString());
         builder.redirectErrorStream(true).redirectOutput(log.toFile());
         var environment = builder.environment();
         environment.put("SERVER_PORT", Integer.toString(port));
@@ -261,7 +301,20 @@ class PackagedReferenceCriticalJourneyTest {
         environment.put("KOIKI_REFERENCE_API_AUDIENCE", AUDIENCE);
         environment.put("DEBUG", "false");
         environment.put("LOGGING_LEVEL_ORG_SPRINGFRAMEWORK", "INFO");
+        if (resourceLimitsEnabled()) {
+            environment.put("SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE", "4");
+            environment.put("SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE", "1");
+            environment.put("LOGGING_LEVEL_COM_ZAXXER_HIKARI", "DEBUG");
+        }
         return builder.start();
+    }
+
+    private static boolean resourceLimitsEnabled() {
+        String value = System.getProperty("koiki.reference.verification.resource-limits.enabled", "false");
+        if (!value.equals("true") && !value.equals("false")) {
+            throw new IllegalArgumentException("Invalid verification resource-limits property");
+        }
+        return value.equals("true");
     }
 
     private static void waitUntilReady(Process process, String baseUrl) throws Exception {
