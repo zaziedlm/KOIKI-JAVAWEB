@@ -1,6 +1,6 @@
 # S1初回Reference基盤：端末preflight（2026-10-07）
 
-**最新結果：§10の通常無効構成・Entity登録・migration互換の最小確認はPASS（新規8件＋既存Architecture2件）。§8の既存25 class／99件＋E2E1件は変更前baseline。通知基盤はJPA mapping／条件付きEntity登録／V4までの最小実装であり、Domain規則・保存Use Case／認可／Audit・全55件は未完了。** §1〜8の未実施／停止記載は各確認時点の履歴として保持する。§10の変更は未commit。
+**最新結果：§12のRepository／JPA Adapter・Spring管理transaction・現在認可／実Audit接続について、新規6 class／55件、変更後の既存25 class／99件とpackage済みReference E2E1件はすべてPASS。初回限定基盤の差分レビュー・local検証結果は2026-10-07にOwner承認済み（§13）。** §8は変更前baseline、§10・11は前段の結果。先行各節の未実施／未commit／停止記載は各確認時点の履歴として保持する。§10の変更はOwner操作で`a316a0d`へcommit済み、§11・12の変更25ファイルは未commit。正式運用scope／TTL・停止／provider証拠の接続は未成立。
 
 ## 1. 結論・source・承認範囲
 
@@ -242,3 +242,123 @@ M01の有効時登録確認は現段階のmappingに限定する。必要なServ
 - 証拠は`build-support/reference-e2e-verification/target/s1-initial-check-20261007-clean/`のresults.json、source-hashes.json（新規7 file）、class別sanitized XML／log／manifest、resources.jsonl。初回停止は`s1-initial-check-20261007/`に保持。XMLの環境・captured output・失敗payloadを除去し、秘密原文をrawへ保存しない。Maven heap環境値はfinallyで復元。
 
 **次の作業：** この最小mappingを採用済みのDomain生成・期限／対象／閉鎖規則へ完成させ、限定Repository／Adapter・Spring管理transaction・Public IdentityQuery／Recorder・用途別grantへ接続する。全55件・変更後25 class＋E2E・Owner受入は残る。commitは事前確認またはOwner操作を待つ。
+
+## 11. Domain生成・期限・対象照合・閉鎖規則（2026-10-07）
+
+**判定：採用済みP01〜P12／C01〜C03のDomain15件と既存Architecture2件はPASS。** sourceはOwner操作でcommit済みの`a316a0d00b356895fd4ec87fe0976927bb2c45f8`＋本節の未commit差分。開始時のbranchは`feature/phase4-s1-reference-foundation`、作業ツリーcleanを確認。今回の変更はReference notificationのRICH／JPA SHARED Domain2型、Domain test2 class、本Evidenceの計5ファイル。Maven依存・Framework／Rules・Security・登録構成・V4は変更していない。git add／commit／pushは実行していない。
+
+### 11.1 実装と保証範囲
+
+- `RecoveryPermit.issue`で必須permit／actor／target／reason／時刻、非空文字列、column長、attempt非負を検証。発行時刻・期限をmicrosecond精度へ切り捨て、調整後の`expiresAt <= issuedAt`を拒否する。Clockと採用TTL policyからの時刻生成は後続Application責務であり、正式TTL値を追加していない。
+- `requireConsumable`でenvironment／publication／event／listener／expected attemptの全一致、未閉鎖、`now < expiresAt`を確認。判定時刻は丸めず、期限一致／経過を拒否する。判定自体は消費記録・送信・認可を実行せず、期限切れで自動閉鎖しない。
+- `close`はclosedAt／confirmedBy／resultRefをすべて検証してから一式を更新。不足・非空／長さ違反で部分更新せず、再閉鎖による証拠書換えを拒否する。期限経過後の人の解決記録は可能。主体の真正性・停止／突合証拠の信頼性は後続Application責務であり、Domainの一式整合を配信成功と同一視しない。reason／resultは現段階では必須／非空／長さを検証し、信頼できるcode／opaque参照の供給は後続で確認する。
+- `RecoveryConsumption.record`でpermit／operation／worker世代／消費時刻を必須とし、worker非空／column長とmicrosecond精度を確認。公開操作は生成と値の取得のみで、更新・削除methodなし。append-onlyのSQL権限制御・一意性・FK・commitは後続の制限付き実DB検証で確認する。
+- 不変列の`updatable=false`とpermitの`@DynamicUpdate`／`@Version`を維持。JPA保存／再読取後の期限境界は採用済みD03に残し、今回のメモリ上Domain testだけで実DB保証を認定しない。
+
+### 11.2 method対応・結果
+
+method名は[初回実行資料§2.1・2.2](../../development/phase4-s1-reference-foundation-execution-review-20261006.md#21-recoverypermittest12)の採用案と一致し、通常Test各1 invocationとして作成。項目別assertionをinvocation数へ数え替えていない。
+
+| class／対応 | 実施 | 結果 | class外側時間 |
+|---|---|---|---|
+| RecoveryPermitTest／P01〜P12 | 期限直前／一致／直後、対象差異5、閉鎖済み、生成必須値、理由・期間、閉鎖一式／再閉鎖 | 12件、failure／error／skip 0 | 12.44秒 |
+| RecoveryConsumptionTest／C01〜C03 | operation／worker／permit欠落拒否。各method内で正常生成・値保持・時刻／長さも確認 | 3件、failure／error／skip 0 | 12.12秒 |
+| ReferenceArchitectureTest | businessModuleRules／frameworkOwnershipRulesの既存2入口 | 2件、failure／error／skip 0 | 16.51秒 |
+
+clean `test-compile`はoffline／`-pl koiki-reference-app -am -DskipTests`で成功（50.663秒、Reference main108／test30 source、NullAwayを含む）。各classは別Maven呼出し、fork1／reuseForks=false、Maven・test heap768 MiB、JUnit並列無効で逐次実行した。
+
+```powershell
+# class名をRecoveryPermitTest／RecoveryConsumptionTest／ReferenceArchitectureTestへ順次指定
+# 各呼出し区間だけMAVEN_OPTS=-Xmx768m、終了時に元値を復元
+.\mvnw.cmd -o -B -ntp -pl koiki-reference-app -am "-Dtest=RecoveryPermitTest" "-Dsurefire.failIfNoSpecifiedTests=false" "-DforkCount=1" "-DreuseForks=false" "-DargLine=-Xmx768m" "-Djunit.jupiter.execution.parallel.enabled=false" test
+```
+
+### 11.3 実行環境・証拠・残作業
+
+最初の通常sandbox実行は資源取得で「アクセスは拒否されました」となり、test開始前に終了。同じ検証scriptを環境の権限付き承認手順で再実行し15＋2件は成功したが、前回終了時の停止印が残り、継続資源monitorの記録が欠落していた。成功XMLを保全し、既存結果を上書きしない新規run directoryを必須とするscriptへ修正。資源記録の存在も必須確認として、別runで同じ15＋2件を再実行した。これは監視証拠不足の修正であり、test期待値・拒否枝・Rulesを変更した再実行ではない。
+
+最終runは5秒間隔9 sample、使用可能memory最小16.89 GiB、disk最小44.03 GiBで8 GiB／10 GiB条件を満たした。対象classはDB／Docker／browser／serverを使用せず、各Maven／test JVM終了後に次のclassを開始、当該monitor jobもfinallyで終了。各classは10分以内。今回終了時の既存`target/s1-*` raw総量は2,105,611 bytesで1 GiB未満。
+
+rawは`build-support/reference-e2e-verification/target/s1-domain-check-20261007-resourced/`。更新時刻を照合したclass別sanitized XML／Maven log／manifest、`results.json`、`resources.jsonl`、Domain4ファイルのSHA-256を記録した`source-hashes.json`を保全。初回結果は`target/s1-domain-check-20261007/`へ別保存し、検証専用runnerも同directoryに置いた。XMLのsystem properties／stdout／stderrはarchiveから除去し、環境値全体や秘密をEvidenceへ出力していない。
+
+**残作業：** 限定Repository／Adapter・Spring管理transaction・Public IdentityQuery／Recorder・用途別grant、実DB精度／lock／競合／Audit rollback、R04〜R07を完成させる。ここまでの新規実施は段階別に23／55件（Domain15＋先行migration5／登録3）であり、全55件の同一完成実装での受入、変更後既存25 class＋E2E、Owner受入は未成立。正式TTL／scope供給元・真正な停止／provider証拠の運用接続と通知／復旧は後段境界を維持する。今回5ファイルは未commitで、commitは事前確認またはOwner操作に従う。
+
+## 12. Repository／Adapter・transaction・認可／Auditの実接続（2026-10-07）
+
+**判定：新規6 class／55 invocation、既存25 class／99件、package済みReference E2E1件は同じ最終sourceでPASS。** sourceは`a316a0d00b356895fd4ec87fe0976927bb2c45f8`＋§11・12の未commit差分。§11からDomain2型／test2 class／Evidenceの差分を継続し、今回の接続・test・隔離grant setupと合わせて計25ファイル。codeはReference notification、有限port／Clock・grantと実DBharnessはtest所有。POM／依存・Framework API／Rules／SQL・通常Security／properties・既存V1〜V3は変更していない。Agentによるgit add／commit／pushは実行していない。
+
+### 12.1 保存・認可・Auditの実装
+
+- Domain Repository2契約はSpring Data Commons `Repository`を継承し、`@NoRepositoryBean`でroot自動登録を抑止。必要なscope付き取得／row lock、INSERT／flush、version前進、消費参照だけを公開し、DELETE／TRUNCATE／消費UPDATEを追加しない。
+- 明示登録のJPA AdapterがEntityManagerを使用。permit取得はpermit ID＋environment＋publicationをJPQL／SQLの条件に含め、全件取得後filterで代替しない。消費と閉鎖は同じpermit rowを最初に`PESSIMISTIC_WRITE`で取得し、消費は`PESSIMISTIC_FORCE_INCREMENT`でversionだけを更新する。JPA例外はSpring標準の例外変換を使い、Application外へは対象・DB競合の詳細を含まない拒否／HOLDとする。
+- 採用済みINSERT列権限に合わせ、permit閉鎖3列とversionを`insertable=false`に調整。初期NULL／version0はDB既定とHibernateの初期versionで成立し、閉鎖は既存`@DynamicUpdate`とversion条件付きUPDATEで閉鎖列／versionだけを更新する。不変列の`updatable=false`を維持し、用途別権限を拡大して成立させていない。
+- `RecoveryPermitService`はSpring管理`TransactionTemplate`（timeout10秒）で発行・消費・閉鎖・観察を調整。保存／flushと実Business Recorderは同じJpaTransactionManager・DB・commitへ参加。拒否の実Security Recorderは保存transactionを終了してから呼び、記録失敗でも拒否を維持する。callerの既存transactionを持ち込む操作は拒否し、caller-held lockを残したままSecurity別transactionへ進まない。
+- 主体はSecurityContextの認証済みPublic `FrameworkPrincipal`から取得し、Public IdentityQueryへAdapter経由で現在照会。presented principalのpermission snapshotを信用せず、ACTIVE・現在のISSUE／READ／EXECUTE／CLOSE能力とReference-owned scopeを、保存／permit取得より先に確認する。消費の初回境界は現在主体が保存済み発行者と一致する場合に限定し、worker認証／委譲受付は追加しない。確認済み主体だけをUSER、不存在・照会不能等の未確認主体をANONYMOUSとして拒否Auditへ対応付ける。
+- Business code／action／actor／resource、Security拒否／確認不能分類は採用判断表D5に対応。発行=`PERMIT_ISSUED`、消費=`PERMIT_CONSUMED`、閉鎖=`PERMIT_CLOSED`は消費確定／人の解決記録の意味に限定し、配信成功を意味しない。scope外／未確認対象のSecurity記録にはresourceを付けない。技術競合・期限切れ・証拠不足を成功Auditや一律Security侵害へ変換せず、自動再送・消費削除・自動閉鎖を行わない。
+- scope／TTL policy／現在target／運用証拠の必要portだけを作成し、production既定は確認不能／empty。肯定側はtest所有の有限scope、可変UTC Clock、有限TTL／snapshot／証拠recordに限定した。証拠はpermit／5項目target／operation・worker世代または確認主体・result参照と照合し、callerの任意booleanで確認済みにしない。正式TTL値／上限、scope割当、真正な停止／provider突合Adapterは未接続のまま必要操作を拒否する。
+- 構成有効時だけRepository／Adapter／Service／Entityを登録。通常未設定／falseでは不在。観察はApplication-owned最終recordへtransaction内でmaterializeし、Entityを外へ返さない。Web／CLI・sender／listener／runner／publication schema／Modulith runtimeは追加していない。
+
+### 12.2 隔離grant・実DBharness
+
+新規testのharnessは`org.koikifw.referenceacceptance.notification`へ配置し、正式Framework／Reference操作受付へ含めない。隔離setupは実Framework二階層FlywayとReference V1〜V4を管理接続で適用。その後のruntime testではFlyway実行をtest設定で停止し、Hibernate schema validationは維持した。通常ReferenceのFlyway設定／validationは変更せず、Servletの通常起動とM01〜M05を別に再実証している。
+
+test resource `notification/s1-isolated-grants.sql`を管理setupだけで実行。NOLOGIN／NOINHERIT notification ownerとNOINHERIT permit／consumer／readerを作成し、passwordは実行中に生成。owner membershipなし、superuser／createdb／createroleなしをDB照会で確認。grantは採用表の2 table／列と、Public IdentityQueryの現行5 read table SELECT、Public RecorderのAudit INSERTだけ。Audit SELECT・password／login-attempt／Session参照・schema CREATE・permit削除／TRUNCATE・消費変更は禁止を維持。ALL TABLES／default privilegesを使用せず、正式運用credential／role配備へ昇格していない。
+
+各用途は同じDBへの別DataSource／JPA context、pool2／minimum idle0／取得待ち10秒。最大3 poolの6接続＋管理最大2で8以内。直接の権限拒否確認はruntime接続1本ずつを閉じて進め、同時競合worker2と同時管理接続の予算を越えない。管理接続はDDL／test seed・許可の一時REVOKE／証拠突合／test cleanupだけに用い、業務成功をowner接続で代替しない。実IdentityQuery／Business・Security Recorder／JPA／transactionはmockに置換していない。
+
+### 12.3 method対応と最終結果
+
+T01〜T16／D01〜D12／R04〜R07を[初回実行資料§2](../../development/phase4-s1-reference-foundation-execution-review-20261006.md#2-新規6-class55-invocationのmethod対応案)と同じmethod名／通常Test各1 invocationで作成。R01〜R03、M01〜M05、P01〜P12／C01〜C03も同じ最終実装で再実行した。
+
+| class | 件数 | failure／error／skip | class外側時間 |
+|---|---|---|---|
+| RecoveryPermitTest | 12 | 0／0／0 | 14.00秒 |
+| RecoveryConsumptionTest | 3 | 0／0／0 | 13.45秒 |
+| NotificationFoundationTransactionTest | 16 | 0／0／0 | 38.60秒 |
+| NotificationFoundationPersistenceTest | 12 | 0／0／0 | 49.28秒 |
+| NotificationFoundationRegistrationTest | 7 | 0／0／0 | 43.69秒 |
+| NotificationFoundationMigrationTest | 5 | 0／0／0 | 45.09秒 |
+| ReferenceArchitectureTest（既存） | 2 | 0／0／0 | 17.85秒 |
+
+実Audit INSERT権限を一時REVOKEして発行／消費／閉鎖それぞれの保存・Audit rollbackを確認。現在能力失効、DISABLED／不存在、実Identity SELECT失敗、scope外／取得不能、transactionなしBusiness拒否、Security INSERT失敗でも拒否継続を実証した。
+
+実DBでは禁止操作がSQLSTATE42501で失敗し、消費record不変を確認。未閉鎖targetは期限切れ・消費済みUNKNOWNでも次許可を拒否し、operation一意違反もrollback。消費競合／閉鎖競合は成功1件、消費対閉鎖は共通row lockで直列化、stale entity mergeはversion保護で既存証拠を保持。保存・再読取後のmicrosecond期限直前は消費可、一致／直後は拒否。制限付きSpring transactionで消費INSERT／version更新をflush後にtest-only `pg_sleep(11)`を実行し、実10秒SQL／transaction上限で失敗・transaction終了・消費とversionのrollbackを確認した。lock_timeout10秒は実DB SHOWで確認し、すべてのJVM／port処理が10秒で強制終了するという保証には広げない。
+
+R04〜R07は未接続scope／TTL／target／証拠と証拠差異の拒否、有効時の必要登録・既存Entity維持、notification sender／runner／registry／scheduler／listener Bean・HTTP handler不在を確認。M01〜M05は既存location／履歴validationを維持して再成功。
+
+### 12.4 実行記録・資源・cleanup
+
+最初のtest実行はcompile段階で停止。追加testのpublic可変array警告はimmutable Listへ修正。既存ExpenseRequestDetailのnullable引数を拒否するincremental出力不一致はsourceの`@Nullable`を確認し、既存source／NullAway設定を変更せずclean buildで解消した。clean test-compileは49.225秒、main121／test34 sourceで成功。その後T16、D12／R7／Architecture2の実接続smokeは成功し、例外変換を整えた最終sourceで上表の全55件＋Architecture2を再確認した。
+
+最終runは`build-support/reference-e2e-verification/target/s1-foundation-suite-20261007/`。class別sanitized XML／Maven log／manifest、`results.json`、`resources.jsonl`、notification source／test／V4／grant27ファイルのSHA-256を保全。各class別Maven／fork1／reuseForks=false、Maven・test heap768 MiB、JUnit並列無効で逐次実行。5秒間隔43 sampleで使用可能memory最小15.40 GiB、disk最小43.74 GiB、DB同時最大1。各DB inspectとSHOWでmemory1 GiB／CPU1／max_connections16／各timeout10秒を確認。各classは10分以内で、DBとRyuk等の補助container消滅を確認してから次へ進み、monitorもfinallyで終了した。
+
+| class | 当該DB ID（削除確認済み） |
+|---|---|
+| Transaction | `231754b0dd8228b2421021cd64a670e3cfb1ac9bfec643785527bd14073ec1e0` |
+| Persistence | `643fdf62a2fe2275cc67939a8da7ef85eed3c5b1b3be3cb036fba567a3f4611e` |
+| Registration | `c893619a622810ceb295ab13540bab26909dee2da9161ab397061a06e2b490a2` |
+| Migration | `adc485d570e5b8c0ae2881c9434f96b08978cb16c131bd6ec1021004d18c334e` |
+
+初回compile停止のrunは`target/s1-connection-smoke-20261007/`、修正後T16は`target/s1-connection-smoke-20261007-2/`、D12／R7／Architecture2は`target/s1-connection-persistence-20261007/`へ保全。環境の権限付き承認手順で同じ限定検証を実行し、無関係container／processを停止していない。初回smoke runnerの最終表示に前段のcase名が残っていたため、判定は表示文言ではなく当該classの新しいXML／manifestで照合した。最終suite runnerの表示は6 class／55件へ修正済み。
+
+### 12.5 既存回帰と残条件
+
+既存25 class／99件とpackage済みReference E2E1件は、§8のbaselineと同じ集合・条件で`target/s1-regression-20261007/`へ実行しすべてPASS。新規55件の証拠はReference target外へ保全し、E2E直前のclean packageで消失させない。変更後の新規sourceは未commitとしてbase HEAD＋SHA-256で識別し、commit操作を前提に検証を止めない。
+
+変更後回帰の開始16:12:23〜終了16:23:07 JST、644.04秒（約10分44秒）で60分条件以内。新しいXML26件（Reference25＋E2E1）を件数／exit code／failure・error・skip／cleanupで照合し、すべて成功。baselineのclass名＋invocation数との差分0、notification source27ファイルの実行前後SHA-256差分0、HEADは`a316a0d`のまま。既存Architecture2件は既存99件にも含まれ、新規55件へ重複加算していない。
+
+回帰monitorは121 sample、使用可能memory最小15.47 GiB、disk最小43.45 GiB、DB同時最大1。E2E子ReferenceはPID27052、heap768 MiB／pool4／minimum idle1、DBは`b4eed22505ea015e444839500df84e20604d0fcb73836ccccd78bd5af9a3f802`（memory1 GiB／CPU1／max_connections16）。各classのDB・補助container、E2Eのbrowser／issuer／子Reference／port／temp logのcleanupが成功し、外側で子PIDとDBの残存なしを確認した。
+
+E2E直前のoffline clean packageは51.321秒で成功。JAR SHA-256は`DAEE94CAF5A9552CF07F8CEB37B9D578993663A4C2FD72F3C0B6B6CE55CBF014`。JARにはnotification code／V4が含まれ、有限port・Clockのtest harnessと隔離grant SQLが含まれないことをentry一覧で確認。E2Eの秘密非出力検査を通った子logからheap／pool診断だけを保管した。結果は`regression-manifest.json`、class別sanitized XML／log／manifest、`sanitized-package.log`、`sanitized-process.log`、`resource-samples.jsonl`へ保存。全既存`target/s1-*`のraw総量は終了時3,919,416 bytesで1 GiB以内。
+
+本段階は採用済み初回基盤の実装・local検証結果であり、Ownerの初回受入は未成立。Phase 4全体開始・DoD 4-1〜4-5／4-12のPASS、正式運用scope／TTL・時計差、本人認証／worker委譲の受付、停止／provider証拠・通知／復旧／Modulith Level2接続、配布／remoteは後段境界を維持する。標準作業量は実経過時間から推定しておらず、Owner review・環境承認待ちを別枠とする管理条件を維持。今回差分25ファイルは未commitで、commitは事前確認またはOwner操作に従う。
+
+## 13. 初回限定基盤の差分レビュー・local検証結果のOwner承認（2026-10-07）
+
+Ownerは実装ポイントの説明、差分ソースおよび本検証記録を確認し、同日のチャットで「説明も参考に、差分と[検証記録](docs/architecture/validation/phase4-s1-reference-foundation-20261007.md)を確認しました。問題なし検証を承認します」と明示した。
+
+**判定：初回限定Reference保存・認可・Audit基盤の差分レビュー・local検証結果は OWNER APPROVED。** 対象は§11・12のDomain、Repository／JPA Adapter、Spring管理transaction、現在認可／実Audit、条件付き登録と未接続時の拒否、隔離実DB検証および変更後回帰（新規55件・既存99件・package済みE2E1件）の結果。対象sourceは§12で識別した`a316a0d`＋未commit差分と検証時SHA-256であり、§12.5末尾のOwner受入未成立は承認前時点の履歴とする。
+
+正式運用scope／TTL・時計差、本人認証／worker委譲の受付、停止／provider証拠の運用接続、通知／復旧／Modulith Level2、Phase 4全体開始・DoD・配布／remoteは本承認の対象に拡張しない。ローカル手動実行は後日とする。後段は必要reviewと個別開始判断に従う。
+
+本承認はcommit／pushの操作指示ではない。Agentは承認記録のみ更新し、git add／commit／pushを行っていない。commitはOwnerへの事前確認またはOwner自身の操作、remote pushは現時点で不要という境界を維持する。
