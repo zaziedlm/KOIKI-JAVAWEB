@@ -118,3 +118,7 @@ scope／TTLのAdapter単独で先行できるかは、選んだ正本がpublicat
 **後続の採用判断（2026-10-07）：** Ownerは[供給案§8](phase4-s1-managed-scope-ttl-configuration-proposal-20261007.md#8-owner採用承認2026-10-07)で限定実演向けscope／TTL供給案を採用した。O-01／O-02は当該限定条件で採用済み、実担当・実配備・時計監視等のOPENと実装開始判断は残る。O-03〜O-08の未採用状態、停止／provider証拠・通知／復旧の別reviewを維持する。
 
 **後続の限定開始承認（2026-10-07）：** [scope／TTL限定開始票§8](phase4-s1-managed-scope-ttl-limited-start-review-20261007.md#8-owner承認条件付き限定開始2026-10-07)で、設定供給・発行直前再検査と当該検証に限り、文書commit・clean source固定・preflight成立を条件とする作成／隔離検証をOwner承認済み。O-07／O-08のうち同票のscope／TTL再検査・検証条件だけを採用し、worker認証・外部証拠取得・送信前再確認およびO-03〜O-06は別判断を維持する。
+
+**後続の結果承認・次の整理（2026-10-07）：** scope／TTL実装・検証は[検証記録§7](../architecture/validation/phase4-s1-managed-scope-ttl-20261007.md#7-実装検証結果のowner承認2026-10-07)でOwner承認済み、Ownerのcommit `6cf029e`で固定した。続いて[現在対象・停止／provider証拠の接続契約と限定範囲案](phase4-s1-target-operational-evidence-contract-review-draft-20261007.md)を作成した。O-03〜O-06と後段O-07／O-08の方式採用・実装開始は未成立で、本案はOwner review入力。
+
+**後続のtest限定開始承認（2026-10-08）：** [対象・運用証拠ハーネス開始票§9](phase4-s1-operational-evidence-harness-limited-start-review-20261007.md#9-owner承認条件付き限定開始2026-10-08)で、接続契約案の段階Aと新規48件・回帰・検証上限をOwner承認済み。O-03〜O-08のtest所有modelによる契約照合に限り、文書commit・clean source固定・preflight成立後に作成／隔離検証できる。実運用Adapter・供給元、停止操作・provider通信、worker認証・送信、本番契約／schema変更の開始判断は未成立を維持する。

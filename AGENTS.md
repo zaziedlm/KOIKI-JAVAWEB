@@ -45,6 +45,14 @@ Reference-ownedの外部管理設定・起動固定snapshotによるscope／TTL 
 同票の資源・時間・作業量・cleanup・停止条件に従う。運用target／停止／provider証拠は未接続時拒否を維持する。
 実設定配備・運用操作、Web／CLI受付・worker認証／委譲、sender／listener／runner、publication／Modulith runtime、
 Framework API／Rules／依存・remoteへ拡張しない。local commitはOwnerへの事前確認またはOwner自身の操作とする。
+2026-10-08の[対象・運用証拠ハーネスの限定開始承認](docs/development/phase4-s1-operational-evidence-harness-limited-start-review-20261007.md#9-owner承認条件付き限定開始2026-10-08)により、
+test所有の可変現在対象・停止制御model・provider観測stub・証拠台帳と現行Portへの接続検証、
+既存Harnessの必要最小変更・当該Evidenceを、文書commit・clean source固定・preflight成立後に作成・検証できる。
+新規5 class／48 invocation候補、scope／TTL40件・初回55件・既存99件＋E2Eと、同票の資源・時間・
+作業量・cleanup・停止条件に限定する。D07の隔離DB内Audit権限一時REVOKE／finally復元を含む。
+本番main／Port／schema／grant定義／依存／通常構成は変更しない。既知の歴史対象閉鎖・複数permit・
+照合後競合の未達は観測・記録だけで、実運用保証にしない。実運用Adapter・停止操作・provider通信、
+受付／worker／送信、publication／Modulith、Framework／CI／remote・Phase 4全体への開始承認ではない。
 P4-ARではFramework本体だけでなく、Customer-like Consumer、package済みReference Application、検証Toolingおよび
 Developer Journeyを受渡し候補として棚卸しし、業務アプリ開発チームの受入側視点でbuild / run / operation / diagnosisを実証する。
 正式な受渡し対象はP4-AR Evidenceを入力とする見直し後Phase 4準備で判断し、Project TemplateはPhase 5境界を維持する。
@@ -95,6 +103,8 @@ Testcontainers実行について、Docker named pipeへ接続できる権限付�
 使い捨てcontainerの起動・停止も対象に含む。実行環境の権限付き承認手順と、採用済み資源・
 cleanup・停止条件に従う。既存P4-PL2許可の流用ではなく、この個別承認に基づく対象追加である。
 2026-10-07のscope／TTL限定開始票§8で承認された条件成立後のMaven／隔離Docker検証も、
+同票の対象・資源・cleanup・停止条件と実行環境の権限付き承認手順に従う。
+2026-10-08の対象・運用証拠ハーネス限定開始票§9で承認された条件成立後のMaven／隔離Docker検証も、
 同票の対象・資源・cleanup・停止条件と実行環境の権限付き承認手順に従う。
 
 通常のsandboxで`npipe:////./pipe/docker_engine`への接続を拒否された場合は、
