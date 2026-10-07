@@ -79,7 +79,7 @@ Aのstubは受理前／後の観測、応答喪失、同key同payloadと異paylo
 
 **閉鎖：** confirmedByは実認証主体と現在のCLOSE能力／scopeに一致させる。resultRefの先で対象・停止／provider照合・判断理由・次の処置を辿れることを要求する。今回の候補では未解決UNKNOWNを閉鎖肯定にしない。未解決のまま次許可を発行できる運用は認めない。
 
-**残る競合：** 現行closeも`requireCurrentTarget`を呼ぶため、attempt更新・publication削除後の古い許可は閉じられない。live対象と許可時の歴史対象を区別し、旧許可の解決を照合する別契約／操作区分が必要かを判断する。また、初回基盤には同一論理通知に対する複数permitを排除する保証がない。新許可の抑止を供給元予約で担うかDB制約等で担うかは未決。Aではこの現行拒否・未達を明示し、対象比較の緩和や新schemaを先行しない。
+**残る競合（2026-10-08訂正）：** 現行closeも`requireCurrentTarget`を呼ぶため、attempt更新・publication削除後の古い許可は閉じられない。live対象と許可時の歴史対象を区別し、旧許可の解決を照合する別契約／操作区分が必要かを判断する。同じenvironment・publicationの未閉鎖permitはV4の部分unique indexで1件に制限され、消費・期限経過だけでは次許可を発行できない。別publicationでも同じ論理通知となる場合の横断抑止は、この制約だけでは保証しない。Aでは既存保証と現行拒否・未達を分けて記録し、対象比較の緩和や新schemaを先行しない。承認時に同一対象の抑止を未実装と説明した誤りとD11訂正は[開始票§10](phase4-s1-operational-evidence-harness-limited-start-review-20261007.md#10-preflightでのd11前提訂正2026-10-08owner確認待ち)に記録する。
 
 ## 7. E-06：transactionと使用時の再照合
 
@@ -139,3 +139,5 @@ Ownerは本書を確認し、「次へ進めましょう」と指示した。こ
 ## 12. 段階Aの採用・限定開始承認への対応（2026-10-08）
 
 Ownerは[限定開始票§9](phase4-s1-operational-evidence-harness-limited-start-review-20261007.md#9-owner承認条件付き限定開始2026-10-08)で、段階Aのtest所有ハーネスによる方式・限定範囲と、具体test集合・検証上限・開始条件を承認した。§10等の未判断記載は作成時の履歴とし、今回採用されたtest内の契約と実運用供給元の未達を区別する。段階B、実停止方式／provider／証拠保管の運用採用、歴史対象閉鎖・次permit抑止・原子的保護の解決は未成立。実装・環境実行は同票の文書commit・clean source固定・preflight条件に従う。
+
+**D11訂正の承認（2026-10-08）：** preflightで確認した同一environment・publicationの未閉鎖許可一意制約を§6へ反映し、[開始票§11](phase4-s1-operational-evidence-harness-limited-start-review-20261007.md#11-d11訂正のowner承認2026-10-08)でOwner承認済み。既存の次許可拒否保証を未達と扱わず、歴史対象閉鎖・別publication間の同じ論理通知の横断抑止・照合後競合を区別する。段階Aの対象・48件・上限を維持し、訂正文書commit後のclean source再固定・source／環境差分確認を経て進める。

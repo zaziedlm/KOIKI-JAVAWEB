@@ -1,6 +1,6 @@
 # S1後段：対象・運用証拠ハーネスの限定検証開始票案（2026-10-07）
 
-**状態：OWNER APPROVED / 文書source固定・preflight条件付き限定開始（2026-10-08、§9）。** Ownerは接続契約案の段階Aと本票のレビュー整理を確認し、内容を承認した。文書commit・clean source固定・preflight成立前にtest作成・Maven／Docker検証を先行しない。
+**状態：§9の条件付き限定開始・§10のD11訂正はOWNER APPROVED（2026-10-08、§11）。** 環境preflightは`ea07bad`で成立。訂正・承認記録を文書commitしてclean sourceを再固定し、成立済みpreflightからのsource／環境差分を確認した後、承認範囲のtest作成・検証へ進む。
 
 **source：** `feature/phase4-s1-reference-foundation` / `6cf029e09d9c1a73550f0ef8e3f8a5996c67390d`＋未commitの後段文書。本票作成前には運用接続レビュー更新と接続契約案の2件が未commit。scope／TTL結果は[検証記録§7](../architecture/validation/phase4-s1-managed-scope-ttl-20261007.md#7-実装検証結果のowner承認2026-10-07)でOwner承認済み。
 
@@ -16,7 +16,7 @@
 
 - 対象／証拠照合直後の変更を現行Serviceだけでは原子的に抑止できない。
 - attempt変更／対象削除後の旧許可は現在対象照合で閉鎖できない。
-- 同一論理通知に対する複数permitの発行を初回基盤だけでは抑止しない。
+- 同じenvironment・publicationの未閉鎖permitはV4の部分unique indexで1件に制限され、消費・期限経過だけでは次permitを発行できない。一方、別publicationでも同じ論理通知となる場合の横断的抑止は、この制約だけでは保証しない（§10で訂正）。
 
 この未達の確認は想定済みの試験結果として区別する。それ以外の新たな安全条件不足、または本番接続へ進むための契約修正が必要なら停止して再reviewする。肯定testのために対象照合・認可・Auditを緩和しない。
 
@@ -77,10 +77,10 @@ IDをそのままJUnit method prefixへ対応付ける。parameterized invocatio
 8. **D08** 同permitへ2要求を有界に競合させ、一度性とcommit済み消費保持を確認。各taskへtest認証を設定・解放し、実DB roleを維持。
 9. **D09** 消費commit後に制御を失効。test側の実行可否判定はHOLD、消費は保持。commit結果不明のtest modelも追加実行拒否。senderはなく実送信保証は未達。
 10. **D10** 照合済み人の結果で閉鎖＋Audit、UNKNOWN結果では閉鎖0。同じ対象の消費・証拠を保持。
-11. **D11** attempt更新／対象削除後の旧permit閉鎖は現行拒否と記録。同一対象への複数permitが現行で発行可能な点も観測し、運用接続前の未達とする。
+11. **D11（訂正承認済み、§11）** attempt更新／対象削除後の旧permit閉鎖は現行拒否と記録。同じenvironment・publicationの未閉鎖許可がある場合、消費後・期限後も次permit発行が拒否される既存保証を確認する。別publicationにまたがる同じ論理通知の抑止は現行値契約では未達と区別する。
 12. **D12** 照合後に状態が変わる窓をtest hookで観測。Port自身が検知した差異の拒否と、最後の照合後に変わる状態を現行Serviceでは原子的に防げない点を区別。実platform／publication fencingのPASSにしない。
 
-D11／D12は現行不足を確認する想定test。新たな本番制約を実装したと説明しない。P05もstub内の識別検証であり、実並行送信の受理保証ではない。必要枝の追加・件数変更はcoverageを落とさず、本票との差異と上限影響を提示する。
+D11は既存の次許可拒否保証と歴史対象閉鎖の未達を、D12は照合後競合の未達を確認するtest。新たな本番制約を実装したと説明しない。P05もstub内の識別検証であり、実並行送信の受理保証ではない。必要枝の追加・件数変更はcoverageを落とさず、本票との差異と上限影響を提示する。
 
 ## 5. 回帰・package・検証記録
 
@@ -134,3 +134,21 @@ Ownerは、本票の到達点・変更path・証拠の扱い・48件の検証・
 本番main／Port／schema／grant定義／依存／通常構成は変更しない。D11／D12の既知未達は観測・記録の対象であり、解消した保証にはしない。実運用Adapter、停止操作、provider通信、受付／worker／送信、publication／Modulith、Framework／CI／remote、Phase 4全体・DoD・正式受渡しへ承認を拡張しない。
 
 Agentは承認記録・正本導線を反映するだけでgit add／commit／pushを行わない。Owner操作またはコミット操作への事前確認で文書をcommitするまでtest作成・検証を開始しない。source固定後は同じ承認範囲の開始許可を再要求せず、preflight・環境の権限付き実行手順と本票の停止条件に従う。実装・検証結果のOwner受入は別途判断する。
+
+## 10. preflightでのD11前提訂正（2026-10-08、Owner確認待ち）
+
+`ea07badc5720949a2cc7b03c9f522e011183c539`をclean sourceとして固定し、preflightで既存testとV4を確認した際に、承認時のD11「同一対象への複数permitが現行で発行可能」という説明が誤りだと判明した。Agentの設計整理・レビュー説明の誤りであり、実装不具合ではない。
+
+[V4](../../koiki-reference-app/src/main/resources/db/migration/kkref-notification/V4__create_notification_recovery_records.sql)の`uk_kkref_notification_permit_unclosed_target`は`(environment_id, publication_id) WHERE closed_at IS NULL`の一意制約。[既存PersistenceTest](../../koiki-reference-app/src/test/java/org/koikifw/reference/notification/NotificationFoundationPersistenceTest.java)の`preventsNextPermitForUnclosedTarget`は未閉鎖・消費後・期限経過後の次許可拒否を確認する。本票§1・D11と接続契約案の該当説明を訂正した。
+
+訂正案は、同一environment・publicationの既存抑止保証を保護し、歴史対象閉鎖と別publicationにまたがる論理通知の横断抑止を未達として区別すること。新規5 class／48件・main変更なし・検証上限は変更しない。§9の承認履歴は保持するが、誤った前提に基づくD11を無断で実装しない。必要な確認は本訂正箇所だけであり、他の承認済み範囲の開始許可を再要求するものではない。
+
+preflight結果は[検証記録](../architecture/validation/phase4-s1-operational-evidence-harness-20261007.md)に記録する。新規test作成・48件検証は訂正のOwner確認後に開始する。git add／commit／pushは行っていない。
+
+## 11. D11訂正のOwner承認（2026-10-08）
+
+Ownerは§10の訂正案を確認し、「確認し、了承、承認します」と明示した。訂正後D11の既存一意保証・歴史対象閉鎖と別publication間の横断抑止の未達の区別を採用する。§10の確認待ち記載は訂正案提出時の履歴で、待ち条件は解消した。
+
+新規5 class／48件、本番main変更なし、回帰集合・資源／時間／作業量・停止条件は§9の承認を維持する。新たな実運用接続やschema変更は承認していない。実装結果の受入は別途判断する。
+
+§7・9の承認文書commit／clean source条件に従い、訂正・preflight結果・本承認を含む文書4件をOwner操作または事前確認でcommitしてsourceを再固定する。成立済みpreflightの結果を保持し、main／test差分なし・必要資源／Docker／cacheとcleanup状態を開始直前に確認する。変更がないcompile／browser／既存smokeを無条件に反復しない。Agentはgit add／commit／pushを行わず、同じ範囲の開始承認を再要求しない。

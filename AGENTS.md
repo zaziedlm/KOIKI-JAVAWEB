@@ -50,9 +50,12 @@ test所有の可変現在対象・停止制御model・provider観測stub・証�
 既存Harnessの必要最小変更・当該Evidenceを、文書commit・clean source固定・preflight成立後に作成・検証できる。
 新規5 class／48 invocation候補、scope／TTL40件・初回55件・既存99件＋E2Eと、同票の資源・時間・
 作業量・cleanup・停止条件に限定する。D07の隔離DB内Audit権限一時REVOKE／finally復元を含む。
-本番main／Port／schema／grant定義／依存／通常構成は変更しない。既知の歴史対象閉鎖・複数permit・
+本番main／Port／schema／grant定義／依存／通常構成は変更しない。同一環境・publicationの未閉鎖permit一意制約を維持し、歴史対象閉鎖・別publicationにまたがる論理通知の抑止・
 照合後競合の未達は観測・記録だけで、実運用保証にしない。実運用Adapter・停止操作・provider通信、
 受付／worker／送信、publication／Modulith、Framework／CI／remote・Phase 4全体への開始承認ではない。
+preflightで判明したD11の前提誤りは同開始票§10へ記録し、§11でOwner訂正承認済み（2026-10-08）。
+訂正・承認文書commit後のclean source再固定と成立済みpreflightからのsource／環境差分確認を経て、
+訂正後D11を含む承認済みtest作成・48件検証へ進む。同じ範囲の開始承認を再要求しない。
 P4-ARではFramework本体だけでなく、Customer-like Consumer、package済みReference Application、検証Toolingおよび
 Developer Journeyを受渡し候補として棚卸しし、業務アプリ開発チームの受入側視点でbuild / run / operation / diagnosisを実証する。
 正式な受渡し対象はP4-AR Evidenceを入力とする見直し後Phase 4準備で判断し、Project TemplateはPhase 5境界を維持する。
