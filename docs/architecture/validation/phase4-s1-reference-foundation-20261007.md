@@ -1,6 +1,6 @@
 # S1初回Reference基盤：端末preflight（2026-10-07）
 
-**最新結果：§8の既存25 class／99件＋E2E1件baselineはPASS。検証専用設定の実効確認・baseline取得まで完了。通知の業務基盤実装・新規55件は未開始。** §1〜7の未実施／停止記載は各確認時点の履歴として保持する。
+**最新結果：§10の通常無効構成・Entity登録・migration互換の最小確認はPASS（新規8件＋既存Architecture2件）。§8の既存25 class／99件＋E2E1件は変更前baseline。通知基盤はJPA mapping／条件付きEntity登録／V4までの最小実装であり、Domain規則・保存Use Case／認可／Audit・全55件は未完了。** §1〜8の未実施／停止記載は各確認時点の履歴として保持する。§10の変更は未commit。
 
 ## 1. 結論・source・承認範囲
 
@@ -196,3 +196,49 @@ clean sourceでArchitecture2件とExpenseAuditRollbackPostgreSqlIntegrationTest1
 - 開始時にrunningだった既存postgres:15の2 containerは最終確認でexited（削除なし）となっていた。inspectの終了時刻は`f4dde4ab972f`が11:45:02 JST、`80f8cead3230`が11:45:08 JST。本作業のcommandに両IDの停止・削除はなく、停止主体・理由は未確認。自動再起動は行わない。資源観測のhost環境変化として記録する。
 
 **今回の出口は完了：検証専用設定の作成・実効制限の確認・既存baseline取得。** 次は承認済み順序に従う通常無効構成／登録・Reference-owned migration互換の最小確認から初回保存・認可・Audit基盤へ進む。新規6 class／55件、通常無効の新旧DB保護、初回基盤のOwner受入は未実施。Phase 4全体開始／非同期通知・復旧の接続／DoD／正式受渡し・remoteの判定へ拡張しない。
+
+## 9. 既存container停止のOwner確認とcommit境界
+
+§8の既存postgres:15の2 containerについて、Ownerは「検証を妨げないタイミングで停止いたしました」と確認した。停止主体・理由は確認済み。§8の未確認記載は当時の照会結果として保持し、baseline PASS／当該run cleanup成立の判定に変更はない。
+
+以降のlocal commitはOwnerへの事前確認またはOwner自身の操作とする指示を受領した。remote pushは現時点で不要。§10の作成・検証ではgit add／commit／pushを行っていない。
+
+## 10. 通常無効構成・登録・migration互換の最小確認
+
+**PASS：M01〜M05の5件、R01〜R03の3件、既存ReferenceArchitectureTestの2件。失敗0／error0／skip0。** 初回基盤全体・登録7件全体・新規55件の受入ではない。
+
+### 作成した最小範囲
+
+- Reference-owned notificationのRICH／JPA／SHARED metadata、RecoveryPermit／RecoveryConsumptionのJPA field mapping。
+- 専用NotificationFoundationConfiguration。未設定／falseで登録不在、trueだけでnotification modelのEntityScanを追加。不正値は診断して起動拒否。既存EntityScan、root Repository scan、Security、通常propertiesは変更していない。
+- 別location `db/migration/kkref-notification/V4__create_notification_recovery_records.sql`。採用済み2 table・必須値／期限／閉鎖一式制約・未閉鎖target partial unique・operation unique・自module内FKを追加。V1〜V3、Framework migration、POM／依存／Rules／CIは変更していない。
+- この段階のmodelはmappingのみで、操作を受け付けるfactory／更新method／Application／Repository／Adapterは未作成。Domain規則や用途別grant・実Query／Recorder接続は次段階。operational entrypointを設けず、testの有限UUID／TTL等を運用値へ昇格していない。
+
+### 検証結果
+
+| ID／class | 今回確認した内容 | 結果 |
+|---|---|---|
+| M01 | freshのFramework二階層→Reference V1〜V4、両table・partial unique／FK、既存IdentityUserEntity／DepartmentEntity／ExpenseRequestと追加2 Entityの登録、Hibernate schema validate | PASS |
+| M02 | V1〜V3から管理側の両location適用。既存department rowとV1〜V3／baseline履歴の全列が不変 | PASS |
+| M03 | test限定の失敗SQLでV4 transactionをrollback。途中tableが残らず、既存department rowと履歴が不変。既存SQL／履歴の削除・validation無効化なし | PASS |
+| M04 | 通常Web起動・未設定、V4未適用。追加Entity／専用Configuration Bean不在、既存3代表Entity保持、通常Flyway validation成功、追加table不在 | PASS |
+| M05 | 管理適用後に通常Web起動・false・既存locationのみ。validation成功、追加Entity／Bean不在、V4履歴・両table・permit／consumption test記録を保持 | PASS |
+| R01〜R03 | 未設定／false時の登録不在と既存代表Entity保持、不正値による起動拒否 | 3／3 PASS |
+| ReferenceArchitectureTest | businessModuleRules＋frameworkOwnershipRules。Rules除外・Framework内部import追加なし | 2／2 PASS |
+
+通常locationでのV4 validationは**現行のFlyway既定`*:future`**で成立した。ignore pattern、validate-on-migrate、既存locationを変更していない。保証対象は現行V1〜V3＋別location V4であり、通常locationに後続versionを追加する際や旧JAR互換は別途再検証する。
+
+M01の有効時登録確認は現段階のmappingに限定する。必要なService／Adapter／Repository全体の登録・未接続拒否（R04〜R07）や認可・Audit・grantの成立を認定しない。既存25 class＋E2Eの変更後全回帰は初回基盤が揃った段階でbaselineと同じ条件で行う。
+
+### source・環境・記録・cleanup
+
+- branch `feature/phase4-s1-reference-foundation`、基点HEAD `1311fbfd8c471d0488427274e60fc81d7b91bb7c`＋未commitの新規7 file。本Evidence追記を加えた作業差分は8 file。
+- offline clean test-compileは108 production source／28 test sourceを再compileし45.642秒で成功。前段incremental compileも成功したが、clean実証と区別する。
+- 初回実行のM5／R3は成功したが、Architectureで旧package `org.koikifw.reference.web.ReferenceBusinessUrlSecurityTest`の残存classが再検出され停止。旧class更新時刻13:11:23、現packageのclass更新時刻13:13:26 JSTを確認。生成主体は未確定。source／Rules変更による回避はせず、失敗記録を保全しclean build後に別runで再確認した。
+- 再確認は既存row・追加記録保持のassertionを補強した変更後の条件。最終M5／R3／Architecture2を採用し、前runの結果を加算しない。
+- DB同時1、memory1 GiB／CPU1／max_connections16、test heap768 MiB、既存startup pool4／idle1。管理接続は逐次1本とFlywayの管理処理のみで、用途別runtime grantの証拠ではない。新規DBのlock／statement／transaction timeout各10秒もDB SHOWで確認。
+- 最終classの外側実時間はM5＝40.97秒、R3＝36.22秒、Architecture2＝15.60秒。DB class各10分以内。5秒間隔の観測でavailable memory最小15.20 GiB／disk44.18 GiB、DB最大1、資源違反なし。標準作業量の消費をこれらの実時間から算定しない。
+- 新規DB ID `5697e56497fabb27a0d0647b71e8b39285c0d8531efbc806d167c2468ab07c8d`／`4363c36d862e3938818b6328b5e5ba1c478e2b6c329f7ea65a51815853d638cf`の削除と補助container残存0を各class後に確認。Web context／poolもtry-with-resourcesで終了。失敗SQLの一時file／directoryは当該pathだけを削除。
+- 証拠は`build-support/reference-e2e-verification/target/s1-initial-check-20261007-clean/`のresults.json、source-hashes.json（新規7 file）、class別sanitized XML／log／manifest、resources.jsonl。初回停止は`s1-initial-check-20261007/`に保持。XMLの環境・captured output・失敗payloadを除去し、秘密原文をrawへ保存しない。Maven heap環境値はfinallyで復元。
+
+**次の作業：** この最小mappingを採用済みのDomain生成・期限／対象／閉鎖規則へ完成させ、限定Repository／Adapter・Spring管理transaction・Public IdentityQuery／Recorder・用途別grantへ接続する。全55件・変更後25 class＋E2E・Owner受入は残る。commitは事前確認またはOwner操作を待つ。
