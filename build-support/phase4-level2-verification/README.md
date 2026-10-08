@@ -99,3 +99,49 @@ See [start/stop contract](../../docs/development/phase4-s1-stage-b1-read-connect
 and [case, resource, failure, cleanup evidence](../../docs/architecture/validation/phase4-s1-stage-b1-read-connection-20261008.md).
 Neither observed termination nor a provider row proves drain, distributed fencing, safe retry,
 complete coverage, B-2 readiness, or production delivery safety. D11/D12 and I05 remain explicit gaps.
+
+## S1 B-2 initial issue/read verification
+
+B2 connects a Reference-owned, explicitly enabled JDBC Adapter to a frozen Tooling-owned source.
+The fixture stops its ordinary child, disables the writer roles, rejects remaining source sessions,
+and exposes a SELECT-only view. The Reference protection scope surrounds the existing issue
+transaction through commit or rollback. The ordinary configuration remains disabled; consume/close
+evidence remains disconnected. Issuing a permit does not prove safe delivery or authorize resend.
+
+The bounded collection is 54 new cases and 301 regression cases. See the
+[approved start/stop contract](../../docs/development/phase4-s1-stage-b2-issue-read-limited-start-review-20261008.md)
+and [source, commands, failures and cleanup evidence](../../docs/architecture/validation/phase4-s1-stage-b2-issue-read-20261008.md)
+for current results and the Owner-approved corrections. Tooling helpers, SQL and acceptance tests
+are outside the ordinary JAR; the five new Reference main types intentionally belong to its JAR.
+
+**Current status (2026-10-08):** bounded verification complete; Owner result accepted (Evidence section 19).
+New 54 and regression 301 cases qualify, including the first packaged E2E execution and final
+cleanup audit. Saved 54 + 189 cases retain their non-impact conditions; aligned 111 cases were
+preserved and checked, followed by E2E 1. These are separate artifact epochs, not 355 reruns in
+one classpath. The aligned Web MVC cache (`347542...`) is retained under section 30 approval.
+The Reference package includes its five intended main types and excludes fixtures. Original
+failures remain preserved. See Evidence sections 17–20 and
+`tmp/b2-verification-0321079-20261008/E2E-finish/source-after-install.json` for current hash inputs.
+
+`scripts/verify-s1-b2.ps1` is a bounded session runner, not a fresh-clone bootstrap. Its Reference
+stage uses the approved isolated source/output at `tmp/b2-isolated-compile-r2-0321079-20261008/`.
+The process bridge uses the preflight JDBC classpath under `tmp/b2-preflight-0321079-20261008/`.
+Regression commands and approved continuation are recorded under
+`tmp/b2-runtime-route-r2-0321079-20261008/`; per-class raw is kept separately under
+`tmp/b2-verification-0321079-20261008/`. Existing run directories are never overwritten.
+
+To revisit evidence, inspect the class XML, exit/result metadata, source/artifact hashes and
+approval chain without running Maven. To execute again, first confirm the source, JDK/Maven,
+offline dependencies, Docker, cached images/browser, explicit case list, remaining budget and
+fresh run paths against the approved envelope. A new full run requires a new bounded execution
+decision; the failed-attempt retry allowance does not renew itself. Preserve original target/JAR
+and isolated versions; do not copy isolated classes back or change compiler settings.
+
+The fixture does not establish production fencing, drain, privileged administrator exclusion,
+backup/DR, provider delivery, complete coverage, or formal adoption. Historical target closure
+and cross-publication suppression remain outside this initial issue/read boundary. Framework
+API/Rules, distribution, CI/remote and Phase 4 overall retain their separate approval boundaries.
+
+B2受入成果のsource固定対象・証拠所在・再見／再実行条件は
+[fixed-results handoff](../../docs/development/phase4-s1-stage-b2-fixed-results-next-session-handoff-20261008.md)
+と[hash/evidence manifest](../../docs/architecture/validation/phase4-s1-stage-b2-fixed-evidence-manifest-20261008.json)を参照する。

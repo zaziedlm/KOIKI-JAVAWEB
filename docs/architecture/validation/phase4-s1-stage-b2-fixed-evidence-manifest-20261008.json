@@ -1,0 +1,1475 @@
+{
+  "SchemaVersion": 1,
+  "RecordedDate": "2026-10-08",
+  "Status": "OWNER ACCEPTED",
+  "Branch": "feature/phase4-s1-reference-foundation",
+  "BaseHead": "03210795a8ffd146d0bcc10c9d1da4d62a69308c",
+  "CommitState": "OWNER_APPROVED_FIXATION_BY_CONTAINING_DOCUMENT_COMMIT",
+  "HashEncoding": "SHA256 raw file bytes; Git CRLF normalization can change checkout hashes",
+  "NewCases": 54,
+  "RegressionCases": 301,
+  "TotalCases": 355,
+  "ArtifactEpoch": "saved54+189 with non-impact checks / aligned111 preserved / first E2E1",
+  "SourceFiles": [
+    {
+      "Path": "build-support/phase4-level2-verification/scripts/verify-s1-b2.ps1",
+      "Bytes": 18262,
+      "Sha256": "53E936DA0233E2EBD20AB6EBE43E6A136F3CCAD6D2CF19BA514236B61548ADCA"
+    },
+    {
+      "Path": "build-support/phase4-level2-verification/src/test/java/org/koikifw/buildsupport/phase4/b2fixture/B2FrozenSourceCoordinator.java",
+      "Bytes": 5004,
+      "Sha256": "FBCEB6FBD4A5549846C07FAE65493093AF9419F80A8D4816C6F3DA30A5AD1810"
+    },
+    {
+      "Path": "build-support/phase4-level2-verification/src/test/java/org/koikifw/buildsupport/phase4/b2fixture/B2FrozenSourceProtocol.java",
+      "Bytes": 8926,
+      "Sha256": "E86B1045499548347870914003425D8CBA49C2C862B69A97B6A6172698473EC2"
+    },
+    {
+      "Path": "build-support/phase4-level2-verification/src/test/java/org/koikifw/buildsupport/phase4/B2FrozenSourceProtocolTest.java",
+      "Bytes": 7388,
+      "Sha256": "488798DBD3CEC0EE27F97E21B5386AAEEB103C681A96A4911D2B7F986DC3D029"
+    },
+    {
+      "Path": "build-support/phase4-level2-verification/src/test/java/org/koikifw/buildsupport/phase4/B2SourceFreezeTest.java",
+      "Bytes": 6701,
+      "Sha256": "BBF8B01C6A36AFD552E24B167F212FA06866AA4F80CFB3718710665C5B0C7FF7"
+    },
+    {
+      "Path": "build-support/phase4-level2-verification/src/test/resources/s1-b2/frozen-source.sql",
+      "Bytes": 2993,
+      "Sha256": "B96C80C9E0E58FAE48C293B1584382ECBF9461338EAC967E8F42244018EB2096"
+    },
+    {
+      "Path": "koiki-reference-app/src/main/java/org/koikifw/reference/notification/adapter/outbound/configuration/FrozenRecoverySourceSettings.java",
+      "Bytes": 2574,
+      "Sha256": "6349F268442C188E9B7CB652F1025D4420E40A42880018FE2ADD9DC7C559B084"
+    },
+    {
+      "Path": "koiki-reference-app/src/main/java/org/koikifw/reference/notification/adapter/outbound/operational/JdbcProtectedRecoveryTargetAdapter.java",
+      "Bytes": 5636,
+      "Sha256": "F67083A7BA6CEEA4F90653A3AA273C8AC4718A7F3A0D0875A7F5B444A2C08B17"
+    },
+    {
+      "Path": "koiki-reference-app/src/main/java/org/koikifw/reference/notification/application/port/outbound/RecoveryIssueProtectionPort.java",
+      "Bytes": 469,
+      "Sha256": "6673E6E91E85C20D1F7218A09471704EE7D862735DF5FA3AE9E8D3706BCFA9D9"
+    },
+    {
+      "Path": "koiki-reference-app/src/main/java/org/koikifw/reference/notification/application/ProtectedRecoveryIssueService.java",
+      "Bytes": 1566,
+      "Sha256": "9F6827F02AA99DF56754164E7D61047BD068DE26C9D55AE903CD3E1CC0B6ABCE"
+    },
+    {
+      "Path": "koiki-reference-app/src/main/java/org/koikifw/reference/notification/configuration/FrozenRecoverySourceConfiguration.java",
+      "Bytes": 3781,
+      "Sha256": "49924A6A1DFC92E5162028F7ACE3A43C1BF63FDCD79F0AA50A6004C40B955E36"
+    },
+    {
+      "Path": "koiki-reference-app/src/main/java/org/koikifw/reference/notification/configuration/NotificationFoundationConfiguration.java",
+      "Bytes": 5568,
+      "Sha256": "7219146353603678CF0761C8C55CE701B08F7182FD31E8203F1C6D00AEA7D69F"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/B2FrozenSourceRegistrationTest.java",
+      "Bytes": 6366,
+      "Sha256": "78C352D5170185719AF193ED875D70FE2CCEECA355E138262595CBC509675D32"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/B2IssueBoundaryTest.java",
+      "Bytes": 4093,
+      "Sha256": "9F9991BE8D30BC961883B21BD60168AA0B786D1E73300991320CCEDBB13C6AB9"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/B2IssueTransactionTest.java",
+      "Bytes": 5063,
+      "Sha256": "7C8815DF3726D0AF271DEBA51BC12C1E6C4D50B44538AD64E88C3184DA050D21"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/B2ProtectedIssueReadTest.java",
+      "Bytes": 5239,
+      "Sha256": "9D6315F363BAEF7FCD972FC941EDB381CDADEC880DAE7BE65C54FB63CDFEA56C"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/referenceacceptance/notification/B2FrozenSourceProcess.java",
+      "Bytes": 6899,
+      "Sha256": "728AC8CD1B92329662C4F16A6D0864F5300EE2B4C172676C0430D07A4B2209A5"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/referenceacceptance/notification/B2ReadConnectionHarness.java",
+      "Bytes": 7576,
+      "Sha256": "CEBC62446CCB1D9508DBEB6CBEABEA82E38125BDB279CF60BACB06E8EB3B94B6"
+    }
+  ],
+  "Artifacts": [
+    {
+      "Path": "tmp/b2-isolated-compile-r2-0321079-20261008/koiki-reference-app/target/koiki-reference-app-0.1.0-SNAPSHOT.jar",
+      "Sha256": "5F78A9C4C88ED1E6B05222B8F607F7F0637D13210FB566E9AFD5B8555DE0876D"
+    },
+    {
+      "Path": "build-support/phase4-level2-verification/target/phase4-level2-verification-0.1.0-SNAPSHOT.jar",
+      "Sha256": "E72019D3CA6A019D22548CDDCF88EA848D181F15E6A71E31E7C6069FC9C16F3A"
+    },
+    {
+      "Path": "tmp/b2-artifact-alignment-0321079-20261008/koiki-starters/koiki-starter-web-mvc/target/koiki-starter-web-mvc-0.1.0-SNAPSHOT.jar",
+      "Sha256": "34754252439BB8B5C446122A0F173B15B139731DF80A50D77C2F96B750F66FC1"
+    },
+    {
+      "Path": "koiki-reference-app/target/koiki-reference-app-0.1.0-SNAPSHOT.jar",
+      "Sha256": "604412D21CB4C17F36E110EB9ED3D3FB71E586B7D4C8E2BF03E43F1CDA78CD6E"
+    }
+  ],
+  "EvidenceIndex": [
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Tooling-first/gate-summary-corrected.json",
+      "Bytes": 5236,
+      "Sha256": "A481EB0DD508E3047416EB87F6B3B0BFD7E52277E71CB942FDED4B1A12917E77"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Tooling-first/results.json",
+      "Bytes": 597,
+      "Sha256": "1F0FE2BB63D2246EF59DED7110E4A53E48A26AF2AD7D4F37BA37D322CEF9082B"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Tooling-first/summary.json",
+      "Bytes": 1843,
+      "Sha256": "495FE35B9470D86A026E6A5D129FF9297F157BEC63293ED581F8A48F94ECFDCF"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Tooling-first/B2FrozenSourceProtocolTest/junit-sanitized.xml",
+      "Bytes": 1809,
+      "Sha256": "CCE8F300433B083B9E5355F8EE5FB33E737277C896A197030527E5C294BA7212"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Tooling-first/B2FrozenSourceProtocolTest/result.json",
+      "Bytes": 271,
+      "Sha256": "47ADF089F79A7006676DC3161449CFADEF123FDB2D9FE9EDBCD93B2E5AE68F26"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Tooling-first/B2SourceFreezeTest/junit-sanitized.xml",
+      "Bytes": 1677,
+      "Sha256": "1F3D5F05ECD775A02361B7E69A7C762BFF307E5CE502635B8F941387888C22D7"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Tooling-first/B2SourceFreezeTest/result.json",
+      "Bytes": 263,
+      "Sha256": "42FF633ABB5DF4C0ADB5A604CBEAE39C3ED50E61353B8F8063967B7BAF4879D7"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Reference-registration-first/junit-sanitized.xml",
+      "Bytes": 1633,
+      "Sha256": "EC58B9CF09872C91334E8DCD3896D9245C11B6B759B7C68EB79679A0AAC698B6"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Reference-registration-first/result.json",
+      "Bytes": 701,
+      "Sha256": "FD70452ABCA9FC2CFB63373081B03BEE051B6F2A0C706B1EE78187536AB70298"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Reference-isolated-r2/results.json",
+      "Bytes": 897,
+      "Sha256": "74D46012E3F5048ED3FA356B979D20AA0856A8709D2AC4C9EEE8CA71FA69C6D2"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Reference-isolated-r2/summary.json",
+      "Bytes": 218345,
+      "Sha256": "639E3043497379D4C35807CD3AB8D6778F39F37BBAAE5EEE725D12EC5230F180"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Reference-isolated-r2/B2IssueBoundaryTest/junit-sanitized.xml",
+      "Bytes": 1577,
+      "Sha256": "F56D7E0FAF26F0D2E6F6FC3C576EFAB978CD02A671A44D3C4B0A546A1D352E2C"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Reference-isolated-r2/B2IssueBoundaryTest/result.json",
+      "Bytes": 265,
+      "Sha256": "CD41E55BD886506C4C2815EF3B1866CBD4FCF36CF48285A6FBA7312929D222F9"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Reference-isolated-r2/B2IssueTransactionTest/junit-sanitized.xml",
+      "Bytes": 1693,
+      "Sha256": "AC015AD64706159CE3A7C9145628CD532B94F7A816353EA19264C057AF4B59E5"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Reference-isolated-r2/B2IssueTransactionTest/result.json",
+      "Bytes": 268,
+      "Sha256": "5BA4834CB777E2BB0363BCEE895F76EA60B561A6DDA809C3E7F7AF796DEF0969"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Reference-isolated-r2/B2ProtectedIssueReadTest/junit-sanitized.xml",
+      "Bytes": 2169,
+      "Sha256": "7F97A463E37C7B97245741543F8D8601029E6309268BE6E8600676A96031D26A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Reference-isolated-r2/B2ProtectedIssueReadTest/result.json",
+      "Bytes": 272,
+      "Sha256": "F3B1B1D56397DA1B5FCF24685CC2E2EE154E0634B6B7D4C48DA56B323D949093"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/results.json",
+      "Bytes": 9334,
+      "Sha256": "94DDE999D58E30D274369441E50F471981B7CBB74A25AF28D0325EB3CC2AC073"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1EvidenceLedgerTest/junit-sanitized.xml",
+      "Bytes": 1805,
+      "Sha256": "468F6B946C5C29722D32082042FF1BBE9C7D976671E711476DC1C64B83D80905"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1EvidenceLedgerTest/result.json",
+      "Bytes": 714,
+      "Sha256": "ECE3AEFB10BEA463115942E7CF47628F16DC940C872C86D3508D09010A2FF4E3"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1ProviderReadTest/junit-sanitized.xml",
+      "Bytes": 1501,
+      "Sha256": "76427EBE5C0880308A18835A789A82529F4CF162FA208766E626C8E03E10ACFA"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1ProviderReadTest/result.json",
+      "Bytes": 708,
+      "Sha256": "F0200C8F53232092F5F9405923A2009D751A763DA47C367F7E56269ACE5D724D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1ReadConnectionIT/junit-sanitized.xml",
+      "Bytes": 1520,
+      "Sha256": "05EE2C51BE6FFC9C9738BE7E0106CE846848606E654C80D9B4BDBE9E9A413034"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1ReadConnectionIT/result.json",
+      "Bytes": 739,
+      "Sha256": "EE85001342C647D5ADDD6360E9C2C4944316BAC73F124B025205D66EF4FD8D8D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1ReaderPrivilegeTest/junit-sanitized.xml",
+      "Bytes": 1538,
+      "Sha256": "19CC5487AB7D5B1177BC16721D1FCA324A8A8D358DBE04044F099B43C7A6D8B8"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1ReaderPrivilegeTest/result.json",
+      "Bytes": 714,
+      "Sha256": "D6D80EE77D617E262F08B5EC10BA98AFA6A035C19E34DE3CFA554A7A1DF97927"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1StopObservationTest/junit-sanitized.xml",
+      "Bytes": 1485,
+      "Sha256": "1E6FA11181A52049974FCD1DA1E701EF3389F080B3B6F283F23089F3F9B81743"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1StopObservationTest/result.json",
+      "Bytes": 714,
+      "Sha256": "29625BE01C6BFA834BFC0ECB4EE81C2771B8727B4AD2229E7EB96C3940946836"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1TargetReadTest/junit-sanitized.xml",
+      "Bytes": 1742,
+      "Sha256": "712D8EB9204BC1D9472CD4713F1AB8B513C7D7AACC9D009001D0AD87A0313A53"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/B1TargetReadTest/result.json",
+      "Bytes": 706,
+      "Sha256": "9A7BF3A505FB2CFF0D0583CB2441A46D163618DFA3686066127B13C36213607F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/OperationalRecoveryEvidenceStoreTest/junit-sanitized.xml",
+      "Bytes": 1979,
+      "Sha256": "49305393C2A38094DDB9B766A076217FB1CFBD5B2067A6DF182E6E8234ACC20D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/OperationalRecoveryEvidenceStoreTest/result.json",
+      "Bytes": 761,
+      "Sha256": "D3B8053E41B8FFE1FA85B91904BFDEE415A8E8D1DD0389DF379773EDBCC3EE46"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/OperationalRecoveryProviderEvidenceTest/junit-sanitized.xml",
+      "Bytes": 1711,
+      "Sha256": "079F75F44366100C68980BAA8D619BA5BB10DF65E1E48C8F999E9ADDCA676DF6"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/OperationalRecoveryProviderEvidenceTest/result.json",
+      "Bytes": 765,
+      "Sha256": "266C3ED1BF5A47D9199F8C71FD30C2286A1FBD629260D23AD03A229D18A6565A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/OperationalRecoveryStopEvidenceTest/junit-sanitized.xml",
+      "Bytes": 1632,
+      "Sha256": "77CC1EB8BA6DFFEF92014A4CC65C6CDE78B6916C112226034170180C8456EF72"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/OperationalRecoveryStopEvidenceTest/result.json",
+      "Bytes": 757,
+      "Sha256": "64D4DA6B5DF47021AAF311DF9F668918DEA1B2BA80F86FBDB70C89044D74FA8A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/OperationalRecoveryTargetContractTest/junit-sanitized.xml",
+      "Bytes": 1903,
+      "Sha256": "B37C15BD862EC3F4F275687353347C2FD1A49D215688F88AB92D6678750CA49D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/OperationalRecoveryTargetContractTest/result.json",
+      "Bytes": 763,
+      "Sha256": "61EA38E120D05DEA066EBB84DB7DE5F684F2372ED03474C3926779445538D3CA"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/ProcessCrashRecoveryIT/junit-sanitized.xml",
+      "Bytes": 725,
+      "Sha256": "A560E5BAC387285B66EDEDB825D868284EC03F0C3F27FE5AE19198E7D9A83953"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/ProcessCrashRecoveryIT/result.json",
+      "Bytes": 850,
+      "Sha256": "A44C1792C9AB2440A967B026DE05C8FB46F894A8356159C92413C86AB63E7853"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/PublicationRecoveryTest/junit-sanitized.xml",
+      "Bytes": 1057,
+      "Sha256": "E47A9FE577DC5DF9430D15291A0A153E12821F7E8E5B229DBAB354EE0615F48B"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-first/PublicationRecoveryTest/result.json",
+      "Bytes": 718,
+      "Sha256": "B2179514D230EF015A0300DAE7EB527E5EA1872489C2959AF3084731A453EDF5"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/results.json",
+      "Bytes": 31466,
+      "Sha256": "02FAFCCAF0F97D1D8725925213183A7EE242BD1EA455A0CF78F825C32D9E8FB0"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/reused-results.json",
+      "Bytes": 9334,
+      "Sha256": "94DDE999D58E30D274369441E50F471981B7CBB74A25AF28D0325EB3CC2AC073"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/DepartmentDeactivationPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 810,
+      "Sha256": "CC2E0F24F785BA0C74B300A74682BF531E9EE2944BF8A4A4EBEC28410A998D48"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/DepartmentDeactivationPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 713,
+      "Sha256": "DBE327CF185786127C8244128F7BAFB4EFFA4A239CE7BD3EC1083CAB53D79091"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/DepartmentDeactivationPostgreSqlIntegrationTest/result.json",
+      "Bytes": 872,
+      "Sha256": "9E3B39379913BCCEDA373513CCEF93F145EAB934BD568CBF07A1F9F7621B25C3"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseApiControllerTest/junit-sanitized.xml",
+      "Bytes": 1512,
+      "Sha256": "9D7B11E3E9015D30A6B335BC1A835390DB38938DB044276B3109464755A4FB44"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseApiControllerTest/process-exit.json",
+      "Bytes": 689,
+      "Sha256": "8751577D421C9EACC6CCE170DFBBC9DA6F76E97361AA77D6B9A855CF9A261A6C"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseApiControllerTest/result.json",
+      "Bytes": 824,
+      "Sha256": "B1A355064F6B4671865152B1B33C7C53F92C4A3CBFBBDC69901130527259F07F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseApiPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 1039,
+      "Sha256": "8EC0D5AFF859F2B94658EC1D61E1390CE072C3C65889FB7E577BC79DF8AF2388"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseApiPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 701,
+      "Sha256": "C0C170A10E5843E26DBB14A2BCE81D73A4D6CF8B01BCB87B11C49E56FB8E4CA4"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseApiPostgreSqlIntegrationTest/result.json",
+      "Bytes": 848,
+      "Sha256": "EDA7A4F31593AE0AA767AF2B2351A067B41D055CC9637D7448C03C92290E6DE0"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseApplicationServiceMethodSecurityTest/junit-sanitized.xml",
+      "Bytes": 970,
+      "Sha256": "F1938954FE6E6F1E622A565EA88EBF47BFE8B1B94A95F8B7066E961BB7B82E8F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseApplicationServiceMethodSecurityTest/process-exit.json",
+      "Bytes": 708,
+      "Sha256": "CC66C8E19C584D3CD71ED326346C6BDDDB29B19EC28BB227350B6C7E2402B582"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseApplicationServiceMethodSecurityTest/result.json",
+      "Bytes": 863,
+      "Sha256": "5BEBB37B64538031893E705029683815283C52C81896558DDDC70E3593BA75EB"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseAuditRollbackPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 594,
+      "Sha256": "A0F3FE56F3F1F81D2A3383E12F637A24A4C0D28A31D4F92F4D045007C996D1DA"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseAuditRollbackPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 711,
+      "Sha256": "921CBA374865C82DEEC562CC47355A8A3035B3BCF0BFAF68BEBE742C0D4BE958"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseAuditRollbackPostgreSqlIntegrationTest/result.json",
+      "Bytes": 868,
+      "Sha256": "12776F0839F3DA2153F69301C8B3E93F6747A3457583EE06F511B87068F2561C"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpensePostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 1519,
+      "Sha256": "876BC74D541CF74B4E9A17DE2C8F4CE3EF653BA293712A9B4FDC6317085EFA8F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpensePostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 698,
+      "Sha256": "768E82EF709D69781D12E27D19417A9C8C0B54102FA585CA35C882347F351017"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpensePostgreSqlIntegrationTest/result.json",
+      "Bytes": 842,
+      "Sha256": "B13CAA313DF071A55D74A46F35AC9E68E57304AA2BDB5EFFCF65702C082B3840"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseReadModelPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 1356,
+      "Sha256": "4933AE8041665FC665C60F89FEE5D58A26113E1A68DD33299BAE2BC6077E501E"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseReadModelPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 707,
+      "Sha256": "A85FA7283DD1B997BF0184455A23423D132F26718609F4A36491E74E1479EA88"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseReadModelPostgreSqlIntegrationTest/result.json",
+      "Bytes": 860,
+      "Sha256": "83CFC29F1C7F420C728607CAEAD08037B0555707B3223562F90002B1DE08E0B8"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseReadServiceMethodSecurityTest/junit-sanitized.xml",
+      "Bytes": 594,
+      "Sha256": "1D7571A6429E94B66410E82E9867E0F80476D1E96D7A403ABD7F4B18B1C1FD33"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseReadServiceMethodSecurityTest/process-exit.json",
+      "Bytes": 701,
+      "Sha256": "314551A2B1C9960AA6FF5338D717C7DCC69748C8FF467CF388E963AD66C0AC47"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseReadServiceMethodSecurityTest/result.json",
+      "Bytes": 849,
+      "Sha256": "1BFB6141868139744FA6BDC5CBCF86B3B0912EA35FF758064DB6B9E03B41437C"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseRequestTest/junit-sanitized.xml",
+      "Bytes": 1022,
+      "Sha256": "A90BF7C236C3BD039951FD24A9A0770390F419C36B4C36EE40794C86173B43F1"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseRequestTest/process-exit.json",
+      "Bytes": 683,
+      "Sha256": "F5C38207632161394F1CD3D5C715D53DEF4F59C2F129D1D1549D2116BDC6BFED"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ExpenseRequestTest/result.json",
+      "Bytes": 813,
+      "Sha256": "378848946200BB111F4049704369AAC0EAD9F647AC68D37D0EF4CDD951ADFBED"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityManagementControllerTest/junit-sanitized.xml",
+      "Bytes": 2085,
+      "Sha256": "1CF1440846394CFE20565766607017C1F717504B2A966140871E3935F6E47AD8"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityManagementControllerTest/process-exit.json",
+      "Bytes": 697,
+      "Sha256": "B41BC5C1D1F85931872674354CDBEB6222408ED5EFDB84DFBAB6DD2452DF9AE5"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityManagementControllerTest/result.json",
+      "Bytes": 841,
+      "Sha256": "1379A8AE42C89D6A1A55DF7C7FD7C776E5AD0B355EE90EF85100EACF561D362A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityManagementExceptionHandlerTest/junit-sanitized.xml",
+      "Bytes": 1532,
+      "Sha256": "C494F1531FEF2D2C9F7D9B475F5BF9E3BDFDF772980F06DC29E2AAF72BE28753"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityManagementExceptionHandlerTest/process-exit.json",
+      "Bytes": 703,
+      "Sha256": "4C83B9C661BD1BB197FD5F2747F0187315CFD9D2E1AD07795A4624315D1DDF0B"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityManagementExceptionHandlerTest/result.json",
+      "Bytes": 853,
+      "Sha256": "7DE2F44ABD1693065659AA873659AB7BB66503A1C108ABD429CF893D1D6BF602"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityUrlSecurityTest/junit-sanitized.xml",
+      "Bytes": 1853,
+      "Sha256": "2EC8039AD9F461E57EE692095A97624CE977DC96EA97080E13F28EACEE9EA4E0"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityUrlSecurityTest/process-exit.json",
+      "Bytes": 688,
+      "Sha256": "F4C76530F934229DFD33B65E84C54784748939EE8482B8C01CFF7A068D2C9499"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityUrlSecurityTest/result.json",
+      "Bytes": 823,
+      "Sha256": "4B2973C2BD3E242553B7337985B36E93CC882FCBD1BFC7D75FC09032F707D331"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityUserManagementMethodSecurityTest/junit-sanitized.xml",
+      "Bytes": 1548,
+      "Sha256": "BA7014C57A846BCF0B21BD0AF712D83603E5DBC6EBBCFA282C473623BD9E27BD"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityUserManagementMethodSecurityTest/process-exit.json",
+      "Bytes": 705,
+      "Sha256": "EA78C2D2834CAA67AADAEC128FB97A65A182AC4B500721CDF971F0CFB3411679"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityUserManagementMethodSecurityTest/result.json",
+      "Bytes": 857,
+      "Sha256": "05DF6EEB39738741EFF4A178ED73833162B84FF8832D50CC07FF8FAEE05CB1EE"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityUserManagementTest/junit-sanitized.xml",
+      "Bytes": 926,
+      "Sha256": "15982B3601152C74C7FE5E2F61DA3B28E25008DD9C77CB17F00FF163F742DE97"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityUserManagementTest/process-exit.json",
+      "Bytes": 691,
+      "Sha256": "66AC651B0329A9A26C90C25BB0250EF56D97B461593770B523EF2248CDF54437"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/IdentityUserManagementTest/result.json",
+      "Bytes": 829,
+      "Sha256": "E9F5AB05C22E874411ECEC444F748FF15146DD9EF955ACE5ABACFA6C6D6FF9D7"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/JpaMasterAvailabilityQueryTest/junit-sanitized.xml",
+      "Bytes": 634,
+      "Sha256": "436B6D7E4909CEE1517017068BDC98D7C21229CD678EF6193F992D0F729BD55E"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/JpaMasterAvailabilityQueryTest/process-exit.json",
+      "Bytes": 695,
+      "Sha256": "8A305048B0464EF0449F318B4626E2D406B42023FC8C843066D38AB0FD655AFB"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/JpaMasterAvailabilityQueryTest/result.json",
+      "Bytes": 837,
+      "Sha256": "E49DDA3689779DB659011500C78F79C7978BFA6A71E2FB2440DD5C44295A30CA"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryConfigurationDbTest/junit-sanitized.xml",
+      "Bytes": 1452,
+      "Sha256": "9A9926E8F8561B96D41BBF7516DEE9B1C98DDB0A4968CD2D3BFCD1CDF17E6592"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryConfigurationDbTest/process-exit.json",
+      "Bytes": 610,
+      "Sha256": "A7B1FDF870770A625AFDDFE453D8A6A6DF8FBBB0E0D4FD51B7187FE894AC5802"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryConfigurationDbTest/result.json",
+      "Bytes": 756,
+      "Sha256": "8930A97E2C93E09F02040B095DBD8096A6D182401446B841EDD6B11A8054747D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryConfigurationLoaderTest/junit-sanitized.xml",
+      "Bytes": 2218,
+      "Sha256": "F42C7F00251380AE91FF5058398117B2EB7AEDC60AEB7F48B46372AF5EDBE316"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryConfigurationLoaderTest/process-exit.json",
+      "Bytes": 614,
+      "Sha256": "45CEE806B89C760BA74BC5B5F56625E649D5AAB01C7CE9F7F6DF14FE3D919F2C"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryConfigurationLoaderTest/result.json",
+      "Bytes": 765,
+      "Sha256": "1DF75A8AFFE3A7A857F4E17FB039B28D73322A7CCCEA21DB98D4FEE3F60A6933"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryConfigurationRegistrationTest/junit-sanitized.xml",
+      "Bytes": 1497,
+      "Sha256": "29DC42B3D4F423AE4D6EE5F0CE72827101767A311780DD00455B2C0EEFE2FFEC"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryConfigurationRegistrationTest/process-exit.json",
+      "Bytes": 621,
+      "Sha256": "4B9746D6F78224DFF1F594AA9A05AE1E4663FEAE5B95E8895C4511A05F1BDDEF"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryConfigurationRegistrationTest/result.json",
+      "Bytes": 776,
+      "Sha256": "BDDDEF9D9A0B1F8BA2C199C8B41DA35889C94FBDF7F38361D9F09800A4540E26"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryScopeAdapterTest/junit-sanitized.xml",
+      "Bytes": 1536,
+      "Sha256": "1C0452571BFBA5D2DF2DF2A2A62A211EEB47ED316213E249290584271F620587"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryScopeAdapterTest/process-exit.json",
+      "Bytes": 607,
+      "Sha256": "B574A8A86B0076F799A917ED1ACB50AEDA8A5477C0A63D2DBA0468214C9C15F7"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryScopeAdapterTest/result.json",
+      "Bytes": 749,
+      "Sha256": "EEF95C51003E3741E0BB5CFE8B8D111D55003FD480A51A74F5D3B970FF0D199E"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryTtlPolicyAdapterTest/junit-sanitized.xml",
+      "Bytes": 1615,
+      "Sha256": "D2B29002BA4EB61E67754B5B78D1C9AB0C3791E201E75A6218FFF137C2C21FB0"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryTtlPolicyAdapterTest/process-exit.json",
+      "Bytes": 611,
+      "Sha256": "5947D4C3BF622CB3CB09944D5CD7CDEEAC21451A8B724A4A5F22B61B6AC73380"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ManagedRecoveryTtlPolicyAdapterTest/result.json",
+      "Bytes": 757,
+      "Sha256": "BF4B22DDBE1A71775D500014EDE79793C1B4C442241268EA3022CC7A2F4ACFEB"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterAdministrationMethodSecurityTest/junit-sanitized.xml",
+      "Bytes": 603,
+      "Sha256": "2A7F9AFAB0F6DAC30255BB4DB0238EC2A651E282AD795FDA8B16ED251BE954C9"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterAdministrationMethodSecurityTest/process-exit.json",
+      "Bytes": 703,
+      "Sha256": "AC4D5834B628772C2192E691DE4006D40A33E44B2947C89C647984303886F919"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterAdministrationMethodSecurityTest/result.json",
+      "Bytes": 853,
+      "Sha256": "6224293E33868EE0100AA71198FC7DEB17EA7C855E4FDC4048BC2FE797DE1CFC"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterAdministrationTest/junit-sanitized.xml",
+      "Bytes": 1067,
+      "Sha256": "C9D46F6EB20EF50E7A42CCC70A1E66077A4B98AAC58E343C496728759C85B45D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterAdministrationTest/process-exit.json",
+      "Bytes": 689,
+      "Sha256": "DD1E4C4D79C5A15BCA947143805B2E346F8B11D9945251241887F914DD6F1F49"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterAdministrationTest/result.json",
+      "Bytes": 825,
+      "Sha256": "2BFB59F82696CD98EAF9C28D5DEDF391166A81D8430739061A3B0381E16372DE"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterCatalogQueryMethodSecurityTest/junit-sanitized.xml",
+      "Bytes": 604,
+      "Sha256": "FF3017B25BE005AE8EC84AA15BA2760353F3CCF8E6D927E81D4C5169C26AAF7D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterCatalogQueryMethodSecurityTest/process-exit.json",
+      "Bytes": 700,
+      "Sha256": "F64C0B1E4E0C4430D84195B1A898E2A136C60CB80EFB14C00E46CAB2E8B583C7"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterCatalogQueryMethodSecurityTest/result.json",
+      "Bytes": 849,
+      "Sha256": "54F06E78323EC45170774023DFAA8A28F8963E9D181794A6CA777B3D37B11887"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 758,
+      "Sha256": "F4A5E4369231A654151A01A739B9D6C5B692845BBFCD169C16B1BE190981FF5B"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 697,
+      "Sha256": "0C3CC6EC9816FE45237EAAD6E91395BF3B5B58F2C7F822EF6FF64461BF73983E"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterPostgreSqlIntegrationTest/result.json",
+      "Bytes": 840,
+      "Sha256": "272290DC592D8BD9FC98E090FF2AE5D5344A0EFE5E24A72FC8C61773EA0E0957"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterReadModelPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 587,
+      "Sha256": "A32E74EF549BF02B19E2404C14DE1336510D4D7355BA987CB2354C0287F82B58"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterReadModelPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 706,
+      "Sha256": "82786E921B70494546EDC710CA8E0FA2C31A7D3706D16E6D959E41F93C0A2C5F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/MasterReadModelPostgreSqlIntegrationTest/result.json",
+      "Bytes": 858,
+      "Sha256": "D69931B7C8255FFE6973B116837200C7AA38DDA7D8B51A1F70D507D183D2F6E4"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationMigrationTest/junit-sanitized.xml",
+      "Bytes": 1238,
+      "Sha256": "911F87935F8227A28A7E89857F7DECB1A183E833CBDC4507EC897514A8085E32"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationMigrationTest/process-exit.json",
+      "Bytes": 612,
+      "Sha256": "C179C8BE9A5488E2393D63C851657E4F0A81870C8E4887093961E50F65F4615D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationMigrationTest/result.json",
+      "Bytes": 758,
+      "Sha256": "744894652AB3D26C72A81398DD8B184C2994005A3118FA207B19747BD5CAE16A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationPersistenceTest/junit-sanitized.xml",
+      "Bytes": 2434,
+      "Sha256": "F9D20A8E527D6271D97E989A13128D2274DA8A3ED74D9746C52DECFEA9764A6E"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationPersistenceTest/process-exit.json",
+      "Bytes": 614,
+      "Sha256": "E5F48A629E89E9263041659B1C21CD61A754181477F604AC945F590AAC030211"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationPersistenceTest/result.json",
+      "Bytes": 763,
+      "Sha256": "FCDF66CD1F8A4DC84551BE9A87652131BCFCA8D7A9CF8580E3B620560D22E586"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationRegistrationTest/junit-sanitized.xml",
+      "Bytes": 1631,
+      "Sha256": "08EDEA692ADBDBEB5DBEFC826673D5183643FA1DF45E472E76A71DF327525A8E"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationRegistrationTest/process-exit.json",
+      "Bytes": 615,
+      "Sha256": "BD5B948C01F9CBD1B5FB9C6D7DB6C014A7F805B61C4C5CDA8B1F009C33BAE439"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationRegistrationTest/result.json",
+      "Bytes": 763,
+      "Sha256": "36CAAE7CF9925DA9C74DB5ED5DD3A4528DCB9F98C8B512D55EF23DFD601032BC"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationTransactionTest/junit-sanitized.xml",
+      "Bytes": 3079,
+      "Sha256": "606AA979F37E625A6A55D40634B103B4F5F908A5029D130E982DD358BC52B556"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationTransactionTest/process-exit.json",
+      "Bytes": 614,
+      "Sha256": "0E0985075DC20526F2255638B94AFA03746712C58518BD967ED4C85700A40DF2"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/NotificationFoundationTransactionTest/result.json",
+      "Bytes": 764,
+      "Sha256": "022433B83CF2F7C6EF0B5EE4F96728EBFA7DFF28633769A82819CCCFCEE58CF0"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/OperationalRecoveryEvidenceDbTest/junit-sanitized.xml",
+      "Bytes": 2492,
+      "Sha256": "F63F683DB569AC28C7F8F000602E7ECB7BC19CEC73971D8D64D2ACF1CE935CAC"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/OperationalRecoveryEvidenceDbTest/process-exit.json",
+      "Bytes": 610,
+      "Sha256": "E8BF6E9BE6C33224D83E03143C882C8565A40A9EC1909A06FE034182CECCF96D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/OperationalRecoveryEvidenceDbTest/result.json",
+      "Bytes": 756,
+      "Sha256": "AD2EE5F2A79ED52C800C923DAC0E7DF6A0B2D03556977005C742CF4565F6E805"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/RecoveryConsumptionTest/junit-sanitized.xml",
+      "Bytes": 843,
+      "Sha256": "BCD48286058056E82911896199F434A010EFECA73D5A26AB75203193D3D8AAD0"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/RecoveryConsumptionTest/process-exit.json",
+      "Bytes": 599,
+      "Sha256": "132E840DF440386FA62CE87A11EE013649B47B2F74052761CC9D73B3413F50E3"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/RecoveryConsumptionTest/result.json",
+      "Bytes": 733,
+      "Sha256": "8618139517245893A3FFDD460E9D7CF386CA13DC5B69F33020FF7144AD0844AA"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/RecoveryPermitTest/junit-sanitized.xml",
+      "Bytes": 2146,
+      "Sha256": "E740DCAF9C87E76E8CB6300F59821F9CA428BB3A1CC7FCAB8A6C8E7D8DBB1E17"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/RecoveryPermitTest/process-exit.json",
+      "Bytes": 594,
+      "Sha256": "D5590329E1B2FE6F4159B7E2068B5E8CB68A72567D85C7D03AFB48CB2026FB07"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/RecoveryPermitTest/result.json",
+      "Bytes": 725,
+      "Sha256": "A3F5F82CE319706A75D30E45FCB4CAA0370E3AE983F703903BD98CB39D05764A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceApiJwtDecoderTest/junit-sanitized.xml",
+      "Bytes": 595,
+      "Sha256": "551293EB75456298DAE8B6491F425EFC19ECB6801EB060581870857118E2F088"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceApiJwtDecoderTest/process-exit.json",
+      "Bytes": 691,
+      "Sha256": "0BADDB79D60E14E50B9E8523388EE782F81F81D8612FF4F66E5618BFBACFFA9B"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceApiJwtDecoderTest/result.json",
+      "Bytes": 829,
+      "Sha256": "A9CDB1C8EC9B64CC9A2941F604CE8D363B257941534642CDE262BF65EB5B4BAD"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceArchitectureTest/junit-sanitized.xml",
+      "Bytes": 664,
+      "Sha256": "27C4FC71FA38AC99742DFC0A52F20B10EB8AE8E9382FF83581DF8121D4F96A60"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceArchitectureTest/process-exit.json",
+      "Bytes": 690,
+      "Sha256": "F0B73ACED28CE432145280D9910CE661F45245AAC2C85E1CE5C4E58168A58718"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceArchitectureTest/result.json",
+      "Bytes": 824,
+      "Sha256": "D2AB7CCF6A32A9558D9AAB27DFD4DAA6A8346C97EEAEC3ED1EA3032187452312"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceBusinessUrlSecurityTest/junit-sanitized.xml",
+      "Bytes": 8520,
+      "Sha256": "4CADD3C96FCCBD1B4F385CAC0A4A4013F659399F76EA008CD8CE4F9D882F0DF9"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceBusinessUrlSecurityTest/process-exit.json",
+      "Bytes": 698,
+      "Sha256": "5EB24DC09C2A1892D26E126892421F502EE6785C388E6A5EACA8B7C883DF455C"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceBusinessUrlSecurityTest/result.json",
+      "Bytes": 844,
+      "Sha256": "CE67525D3D6CEF07929192FA2C890CDFDB1E941257D9C3EE98206C74B2255D1C"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceJwtAuthenticationConverterTest/junit-sanitized.xml",
+      "Bytes": 1000,
+      "Sha256": "66096BE2E30BBFFCF72D4413F8BC4F5FC626084DE4D9C5B2EA6D95E73420ACDF"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceJwtAuthenticationConverterTest/process-exit.json",
+      "Bytes": 704,
+      "Sha256": "FFBFC6F79924731CD6762C0DEFF9843B6C76DA99E05A68F6D0F7EA53F0F7BABC"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceJwtAuthenticationConverterTest/result.json",
+      "Bytes": 855,
+      "Sha256": "59F4E569828AAC8F84014B399A156340220846C7ADF8FE483F4775727F24A208"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceSecurityConfigurationTest/junit-sanitized.xml",
+      "Bytes": 602,
+      "Sha256": "32F56DAC2323B9D240BF5C392C30C5DAE530B5BA7180A04FB3F36D1266CE1A40"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceSecurityConfigurationTest/process-exit.json",
+      "Bytes": 698,
+      "Sha256": "36E39E29A6C7847EC2ED2737880C88483FD1287C211FA64FF40FA0C889248D3E"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-r2-continue/ReferenceSecurityConfigurationTest/result.json",
+      "Bytes": 845,
+      "Sha256": "69C2486C447FF67C817C64F2385923D5F2F76628B8C96ECF39B1F716E68905F5"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/results.json",
+      "Bytes": 25729,
+      "Sha256": "D4C888B713C2556E9777878BBFFC35AC2DDE39CDF68A9972D9037F11D1914025"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/reused-results.json",
+      "Bytes": 17228,
+      "Sha256": "4BB0F9937E08F434F0CDD61FB899ED96FCBF66A427F2447A73F7A15AF7237E9A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/DepartmentDeactivationPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 809,
+      "Sha256": "A0DF2AF61E3E6201748CD0CA38FE77EB7ABEAA3B739DD43CA7249CB5E7E9B9F7"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/DepartmentDeactivationPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 713,
+      "Sha256": "B6314B186C760D24A705B573AF0D35BD965AD0537F2D2F72FE31F0D1CDCD7F51"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/DepartmentDeactivationPostgreSqlIntegrationTest/result.json",
+      "Bytes": 872,
+      "Sha256": "06FDAFEFE49A451E46578D924A72BB516BFA91CD1B003FC9ADE609304177F557"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseApiControllerTest/junit-sanitized.xml",
+      "Bytes": 1511,
+      "Sha256": "BCE3FDF24780E95B9A147E1D4B4E66F20A33AD0FF54641E752DE7B829D382556"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseApiControllerTest/process-exit.json",
+      "Bytes": 689,
+      "Sha256": "482D935C9F5699E704429FB7E580D7478B4BDAF05CD172F1BF1F72DEA98F9089"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseApiControllerTest/result.json",
+      "Bytes": 825,
+      "Sha256": "3A2BAC738A723B9B71E86A60EB906E34C83ECBEA9390A7569D223780371AC006"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseApiPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 1039,
+      "Sha256": "1E7E63996708CB7221F38A886FC6325F9162200AEEC4D3F38174AAF8449D36A7"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseApiPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 701,
+      "Sha256": "C24ACF543DD6BD1C74677E2098DA363512F4BF346B7ABB4B8A6F1E6848F2C8F2"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseApiPostgreSqlIntegrationTest/result.json",
+      "Bytes": 848,
+      "Sha256": "483B9A54D69C10EB3921715E0F0944A5C2F94DA572F6B6C69721FB3AE28489CB"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseApplicationServiceMethodSecurityTest/junit-sanitized.xml",
+      "Bytes": 970,
+      "Sha256": "D604006B11032C268FABC11745F7D040D1DF2AB99854AA9A0C61BD429D0165B2"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseApplicationServiceMethodSecurityTest/process-exit.json",
+      "Bytes": 708,
+      "Sha256": "2588E33D0DF0336198A9BF4E8A8ACE28F4D34D5AA4214D57771BE34D6182C986"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseApplicationServiceMethodSecurityTest/result.json",
+      "Bytes": 863,
+      "Sha256": "E97EF74020886884811EB063DC1E4A41CEE8201FCD81041957B999A71B8583FB"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseAuditRollbackPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 593,
+      "Sha256": "CC1FFF199C782C86F7891A1C3D4C39175CF96C1D4101DA6833DFB4D3D50C14A3"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseAuditRollbackPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 711,
+      "Sha256": "FE3C0B96F582CD1AA37D089C7CC68B8C26F6FA07276CE1D359BFB2534A3B0C9F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseAuditRollbackPostgreSqlIntegrationTest/result.json",
+      "Bytes": 868,
+      "Sha256": "B7A3C4FAF1431FF88C1D140514ABD9A212D74D4F8366417034D70E75CB7251B8"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpensePostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 1519,
+      "Sha256": "1D5CF781F4A19136D4BD951F1C0C3740771C10937FAD8D788CF27F0B2D833F7A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpensePostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 698,
+      "Sha256": "8E1DDC8E404A2FA0C200740680D5ACFF95BC6AB82BA7910A534A34C717BFFC36"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpensePostgreSqlIntegrationTest/result.json",
+      "Bytes": 842,
+      "Sha256": "EFAD94CF55E60FCB226EE6EF9A1E7478FE6CC579EF994D6E47214BD4D88612C0"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseReadModelPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 1358,
+      "Sha256": "B070616E5BA3857E518A837DF541B4A81C79AF3FBD2F7F041BF221079A7C3C74"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseReadModelPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 707,
+      "Sha256": "FB75CA80A22C98F2534C8E88B01117E2083B7EE6C8CFCC84918DE58DAE9605D9"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseReadModelPostgreSqlIntegrationTest/result.json",
+      "Bytes": 860,
+      "Sha256": "75F252A37CEA46246EB122FDA1E74E8B1B6886FA93C11FB544B46859D7E7B2B9"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseReadServiceMethodSecurityTest/junit-sanitized.xml",
+      "Bytes": 594,
+      "Sha256": "8C0BC4E0D831A95D207061A6DF685E5B856116BF29E52332B41DDD6B0A6C1F28"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseReadServiceMethodSecurityTest/process-exit.json",
+      "Bytes": 701,
+      "Sha256": "3B9211197206256E96F9770DDFE13DC134271CD666B28A145C6226542D8081B3"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseReadServiceMethodSecurityTest/result.json",
+      "Bytes": 849,
+      "Sha256": "D144BFE732F2BF3C3500A3164CA779BB4C2E0B29D3F84EE499771981D056356E"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseRequestTest/junit-sanitized.xml",
+      "Bytes": 1022,
+      "Sha256": "1646237B593C8035E28BB61CA30585A862FF587F960372E80D238CC4427A2167"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseRequestTest/process-exit.json",
+      "Bytes": 683,
+      "Sha256": "69BF95756EEF9F06B7A1F85D18BAE476C2F1E7982E5D6E05E3F85AF94600897D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ExpenseRequestTest/result.json",
+      "Bytes": 813,
+      "Sha256": "E83AAD96B805C3F4BE22A1C2DE7323AD59464179D1027E0030460BDC2542D898"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/Framework-isolated-package/process-exit.json",
+      "Bytes": 426,
+      "Sha256": "3E2FA23DE40784CDA20EC2C739E1398543A632C3CA5986F3DE72BB90D81BEA3D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/Framework-isolated-package/result.json",
+      "Bytes": 563,
+      "Sha256": "AAFFDAAFB66C893C64681A0C1CDD19A568C165655F82E39508773AB3E15D3739"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/Framework-local-install/process-exit.json",
+      "Bytes": 902,
+      "Sha256": "3158D86B5CA3CF1105FBFA73E8DECE7FFD54F7E409F149EEAA17B83C2CF70C4F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/Framework-local-install/result.json",
+      "Bytes": 1036,
+      "Sha256": "9B7C048918EB7808EDCCF38C9695619BABC5D01A30F092D72D02F03E8118CB46"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityManagementControllerTest/junit-sanitized.xml",
+      "Bytes": 2086,
+      "Sha256": "EA742B97A5D685F57286721CC8422CFB8BB072628BFCA083EECAA3E51DBD7BF4"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityManagementControllerTest/process-exit.json",
+      "Bytes": 697,
+      "Sha256": "A5547EDF4FAB6326E3A6C74BF7BA6B90D2EF8BA905C147D0E9AFBEC8BE2FEA02"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityManagementControllerTest/result.json",
+      "Bytes": 841,
+      "Sha256": "4B1EF662ADA8FC12A128185DAD76A1C67B2ABA39612EAF44EB872095B2592FE3"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityManagementExceptionHandlerTest/junit-sanitized.xml",
+      "Bytes": 1532,
+      "Sha256": "66EF49FF518D34A6122101D2142E9FBFCD8BDA52C8527CF0A44E0D91FC7E4087"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityManagementExceptionHandlerTest/process-exit.json",
+      "Bytes": 702,
+      "Sha256": "A2AFEBBE87F44549EF8165C284B660652601021A31A254F7883452742066C502"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityManagementExceptionHandlerTest/result.json",
+      "Bytes": 853,
+      "Sha256": "3F9ADECA9926B1364ABE01247D573D29FC27F95695CCCC2E8CC850D4140FB01F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityUrlSecurityTest/junit-sanitized.xml",
+      "Bytes": 1852,
+      "Sha256": "F240EBB9BB8B23AA7A25BBC65DA415D348B1C6FEF4A479C05DB56BAF10C6A31B"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityUrlSecurityTest/process-exit.json",
+      "Bytes": 688,
+      "Sha256": "32458682EAAE3250DF4E78DB98E79F31792E7F5A51B1737BE30CCC78869947D4"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityUrlSecurityTest/result.json",
+      "Bytes": 823,
+      "Sha256": "186A84B76E5D74FFFB80C838B63316041BA9535F4BB50E95A613803AD48CD972"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityUserManagementMethodSecurityTest/junit-sanitized.xml",
+      "Bytes": 1547,
+      "Sha256": "8CE36F00F09263F952194B28733F56FE6D320B96A4EAA4E47930036B4C0F5B9C"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityUserManagementMethodSecurityTest/process-exit.json",
+      "Bytes": 705,
+      "Sha256": "7A19406830FFA3D90F39925307951BE3F11BC52412843D6A177BF8B4500F6CDB"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityUserManagementMethodSecurityTest/result.json",
+      "Bytes": 857,
+      "Sha256": "003CC8466DEBC5C1D77FE0D7970E96F34FC616F7DB502DD6E49F2EF7B67844FF"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityUserManagementTest/junit-sanitized.xml",
+      "Bytes": 925,
+      "Sha256": "D9DD46B70F29A23B1891EFED439E425198BD87792347BF09DDB7A92D8494326A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityUserManagementTest/process-exit.json",
+      "Bytes": 691,
+      "Sha256": "7A96CC8A6BE86392FE3EA72DF190E6B3CE06A821FB5BECEA89CD8BFCE215EB40"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/IdentityUserManagementTest/result.json",
+      "Bytes": 829,
+      "Sha256": "078A4A475CD44FAFF54D0BD2C78296028E89F10DDAFFA4BDD7E19247E71C9617"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/JpaMasterAvailabilityQueryTest/junit-sanitized.xml",
+      "Bytes": 634,
+      "Sha256": "78193768A5E469EBC19AD07A65FAFC4279E9FF4FEC0E7C0FC703ECC92D74F044"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/JpaMasterAvailabilityQueryTest/process-exit.json",
+      "Bytes": 695,
+      "Sha256": "7A803A6E032689CECABA2B460A677A8E39D1F35C3D273C7E1E60B23994451C4B"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/JpaMasterAvailabilityQueryTest/result.json",
+      "Bytes": 837,
+      "Sha256": "2D7780766C4E45B7BA4C8D6808514641A3C2220FA7F084C5FDE16C73039213B0"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterAdministrationMethodSecurityTest/junit-sanitized.xml",
+      "Bytes": 603,
+      "Sha256": "031F545300CA36891C6E13E865678D1E0F43C1FF821659660953E1E88FC546E5"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterAdministrationMethodSecurityTest/process-exit.json",
+      "Bytes": 703,
+      "Sha256": "C6788D2344E4647059849D6F97F7BB2421E2EE6075E0DF56D71387A10958B892"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterAdministrationMethodSecurityTest/result.json",
+      "Bytes": 853,
+      "Sha256": "E02EBD32A1A4F837E9C4C28762A4897CCBEF7FB3D721000BB903AE42CA37AA6A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterAdministrationTest/junit-sanitized.xml",
+      "Bytes": 1067,
+      "Sha256": "DF1A7DBA783EF84B8F597B118A52F3AF4E5018674D1C8C2C217066EA3E074214"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterAdministrationTest/process-exit.json",
+      "Bytes": 689,
+      "Sha256": "FBAC9A5D5A6131DA4432E022BD2F1889FAE75BF49D65958221FD19533B6D2D4A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterAdministrationTest/result.json",
+      "Bytes": 825,
+      "Sha256": "15D5C4D46CEA706A8406172EDF1ACF7F6A306269EA8965CC05F12BBBB12C7A80"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterCatalogQueryMethodSecurityTest/junit-sanitized.xml",
+      "Bytes": 603,
+      "Sha256": "6BE79A47CCEBA5A25815155E9679168F7490AC6A78F5EC008FF59237AD9B3152"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterCatalogQueryMethodSecurityTest/process-exit.json",
+      "Bytes": 701,
+      "Sha256": "5E70BFA247C98DBAED49945347803B9AC9502BE7AA743894877F0E6F2FB05021"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterCatalogQueryMethodSecurityTest/result.json",
+      "Bytes": 849,
+      "Sha256": "8171E7BF17F20E14FF3924C1554B19F1B979C9ECA4521555C2C73332116CB2DA"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 758,
+      "Sha256": "015C18D9D15B181DB003D1636C5C5F8BA8F44A30EE772C9938C5E540B741D2FC"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 697,
+      "Sha256": "912D3B7F2F240B1644EA8F42F3A4ABC9AEF4EB679C371B8497822C6433A73EE2"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterPostgreSqlIntegrationTest/result.json",
+      "Bytes": 840,
+      "Sha256": "E228AAD06D8C2C3936BA1C46DCE68B6741FD9FE3458DCF628ACE55D758109FA7"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterReadModelPostgreSqlIntegrationTest/junit-sanitized.xml",
+      "Bytes": 588,
+      "Sha256": "BF327DB1A76491C2A8AD467262E8E40F722A5E123CDDE0A621206D3804F7CD3F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterReadModelPostgreSqlIntegrationTest/process-exit.json",
+      "Bytes": 706,
+      "Sha256": "9125DE7418B4D523649A82DFCBBC36AE96449A68503423B9FA1C81D3CD83CA3D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/MasterReadModelPostgreSqlIntegrationTest/result.json",
+      "Bytes": 858,
+      "Sha256": "68095FCDFAA6BC3B967423BA5342305A08389FBC5A423640D19CE74CA6A354F7"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/NotificationFoundationMigrationTest/junit-sanitized.xml",
+      "Bytes": 1237,
+      "Sha256": "0874D29DD8E8F7BB70233D30347E06820396D20537D11555465FF8B1C733E820"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/NotificationFoundationMigrationTest/process-exit.json",
+      "Bytes": 612,
+      "Sha256": "986FDFDF74D58449F49084448C48B3CB7269C66B1A67888A9FF9D18F6CF04CE1"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/NotificationFoundationMigrationTest/result.json",
+      "Bytes": 758,
+      "Sha256": "87D3D0D611CB33DB0D33512BF20A3C6202F73B48EC156EAA4383FD038666F221"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/NotificationFoundationRegistrationTest/junit-sanitized.xml",
+      "Bytes": 1631,
+      "Sha256": "D565CE976D6B14CEC3B761B37F0C097E6F1A6111ABA480D3BD5D449C6F3AB24E"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/NotificationFoundationRegistrationTest/process-exit.json",
+      "Bytes": 615,
+      "Sha256": "0C827B1373757DDB1AC5CA7ABA7C38F8FDA0ED7F2F92351DBCC054895413F3D4"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/NotificationFoundationRegistrationTest/result.json",
+      "Bytes": 764,
+      "Sha256": "ACD471F98988DCAF75C275F92CEEA9A2B7E364A51EED0B47FCAC66CE10D97CDE"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/Reference-package/process-exit.json",
+      "Bytes": 322,
+      "Sha256": "8FC84265FADCF5E9697E259EF13400C27C520575695F8B466AEA1E507BD59C4B"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/Reference-package/result.json",
+      "Bytes": 450,
+      "Sha256": "14EEFE8DD35362269EEC76EBD862D3B883EDF34C24BFA8A8EA6AE034070E60E6"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceApiJwtDecoderTest/junit-sanitized.xml",
+      "Bytes": 596,
+      "Sha256": "523F9B163551DAAC741D7FA62EB270796707FBC1AE479B67098517150AECCF77"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceApiJwtDecoderTest/process-exit.json",
+      "Bytes": 691,
+      "Sha256": "65C3F708289F626B2E1C18D2C8569058A4653766FE18FA814724764D50C21453"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceApiJwtDecoderTest/result.json",
+      "Bytes": 829,
+      "Sha256": "F8AC8ED380C19FC68AC041FA43F969EBBC1A66FC4C0E6A385F74A6ED96B5540D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceArchitectureTest/junit-sanitized.xml",
+      "Bytes": 665,
+      "Sha256": "213C6DCADA274F9D84DEDB41D01112AFE4F298828E0F27A2543F10851EDAD932"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceArchitectureTest/process-exit.json",
+      "Bytes": 690,
+      "Sha256": "3C3C99EE1534506541C7BCC11F240557BE8C7583BBAFF5EDC89E985BA9538B04"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceArchitectureTest/result.json",
+      "Bytes": 827,
+      "Sha256": "D81472707A8AEFD1597A22E9C6CC52F9AB08FB6649302E329E6477C48A0F5038"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceBusinessUrlSecurityTest/junit-sanitized.xml",
+      "Bytes": 3965,
+      "Sha256": "03A27AA1CAC1AAC0CDC66F53F811BBB18C55A561174CA61B135F8A6245B3701F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceBusinessUrlSecurityTest/process-exit.json",
+      "Bytes": 698,
+      "Sha256": "89B0BE3146D07BBF24DDF270B3893EB810D6829CFFF7F0B4EE3A6D4D88FED50B"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceBusinessUrlSecurityTest/result.json",
+      "Bytes": 844,
+      "Sha256": "FADD9F5EF341F2AF3F8047416F8416DB8C8A544424A99201912CA56880726DFD"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceJwtAuthenticationConverterTest/junit-sanitized.xml",
+      "Bytes": 999,
+      "Sha256": "DD7470121EC0BBE5C1FFC0F4D18676A1F1321DB27CA03C6F0C11EE0D03E427AE"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceJwtAuthenticationConverterTest/process-exit.json",
+      "Bytes": 704,
+      "Sha256": "9544EC7D43F6B8E6B189ADE6083ABF9E3657171FC0CDAFB3195E750D233AD934"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceJwtAuthenticationConverterTest/result.json",
+      "Bytes": 854,
+      "Sha256": "202367047EE655C30E9C1CF4E1C64ED59B3EDF3F6AE355D639EE554AE96BAE55"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceSecurityConfigurationTest/junit-sanitized.xml",
+      "Bytes": 602,
+      "Sha256": "28A1292DCFE985BC9BDD8BC04F997231DF0D7668BC7BED4EB86C344617248698"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceSecurityConfigurationTest/process-exit.json",
+      "Bytes": 699,
+      "Sha256": "259575BAAEE242F80D801D2D30F7107B5D9F8109289EAF239B36C18B701F691F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Regression-artifact-aligned/ReferenceSecurityConfigurationTest/result.json",
+      "Bytes": 844,
+      "Sha256": "7FDA77CF4DE710718B1A8BB889A7BDDDAB1E1FAD54E9E0398F6A72208B698016"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/E2E-finish/results.json",
+      "Bytes": 2005,
+      "Sha256": "BF2FA23260880A19E015E360EB4B3F52176EE188C84B5D0E21E1CF769267482F"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/E2E-finish/reused-results.json",
+      "Bytes": 17228,
+      "Sha256": "4BB0F9937E08F434F0CDD61FB899ED96FCBF66A427F2447A73F7A15AF7237E9A"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/E2E-finish/summary.json",
+      "Bytes": 385433,
+      "Sha256": "AF2651D92D4EE44781CAFC67BB5662A5FAD98BA88BE27A69E7104317E2674823"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/E2E-finish/Framework-local-reinstall/process-exit.json",
+      "Bytes": 902,
+      "Sha256": "9CD59B61558D87A5310287E083A42AB1866E2B3AE2E124CDBFB00AC0445A2683"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/E2E-finish/Framework-local-reinstall/result.json",
+      "Bytes": 1038,
+      "Sha256": "BF33E247EF9AC59E6BE7527D147FAA65473E6A6F2E09BED64DF826805914CC8E"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/E2E-finish/PackagedReferenceCriticalJourneyTest/junit-sanitized.xml",
+      "Bytes": 608,
+      "Sha256": "021FAD17F1FFE86807797C0E315D0C8452C8A5EA98B891C97551F24307C9EA74"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/E2E-finish/PackagedReferenceCriticalJourneyTest/process-exit.json",
+      "Bytes": 749,
+      "Sha256": "016235A71434868533C21CB78482389D09649452FC350620FAEF31A9B67F96A4"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/E2E-finish/PackagedReferenceCriticalJourneyTest/result.json",
+      "Bytes": 892,
+      "Sha256": "EA665976C07C0B1C349E8AF65ED8FBACA3AC0CA2D2AB16CCBFD0D6A247ED593D"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Final-audit-finish/post-documentation.json",
+      "Bytes": 1076,
+      "Sha256": "AFE42EA3C6F857309A10F9E7EC4FE4FB3F04C5DF576F1D69AD6F41A10DB10D88"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/Final-audit-finish/summary.json",
+      "Bytes": 1948,
+      "Sha256": "5EDBBF25C1B359B6B1052A7CB042D5759EB3FA6AE7626DB29A307A31E3E6C892"
+    },
+    {
+      "Path": "tmp/b2-verification-0321079-20261008/E2E-finish/source-after-install.json",
+      "Bytes": 374549,
+      "Sha256": "BF1C7102A540D86CE52A80C28DC2746CF3C2F8AB80712EEF9AC114112E2216F4"
+    },
+    {
+      "Path": "tmp/b2-artifact-alignment-0321079-20261008/payload-comparison.json",
+      "Bytes": 1546,
+      "Sha256": "F7A0DA0A98BD5ECD2E885325B425F2EE3629867C208BAD868C065FE86C9D2A64"
+    },
+    {
+      "Path": "tmp/b2-artifact-alignment-0321079-20261008/source-before.json",
+      "Bytes": 3819,
+      "Sha256": "7B6764D20260A5A789620E444CBB193BAF62B55C301BFF02E3DC6899CAA8DEC2"
+    },
+    {
+      "Path": "tmp/b2-e2e-finish-0321079-20261008/cache-before.json",
+      "Bytes": 884,
+      "Sha256": "AAFC8E568116970819E4E2E335A8704492D862B2787A86C2394C15D6A7952129"
+    },
+    {
+      "Path": "tmp/b2-e2e-finish-0321079-20261008/cache-after.json",
+      "Bytes": 884,
+      "Sha256": "B6A7E1B111E422527028D97847365DB49A1796942DD5BE498D3BED53E4F4E1B1"
+    },
+    {
+      "Path": "tmp/b2-e2e-finish-0321079-20261008/cache-state.json",
+      "Bytes": 297,
+      "Sha256": "53F6FAA29D3758ECB1C278751F2B37F8820124E31083BC401874CCB6CCF961E9"
+    },
+    {
+      "Path": "tmp/b2-runtime-route-r2-0321079-20261008/Run-E2E-Finish.ps1",
+      "Bytes": 11422,
+      "Sha256": "A3AF595C6FCA416FDE627F12EBF7D1B81734B3A58A4100DC6ABDF86230E8C97A"
+    },
+    {
+      "Path": "tmp/b2-runtime-route-r2-0321079-20261008/Final-Audit-Finish.ps1",
+      "Bytes": 8077,
+      "Sha256": "65206F78EAFED2916079D22DB48AABABDBB027D7294E5141156FE5A8B627624A"
+    },
+    {
+      "Path": "tmp/b2-runtime-route-r2-0321079-20261008/Aligned-Bounded-Functions.ps1",
+      "Bytes": 8007,
+      "Sha256": "F494C0123374F1BA4CB84B617ACCEAE226A938C88E8DE8C7ACEED58FFABEFB16"
+    },
+    {
+      "Path": "tmp/b2-runtime-route-r2-0321079-20261008/Cache-Restore.ps1",
+      "Bytes": 2067,
+      "Sha256": "031A23D8EFA143EF5C52BB649FB08F9C58E6AF79F293B7C555AEC43D5429953C"
+    },
+    {
+      "Path": "tmp/b2-preflight-0321079-20261008/reference-test-classpath.txt.manifest.json",
+      "Bytes": 40963,
+      "Sha256": "1B10C54A1E87022B758FBEEDAF05D4A9EC51ED4CB32B4A5F84A417A882C4AE1D"
+    },
+    {
+      "Path": "tmp/b2-preflight-0321079-20261008/tooling-runtime-jdbc-classpath.txt.manifest.json",
+      "Bytes": 28825,
+      "Sha256": "20C92E711B95ED6798F76854405449EFA240ED3603B221E7F9600E7C3B471AC0"
+    }
+  ],
+  "AuditFacts": {
+    "CopiedSourceFiles": 205,
+    "SourceHashEntries": 1286,
+    "FixtureEntryCount": 0,
+    "ContainerCount": 0,
+    "ReadyFileCount": 0,
+    "VerificationEnvironmentCount": 0,
+    "MinimumMemoryBytes": 16144211968.0,
+    "MinimumDiskBytes": 50725650432.0,
+    "MaximumNewJava": 4.0,
+    "MaximumDatabases": 1.0,
+    "B2RawBytes": 95165631,
+    "AllB1B2RawBytes": 102902119,
+    "RetainedCoordinatorBytes": 143766,
+    "RegressionSeconds": 1302.0013935000002,
+    "KnownB2Seconds": 2076.4187518,
+    "UnmeasuredReserveSeconds": 300
+  },
+  "Portability": "Raw and JAR contents are not embedded. Local paths must be preserved separately. This index is not a signed authenticity guarantee.",
+  "SourceGitCommit": "d70b883a1edface5f524272e564f715afb1bab25"
+}
