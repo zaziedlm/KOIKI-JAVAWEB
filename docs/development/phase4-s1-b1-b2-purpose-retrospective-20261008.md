@@ -1,6 +1,6 @@
 # Phase 4 S1 B1／B2の振り返りと目的適合確認（2026-10-08）
 
-状態：`SESSION REFLECTION RECORDED / DIRECTION REVISED（2026-10-09、§5）`。Ownerとの振り返りを記録する。B1・B2初回issue／readは受入済み。目的適合の総評と今後の進め方の提案であり、後続操作・Phase 4全体・DoDの開始／完了承認を追加しない。
+状態：`SESSION REFLECTION RECORDED / DIRECTION REVISED（2026-10-09、§5〜§6）`。Ownerとの振り返りを記録する。B1・B2初回issue／readは受入済み。目的適合の総評と今後の進め方の提案であり、後続操作・Phase 4全体・DoDの開始／完了承認を追加しない。
 
 ## 1. Phase 4とS1の位置づけ
 
@@ -56,3 +56,22 @@ Ownerは本振り返りの記録と、別端末・別AIセッション向け引�
 §3の総合判断（目的に即した方向、中心実証はこれから）は維持する。そのうえでOwnerは、consume／close接続の深掘りより先に、Reference appへ最小の非同期経路を早期に組み込み、正常系→異常系→停止後回復の順に取り組む方向へ修正することを採用した。§3で次回入口とした「対応表の中でconsume reviewの範囲を決める」は、「対応表に担う機構を加え、R0開始判断資料を作る」へ置き換える。根拠・段階案R0〜R5・維持する境界・採用範囲は[軌道修正案](phase4-s1-async-reference-direction-correction-draft-20261008.md)（§9）に記録する。
 
 この方針採用は、Reference Level 2 runtime・依存・code／migration・検証の開始承認ではない。R0の開始判断はOwnerが個別に行う。
+
+## 6. 方針見直し後のB1／B2成果の位置づけ（2026-10-09）
+
+Ownerは方針変更を判断したうえで、B1／B2までの作業は無駄ではないとの見方を示した。Claude Codeの評価も同じであり、成果を次の3つに分けて位置づける。評価はsource・文書の読取りに基づき、新しい検証結果ではない。
+
+| 区分 | 対象 | 後続での使い道 |
+|---|---|---|
+| そのまま使う | `RecoveryPermitService`の実Identity・能力・管理scope認可、Business Audit・拒否時Security Audit、HOLD分類、transaction外境界。V4の追記のみの消費記録と、publication単位の未閉鎖permit一意制約。管理設定によるscope・TTL供給。`RecoveryTarget`の5項目（Modulith `event_publication`と対応） | R4（復旧操作の統制、DoD 4-4）でReferenceの復旧経路へ接続する。E11〜E17の受け皿 |
+| 知見として使う | B1の読取・拒否規則（曖昧・不明・矛盾を肯定にしない、UNKNOWNを未送信としない） | R3のE06・E10で運用者が判断する基準 |
+| 〃 | process台帳・起動世代・停止観測・子JVM資源制限 | R3の停止注入実験の土台 |
+| 〃 | B2で確定した事実：照合直後の変化（D12）は再読取や短いTTLでは閉じず、書込み全停止でのみ安全になった | 軌道修正案§5の保護モデル選択の実証済み根拠 |
+| 〃 | B2総評§20の手順上の教訓、既存回帰約300件 | R1以降の検証入口、Reference非同期組込み時の回帰安全網 |
+| 置換見込み | B2凍結protocol（`b2_read.frozen_target` view、role NOLOGIN凍結）、`JdbcProtectedRecoveryTargetAdapter`、ThreadLocal保護scope | Reference自身のpublicationへ接続する際に作り直す。当初からToolingを供給元とする限定実証の暫定物である |
+
+**総評：** 成果は無駄ではない。ただし順序の結果、割高になった部分がある。非同期経路を先にReferenceへ入れていれば、B1／B2は本物のpublicationを対象にでき、Tooling用viewや凍結protocolの一部は不要だった。段階ごとの開始票・訂正承認・固定manifestの負担も、成果物の量に比べて大きかった。
+
+一方、統制側を先に固めたことで、R1〜R3では認可・Auditの設計を後回しにし、非同期の検証に集中できる。今回の方針変更はB1／B2を否定するものではなく、**成果をR4へ置き直し、順序を正すもの**と位置づける。
+
+**教訓：** 統制や保護の仕組みは、対象となる本物の処理経路を先に用意してから作る。対象が仮の段階では、検証の上限とreviewの細かさを軽くし、置換見込みの暫定物への投資を抑える。
