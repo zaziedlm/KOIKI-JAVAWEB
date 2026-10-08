@@ -95,6 +95,18 @@ assertion・件数・資源上限・停止条件を維持し、新規52件・結
 canonical command propertyへ揃え、source／環境差分確認・compile後に選択IT2件を1回確認する。
 数値・秘密のenv供給・transaction／migration／業務assertion・件数を維持し、起動初期からの実値を確認する。
 不一致・回帰失敗・上限超・cleanup失敗では停止し、追加修正・新規52件・結果受入・remoteへ拡張しない。
+2026-10-08の[B-2初回issue／readの条件付き限定開始承認](docs/development/phase4-s1-stage-b2-issue-read-limited-start-review-20261008.md#13-owner承認条件付き限定開始2026-10-08)により、
+承認文書commit・clean source固定後のpreflightと、成立時のReference-owned保護Port／outer service／
+SELECT専用JDBC target Adapter・有限設定・条件付き登録の新規main5件と既存Configuration Import1件、
+Tooling test所有のcoordinator／凍結protocol／専用SQL・新規6 class／54件・当該Evidence等の作成・検証を許可する。
+全差分は同票の新規18件＋既存2件、回帰301件を含む355件、最大4 JVM／DB1／接続8、検証90分と累積予算・
+作業量／raw・再実行上限・cleanup／停止条件に限定する。Ownerが限定環境管理責任を兼務し、Agentへ条件成立後の
+当該fixture準備・通常子終了・writer NOLOGIN／権限取消・接続確認・凍結証明登録・隔離DB／子JVM操作を委任する。
+通常無効・未接続拒否、既存Identity／scope／TTL／保存・Auditを維持し、consume／closeの証拠Portはemptyのままとする。
+既存B1 source／test／SQL、既存Service／Port／Repository／Domain・migration・Security／通常properties、
+POM／依存・Root Reactor／Framework／CIは変更しない。肯定consume／close・送信／復旧／worker委譲・Reference Level 2・
+実運用／DoD／正式受渡し／Phase 4全体・remoteに拡張しない。副Agentは使用しない。
+local commitはOwner操作または操作前確認、結果受入は別判断とする。文書commit・clean source固定前に実装・検証を先行しない。
 P4-ARではFramework本体だけでなく、Customer-like Consumer、package済みReference Application、検証Toolingおよび
 Developer Journeyを受渡し候補として棚卸しし、業務アプリ開発チームの受入側視点でbuild / run / operation / diagnosisを実証する。
 正式な受渡し対象はP4-AR Evidenceを入力とする見直し後Phase 4準備で判断し、Project TemplateはPhase 5境界を維持する。
@@ -151,6 +163,9 @@ cleanup・停止条件に従う。既存P4-PL2許可の流用ではなく、こ�
 2026-10-08のB-1読取接続限定開始票§11で承認された条件成立後のMaven／隔離Docker・当該子JVM検証も、
 同票の専用schema／role・fixture準備副作用、検証集合・上限・cleanup・停止条件に限定して対象に含む。
 文書commit・clean source固定前に実行せず、環境の権限付き承認要求を迂回しない。
+2026-10-08のB-2初回issue／read限定開始票§13で承認された条件成立後のMaven／隔離Docker・当該coordinator／
+通常子JVM検証も、同票のfixture準備・専用schema／role・writer遮断・有限操作、355件・資源／時間／作業量・
+raw／再実行上限・cleanup／停止条件に限定して対象に含む。文書commit・clean source固定前に実行しない。
 
 通常のsandboxで`npipe:////./pipe/docker_engine`への接続を拒否された場合は、
 それだけでRancher DesktopまたはDocker Engineの障害と判定しない。

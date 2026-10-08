@@ -1,6 +1,6 @@
 # Phase 4 S1 B-2初回 issue／read：具体差分・条件付き限定開始票案（2026-10-08）
 
-状態：`DRAFT / OWNER START REVIEW PENDING`。方式・初回操作範囲は[方式review§9](phase4-s1-stage-b2-use-boundary-review-draft-20261008.md#9-方式初回操作範囲のowner承認2026-10-08)でOwner承認済み。本票は具体差分・操作委任・検証上限・開始条件を新たに判断する資料である。
+状態：`OWNER APPROVED — 条件付き限定開始（§13）`。方式・初回操作範囲は[方式review§9](phase4-s1-stage-b2-use-boundary-review-draft-20261008.md#9-方式初回操作範囲のowner承認2026-10-08)でOwner承認済み。承認文書commit・clean source固定とpreflight成立後に、本票内の作成・検証へ進む。
 
 ## 1. 開始対象と除外
 
@@ -177,7 +177,7 @@ Reference main5件はReference JARに含まれる意図した限定Adapter差分
 
 ## 10. Owner判断欄
 
-`未判断`。§2〜§9の具体差分・操作委任・検証集合・予算・停止／cleanup条件を承認／条件変更／保留として記録する。
+本欄提出時は`未判断`。後続の§13で、§2〜§9の具体差分・操作委任・検証集合・予算・停止／cleanup条件をOwner承認済み。
 
 Ownerが限定環境管理責任を兼務し、文書commit・clean source固定とpreflight成立後の本票内作成・Maven／隔離Docker・当該子JVM／fixture操作をAgentへ委任する条件付き開始案。実装・検証結果の受入は別判断。今回の方式採用承認だけでは本票の開始を実行しない。
 
@@ -198,3 +198,13 @@ Ownerは「この2コミットのローカル操作を承認します。対応�
 B1の16件はcommit `6af0d3eae279c38c0faa5541f2bbfd5bde357dcd`（`test: complete approved S1 B1 read connection validation`）で固定した。登録前に検証時のsource hash台帳13件との一致、登録差分16件とdiff checkを確認した。検証の再実行・code変更は行っていない。
 
 B2文書3件は本票・方式review・段階B契約の導線を別コミットする。今回の操作ではB2開始承認のAGENTS導線を追加せず、開始票の未判断状態を保持する。コミット完了後にGit履歴と作業ツリーのcleanを確認する。raw／scriptの端末内保管は継続する。
+
+## 13. Owner承認：条件付き限定開始（2026-10-08）
+
+Ownerは「B2条件付き限定開始票案 を開始します」と明示した。本票§2〜§9の具体差分、新規18件＋既存2件、fixture準備・凍結・当該子JVM管理・隔離DB操作、新規54件＋回帰301件、資源・累積予算／作業量・raw／再実行上限・停止／cleanup条件を採用し、条件付き限定開始を承認した。
+
+Ownerが限定環境管理責任を兼務し、承認文書commit・clean source固定後のpreflightと、成立時の本票内作成・Maven／隔離Docker・当該coordinator／通常子JVM・fixture操作をAgentへ委任する。事前のsourceはbranch `feature/phase4-s1-reference-foundation`、clean HEAD `66bee695719db3c82f2ec2002dbd1703625e6ef2`で確認した。開始承認記録を含む固定後commitは別途記録する。
+
+肯定consume／close・実外部送信／復旧runner／worker委譲・Reference Level 2、Framework／POM／依存／CI／remote・実運用／正式受渡し／DoD／Phase 4全体への承認ではない。保証限界・網羅性懸念・D11／D12の後続対象を保持し、結果受入は別判断とする。同じ限定開始範囲の承認を再要求しない。
+
+今回の反映は本票とAGENTSの承認記録だけ。local commitはOwner操作または操作前確認を維持する。直前の2コミット操作承認は完了した16件＋3件の操作に対応するため、今回の承認記録2ファイルの追加commitは個別操作確認を経る。文書commit・clean source固定前にcode／SQL作成・Maven／Docker・子JVM操作を先行しない。
