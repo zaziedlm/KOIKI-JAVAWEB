@@ -2,6 +2,8 @@
 
 **状態：OWNER APPROVED／条件付き限定開始（2026-10-08、§11）。** §1〜§8の具体方式・補強差分・検証集合・副作用・上限・担当・開始／停止条件は承認済み。承認文書commit・clean source固定後のpreflightと、成立時の対象作成・検証に限定する。実装・検証結果の受入は別判断。
 
+**最新実行状態：B1限定検証の完了記録・実装結果は `COMPLETE / OWNER APPROVED`（§30、2026-10-08）。** 全検証集合PASS／source不変／最終package非混入／cleanup成立、先行失敗と未達を保持。B-2／実運用／remoteの開始は別判断。
+
 **確認source：** `feature/phase4-s1-reference-foundation` / `08f47402e470d72dc8538452f5766331bb4dc323`。作成前には段階B文書3件の未commit差分あり。今回source読取と文書整理のみ。環境到達性・artifact／image cache・資源はpreflightで別途確認する。
 
 **Ownership／対象：** 実供給元・読取クライアント・独立証拠保管はTooling-owned、非配布の`build-support/phase4-level2-verification/`。Referenceへの適用契約はnotificationが所有するが、本票はReference本体のAdapter／Port登録を変更しない。Framework／Customer／Root Reactor／正式artifactへ昇格しない。KOIKI project overview／business feature workの所有境界と既存AGENTSを適用する。
@@ -268,3 +270,100 @@ canonical指定が初期化前の適用と起動正常化を保証すること�
 Ownerは§21について「限定検証へ進めることを承認します」と明示した。helperの明示選択時launchに限り、Hikari数値のenv供給をcanonical command propertyへ揃え、起動時からの実値・VM flags・選択IT2件とcleanupを1回の限定検証で確認する。§21の確認待ちは履歴として保持し、今回の承認で解消した。
 
 数値・URL等の秘密のenv供給・transaction timeout・Flyway有効状態／locking・既存業務assertion／件数を維持する。source／環境差分確認とoffline compile後、jdbc単独の選択IT2件を実行する。初期値不一致が残る・回帰失敗・上限超・cleanup失敗では停止し、得られた情報と実装判断を整理する。原因追及の反復・未承認の追加修正・新規52件・結果受入・実運用／remoteへ拡張しない。git add／commit／pushを行わない。
+
+## 23. B-1作成中の固定順序・test読取process entryの具体化案（2026-10-08、Owner確認待ち）
+
+Ownerのpreflight再開・概算予算での続行指示後、承認済みpath内の契約／collector／ledger／reader4 helperとtest SQLの初稿を作成した。offline support profile `test-compile`はSUCCESS、8.909秒。SQL／DB／子JVM／test invocationは未実行であり、初稿の実効性は未認定。新規test6 classとprocess harnessは未作成。本節の追加entryと固定順序を採用したとは扱わない。
+
+### 23.1 事前の通知bindingと生成publicationの固定順序
+
+`ProbeRunner`は`probe.approve.id`としてevent IDだけを受け、`ApprovalProbe`が`ProbeApproved(eventId)`を発行する。cached Modulith2.1.1の`TargetEventPublication.of`／`DefaultEventPublication`を`javap -p -c`で読取り、constructor内の`UUID.randomUUID()`によるpublication ID生成を確認した。通常Tooling mainを変更せずにpublication IDまでイベント生成前に指定する入口はない。既存ITのJSON LIKEによるID取得は本票の厳密照合へ流用しない。
+
+§2の「bindingはfixture生成前に確定」を次の順序に具体化する案：
+
+1. 起動前にenvironment・run・event ID・期待event type／listener、通知key・payload識別・宛先識別・供給元／JAR識別と期限を固定する。通知bindingの事後作成・事後差替えは許可しない。
+2. 既存通常子を1件だけ起動・発行し、有限候補からevent type／listener・厳密復元event IDを照合して生成publicationを一意取得する。0件・複数件・別run／対象差異なら拒否する。ID発見と対象の有効読取を区別する。
+3. 生成publication IDをrunの対象へ一度だけ固定する。以後はpublication IDで1行をSELECTし、全tuple・観測世代・元row fingerprintを再照合する。再探索による別publicationへの自動付替えはしない。
+4. snapshot／独立証拠保存後にSELECT専用readerへ渡す。変更・曖昧・保存失敗・期限／失効は拒否／UNKNOWNとする。
+
+初稿の`Manifest`は通知binding、`Fixture.discover`／`seal`は生成publicationの固定を表す。今後の実装で期待listenerとrun／JAR識別の強制・二度目の固定拒否を含めて補完する。事前に全publication tupleを指定するという解釈とは異なるため、順序を明示してOwner判断を求める。生成済みtable IDを書換えたりModulithへID供給機能を追加したりする案は採らない。
+
+### 23.2 E10／I07の読取JVM entry
+
+既存通常Tooling JARの`ProbeApplication`／`ProbeRunner`には独立証拠schemaのSELECT／照会結果返却がない。同一JVMでJDBC clientを作り直すだけでは、§2／§5の「採取／読取JVMを終了・再起動して一意追跡」の実証にならない。§4の「不足して追加helper／process entryが必要なら差分と上限への影響を提示する」に従い、次の最小案を提出する。
+
+| 対象 | 提出する差分・条件 |
+|---|---|
+| `b1fixture/B1EvidenceLedger.java` | 既存の採用済みtest helperに`public static void main(String[] args)`を追加。引数は非秘密reference IDのみ。SELECT専用roleで`b1_read.evidence`／`b1_read.revocation`を同一read-only transaction内で照会。戻り値はreference＋canonical digestかsanitized拒否分類。元本文・SQL／driver例外・credentialを出力しない。新helper／Maven dependencyなし |
+| `b1fixture/B1ProcessHarness.java` | 既存通常子の終了確認後にだけ読取子を逐次起動。compile済みtest-classesとcached PostgreSQL driverだけのclasspathを使用。ENVでURL／username／passwordを渡し、heap768 MiB、connect／socket／query timeout10秒、終了待機10秒・finally停止と一時log cleanup。管理下全子台帳へ記録し、同時子1を維持 |
+| E10／I07 | DBを保持し、読取子1を終了後に読取子2を起動。同一参照／本文digestと別JVMの起動・終了を観測。失効記録追加後の拒否も照合。DB container削除後の保持・本番backup／fencingの保証にしない |
+| JAR・通常起動 | entryはtest-classesだけ。既存通常JAR、main／Port／POM／依存／migration／通常設定を変更せず、最終package非混入を確認する。新規6 class／52 invocationの枠を維持 |
+
+新規読取entryは通常子との重複起動を許可しないため、Maven＋fork＋子の最大3 JVMとDB同時1を増やさない。追加poolなし、reader枠内の直結1接続。class上限15分・cleanup予備5分、集合・全実経過・raw／再実行上限を維持する。E10／I07以外へのentry利用拡張はしない。
+
+### 23.3 採用後の再開条件と現在の状態
+
+本節の二段階固定とtest読取entryを採用した場合、その承認を記録し、Ownerの文書commit／source固定条件に沿って差分確認後に残helper／SQL／6 test classを完成させる。同じ既存B-1開始承認は再要求しない。DB setup管理者・通常fixture writer・採取writer・readerの区別、通常子による既存migrationとtest専用schema準備の順序も実装で強制する。現在のcollectorのfocused raw seed準備を、I01の通常子による実publication生成へ読み替えない。
+
+現在は追加entryを作成・実行していない。compileは初稿の構文・既存test sourceとの共存確認だけ。4 helper＋SQLは未検証の作成途中として保持し、test PASS・JDBC実接続・preflight再認定・結果受入とは扱わない。資源増量、Framework／Reference main、B-2、実運用／remoteへの拡張は含めない。
+
+## 24. §23の2点採用のOwner承認（2026-10-08）
+
+Ownerは「2点の採用を承認いたします」と明示した。§23.1の事前通知bindingと生成publicationの一度固定、§23.2の既存test helper内のSELECT専用読取entryを採用する。§23の確認待ちは提出時の履歴として保持し、今回の承認で解消した。
+
+初回の承認文書commit・clean source固定とpreflight成立は`23379b3`を基点に実施済み。現在の未commit差分は承認範囲内の作成途中code／SQLと追記文書であり、その差分・hashを記録して続行する。§23.3のsource条件はこの初回固定と差分確認に従うもので、今回の承認に独立した再commit／clean化の要求を追加しない。Ownerによるlocal commit操作または操作前確認、未承認remote禁止は維持する。
+
+残helper／SQL／6 test classを完成させ、classごとの予算予約・逐次実行・実効資源・cleanup確認で限定検証する。追加entryはE10／I07に限定し、同時子1・heap768 MiB・DB同時1・reader接続枠・timeout／終了待機10秒を維持する。既存main／POM／依存／migration／通常設定を変更せず、D11／D12と網羅性懸念を保持する。既存B-1開始承認や同じ2点の採用承認を再要求しない。結果受入・B-2・実運用・remoteは別判断である。
+
+## 25. S01〜S07 cleanup失敗・限定訂正案（2026-10-08、Owner確認待ち）
+
+§24採用後、承認済み5 helper・test SQL・6 class／52 invocationを作成し、offline compileが成立した。T10件は先行sourceでPASS、P8件・E10件・R8件は後続helper sourceでPASS。S8件ではS01〜S07が`B1ProcessHarness.close()`内の子log削除時にWindows `FileSystemException`（別processが使用中）となり、S08だけPASS。新規52件全体のPASSではない。I8件、選択PL2回帰・Reference関連143件／既存99件＋E2E・最終clean packageは開始していない。
+
+停止条件に従い、同条件rerun・次class・cleanup原因修正を先行していない。終了後はcontainer0、今回Javaなしを確認。一時directory7件が残っていたため、当該classのlogを各先頭16 KiB＋末尾48 KiB以内でsanitizationして保全し、fork終了後に確認済みworkspace配下の当該file・空directoryだけを非再帰でcleanupした。13:43:14 JSTの最終診断はcontainer0／既存Java2660・4684だけ。既存process・container操作、無断raw削除は行っていない。
+
+**確認できたこと：** 7件はchild log削除箇所の使用中エラーで、親fork終了後には同じfileを削除できた。保持していたprocess／handleの主体は未特定。この観測から恒久的handle leak、特定のWindowsサービス、子の未終了を断定しない。正常起動・VM／pool／DBの資源観測は得られたが、S01〜S07をcleanup以外PASSと認定しない。
+
+**最小訂正案（採用前は未実装）：** test-only `B1ProcessHarness`1件の終了・file cleanupだけを補う。
+
+1. 管理下の全子について終了待機10秒と非生存確認を行い、各Processのstdin／stdout／stderr streamを明示的に閉じる。停止／終了の証拠とlog handle解放を区別する。
+2. 当該directory内の既知fileだけを対象とし、cleanup全体で最大10秒の有界再観測・削除を行う。無限retry・`System.gc()`依存・削除失敗の無視・glob／再帰による広域削除はしない。
+3. 最後まで削除できない場合はsanitized子logと終了状態を有限量保全し、cleanup失敗を返す。先行例外がある場合はcleanup例外をsuppressedとして保持し、元の失敗を隠さない。
+4. 子の業務動作・通知binding／tuple・source／世代・assertion・件数、heap／pool／DB・I/O／子終了timeoutを変更しない。新規class上限15分とcleanup予約を維持する。既存`B1ResourceLimits`・既存test・main／POM／migrationは変更しない。
+
+採用後は差分・環境・compileを確認し、**S01〜S08の同じ8 invocationを訂正条件で1回だけ**検証する。PASSとclass全体のcleanup成立時にI01〜I08へ進む。失敗／未達なら停止し、削除deadline延長・別方式・追加原因探索を自動で行わない。前回の失敗と訂正runを別保管する。既存B-1開始範囲・§24の2点採用は再要求しない。
+
+通常Tooling経路への新fixtureの自動実行を避けるため、作成済み6 classには既存の明示選択property `koiki.b1.resource-limits.enabled=true`を要求するJUnit conditionを追加し、READMEへ入口・停止状態を記録した。これは承認済みのtest専用／明示選択境界の実装で、cleanup原因修正ではない。停止後のcondition差分は未compile・未実行であり、次の採用後compileへ含める。property未指定・falseでDB／子を起動しないことも、実行を伴わないdiscoveryまたは限定検証で確認する。
+
+## 26. §25最小訂正案のOwner承認（2026-10-08）
+
+Ownerは§25を確認し「最小訂正案を承認いたします」と明示した。test-only `B1ProcessHarness`の終了・既知file cleanupだけの訂正、source／環境差分・compile確認後のS01〜S08訂正条件1回を実施する。S全件PASSとcleanup成立後だけI01〜I08へ進む。終了待機・削除観測各10秒、資源・assertion・件数・対象外境界と停止条件を維持する。§25の確認待ちは提出時の履歴として保持し、同じ訂正承認は再要求しない。失敗の保全と結果受入の別判断、local commit事前確認／Owner操作・remote禁止を維持する。
+
+## 27. Reference関連集合の実行条件訂正案（2026-10-08、Owner確認待ち）
+
+§26承認後、B1 cleanup最小訂正のS8件・I8件・最終sourceのT／P／E／R計52件と選択PL2回帰6件はPASS／cleanup成立。Tooling最終jdbc clean packageとfixture非混入も成立した。一方、Reference関連143件の5番目`OperationalRecoveryEvidenceDbTest`12件はfailure11／error1となり、停止条件§8に従って後続を停止した。関連集合の先行4 class／36件はPASS、残95件と既存99件＋E2Eは未実行。失敗をB1 52件の失敗へ読み替えず、全回帰PASSとも扱わない。
+
+**確認済みの実行条件誤り：** Agentが既存99件／E2E向けのcommand property `spring.datasource.hikari.maximum-pool-size=4`／`minimum-idle=1`を、関連集合にも追加した。関連集合の既存`NotificationFoundationDbHarness.open`はpool2／idle0／接続待機10000 msを設定・検査する。失敗11件は`open:148`の「expected 2, actual 4」、D09は接続枠不足SQLState53300とHibernate metadata取得失敗を記録。D09までの完全な因果・保持接続数は未特定だが、誤ったglobal overrideはsource・command・実値の照合で確定した。既存Harness／assertionを変更する案は採らない。
+
+**最小訂正案（未実行）：** 関連集合の実行commandから上記2つのglobal overrideだけを除き、前回PASS時と同じ既存Harness条件へ戻す。heap768 MiB・resource-limits true・DB1 GiB／CPU1／max_connections16・timeout10秒・fork1／逐次・業務assertion／件数を維持する。Reference／Tooling source、POM、main、test、migrationの追加訂正はしない。既存99件／E2Eの専用pool4／idle1条件は当該集合に限って維持する。
+
+採用後はsource／環境差分・累積予算を確認し、失敗した同じ12件を訂正条件で1回だけ確認する。PASS・実値pool2／idle0・cleanup成立時だけ、未実行95件と既存99件＋E2E／Reference最終clean packageへ進む。先行36件はDB poolを使わない契約・model testの結果としてrun条件とともに保持し、必須枝を削らない。新規52件やPL2回帰6件はsource不変・既検証済みなので再実行しない。別run保管、関連143件の累積60分（先行分を引継ぎ）、既存99件＋E2E60分・全240分、raw1 GiB・cleanup・停止条件を維持する。不一致・回帰失敗・上限超・cleanup失敗なら停止し、追加訂正を先行しない。
+
+訂正candidateは非配布`tmp/b1-reference-verification-20261008/Run-Related-Candidate.ps1`へ準備済み、未実行。過去の失敗runner／XML／sanitized diagnosticとcleanup記録を保持。14:13:18 JSTのread-only確認はcontainer0、今回Javaなし、既存Java2660／4684だけ。Reference／E2E source hash差分0。管理目安は累積約83分／残約157分で、実測の認定値ではない。実装結果受入・B-2／実運用・remoteは別判断。local commit／pushなし。
+
+## 28. §27対応案・限定再検証のOwner承認（2026-10-08）
+
+Ownerは§27の対応案を確認し「承認します。また限定再検証についても同様です」と明示した。関連集合のglobal pool4／idle1 overrideだけを除去し、既存Harnessのpool2／idle0／接続待機10秒へ戻す実行条件訂正と、source／環境差分・累積予算確認後の同じ12件の訂正条件1回を採用する。全件PASS・実値・cleanup成立時だけ残95件と既存99件＋E2E／Reference最終clean packageへ進む。
+
+§27の確認待ちは提出時の履歴として保持し、今回の承認で解消した。新規52件とPL2回帰6件は既検証source不変を照合して保持し、再実行しない。既存source／assertion／件数・資源・timeout・累積上限・raw保全・停止条件を維持する。関連集合先行分を予算へ引継ぎ、Owner待ちを実検証時間へ一括計上せず、同じ承認を再要求しない。実装結果受入・B-2／実運用／remoteは別判断、local commitはOwner操作または事前確認とする。
+
+## 29. §28承認後の実施結果・受入判断待ち（2026-10-08）
+
+§27採用のglobal pool override除去後、失敗した同じ12件を訂正条件で1回検証し、pool2／idle0・PASS／cleanupを確認。続く95件も成立し、先行36件と合わせたReference関連143件はPASS。既存25 class／99件と最終clean packageしたReferenceのE2E1件もPASS／cleanup成立。新規B1 52件と選択PL2回帰6件は再実行せず、最終source不変を照合してPASSを保持した。詳細・source／JAR hash・資源・失敗保全・未達は[Evidence§23](../architecture/validation/phase4-s1-stage-b1-read-connection-20261008.md#23-限定検証の完了owner結果レビュー入力2026-10-08)へ記録。
+
+Reference／Tooling source・既存test／assertion／件数・POM／main／migrationの追加変更なし。最終packageのfixture非混入と、14:43:17 JSTのcontainer0／当該子16476不存在／既存Javaだけ・新browser／driver残留0を確認。過去の失敗・診断・rawを保持し、今回の限定条件で集合の検証完了とする。実装結果の受入は未判断、B-2／実運用・正式受渡し／DoD／Phase 4全体・remoteへの開始承認ではない。local commit／pushなし。次はOwner結果レビューであり、自動で対象外作成・追加検証へ進めない。
+
+## 30. B1限定検証の結果受入・Owner承認（2026-10-08）
+
+Ownerは[Evidence§23の完了記録](../architecture/validation/phase4-s1-stage-b1-read-connection-20261008.md#23-限定検証の完了owner結果レビュー入力2026-10-08)を確認し「確認、承認いたします」と明示した。[同Evidence§24](../architecture/validation/phase4-s1-stage-b1-read-connection-20261008.md#24-b1完了記録のowner承認2026-10-08)に反映し、B1限定検証の実装・検証結果を `COMPLETE / OWNER APPROVED` とする。§29の受入待ちは提出時の履歴として保持し、今回解消した。
+
+新規52件・選択PL2回帰6件・Reference関連143件・既存99件＋E2E1件と非混入／source不変／cleanup・保全の完了を受入対象とし、追加再実行を行わない。D11／D12・網羅性・timeout等の既知限界は維持する。結果受入をB-2／実運用・正式受渡し／DoD／Phase 4全体・remoteの開始許可や、local commit操作の承認へ拡張しない。今回は文書反映だけ、git add／commit／pushなし。

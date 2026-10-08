@@ -68,3 +68,34 @@ install the current Root Reactor artifact before running this standalone Tooling
 ```
 
 Tests use a disposable `postgres:17-alpine` Testcontainers instance. Docker access is required.
+
+## S1 B-1 limited read verification
+
+B1 fixtures are test-only and outside the Root Reactor. They read supplier-owned views with a
+SELECT-only role; they never invoke Reference permit operations or external delivery.
+The six B1 classes require explicit `koiki.b1.resource-limits.enabled=true`. They remain disabled
+in ordinary, unselected Tooling runs. No B1 helper, SQL, or reader entry belongs in the ordinary JAR.
+
+Compile offline with existing test-only support profiles; runtime uses `jdbc` alone and direct goals:
+
+```powershell
+.\mvnw.cmd -o -B -ntp -f build-support/phase4-level2-verification/pom.xml '-Pjdbc,s1-contract,s1-web' -DskipTests test-compile
+.\mvnw.cmd -o -B -ntp -f build-support/phase4-level2-verification/pom.xml -Pjdbc '-Dkoiki.b1.resource-limits.enabled=true' '-DargLine=-Xmx768m' '-DforkCount=1' '-DreuseForks=false' '-Djunit.jupiter.execution.parallel.enabled=false' '-Dtest=B1TargetReadTest' surefire:test
+```
+
+Set `MAVEN_OPTS=-Xmx768m` only for each run and restore it in `finally`. Execute one class at a time,
+reserve its time and cleanup budget, preserve sanitized failure evidence, and confirm all managed
+children, pools, DB/Ryuk, ports, and temporary files have ended before starting the next class.
+The integration class uses `-Dit.test=B1ReadConnectionIT` with direct
+`failsafe:integration-test failsafe:verify`. Preserve raw outside `target` before any clean package.
+
+**Current status:** the bounded verification is complete: B1 52 cases, selected PL2 regression 6,
+Reference related 143, existing Reference 99, and packaged E2E 1 all pass with cleanup confirmed.
+Clean packages exclude the fixture. Earlier failures are preserved, including the Agent runner
+pool override mistake corrected under Owner-approved sections 27/28. The B1 bounded implementation
+and verification results are COMPLETE / OWNER APPROVED (2026-10-08, Evidence section 24).
+B-2, production use, distribution, and remote actions require their own decisions.
+See [start/stop contract](../../docs/development/phase4-s1-stage-b1-read-connection-limited-start-review-20261008.md)
+and [case, resource, failure, cleanup evidence](../../docs/architecture/validation/phase4-s1-stage-b1-read-connection-20261008.md).
+Neither observed termination nor a provider row proves drain, distributed fencing, safe retry,
+complete coverage, B-2 readiness, or production delivery safety. D11/D12 and I05 remain explicit gaps.
