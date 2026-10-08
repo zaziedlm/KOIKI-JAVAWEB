@@ -67,6 +67,13 @@ Reference／Tooling main・既存test／migration・POM／依存・Root Reactor�
 B-2のReference Adapter／肯定Port登録・許可操作、外部送信／復旧runner／Reference Level 2・Phase 4全体・
 DoD／正式受渡し・remoteへ拡張せず、D11／D12と網羅性懸念・未達を保持する。副Agentは使用しない。
 local commitはOwner操作または操作前のOwner確認とし、実装結果の受入は別判断とする。
+2026-10-08の[同開始票§13の訂正承認](docs/development/phase4-s1-stage-b1-read-connection-limited-start-review-20261008.md#13-12訂正のowner承認2026-10-08)により、
+既存test-only依存を含む`jdbc,s1-contract,s1-web` profile補足と、Toolingの`PublicationRecoveryTest.java`／
+`ProcessCrashRecoveryIT.java`の最小資源設定・launch差分、test-only `B1ResourceLimits.java`1件追加を許可する。
+既存test変更禁止の例外はこの2ファイルの明示選択時の資源設定だけとし、assertion・件数・通常起動条件を維持する。
+訂正・承認文書commitとclean source再固定・source／環境差分確認後に、実効制限確認に必要な3ファイルを
+作成・限定検証する。制限成立前に新規52件のハーネス作成・検証を開始しない。
+検証集合・資源／時間／作業量・raw上限・停止条件・main／POM／migration等の除外は維持し、同じ訂正承認を再要求しない。
 P4-ARではFramework本体だけでなく、Customer-like Consumer、package済みReference Application、検証Toolingおよび
 Developer Journeyを受渡し候補として棚卸しし、業務アプリ開発チームの受入側視点でbuild / run / operation / diagnosisを実証する。
 正式な受渡し対象はP4-AR Evidenceを入力とする見直し後Phase 4準備で判断し、Project TemplateはPhase 5境界を維持する。

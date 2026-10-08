@@ -173,3 +173,26 @@ Ownerは確認に対し、次の発言で明示承認した。
 Reference／Tooling main・既存test／migration・POM／依存・Root Reactor・Security・通常properties・CIは変更しない。B-2のReference Adapter／肯定Port登録・issue／consume／close、外部送信／復旧runner／Reference Level 2・実案件の運用受入・Phase 4全体・DoD・正式受渡し・remoteは承認対象に含めない。§10の記録方針、網羅性懸念、D11／D12・分散保証等の未達を保持する。
 
 Agentは今回、承認記録・AGENTS導線だけを反映し、git add／commit／pushを行わない。実装・検証結果は別途Ownerレビューする。
+
+## 12. preflightで判明したprofile・実効制限の差分案（2026-10-08、Owner確認待ち）
+
+Ownerの文書commit `df3b653651e29dde9c288fb02f5b1c0a44cf1dab`をclean sourceとして固定し、[preflight記録](../architecture/validation/phase4-s1-stage-b1-read-connection-20261008.md)の環境・cache・offline compileを確認した。次の不足が判明したため、§8の停止条件に従いtest作成・実行を開始していない。
+
+- `jdbc`単独では既存S1 test sourceのtest依存が不足する。既存`jdbc,s1-contract,s1-web` profileによるoffline test-compileは成功。publication storeはjdbc、新依存追加なし、実行対象testは§6の選択集合のまま。profile指定にこのtest-only依存条件を補足する案とする。
+- 選択した既存`PublicationRecoveryTest`／`ProcessCrashRecoveryIT`は、container memory／CPU・DB max_connections／timeoutを設定していない。子heap／poolの外部指定だけではcontainer条件を満たせない。既存test変更禁止のまま選択回帰の上限を成立させられる、という開始票の前提に不足があった。
+
+**最小訂正案：** Toolingの既存test2ファイルに、B-1資源制限を明示選択した場合だけ働くtest-only設定導線を追加する。新test helper `src/test/java/org/koikifw/buildsupport/phase4/b1fixture/B1ResourceLimits.java`を候補とし、container作成前のmemory1 GiB／CPU1、DB max_connections16・lock／statement timeout10秒、当該子heap768 MiB・pool2／idle0・接続待機10秒を設定・実効確認する。既存test methodのassertion・件数・通常の既存起動条件は保持する。管理接続を含むconnection総計8、子同時1、timeout後cleanupも確認する。
+
+追加変更対象は既存`PublicationRecoveryTest.java`／`ProcessCrashRecoveryIT.java`の資源設定・launch部分と上記helper1件だけ。新B-1 fixtureにも同じ上限を適用する。§4の差分候補14件に3件を追加し、計17件候補（承認文書別）となる。main／POM／依存／既存migration・Reference本体を変更しない。
+
+新規6 class／52件・選択回帰6件・関連143件・既存99件＋E2E、資源・時間・作業量・raw上限、未知状態HOLD・D11／D12の未達を維持する。profile補足と既存testの最小資源設定差分についてだけOwner判断を求め、§11の他の承認範囲を再要求しない。承認前にhelper・既存testを変更せず、文書訂正・承認commit後のclean source再固定とsource／環境差分確認へ進む。
+
+## 13. §12訂正のOwner承認（2026-10-08）
+
+Ownerは§12の訂正案を確認し、「了解承認いたします」と明示した。既存test-only依存を含む`jdbc,s1-contract,s1-web` profileの補足と、既存`PublicationRecoveryTest.java`／`ProcessCrashRecoveryIT.java`の最小資源設定・launch差分、test-only `B1ResourceLimits.java`1件の追加を採用する。§12の確認待ちは提出時の履歴であり、承認待ち条件は解消した。
+
+既存test methodのassertion・件数・通常起動条件を保持し、B-1明示選択時だけ§12の上限を設定・実効確認する。候補差分17件（承認文書別）、新規6 class／52件・選択回帰6件・関連143件・既存99件＋E2E、§7の上限と§8の停止条件を維持する。§11の「既存test変更なし」は、この承認済み2ファイルの最小差分だけを例外とする。main／POM／依存／既存migration・Reference本体は変更しない。
+
+訂正・承認・preflight記録とAGENTS導線を文書commitし、clean sourceを再固定してsource／環境差分を確認する。その後、実効制限の成立確認に必要な承認済み3ファイルの作成・変更と限定検証を進め、制限成立前に新規52件のハーネス作成・検証を先行しない。確認済みのcompile／cache情報は保持し、変更や追加懸念のない確認を無条件に反復しない。
+
+この承認でpreflight完了・実効制限PASS・新規52件PASSを認定するものではない。実効値・cleanupと成立判定はEvidenceへ記録する。同じ訂正範囲の開始承認を再要求せず、実装結果の受入、B-2・実運用・DoD・remoteの別判断を維持する。Agentは今回文書だけを反映し、git add／commit／pushを行っていない。
