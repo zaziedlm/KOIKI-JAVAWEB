@@ -8,6 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.koikifw.buildsupport.phase4.b1fixture.B1ResourceLimits;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,7 +27,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 @SpringBootTest(classes = ProbeApplication.class)
 class PublicationRecoveryTest {
 
-    private static final PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17-alpine");
+    private static final PostgreSQLContainer postgres = B1ResourceLimits.container();
 
     static {
         postgres.start();
@@ -35,6 +38,15 @@ class PublicationRecoveryTest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        B1ResourceLimits.properties(registry);
+    }
+
+    @Autowired HikariDataSource dataSource;
+
+    @BeforeEach
+    void verifySelectedResourceLimits() throws java.sql.SQLException {
+        B1ResourceLimits.assertPool(dataSource);
+        B1ResourceLimits.assertDatabase(postgres);
     }
 
     @Autowired ApprovalProbe approvals;

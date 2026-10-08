@@ -196,3 +196,75 @@ Ownerは§12の訂正案を確認し、「了解承認いたします」と明�
 訂正・承認・preflight記録とAGENTS導線を文書commitし、clean sourceを再固定してsource／環境差分を確認する。その後、実効制限の成立確認に必要な承認済み3ファイルの作成・変更と限定検証を進め、制限成立前に新規52件のハーネス作成・検証を先行しない。確認済みのcompile／cache情報は保持し、変更や追加懸念のない確認を無条件に反復しない。
 
 この承認でpreflight完了・実効制限PASS・新規52件PASSを認定するものではない。実効値・cleanupと成立判定はEvidenceへ記録する。同じ訂正範囲の開始承認を再要求せず、実装結果の受入、B-2・実運用・DoD・remoteの別判断を維持する。Agentは今回文書だけを反映し、git add／commit／pushを行っていない。
+
+## 14. 実効確認でのruntime profile訂正案（2026-10-08、Owner確認待ち）
+
+§13の承認文書commit後、clean `fad5ded`とsource／環境差分を確認し、承認済み3ファイルの資源設定を作成した。[Evidence§7〜§8](../architecture/validation/phase4-s1-stage-b1-read-connection-20261008.md#7-訂正後source資源設定作成限定検証2026-10-08)に実効確認と失敗を記録した。
+
+既存PublicationRecoveryTest4件の資源assertionは成功したが、compile用`jdbc,s1-contract,s1-web` profileの依存が実行時にも入り、KOIKI Data Starter等のautoconfigurationが既存PL2のmigration選択へ影響した。probe schemaが作られず4件がERROR。§8の回帰失敗停止条件に従い、子JVMのIT2件・新規52件は未実行。同条件の再実行はしていない。
+
+**訂正案：** `jdbc,s1-contract,s1-web`は既存test sourceのoffline test-compile専用とし、PublicationRecoveryTestと選択IT2件のruntimeは`jdbc`単独に戻す。compile済みtest-classesに対する`-Pjdbc surefire:test`と`-Pjdbc failsafe:integration-test failsafe:verify`の直接goalで対象を限定する候補。通常lifecycleのtest-compileを再度jdbc単独で呼んで同じcompile不足を再現しない。Tooling JARもjdbcのmain依存でpackageし、test-only support依存がruntimeへ混入していないことを確認する。
+
+codeの許可差分3件・検証集合・上限は変更しない。追加POM／main／migration／業務assertion修正・test除外で既存件数を減らす案ではない。失敗を保全し、修正条件で既存4件を再検証して正常化と実効制限を確認し、成立時に選択IT2件へ進む。profile条件の変更と失敗からの再開についてだけOwner確認を求め、他の承認済み範囲を再要求しない。
+
+## 15. §14訂正のOwner承認（2026-10-08）
+
+Ownerは§14の訂正案を確認し、「案を承認します」と明示した。`jdbc,s1-contract,s1-web`を既存test sourceのoffline test-compile専用とし、既存PublicationRecoveryTest4件と選択ProcessCrashRecoveryIT2件のruntimeを`jdbc`単独とする案を採用する。compile済みtest-classesに対するSurefire／Failsafe直接goalと、jdbcのmain依存によるTooling JARのpackage・runtime依存確認を承認する。§14の確認待ちは提出時の履歴であり、今回の承認で解消した。
+
+§13で要求した承認文書commit・clean source固定は`fad5ded`で実施済みである。今回の承認を記録し、既存code3件・source／環境の差分を確認した後、失敗runを保全して訂正条件で既存4件を再検証する。正常化と実効制限を確認できた場合に選択IT2件へ進む。source不変・追加懸念なしのcompile結果は再利用し、同じ訂正承認を再要求しない。
+
+codeの許可差分3件、既存assertion・件数・通常起動条件、検証集合・上限・cleanup・停止条件を維持する。main／POM／依存／migrationの追加変更は含めない。実効制限成立前に新規52件を作成・検証しない。失敗解消・preflight成立・結果受入・B-2／実運用／DoD／remoteの承認を意味しない。local commitは引き続きOwner操作または操作前のOwner確認とする。
+
+## 16. 子JVM起動失敗の診断保全・再開案（2026-10-08、Owner確認待ち）
+
+§15承認後、code3件のhash不変と環境を確認し、jdbc単独のpackageと直接Surefire goalを実行した。既存4件はPASSし、schema欠落が解消した。一方、選択IT2件はともにhelperの`B1 child startup failed`でFAILUREとなった。[Evidence§10](../architecture/validation/phase4-s1-stage-b1-read-connection-20261008.md#10-jdbc単独での限定再検証結果2026-10-08)に結果を記録した。§8の回帰失敗停止条件に従い、同条件rerun・新規52件へ進んでいない。
+
+子logは既存ITのfinallyで削除された。現在のassertionは「子生存かつStarted ProbeApplicationを観測」をまとめて判定しており、終了理由・起動logを保全していないため詳細原因は未確定。timeoutを緩める、業務assertionを変える、起動判定を省く、といった対処を先行しない。
+
+**最小訂正案：** test-only `B1ResourceLimits.java`の失敗診断だけを補い、既存ITのcleanup前に当該子PID・終了状態・待機経過と、credential・接続情報を除去した子logを非配布run directoryへ有限量で保存する。子終了確認と元log／work directoryのcleanupは維持する。main／POM／migration／既存業務assertion・件数・資源上限を変更しない。
+
+Owner採用後、診断差分を確認して選択IT2件だけを限定再検証する。原因が確定して追加修正が必要な場合は、その差分・根拠を別途提示し、原因不明の反復をしない。同原因・同条件rerun上限、raw上限、停止条件を維持する。既存4件は今回PASSを保持し、追加変更が影響する場合だけ再検証を判断する。診断保全差分と失敗からの再開についてOwner判断を求め、採用前にhelperを変更しない。実効制限全体・preflight・新規52件・結果受入は未成立のままとする。
+
+## 17. §16診断保全のOwner承認（2026-10-08）
+
+Ownerは「診断保全の変更と再検証について、最小訂正案を了解承認します」と明示した。§16のhelper限定診断保全と選択IT2件の再検証を採用する。同時に、これまでの訂正が場当たり的でないかを経緯に沿って点検するよう依頼した。点検は文書・実コード差分・実行記録の照合とし、診断保全以外の追加実装は含めない。
+
+§13のclean source `fad5ded`、§15のruntime訂正、既存4件PASSを引き継ぎ、source／環境差分確認後にhelperの診断だけを変更・compileし、jdbc単独で選択IT2件を実行する。元の失敗と今回のrunを分けて保管し、子終了・元log cleanup・資源上限・assertion・件数を維持する。追加原因修正は必要差分を提示して別判断とし、新規52件・結果受入・実運用・remoteへ拡張しない。Agentはgit add／commit／pushを行わない。
+
+## 18. 点検記録のOwner確認と原因調査の続行（2026-10-08）
+
+OwnerはEvidence§12を確認し、「整理を納得し、作業を続けます」と述べた。点検の整理を確認済みとして記録する。実効制限成立や検証結果受入の承認とは扱わない。
+
+続行は既存の診断保全と原因調査の範囲とする。JAR／classpath・main class／resourceと、cachedライブラリの接続取得経路をread-onlyで照合し、保持接続の内訳が未確定のため、helperの明示選択時だけHikari取得stackの診断（leakDetectionThreshold2000 ms）とFlyway DEBUGを追加する。leak警告は接続を2秒以上保持した取得stackの観測であり、接続漏れの断定ではない。失敗logの有限量保全は先頭16 KiB＋末尾48 KiBとして起動時のstackを残し、credential除去・元log cleanupを維持する。
+
+診断条件を変えた選択IT2件の限定確認を1回行い、同じ条件の反復をしない。pool2・接続待機10秒・DB／JVM上限・migration・業務assertionを変更しない。追加の原因修正は差分と影響を整理して別判断とし、新規52件・main／POM等へ進まない。
+
+## 19. 保持接続の残る1本を特定する診断案（2026-10-08、Owner確認待ち）
+
+§18の診断でFlyway初期接続1本の取得stackと返却を確認したが、timeout時のactive2のうち残る1本は未特定。既存4件とJAR内の共通依存77件・main class／resourceのhashは一致した。これは設定・起動経路の同値証明ではない。詳細は[Evidence§13](../architecture/validation/phase4-s1-stage-b1-read-connection-20261008.md#13-owner点検確認後の接続内訳調査2026-10-08)に記録し、追加実行を停止した。pool3必要・恒久的なconnection leakとは判断しない。
+
+次の診断はhelper1件に集約し、同じ情報不足による反復を避ける。明示選択時のpackage logger `com.zaxxer.hikari`と`org.flywaydb`のDEBUGを確実に指定し、子poolの実設定・追加／貸出／返却のlog、既存の2秒保持stackを保全する。起動待機中に1回だけ管理接続1本で`pg_stat_activity`の接続数・state／wait種別と既知SQLの分類を観測する候補とする。credential・SQL本文／bind値は保存せず、fixture DB限定・query timeout10秒・接続はfinallyで閉鎖する。管理2枠の内1枠を使い、追加poolや常時collectorは作らない。子logは先頭16 KiB＋末尾48 KiBの有限量保全・sanitizationを維持する。
+
+この診断条件で選択IT2件を1回だけ確認し、取得stack・DB状態・pool実値・migration進行を同じ時系列で照合する。記録保存失敗・接続予算8超・回帰失敗・cleanup失敗で停止し、原因修正は別判断とする。pool／timeout／migration locking・Flywayの有効状態、既存業務assertion・件数、main／POM／依存、既存4件PASS、新規52件開始条件は変更しない。採用前に診断追加と再実行を先行せず、同条件の反復は行わない。
+
+## 20. §19採用承認と判断に必要な情報への集中（2026-10-08）
+
+Ownerは「診断追加案§19の採用を承認します」と明示し、「原因追及が目標ではありませんので、とりえる情報から得られる情報に集中してください」と指示した。§19のhelper限定診断・選択IT2件1回・資源／cleanup・既存条件維持を採用する。保持元の完全特定を完了条件とせず、取得できたpool実値・migration進行・DB状態から実装判断に使える事実と未確定事項を整理する。
+
+前回のsource・JAR・既存4件PASSと失敗rawを保持し、source／環境差分確認後に診断追加をcompile・実行する。診断条件の同一反復や追加の原因探索を自動で行わない。失敗時も採取結果と適用できる選択肢を提示し、資源上限・起動方式等の変更は具体的な差分・根拠を別判断へ戻す。新規52件・結果受入・実運用・remoteへ拡張せず、git add／commit／pushを行わない。
+
+## 21. 子pool設定供給の限定訂正案（2026-10-08、Owner確認待ち）
+
+§20の1回限定診断では、両子のHikari起動logがmaximumPoolSize10／minimumIdle10／connectionTimeout30000 msを示した。helperは2／0／10000 msをenvで要求しているが、起動logの初期値と一致していない。失敗時は約10秒の接続取得timeout、起動中1回のDB sampleは子のidle接続2本＋管理1本の計3だった。保持元の完全特定を続けるより、設定供給を既存4件のcanonical property指定へ揃え、pool初期化時から採用済み値であることを確認するのが次の実装判断となる。[Evidence§14](../architecture/validation/phase4-s1-stage-b1-read-connection-20261008.md#14-19採用承認後の1回診断判断に使える結果2026-10-08)へ記録した。
+
+**限定訂正案：** test-only `B1ResourceLimits.java`の明示選択時launchだけで、現行のHikari数値env供給を削除し、`--spring.datasource.hikari.maximum-pool-size=2`／`--spring.datasource.hikari.minimum-idle=0`／`--spring.datasource.hikari.connection-timeout=10000`のcanonical propertyを子commandへ渡す。診断のleakDetectionThreshold2000も同方式へ揃える。数値は変更せず、URL／username／passwordはenvに維持してcommand lineへ出さない。loggerのpackage指定・有限量のdiagnostic／cleanupを維持する。transaction timeoutやFlywayの有効状態／locking、main／POM／migration・既存業務assertion・件数は変更しない。
+
+起動logの最初のpool初期化で2／0／10000を示すこと、正常起動時VM flags・pool確認、選択IT2件の業務assertionとcleanupを採用済み上限内で確認する。初期logに10／10／30000が残る場合は、後段の値やPASSだけで成立としない。新しい供給条件でIT2件を1回だけ実行し、情報が足りなければ条件未成立として結果・選択肢を整理する。追加原因探索や資源増量を自動で行わない。既存4件PASSは保持し、差分により影響が生じた場合だけ回帰を判断する。
+
+canonical指定が初期化前の適用と起動正常化を保証することはまだ実証していない。これは根本原因を断定した案ではなく、観測できた設定不一致に対応する限定案である。採用前に供給方法の変更・再実行を先行しない。code3件・文書3件の差分枠を維持し、新規52件・結果受入・実運用／remoteは別判断とする。
+
+## 22. §21限定訂正・検証のOwner承認（2026-10-08）
+
+Ownerは§21について「限定検証へ進めることを承認します」と明示した。helperの明示選択時launchに限り、Hikari数値のenv供給をcanonical command propertyへ揃え、起動時からの実値・VM flags・選択IT2件とcleanupを1回の限定検証で確認する。§21の確認待ちは履歴として保持し、今回の承認で解消した。
+
+数値・URL等の秘密のenv供給・transaction timeout・Flyway有効状態／locking・既存業務assertion／件数を維持する。source／環境差分確認とoffline compile後、jdbc単独の選択IT2件を実行する。初期値不一致が残る・回帰失敗・上限超・cleanup失敗では停止し、得られた情報と実装判断を整理する。原因追及の反復・未承認の追加修正・新規52件・結果受入・実運用／remoteへ拡張しない。git add／commit／pushを行わない。
