@@ -1,6 +1,6 @@
 # Phase 4 S1 B1／B2の振り返りと目的適合確認（2026-10-08）
 
-状態：`SESSION REFLECTION RECORDED`。Ownerとの振り返りを記録する。B1・B2初回issue／readは受入済み。目的適合の総評と今後の進め方の提案であり、後続操作・Phase 4全体・DoDの開始／完了承認を追加しない。
+状態：`SESSION REFLECTION RECORDED / DIRECTION REVISED（2026-10-09、§5）`。Ownerとの振り返りを記録する。B1・B2初回issue／readは受入済み。目的適合の総評と今後の進め方の提案であり、後続操作・Phase 4全体・DoDの開始／完了承認を追加しない。
 
 ## 1. Phase 4とS1の位置づけ
 
@@ -44,3 +44,15 @@ B2途中のAgent側test／script前提誤り・環境artifact不一致は[総評
 肯定consume／close、D11歴史対象閉鎖・別publication横断抑止、D12後続競合／網羅性、実運用停止／drain・分散fencing、worker認証／委譲、provider delivery、backup／DRを保持する。Reference Level 2・Framework API／Rules／依存・正式配布・DoD・Phase 4全体開始は個別判断。
 
 Ownerは本振り返りの記録と、別端末・別AIセッション向け引継ぎ文書の作成、2文書のcommitとここまでの作業のremote pushを指示した。[次session引継ぎ](phase4-s1-b1-b2-cross-device-session-handoff-20261008.md)を再開入口とする。raw／JAR／cacheはGitで転送されず、別端末での即時再実行保証はない。
+
+## 5. 振り返り後の方針見直し（2026-10-09）
+
+本振り返りの記録後、非同期処理の検証として定まった方向へ進んでいるかを、source・文書の読取りで追加点検した。
+
+- Referenceには非同期の実装（Modulith依存・listener・event publication）がまだなく、S1以降のReference main追加は全てpermit制御面である。B1／B2の対象はTooling所有のview経由の`event_publication`である。
+- permitは復旧許可の一意化と認可・Auditを担うが、旧processや並走workerの送信は止めない。DoD 4-3の重複抑止を主に担うのは送信境界の冪等keyである。
+- B2の保護は全停止型で、ThreadLocalの保護scopeは非同期の送信へ持ち越せない。
+
+§3の総合判断（目的に即した方向、中心実証はこれから）は維持する。そのうえでOwnerは、consume／close接続の深掘りより先に、Reference appへ最小の非同期経路を早期に組み込み、正常系→異常系→停止後回復の順に取り組む方向へ修正することを採用した。§3で次回入口とした「対応表の中でconsume reviewの範囲を決める」は、「対応表に担う機構を加え、R0開始判断資料を作る」へ置き換える。根拠・段階案R0〜R5・維持する境界・採用範囲は[軌道修正案](phase4-s1-async-reference-direction-correction-draft-20261008.md)（§9）に記録する。
+
+この方針採用は、Reference Level 2 runtime・依存・code／migration・検証の開始承認ではない。R0の開始判断はOwnerが個別に行う。
