@@ -34,7 +34,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @Configuration(proxyBeanMethods = false)
 @Conditional(NotificationFoundationConfiguration.Enabled.class)
 @EntityScan(basePackageClasses = RecoveryPermit.class)
-@Import(ManagedRecoveryConfiguration.class)
+@Import({ManagedRecoveryConfiguration.class,FrozenRecoverySourceConfiguration.class})
 public class NotificationFoundationConfiguration {
     @Bean
     RecoveryPermitRepository notificationPermits(EntityManager entityManager) {
