@@ -125,3 +125,9 @@ S1区切りより先に別端末での通常root buildやPR検証が必要にな
 - [B2固定manifest](../architecture/validation/phase4-s1-stage-b2-fixed-evidence-manifest-20261008.json)：旧source18件・artifact・証拠index。
 - [B2受入Evidence](../architecture/validation/phase4-s1-stage-b2-issue-read-20261008.md)：受入範囲、artifact epoch、失敗履歴・訂正・cleanup。
 - [B2限定開始票](phase4-s1-stage-b2-issue-read-limited-start-review-20261008.md)：旧作業の承認境界。今回の追加変更を自動承認しない。
+
+## 9 後続作業の完了追記（2026-10-09）
+
+本書作成後に通常buildとS1／B2専用testの分離を個別承認・実装・検証し、結果は`COMPLETE / OWNER ACCEPTED`となった。Windows通常root257 PASS／予定無効92、専用100 PASS／skip0、負例・package・cleanupの証拠と制限は[最終Evidence§23〜24](../architecture/validation/phase4-s1-b2-normal-build-remediation-20261009.md#24-最終結果のowner受入承認)を参照する。固定tmp依存等の初回所見は履歴として保持し、現時点の実装状態とは区別する。
+
+sourceは基点8b03b9f＋限定hash manifestで検証し、改修はまだ未commit。次は[成果固定commitレビュー](phase4-s1-b2-normal-build-fixed-results-commit-review-20261009.md)の対象をOwnerが操作前確認する。remote／新規検証／非同期Reference実装は別判断。Gitは端末内m2・target・Docker・rawを転送しないため、別端末では固定manifestと準備手順・承認範囲を再確認する。

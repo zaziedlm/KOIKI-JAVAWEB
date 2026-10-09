@@ -4,11 +4,13 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.*;
 import java.util.concurrent.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.koikifw.referenceacceptance.notification.*;
 import org.koikifw.reference.notification.application.port.outbound.RecoveryEvidencePort;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+@EnabledIfSystemProperty(named="koiki.b2.reference-acceptance.enabled", matches="true")
 class B2IssueTransactionTest {
     B2ReadConnectionHarness h;
     private boolean closed;

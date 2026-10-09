@@ -4,11 +4,13 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.koikifw.referenceacceptance.notification.*;
 import org.koikifw.reference.notification.application.ProtectedRecoveryIssueService;
 import org.koikifw.reference.notification.application.port.outbound.*;
 import org.springframework.transaction.support.*;
 
+@EnabledIfSystemProperty(named="koiki.b2.reference-acceptance.enabled", matches="true")
 class B2IssueBoundaryTest {
     B2ReadConnectionHarness h;
     @BeforeEach void prepare() throws Exception {h=new B2ReadConnectionHarness();}

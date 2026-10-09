@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.koikifw.reference.notification.application.RecoveryPermitService;
 import org.koikifw.reference.notification.application.port.outbound.RecoveryEvidencePort;
 import org.koikifw.reference.notification.application.port.outbound.RecoveryScopePort;
@@ -22,6 +23,7 @@ import org.koikifw.referenceacceptance.notification.NotificationFoundationDbHarn
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /** Adopted R01-R07; normal Servlet startup is retained alongside finite integration checks. */
+@EnabledIfSystemProperty(named = "koiki.reference.verification.resource-limits.enabled", matches = "true")
 class NotificationFoundationRegistrationTest {
     private static NotificationFoundationDbHarness db;
     @BeforeAll

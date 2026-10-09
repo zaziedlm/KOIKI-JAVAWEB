@@ -7,6 +7,7 @@ import static org.koikifw.referenceacceptance.notification.ManagedRecoveryTestSu
 import java.nio.file.Path;
 import java.time.Clock;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
 import org.koikifw.reference.notification.adapter.outbound.configuration.ManagedRecoverySnapshot;
 import org.koikifw.reference.notification.application.RecoveryPermitService;
@@ -18,6 +19,7 @@ import org.koikifw.referenceacceptance.notification.NotificationDbTest;
 import org.koikifw.referenceacceptance.notification.NotificationFoundationDbHarness.Mode;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
+@EnabledIfSystemProperty(named = "koiki.reference.verification.resource-limits.enabled", matches = "true")
 class ManagedRecoveryConfigurationRegistrationTest extends NotificationDbTest {
     @TempDir Path directory;
     @Test void R01DisabledNeverReadsManifest() {

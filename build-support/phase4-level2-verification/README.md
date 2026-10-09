@@ -145,3 +145,83 @@ API/Rules, distribution, CI/remote and Phase 4 overall retain their separate app
 B2受入成果のsource固定対象・証拠所在・再見／再実行条件は
 [fixed-results handoff](../../docs/development/phase4-s1-stage-b2-fixed-results-next-session-handoff-20261008.md)
 と[hash/evidence manifest](../../docs/architecture/validation/phase4-s1-stage-b2-fixed-evidence-manifest-20261008.json)を参照する。
+
+## B2 Reference acceptance and ordinary builds
+
+The three Reference process-backed B2 classes are disabled unless
+`koiki.b2.reference-acceptance.enabled=true` is explicitly supplied. Ordinary Root Reactor builds
+do not prepare or launch the Tooling supplier. `B2FrozenSourceRegistrationTest` remains enabled.
+Disabled process-backed cases are not B2 acceptance PASS results.
+
+Explicit B2 process execution currently requires Windows: existing B1 process and VM inspection
+helpers require `java.exe` and `jcmd.exe`. Linux ordinary builds keep the three classes disabled;
+Linux explicit B2 execution requires a separate review. The process bridge fails before launching
+children when prerequisites are missing, unsupported, empty, oversized or unavailable.
+
+Use a newly prepared verification source and dedicated Maven repository under the approved
+execution envelope. Install its Root Reactor artifacts first. The preparation script runs only
+offline jdbc main packaging, test compilation with `jdbc,s1-contract,s1-web`, and **jdbc test-scope**
+classpath generation. The coordinator requires JUnit and Testcontainers as well as main dependencies.
+Compile support profiles are not used to resolve its runtime classpath.
+
+```powershell
+# From the prepared verification source root, after the approved preflight and root checks.
+# $runM2 is an absolute path to its prepared dedicated repository.
+$prepareDirectory = Join-Path (Get-Location) 'tmp/b2-preparation-first'
+New-Item -ItemType Directory -Path (Split-Path $prepareDirectory) -Force | Out-Null
+pwsh -NoProfile -File build-support/phase4-level2-verification/scripts/prepare-b2-reference-acceptance.ps1 -RunDirectory $prepareDirectory -MavenRepository $runM2
+# Continue only when summary.json is PASS. Never clean Tooling after this preparation.
+$classpathFile = Join-Path $prepareDirectory 'tooling-jdbc-test-classpath.txt'
+.\mvnw.cmd -o -B -ntp "-Dmaven.repo.local=$runM2" -f koiki-reference-app/pom.xml '-Dtest=B2FrozenSourceRegistrationTest' '-DargLine=-Xmx768m' '-DforkCount=1' '-DreuseForks=false' surefire:test
+.\mvnw.cmd -o -B -ntp "-Dmaven.repo.local=$runM2" -f koiki-reference-app/pom.xml '-Dtest=B2ProtectedIssueReadTest' '-Dkoiki.b2.reference-acceptance.enabled=true' '-Dkoiki.reference.verification.resource-limits.enabled=true' "-Dkoiki.b2.tooling.classpath-file=$classpathFile" '-DargLine=-Xmx768m' '-DforkCount=1' '-DreuseForks=false' '-Djunit.jupiter.execution.parallel.enabled=false' '-Dsurefire.skipAfterFailureCount=1' surefire:test
+```
+
+Run `B2IssueBoundaryTest` and `B2IssueTransactionTest` separately with the same explicit properties.
+Save fresh XML, exit codes, source/artifact/classpath hashes and finite sanitized logs outside target.
+Keep Maven heap at 768 MiB and restore per-run environment settings in `finally`. Run classes serially,
+verify managed children, DB/Ryuk, ports, ready/partial files and temporary assignments have ended,
+then proceed. A selected acceptance run with missing classpath must fail, rather than skip.
+
+`scripts/verify-s1-b2.ps1` and its original fixed paths remain historical evidence and are not called
+by the new preparation script. Original B1/B2 acceptance and hashes are unchanged. Changed-source
+results belong to [normal-build remediation evidence](../../docs/architecture/validation/phase4-s1-b2-normal-build-remediation-20261009.md),
+under the [Owner-approved review envelope](../../docs/development/phase4-s1-b2-normal-build-remediation-owner-review-20261009.md).
+These instructions do not authorize a new run, remote/CI operations or Reference async implementation.
+
+## S1 dedicated Reference verification
+
+Seven DB-backed S1 classes require the existing test-only property
+`koiki.reference.verification.resource-limits.enabled=true`. Ordinary builds leave it unset:
+64 S1 cases and the 28 B2 process cases are disabled, not counted as acceptance PASS.
+Other default tests, including B2 registration, remain enabled.
+
+Run these classes separately and serially after successful ordinary root verification and install:
+`ManagedRecoveryConfigurationDbTest`, `ManagedRecoveryConfigurationRegistrationTest`,
+`NotificationFoundationMigrationTest`, `NotificationFoundationPersistenceTest`,
+`NotificationFoundationRegistrationTest`, `NotificationFoundationTransactionTest`,
+and `OperationalRecoveryEvidenceDbTest` (64 cases total).
+
+```powershell
+.\mvnw.cmd -o -B -ntp "-Dmaven.repo.local=$runM2" -f koiki-reference-app/pom.xml '-Dtest=ManagedRecoveryConfigurationDbTest' '-Dkoiki.reference.verification.resource-limits.enabled=true' '-DargLine=-Xmx768m' '-DforkCount=1' '-DreuseForks=false' '-Djunit.jupiter.execution.parallel.enabled=false' '-Dsurefire.skipAfterFailureCount=1' surefire:test
+```
+
+Use the existing per-class pool settings; do not overwrite Hikari properties globally.
+Preserve fresh XML and check child/DB/Ryuk cleanup before the next class (maximum 30 seconds).
+Stop on unexpected failures, resource limits or cleanup failure. Dedicated S1 64 plus B2 36
+must execute with zero skips; the B2 registration eight also run in the ordinary build.
+The approved case mapping, finite budgets and source manifest are in the
+[additional Owner review](../../docs/development/phase4-s1-normal-build-dedicated-verification-separation-owner-review-20261009.md).
+
+**Changed-source validation (2026-10-09):** Windows ordinary root `clean verify` passed
+257 executed cases with 92 intentionally disabled. Dedicated S1 64 and B2 36 cases passed
+with zero skips; three missing/invalid classpath commands produced the expected prerequisite
+errors without launching a supplier or DB. Package/source/artifact alignment and cleanup passed.
+The B2 registration eight overlap ordinary and dedicated runs: 349 distinct cases, not 357.
+The finite runner distinguishes the fixed IDE's bounded jcmd from owned verification JVMs
+and observes cluster connections through the existing `postgres` database, outside the frozen
+source database. Do not reuse a monitor that connects to the source during its zero-session check.
+See [final evidence and limits](../../docs/architecture/validation/phase4-s1-b2-normal-build-remediation-20261009.md#23-3承認後のb2成立負例package最終結果).
+Owner accepted these bounded results on 2026-10-09; see the
+[acceptance record](../../docs/architecture/validation/phase4-s1-b2-normal-build-remediation-20261009.md#24-最終結果のowner受入承認).
+Commits, Linux/CI validation and subsequent Reference async work remain separate decisions;
+result acceptance does not authorize another run.

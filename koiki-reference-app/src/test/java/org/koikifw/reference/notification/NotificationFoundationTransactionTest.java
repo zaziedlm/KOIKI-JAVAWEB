@@ -7,6 +7,7 @@ import static org.koikifw.referenceacceptance.notification.NotificationFoundatio
 
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.koikifw.audit.AuditActor;
 import org.koikifw.audit.AuditEvent;
 import org.koikifw.audit.AuditResult;
@@ -16,6 +17,7 @@ import org.koikifw.referenceacceptance.notification.NotificationDbTest;
 import org.koikifw.referenceacceptance.notification.NotificationFoundationDbHarness;
 
 /** Adopted T01-T16, with real public Query/Recorders and restricted runtime connections. */
+@EnabledIfSystemProperty(named = "koiki.reference.verification.resource-limits.enabled", matches = "true")
 class NotificationFoundationTransactionTest extends NotificationDbTest {
     @Test void commitsIssueWithBusinessAudit() throws Exception {
         var target = db.target(); var id = db.issue(target);

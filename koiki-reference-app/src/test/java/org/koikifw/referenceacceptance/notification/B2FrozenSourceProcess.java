@@ -26,17 +26,32 @@ public final class B2FrozenSourceProcess implements AutoCloseable {
             root=root.getParent();if(root==null) throw new IllegalStateException("Repository unavailable");
         }
         Path tooling=root.resolve("build-support/phase4-level2-verification");
+        boolean windows=System.getProperty("os.name","").startsWith("Windows");
+        Path javaExecutable=Path.of(System.getProperty("java.home"),"bin",windows?"java.exe":"java");
+        if(!windows) throw new IllegalStateException("B2_PRECONDITION_WINDOWS_REQUIRED");
+        if(!Files.isRegularFile(javaExecutable)) throw new IllegalStateException("B2_PRECONDITION_JAVA_UNAVAILABLE");
+        String dependencies=classpath();
+        for(String required:List.of("target/classes","target/test-classes",
+                "target/phase4-level2-verification-0.1.0-SNAPSHOT.jar",
+                "target/test-classes/org/koikifw/buildsupport/phase4/b2fixture/B2FrozenSourceCoordinator.class",
+                "target/test-classes/org/koikifw/buildsupport/phase4/b1fixture/B1ResourceLimits.class",
+                "target/test-classes/s1-b1/read-source.sql","target/test-classes/s1-b2/frozen-source.sql")) {
+            if(!Files.exists(tooling.resolve(required))) throw new IllegalStateException("B2_PRECONDITION_TOOLING_UNPREPARED");
+        }
         directory=tooling.resolve("target/s1-b2-reference-"+UUID.randomUUID());
         Files.createDirectory(directory);readyFile=directory.resolve("ready.properties");log=directory.resolve("coordinator.log");
-        String dependencies=Files.readString(root.resolve("tmp/b2-preflight-0321079-20261008/tooling-runtime-jdbc-classpath.txt")).trim();
         String cp=tooling.resolve("target/test-classes")+java.io.File.pathSeparator+tooling.resolve("target/classes")+java.io.File.pathSeparator+dependencies;
-        var builder=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin","java.exe").toString(),
+        var builder=new ProcessBuilder(javaExecutable.toString(),
                 "-Xmx768m","-Dkoiki.b1.resource-limits.enabled=true","-Dkoiki.b2.resource-limits.enabled=true",
                 "-cp",cp,"org.koikifw.buildsupport.phase4.b2fixture.B2FrozenSourceCoordinator",readyFile.toString());
         builder.directory(tooling.toFile()).redirectErrorStream(true).redirectOutput(log.toFile());
         builder.environment().put("B2_SOURCE_READER_PASSWORD",readerSecret);
         builder.environment().put("B2_FIXTURE_ADMIN_PASSWORD",adminSecret);
-        child=builder.start();
+        try {child=builder.start();}
+        catch(java.io.IOException failure) {
+            Files.deleteIfExists(log);Files.deleteIfExists(directory);
+            throw new IllegalStateException("B2_PRECONDITION_LAUNCH_FAILED");
+        }
         try {
             long deadline=System.nanoTime()+Duration.ofSeconds(90).toNanos();
             while(!Files.exists(readyFile) && child.isAlive() && System.nanoTime()<deadline) {
@@ -49,6 +64,27 @@ public final class B2FrozenSourceProcess implements AutoCloseable {
             if(!"1".equals(ready.getProperty("protocol")) || !ready.getProperty("database").matches("[a-zA-Z0-9_]+"))
                 throw new IllegalStateException("Ready protocol invalid");
         } catch(Exception|AssertionError failure) {close();throw failure;}
+    }
+    private static String classpath() {
+        String supplied=System.getProperty("koiki.b2.tooling.classpath-file");
+        if(supplied==null || supplied.isBlank()) throw new IllegalStateException("B2_PRECONDITION_CLASSPATH_MISSING");
+        try {
+            Path file=Path.of(supplied);
+            if(!file.isAbsolute() || !Files.isRegularFile(file)) throw new IllegalStateException("B2_PRECONDITION_CLASSPATH_UNAVAILABLE");
+            if(Files.size(file)>1048576) throw new IllegalStateException("B2_PRECONDITION_CLASSPATH_LIMIT");
+            String value=Files.readString(file,StandardCharsets.UTF_8).replaceFirst("^\\uFEFF","").trim();
+            if(value.isEmpty()) throw new IllegalStateException("B2_PRECONDITION_CLASSPATH_EMPTY");
+            String[] entries=value.split(java.util.regex.Pattern.quote(java.io.File.pathSeparator),-1);
+            if(entries.length>512) throw new IllegalStateException("B2_PRECONDITION_CLASSPATH_LIMIT");
+            for(String entry:entries) {
+                Path dependency=Path.of(entry);
+                if(!dependency.isAbsolute() || !Files.isRegularFile(dependency))
+                    throw new IllegalStateException("B2_PRECONDITION_CLASSPATH_ENTRY_UNAVAILABLE");
+            }
+            return value;
+        } catch(java.io.IOException|InvalidPathException failure) {
+            throw new IllegalStateException("B2_PRECONDITION_CLASSPATH_UNAVAILABLE");
+        }
     }
     public String sourceUrl() {return "jdbc:postgresql://127.0.0.1:"+Integer.parseInt(ready.getProperty("port"))+"/"+ready.getProperty("database");}
     public RecoveryTarget target() {return new RecoveryTarget(ready.getProperty("environment"),UUID.fromString(ready.getProperty("publication")),

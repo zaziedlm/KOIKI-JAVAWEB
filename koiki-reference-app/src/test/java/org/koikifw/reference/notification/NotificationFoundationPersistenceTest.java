@@ -14,6 +14,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.koikifw.reference.notification.domain.model.RecoveryConsumption;
 import org.koikifw.reference.notification.domain.model.RecoveryPermit;
 import org.koikifw.reference.notification.domain.repository.RecoveryConsumptionRepository;
@@ -25,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /** Adopted D01-D12. Setup/evidence is admin-only; business operations use restricted roles. */
+@EnabledIfSystemProperty(named = "koiki.reference.verification.resource-limits.enabled", matches = "true")
 class NotificationFoundationPersistenceTest extends NotificationDbTest {
     @Test void rejectsUpdatesToPermitTargetColumns() throws Exception {
         var target = db.target(); db.issue(target);

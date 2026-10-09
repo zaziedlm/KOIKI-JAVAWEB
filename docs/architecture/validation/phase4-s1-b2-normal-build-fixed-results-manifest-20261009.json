@@ -1,0 +1,1942 @@
+{
+  "Status": "OWNER_ACCEPTED_RESULTS_LOCAL_COMMIT_AUTHORIZED",
+  "Date": "2026-10-09",
+  "Branch": "feature/phase4-s1-reference-foundation",
+  "Base": "8b03b9f7f237d8987c637b6fc2f1a5e66e03ab4f",
+  "CommitPathCount": 22,
+  "SelfPath": "docs/architecture/validation/phase4-s1-b2-normal-build-fixed-results-manifest-20261009.json",
+  "SelfHashExcluded": true,
+  "SourceFiles": [
+    {
+      "Path": "build-support/phase4-level2-verification/README.md",
+      "Change": "MODIFIED",
+      "Sha256": "E600DAE31AABC0A763F0EA97AE689E29BEF78F52CDFE6E99C800AAA783FB2BA5",
+      "GitBlob": "e010acb35ffbacd020dd4a62520bcef63bb2ff7c"
+    },
+    {
+      "Path": "build-support/phase4-level2-verification/scripts/prepare-b2-reference-acceptance.ps1",
+      "Change": "NEW",
+      "Sha256": "17FD39ED27F53AA43503F343E62625F2E77EF521AA2AA1B84D78706D1E227D79",
+      "GitBlob": "1f7a0c281c2c8151b3b34333d64d999f500a9a15"
+    },
+    {
+      "Path": "docs/architecture/validation/phase4-s1-b2-normal-build-remediation-20261009.md",
+      "Change": "NEW",
+      "Sha256": "DF2A84E64A76BBD754C97AD836C603AB5CF4E3253D3692E185B58F7B8F6E3A60",
+      "GitBlob": "491d7b24f10e6bc40eba24558cb70105f60f53b1"
+    },
+    {
+      "Path": "docs/development/phase4-s1-b2-normal-build-fixed-results-commit-review-20261009.md",
+      "Change": "NEW",
+      "Sha256": "C18C4F1B3821FFF4B58B2DF043EEA8AAA667B8F2B41C3F11871E49B3454E485F",
+      "GitBlob": "a64021c1244beca4fa3b9bfa70a8d3c7b38aa4cf"
+    },
+    {
+      "Path": "docs/development/phase4-s1-b2-normal-build-remediation-session-handoff-20261009.md",
+      "Change": "MODIFIED",
+      "Sha256": "88266049E96211FC69E13FA963037764056A933073DC9EA3EBDA5EA22634B3E8",
+      "GitBlob": "170def23e9ff466458c1daeebc845b3cb7c52dcb"
+    },
+    {
+      "Path": "docs/development/phase4-s1-b2-observer-database-correction-owner-review-20261009.md",
+      "Change": "NEW",
+      "Sha256": "5F1A0DA81C5FC774867887401F0AE6A813AAEEDEAEEB1915669BD55734AE9B8A",
+      "GitBlob": "85b3be9786dabbaac9ccc281fb8c304987a54c70"
+    },
+    {
+      "Path": "docs/development/phase4-s1-dedicated-jvm-observation-owner-review-20261009.md",
+      "Change": "NEW",
+      "Sha256": "2AE7B09FF39C0439894208931C7C17B8C1B2BC08162561449739DF23928C000D",
+      "GitBlob": "8aee14a5a7296c5ef153abd6bb0ff885edbd94a8"
+    },
+    {
+      "Path": "docs/development/phase4-s1-normal-build-dedicated-verification-separation-owner-review-20261009.md",
+      "Change": "NEW",
+      "Sha256": "C851633F6BFBF49FC670692EE1AD985D7B9985675838E747BB6995EDCCDC9800",
+      "GitBlob": "31513d4b895c111e3537d22142b3ee990d33a039"
+    },
+    {
+      "Path": "docs/development/phase4-s1-purpose-dod-stage-mapping-20261009.md",
+      "Change": "MODIFIED",
+      "Sha256": "AA0435FE05B61340073CB0966676674DEC397384CB3D9342CFD11DA4E8A3B3B6",
+      "GitBlob": "e265b1e128c755bbd9f279786fb2eabde37bd9d5"
+    },
+    {
+      "Path": "docs/development/phase4-s1-verification-process-ownership-correction-owner-review-20261009.md",
+      "Change": "NEW",
+      "Sha256": "0E3AE8E838A1A41214A4236779C3D555E95E3ED1E4955A4D45F2745BF70A241F",
+      "GitBlob": "c8040767a19cdd0a6e63ef1a4b831288d848c9dd"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/B2IssueBoundaryTest.java",
+      "Change": "MODIFIED",
+      "Sha256": "471D39214B5F330577121FBB758227A580516E8735B35DF34630913EF652AB56",
+      "GitBlob": "907d8f849121a7ff17f24c92e24e49ebead04a45"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/B2IssueTransactionTest.java",
+      "Change": "MODIFIED",
+      "Sha256": "E924740EC4E4F8586C9A103043FECDED0CFC8E994A42ABF3E1DB253F9E4474AF",
+      "GitBlob": "2e2e2300fc6bea00f937abe692fb6d33079b2e64"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/B2ProtectedIssueReadTest.java",
+      "Change": "MODIFIED",
+      "Sha256": "5DE27EE9E761ECFAA4393B1207AFE0D365906D00D0E0F7DDF395B3361CC13E71",
+      "GitBlob": "501f52c0a6a069590febeaaf4b81d30df44d2569"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/ManagedRecoveryConfigurationDbTest.java",
+      "Change": "MODIFIED",
+      "Sha256": "9EE05505A8676FF894FBE73AE4A05EBDA0D5D7BC965DC4EFBD085DE28B30F33F",
+      "GitBlob": "65fda00f45a615af90cc83eca83b4ed666b30d5d"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/ManagedRecoveryConfigurationRegistrationTest.java",
+      "Change": "MODIFIED",
+      "Sha256": "579EAF1FEC6CEDF27384BA319CAC326DD0FC3149DB65A3A5D90DAF89B5D1F235",
+      "GitBlob": "093ef743853dcae834d017eb27e0f9b9ea541bc2"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/NotificationFoundationMigrationTest.java",
+      "Change": "MODIFIED",
+      "Sha256": "1174E84A3788A3FBDC998FC9D58F91C8DF79D2618A1462BB647BC3D4FB8CBD33",
+      "GitBlob": "25444e304cc65ee6cf941d5eefd6c765f9a94270"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/NotificationFoundationPersistenceTest.java",
+      "Change": "MODIFIED",
+      "Sha256": "29E7D31107A5FA346A8D1175DBA42D35AC02BD3A73542A6D5B54AE3747FEE919",
+      "GitBlob": "5d6fd94d3f24fb0411ac1305590e8279c4c5df5a"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/NotificationFoundationRegistrationTest.java",
+      "Change": "MODIFIED",
+      "Sha256": "009F03E5E4E903222ECE8F27002984152B59317520B1B275F0448EBDA0CCE68D",
+      "GitBlob": "34ed91e801b607403af4dadfccb32f701786de9b"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/NotificationFoundationTransactionTest.java",
+      "Change": "MODIFIED",
+      "Sha256": "D6F54109388AABA5C0F5BAC21B23124EE59DAE645D633B807E8740C7F903C731",
+      "GitBlob": "215b272e9b90973429c28a8a0b774d838671283d"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/OperationalRecoveryEvidenceDbTest.java",
+      "Change": "MODIFIED",
+      "Sha256": "B621A933D97BAB04DCA554FE28740A35DDD17C74FA47F3E815FEEBF268D970A4",
+      "GitBlob": "83ef6528aa55a211f9794ca50dce479a2231c20c"
+    },
+    {
+      "Path": "koiki-reference-app/src/test/java/org/koikifw/referenceacceptance/notification/B2FrozenSourceProcess.java",
+      "Change": "MODIFIED",
+      "Sha256": "49004182E7E5A194D118DAEBD62DF9B43ED30F67ADD0B575CC62E87A7BEBB36C",
+      "GitBlob": "09c8342890bca7967d48b6c9ad70bcb5f6693b90"
+    }
+  ],
+  "AcceptedExecutableFiles": 12,
+  "ExecutedSource": {
+    "Base": "8b03b9f7f237d8987c637b6fc2f1a5e66e03ab4f",
+    "Branch": "feature/phase4-s1-reference-foundation",
+    "Files": [
+      {
+        "Path": "build-support/phase4-level2-verification/README.md",
+        "Sha256": "21C6C5E7E99071A585F892A843F5ADD9F9D05982630A019B8C6AEA8C4646BBA2",
+        "CopiedSha256": "21C6C5E7E99071A585F892A843F5ADD9F9D05982630A019B8C6AEA8C4646BBA2"
+      },
+      {
+        "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/B2IssueBoundaryTest.java",
+        "Sha256": "471D39214B5F330577121FBB758227A580516E8735B35DF34630913EF652AB56",
+        "CopiedSha256": "471D39214B5F330577121FBB758227A580516E8735B35DF34630913EF652AB56"
+      },
+      {
+        "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/B2IssueTransactionTest.java",
+        "Sha256": "E924740EC4E4F8586C9A103043FECDED0CFC8E994A42ABF3E1DB253F9E4474AF",
+        "CopiedSha256": "E924740EC4E4F8586C9A103043FECDED0CFC8E994A42ABF3E1DB253F9E4474AF"
+      },
+      {
+        "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/B2ProtectedIssueReadTest.java",
+        "Sha256": "5DE27EE9E761ECFAA4393B1207AFE0D365906D00D0E0F7DDF395B3361CC13E71",
+        "CopiedSha256": "5DE27EE9E761ECFAA4393B1207AFE0D365906D00D0E0F7DDF395B3361CC13E71"
+      },
+      {
+        "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/ManagedRecoveryConfigurationDbTest.java",
+        "Sha256": "9EE05505A8676FF894FBE73AE4A05EBDA0D5D7BC965DC4EFBD085DE28B30F33F",
+        "CopiedSha256": "9EE05505A8676FF894FBE73AE4A05EBDA0D5D7BC965DC4EFBD085DE28B30F33F"
+      },
+      {
+        "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/ManagedRecoveryConfigurationRegistrationTest.java",
+        "Sha256": "579EAF1FEC6CEDF27384BA319CAC326DD0FC3149DB65A3A5D90DAF89B5D1F235",
+        "CopiedSha256": "579EAF1FEC6CEDF27384BA319CAC326DD0FC3149DB65A3A5D90DAF89B5D1F235"
+      },
+      {
+        "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/NotificationFoundationMigrationTest.java",
+        "Sha256": "1174E84A3788A3FBDC998FC9D58F91C8DF79D2618A1462BB647BC3D4FB8CBD33",
+        "CopiedSha256": "1174E84A3788A3FBDC998FC9D58F91C8DF79D2618A1462BB647BC3D4FB8CBD33"
+      },
+      {
+        "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/NotificationFoundationPersistenceTest.java",
+        "Sha256": "29E7D31107A5FA346A8D1175DBA42D35AC02BD3A73542A6D5B54AE3747FEE919",
+        "CopiedSha256": "29E7D31107A5FA346A8D1175DBA42D35AC02BD3A73542A6D5B54AE3747FEE919"
+      },
+      {
+        "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/NotificationFoundationRegistrationTest.java",
+        "Sha256": "009F03E5E4E903222ECE8F27002984152B59317520B1B275F0448EBDA0CCE68D",
+        "CopiedSha256": "009F03E5E4E903222ECE8F27002984152B59317520B1B275F0448EBDA0CCE68D"
+      },
+      {
+        "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/NotificationFoundationTransactionTest.java",
+        "Sha256": "D6F54109388AABA5C0F5BAC21B23124EE59DAE645D633B807E8740C7F903C731",
+        "CopiedSha256": "D6F54109388AABA5C0F5BAC21B23124EE59DAE645D633B807E8740C7F903C731"
+      },
+      {
+        "Path": "koiki-reference-app/src/test/java/org/koikifw/reference/notification/OperationalRecoveryEvidenceDbTest.java",
+        "Sha256": "B621A933D97BAB04DCA554FE28740A35DDD17C74FA47F3E815FEEBF268D970A4",
+        "CopiedSha256": "B621A933D97BAB04DCA554FE28740A35DDD17C74FA47F3E815FEEBF268D970A4"
+      },
+      {
+        "Path": "koiki-reference-app/src/test/java/org/koikifw/referenceacceptance/notification/B2FrozenSourceProcess.java",
+        "Sha256": "49004182E7E5A194D118DAEBD62DF9B43ED30F67ADD0B575CC62E87A7BEBB36C",
+        "CopiedSha256": "49004182E7E5A194D118DAEBD62DF9B43ED30F67ADD0B575CC62E87A7BEBB36C"
+      },
+      {
+        "Path": "build-support/phase4-level2-verification/scripts/prepare-b2-reference-acceptance.ps1",
+        "Sha256": "17FD39ED27F53AA43503F343E62625F2E77EF521AA2AA1B84D78706D1E227D79",
+        "CopiedSha256": "17FD39ED27F53AA43503F343E62625F2E77EF521AA2AA1B84D78706D1E227D79"
+      },
+      {
+        "Path": "docs/architecture/validation/phase4-s1-b2-normal-build-remediation-20261009.md",
+        "Sha256": "E09F8F69F54922EA95067FAF4A694F642C1863D0E6876584A8A4E99564F60F3D",
+        "CopiedSha256": "E09F8F69F54922EA95067FAF4A694F642C1863D0E6876584A8A4E99564F60F3D"
+      }
+    ],
+    "OwnerReviewSha256": "FDC6F236D6027C29342270488106D9650EC6541D7F83A6404AE0E775E3119AD0",
+    "RootSecondsConsumed": 423.53,
+    "RootTimeoutSeconds": 1376,
+    "PreflightBudgetConservativeConsumedSeconds": 600,
+    "PreparationSeconds": 900,
+    "S1Seconds": 480,
+    "B2Seconds": 720,
+    "NegativePackageSeconds": 300,
+    "CleanupReservedSeconds": 300
+  },
+  "Validation": {
+    "Status": "BOUNDED_VALIDATION_PASS_OWNER_ACCEPTANCE_PENDING",
+    "Base": "8b03b9f7f237d8987c637b6fc2f1a5e66e03ab4f",
+    "OrdinaryTests": 349,
+    "OrdinaryExecutedPass": 257,
+    "OrdinaryDisabled": 92,
+    "DedicatedPass": 100,
+    "DedicatedSkipped": 0,
+    "RegistrationDuplicate": 8,
+    "DistinctVerifiedCases": 349,
+    "ExpectedNegativeCommands": 3,
+    "PackageStatus": "PASS",
+    "CaseCoverageAligned": true,
+    "PriorFailuresPreserved": true,
+    "RemoteExecuted": false,
+    "RemediationCommitted": false,
+    "LinuxExecuted": false
+  },
+  "OwnerAcceptance": {
+    "Date": "2026-10-09",
+    "Status": "COMPLETE / OWNER ACCEPTED",
+    "OwnerStatement": "23 §3承認後のB2成立・負例・package・最終結果 を確認し、この結果を承認します",
+    "CanonicalRecord": "docs/architecture/validation/phase4-s1-b2-normal-build-remediation-20261009.md#24",
+    "Branch": "feature/phase4-s1-reference-foundation",
+    "Base": "8b03b9f7f237d8987c637b6fc2f1a5e66e03ab4f",
+    "ExecutedSourceManifest": "evidence/separation-source-manifest.json",
+    "ValidationSnapshot": "evidence/final-validation-summary.json",
+    "ValidationSnapshotSha256": "BF08EA5998A9805FBAE7E2C2C77483A91265CB0248A77BE23A748BF22F385DEA",
+    "PriorEvidenceIndexPreserved": true,
+    "CommitAuthorized": false,
+    "RemoteAuthorized": false,
+    "NewExecutionAuthorized": false,
+    "AsyncImplementationAuthorized": false
+  },
+  "Packages": {
+    "Status": "PASS",
+    "Jars": [
+      {
+        "Jar": "koiki-reference-app\\target\\koiki-reference-app-0.1.0-SNAPSHOT.jar",
+        "Sha256": "8A95568DC3944B78DB6463F5C5F0FC3949D4759B989C3EE9175E944D639E95B2",
+        "FixtureExcluded": true,
+        "Entries": 390
+      },
+      {
+        "Jar": "build-support\\phase4-level2-verification\\target\\phase4-level2-verification-0.1.0-SNAPSHOT.jar",
+        "Sha256": "CE68D082BEFD24515B8923A8228FBA8158AC83A4E2E60C2304846F76F75D92BC",
+        "FixtureExcluded": true,
+        "Entries": 199
+      }
+    ],
+    "SourceStable": true,
+    "PreparedArtifactStable": true,
+    "ReferenceMain5Present": true,
+    "ReferenceOutputAligned": true,
+    "NestedKoikiDependenciesAligned": true,
+    "ClasspathSha256": "8EBEA70B8B8D37F874DEAA05C80B81B3CF37095C5867F63907AC4C301EE48970",
+    "NegativePackageSeconds": 13.8098778
+  },
+  "Budget": {
+    "PreflightConservativeSeconds": 600,
+    "RootCumulativeSeconds": 656.0659472,
+    "S1ConservativeSeconds": 437.689,
+    "PreparationMeasuredSeconds": 36.987,
+    "B2ConservativeSeconds": 519.463,
+    "NegativePackageSeconds": 13.8098778,
+    "FinalCleanupManagementReservedSeconds": 300,
+    "TotalConservativeSeconds": 2564.0148249999997,
+    "TotalLimitSeconds": 5400
+  },
+  "Cleanup": {
+    "Utc": "2026-10-09T02:40:10.3969699Z",
+    "NonbaselineJavaCount": 0,
+    "Baseline": [
+      {
+        "ProcessId": 24852,
+        "Name": "java.exe",
+        "CreationDate": "2026-10-09T06:59:13.196579+09:00"
+      },
+      {
+        "ProcessId": 10280,
+        "Name": "java.exe",
+        "CreationDate": "2026-10-09T06:59:23.320593+09:00"
+      }
+    ],
+    "Containers": [],
+    "SourceRunBytes": 527481564.0,
+    "EvidenceRawBytes": 27157275.0
+  },
+  "LocalRun": "tmp/b2-normal-build-8b03b9f-20261009-first",
+  "LocalRuntimeTransferredByGit": false,
+  "LocalRunners": [
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Assemble-Final-Evidence.ps1",
+      "Sha256": "525FD19D0F9F57950736359671479DC6544D2B0F611D4926B1AF75B16026C180"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Inspect-Packages-Owned.ps1",
+      "Sha256": "2BA8B3B4318DFF70B4108A7EDF1F89E1F1D904B98AC7105C1EA550F5E18873CC"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-B2-Observer-Corrected.ps1",
+      "Sha256": "2148C59724925B9D337A379F7D769F7C22374140F35AF788D3F7E2F065BB3379"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-B2-Owned.ps1",
+      "Sha256": "5B924B1CE8B0CEE4F80E3F657FA9F8966655B35D42B601417C04958ADD47B189"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-Jvm-Observation.ps1",
+      "Sha256": "BC594DF855F42A0FFE19D2DB577A8505AA4447EC49D2751DAB3DDDB4B4FC1CA6"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-Negatives-Owned.ps1",
+      "Sha256": "B9B764CC1101E30CE0864893E9DDFD0B799C40822ED956D3ED1F0723F8158CF8"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-Preparation-Separation.ps1",
+      "Sha256": "B0AB8D8E5E628E737BA541C6E2F83B455A8913DAF1A45175CFB9A5180D088DEF"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-Root-Retry1.ps1",
+      "Sha256": "3D0EBC422FF693176A3CF116AFFC540CF61C3319A465486CBA00AC8F7D576784"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-Root-Retry2.ps1",
+      "Sha256": "AD6608CD1CF6E8323F53A1C3049E186CDC3C51CECD5E17BCC08B398942F3F34A"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-Root-Retry3.ps1",
+      "Sha256": "22917D8F8250683E25BE7506C687563C59F7F17A88142FFAD67CB6A7A1F4A987"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-Root.ps1",
+      "Sha256": "5197713BC5E91931FA594BFD1EFCC523A2B60364C3ADCAE27D6EFBB6F2750154"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-S1-Owned.ps1",
+      "Sha256": "EB120FAB3067030659E02F0D16284CB55DC6D1FFDB02CFBDB30F8BEA2521C364"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-S1-Remaining.ps1",
+      "Sha256": "F110EC5003BEF1F93A9ABCB940C7646E06EAB4154C179F4AEA76143D05DD50F9"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-S1-Separation.ps1",
+      "Sha256": "E67B45AB0A3393B86CC65FD3A8970EBF5F41A2D7B1A5E2EB65347F35F2BE39A1"
+    },
+    {
+      "Path": "tmp/b2-normal-build-8b03b9f-20261009-first/Run-Separation.ps1",
+      "Sha256": "E5E418475AAEEAE5200BE17631C04DBCE7C33287FF25444ED159FFBC67D42A8D"
+    }
+  ],
+  "EvidenceItems": [
+    {
+      "Path": "evidence\\agent-preparation-approved-result.json",
+      "Bytes": 115,
+      "Sha256": "AF4946389C7D3EDE50406B088E7FC803E38A8E352AEE507329595B20BF04299C"
+    },
+    {
+      "Path": "evidence\\agent-preparation-approved.log",
+      "Bytes": 802,
+      "Sha256": "FB579470685E7574D92168B835EE1478824C6055D3192F7C9E38A00EB4848A6D"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueBoundaryTest-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueBoundaryTest-jvm-observations.json",
+      "Bytes": 168423,
+      "Sha256": "209CBB6DDD94E463C864ADC5406D890B93FDA63D4EE9EAB6BFB725D76C23A7E2"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueBoundaryTest-resources.json",
+      "Bytes": 174045,
+      "Sha256": "952C69283C6C87D01DFE9F09ABE934021C3DF49EBD93FB82985DE4C66461D4CC"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueBoundaryTest-result.json",
+      "Bytes": 1629,
+      "Sha256": "A9000502DABAEF7013E88B223AA453D7F2EA0D640F177F21EA6BB5826419A6C5"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueBoundaryTest-suites.json",
+      "Bytes": 477,
+      "Sha256": "F6991211A26AB12046348A4E2B14D0E61574F0EAB7CAB998989BB72920F160CC"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueBoundaryTest.log",
+      "Bytes": 521496,
+      "Sha256": "FB3D6D30B6285AA954CF6CA309529169DEFBD8E5C73F28FA2DA0FC1A462605C5"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueTransactionTest-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueTransactionTest-jvm-observations.json",
+      "Bytes": 162020,
+      "Sha256": "9455AFB9F19F481AF7E6912E0692965E769C84472BB7F9B8A1FAE2069A4729B5"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueTransactionTest-resources.json",
+      "Bytes": 166770,
+      "Sha256": "7703AE652DCA78D9C063025C810A1D7727F7D70ECF0E482F8C3F91ADDA83871E"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueTransactionTest-result.json",
+      "Bytes": 1629,
+      "Sha256": "27F409A46F7FE64CB6BC2A1F376650C132326224182B7C0101C3E88D55FCAC6B"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueTransactionTest-suites.json",
+      "Bytes": 568,
+      "Sha256": "8CED373385ADB429FEC7780AE614C6634408637CFBC985E8A57C8FC49B14F6F1"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueTransactionTest.log",
+      "Bytes": 534190,
+      "Sha256": "2A152106FC5911B1ACAEEB066CC2704C30D97FED525BDEC5BB2A43A28619C8FC"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2ProtectedIssueReadTest-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2ProtectedIssueReadTest-jvm-observations.json",
+      "Bytes": 271158,
+      "Sha256": "BE1000B4E7D58B4D0413BC205DF6EB37BA33A6D20D3DE583C6C13F673AE553BE"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2ProtectedIssueReadTest-resources.json",
+      "Bytes": 284438,
+      "Sha256": "EFAE0872B040EE8EDD240D885EF44BD4F03AA7C21C26C5D6D163A1944077353B"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2ProtectedIssueReadTest-result.json",
+      "Bytes": 2506,
+      "Sha256": "439A3D950434DB128FD5011E595C2D19E1EA8B11CB6B85849C1A924877D223CF"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2ProtectedIssueReadTest-suites.json",
+      "Bytes": 573,
+      "Sha256": "209C21053DBF0CB1DC4BAF55CED54FB28D79615C2AE85EB2E526E2A75C8C2780"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2ProtectedIssueReadTest.log",
+      "Bytes": 912700,
+      "Sha256": "01F0E7FAE5E808B9EAFBF6685F6B6FCB67315ECA5E7B71687C0C9F882DE03C8A"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-preflight.json",
+      "Bytes": 274,
+      "Sha256": "438027E6386C313E793E1BF83D4B2268DA08DC2AF1DE990C038BA2EF60505B83"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-summary.json",
+      "Bytes": 159,
+      "Sha256": "60434D1FE0ABB2BBC9ECA359806506DFA7F672127733E54D2030872509B7B469"
+    },
+    {
+      "Path": "evidence\\b2-observer-database-correction-static-checks.json",
+      "Bytes": 421,
+      "Sha256": "0669CF5B8C284DEA6667B85E1F75EEC6D4EF13F11C5F3EDFCF3D0AC5D370A345"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2FrozenSourceRegistrationTest-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2FrozenSourceRegistrationTest-jvm-observations.json",
+      "Bytes": 5330,
+      "Sha256": "D3E6E052680242DA9F9A52E4162539E883A7D4E7D7108E632766E85D6972CF25"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2FrozenSourceRegistrationTest-resources.json",
+      "Bytes": 2405,
+      "Sha256": "FEAC896B47027338E01D578C7372111FAAC2E99CA60F0E1FE546844A70517FAB"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2FrozenSourceRegistrationTest-result.json",
+      "Bytes": 382,
+      "Sha256": "3FC3C0D0E905B0E7AF9512615D73FCE34ED1865B6E4103AB6EFD1BCAB1EB1A2A"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2FrozenSourceRegistrationTest-suites.json",
+      "Bytes": 492,
+      "Sha256": "2BD03461C7699E7A24EAED1C935823A8A78022424A62B910408D8CB2F21488B7"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2FrozenSourceRegistrationTest.log",
+      "Bytes": 5461,
+      "Sha256": "E9C27768207E00B339C36C72382D011A27EAA8E8139BF515CE22AF79EE54B829"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2ProtectedIssueReadTest-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2ProtectedIssueReadTest-jvm-observations.json",
+      "Bytes": 48312,
+      "Sha256": "DA157526F1B803807B91A12F290DA4121BF8DCAC7A78FAFFFE16660CDA5359DF"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2ProtectedIssueReadTest-resources.json",
+      "Bytes": 36769,
+      "Sha256": "6F0F515631EA496A4A0B43ED87EE99052B903ABE11BD973C7194EA3FB0004602"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2ProtectedIssueReadTest-result.json",
+      "Bytes": 764,
+      "Sha256": "FC334729F0D0909BA1267E5F4704329E5C3BB1CE35550B37881D48B0AAA3A848"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2ProtectedIssueReadTest-suites.json",
+      "Bytes": 574,
+      "Sha256": "B2A3D17BC1AB892991F2E0B49FC4E249A2B7940176C50E9C3BEFA85D905B0373"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2ProtectedIssueReadTest.log",
+      "Bytes": 67361,
+      "Sha256": "CA02B2F699EF3FD686C673CFAD5BA7627A7E7F27D78699AE67BCD2F2CB6800E8"
+    },
+    {
+      "Path": "evidence\\b2-owned-coordinator-retained-manifest.json",
+      "Bytes": 913,
+      "Sha256": "40EC645D197A9CC577502A8D5546E8756231EA8FFCA1EC3FDF5981351C1EEC49"
+    },
+    {
+      "Path": "evidence\\b2-owned-stop-cleanup.json",
+      "Bytes": 339,
+      "Sha256": "8457D2EC20A025FE88BEF1BFC87F8B6967383DD977F0F8FB72B9103D020D6697"
+    },
+    {
+      "Path": "evidence\\dedicated-progress-after-b2-stop.json",
+      "Bytes": 1684,
+      "Sha256": "84BB166958D2491DEB83081FE18C3EA852746B4AC7AB56BA6C2CD2767FB2F8B7"
+    },
+    {
+      "Path": "evidence\\final-budget-summary.json",
+      "Bytes": 372,
+      "Sha256": "85F4A33F8E5A040178EB5E6DF74D3DA8A6B4485B088326E17041CA2082C16F76"
+    },
+    {
+      "Path": "evidence\\final-cleanup.json",
+      "Bytes": 443,
+      "Sha256": "374C575316EE0DC9DE9D4FE1FCB0E919CE50728B27C2A74685E45719079A604F"
+    },
+    {
+      "Path": "evidence\\final-dedicated-case-mapping.json",
+      "Bytes": 24659,
+      "Sha256": "41471AD5B7886888E19C4456BFE5D5F583947831BDB87D97F6082C203E181190"
+    },
+    {
+      "Path": "evidence\\final-resource-summary.json",
+      "Bytes": 2926,
+      "Sha256": "3732FBECDD9681CF2D32BB9362709F24BD6658876B45F109F767E6E18A9522C7"
+    },
+    {
+      "Path": "evidence\\final-temporary-artifacts.json",
+      "Bytes": 117,
+      "Sha256": "87AA64BFC46AFB36BAA44AF592C39FABD2FFFD7B57DCE4822ADEA3135064C1D8"
+    },
+    {
+      "Path": "evidence\\final-validation-summary.json",
+      "Bytes": 542,
+      "Sha256": "BF08EA5998A9805FBAE7E2C2C77483A91265CB0248A77BE23A748BF22F385DEA"
+    },
+    {
+      "Path": "evidence\\install-separation-resources.json",
+      "Bytes": 1103,
+      "Sha256": "49AFF876D7FF6269F6316C613EF791370A8470ADDB03FE6FD6454A0E340EA044"
+    },
+    {
+      "Path": "evidence\\install-separation-result.json",
+      "Bytes": 323,
+      "Sha256": "98CCEE7DD216AB214F93E4A04E854FC23EB48632C8C2E35F2DAE73069F6043ED"
+    },
+    {
+      "Path": "evidence\\install-separation.log",
+      "Bytes": 40055,
+      "Sha256": "AA4128C4949C9AE19419EE7984E7261FFA63F46DADA5021B1E0238162C91718C"
+    },
+    {
+      "Path": "evidence\\jvm-observation-environment.json",
+      "Bytes": 404,
+      "Sha256": "5D70560B8D60A90704EC8B242D698D150D0DFDB61BA1053AD655D1232AAEC46D"
+    },
+    {
+      "Path": "evidence\\jvm-observation-final-cleanup.json",
+      "Bytes": 339,
+      "Sha256": "4586ACF874B6C261478E4DAB7E1AE93AD5FA3E61C26E9607656E9B17BFD71EBC"
+    },
+    {
+      "Path": "evidence\\jvm-observation-preflight.json",
+      "Bytes": 465,
+      "Sha256": "A170F174ED04B7CE109DFC668438D8AF9EAEAC1C9CD22334419B35B03CEC2423"
+    },
+    {
+      "Path": "evidence\\jvm-observation-source-after.json",
+      "Bytes": 2057,
+      "Sha256": "A1C8A5086E6AAF743D284C00BFC1D2A4A5C4F3B126DFCE5BBCC2162FC8045BD0"
+    },
+    {
+      "Path": "evidence\\migration-jvm-observation-jvm-observations.json",
+      "Bytes": 19044,
+      "Sha256": "6E788A3A969C1EC56A1F99C7E2E1B0FEE4A341415F047DF96D9C3FDA91280CA4"
+    },
+    {
+      "Path": "evidence\\migration-jvm-observation-resources.json",
+      "Bytes": 17248,
+      "Sha256": "DF3E45498A2A59F8A75219D4418992F67BDB72FDB86B5F816E5407B08E903E56"
+    },
+    {
+      "Path": "evidence\\migration-jvm-observation-result.json",
+      "Bytes": 472,
+      "Sha256": "7A92B863D0B545B999D6410F92869267031EE4BB5F9158026D91B424DF1DCC52"
+    },
+    {
+      "Path": "evidence\\migration-jvm-observation-suites.json",
+      "Bytes": 389,
+      "Sha256": "20DE4B6910E8EF931E2B376FDCA6DDCAC30EF271414BBE6BD96AFE731BE0E192"
+    },
+    {
+      "Path": "evidence\\migration-jvm-observation-summary.json",
+      "Bytes": 906,
+      "Sha256": "2C0D6032AD3FF01085D7C3DB7563DAEF27E4F147F07869115BB75BF0D8F713B2"
+    },
+    {
+      "Path": "evidence\\migration-jvm-observation.log",
+      "Bytes": 548037,
+      "Sha256": "903D8A3F8357D34B5BDD08D692E5F6B4A312EB3AF1D83F8EE32B1CBE67ADB576"
+    },
+    {
+      "Path": "evidence\\negative-owned-empty-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\negative-owned-empty-jvm-observations.json",
+      "Bytes": 4026,
+      "Sha256": "C8B438110FF8A01FF2B1083D16807BD72CA7C7953158DEE7951958EC05D70DE2"
+    },
+    {
+      "Path": "evidence\\negative-owned-empty-resources.json",
+      "Bytes": 3416,
+      "Sha256": "C564E08D16C642EE5DAC665DE52EDA1510E764301E08F4ABE5C0D8F20FF514C2"
+    },
+    {
+      "Path": "evidence\\negative-owned-empty-result.json",
+      "Bytes": 382,
+      "Sha256": "416DA6175F7F7AC4C30C498148EDA531E3ECC04A89049A1407F29321A0D3A89C"
+    },
+    {
+      "Path": "evidence\\negative-owned-empty-suites.json",
+      "Bytes": 203,
+      "Sha256": "72691C0EFE7AC88F35FA3FEF696EDCD49EF0897087AE7C47E781C498A5FBBEAC"
+    },
+    {
+      "Path": "evidence\\negative-owned-empty.log",
+      "Bytes": 3024,
+      "Sha256": "86EEB601F7DD026635022185F59550B2781D4404834B34BA4C090F1A69B04EC1"
+    },
+    {
+      "Path": "evidence\\negative-owned-missing-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\negative-owned-missing-jvm-observations.json",
+      "Bytes": 3711,
+      "Sha256": "7BB20D312F6E80268A1C7C382920919DD61FCC2EAC239C2628FE50B5AC574C43"
+    },
+    {
+      "Path": "evidence\\negative-owned-missing-resources.json",
+      "Bytes": 3416,
+      "Sha256": "DFE6B136D80B8D5E7B3CAD7413BB6B14EC39A2B99A4976CBB893D1EF7ED4A835"
+    },
+    {
+      "Path": "evidence\\negative-owned-missing-result.json",
+      "Bytes": 381,
+      "Sha256": "E96C0B6B423792AEF76A2F07BED7DFE23881BDB37609B18293E0BA8B3ECDF13F"
+    },
+    {
+      "Path": "evidence\\negative-owned-missing-suites.json",
+      "Bytes": 203,
+      "Sha256": "72691C0EFE7AC88F35FA3FEF696EDCD49EF0897087AE7C47E781C498A5FBBEAC"
+    },
+    {
+      "Path": "evidence\\negative-owned-missing.log",
+      "Bytes": 3028,
+      "Sha256": "194EE8B3BE9C199C00ECFCCCB4D870BCB3EF275BF1A230485EE45C4D62DD52D1"
+    },
+    {
+      "Path": "evidence\\negative-owned-nonexistent-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\negative-owned-nonexistent-jvm-observations.json",
+      "Bytes": 4311,
+      "Sha256": "CFA4348E5480CABFCAF747001489C53415BD7B466E479C4CEA853F7ADBE0B8F3"
+    },
+    {
+      "Path": "evidence\\negative-owned-nonexistent-resources.json",
+      "Bytes": 3416,
+      "Sha256": "A9421021992C6B47CA66FB46031277023EDBF2A4EFB21F0D291BED0932DE1BFD"
+    },
+    {
+      "Path": "evidence\\negative-owned-nonexistent-result.json",
+      "Bytes": 382,
+      "Sha256": "BA652301A3EEF5930CEE5ECA3A52B3A16F9707125B724CE781A62D5D66ACD79E"
+    },
+    {
+      "Path": "evidence\\negative-owned-nonexistent-suites.json",
+      "Bytes": 203,
+      "Sha256": "72691C0EFE7AC88F35FA3FEF696EDCD49EF0897087AE7C47E781C498A5FBBEAC"
+    },
+    {
+      "Path": "evidence\\negative-owned-nonexistent.log",
+      "Bytes": 3036,
+      "Sha256": "8EBA795525E7F0CEDB3292DF5D29E7C6A8DFE7DB7A528A1673C0A6EF72597EC8"
+    },
+    {
+      "Path": "evidence\\negative-owned-summary.json",
+      "Bytes": 95,
+      "Sha256": "BE951514D09613E3FF876854BC4BB53BBBDE4C5DA770D61DFD47D0EBEBDDAA7C"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationPersistenceTest-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationPersistenceTest-jvm-observations.json",
+      "Bytes": 28860,
+      "Sha256": "D8812D860647B37498EACA9C1524578A4AAFB9AD140054EF73EA0D5DDB8BDC96"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationPersistenceTest-resources.json",
+      "Bytes": 26915,
+      "Sha256": "8CE62EFD6B4568B8C9108F50E168A26CA50F6C50D368C13AB2FFAF5ADAC1DFD0"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationPersistenceTest-result.json",
+      "Bytes": 534,
+      "Sha256": "244CAEA564D323B755D69C25D93E10C0A5332F23A77AE25E4DE5987005988DE3"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationPersistenceTest-suites.json",
+      "Bytes": 693,
+      "Sha256": "297508B84CF7986D2DA7F336BB1BA38EFAD527CCCC7B4B28033B11BEA13788FF"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationPersistenceTest.log",
+      "Bytes": 267331,
+      "Sha256": "F7D907B81ABDB9D3ADF4E0B6AE129B7CBF9D9410E648D0BBDCC1E20A58CAE603"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationRegistrationTest-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationRegistrationTest-jvm-observations.json",
+      "Bytes": 21750,
+      "Sha256": "92001732DEC0B7BC401F1DD79B6A63220F1DD969A12EAA8A77AFD457868FDDFE"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationRegistrationTest-resources.json",
+      "Bytes": 19600,
+      "Sha256": "95B656F41BD3978881FB4BD210C2EAABC72D53805E6406E4D66097E7A44E7E9F"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationRegistrationTest-result.json",
+      "Bytes": 533,
+      "Sha256": "104446E37C0D110FC2B98CAADFAAC4614A219C1D775F137272FC7B5510436E04"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationRegistrationTest-suites.json",
+      "Bytes": 514,
+      "Sha256": "7492B1E67AE627EEE12C12FF37CD3F4ACFC8D8B9FC6B9567087CAFD6C1C8061F"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationRegistrationTest.log",
+      "Bytes": 647000,
+      "Sha256": "A86F660674C4902DC68CB75001E9AA4018FF984FF1F0BAF030036480660DED36"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationTransactionTest-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationTransactionTest-jvm-observations.json",
+      "Bytes": 17191,
+      "Sha256": "41FCCCC98065FA71A07C67FB099F30553493F3EC405B54F9A2701EAD8271DF83"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationTransactionTest-resources.json",
+      "Bytes": 14777,
+      "Sha256": "1276E3ACBE500C79FD4DF63AD65A8DE958BC5046F6FACE622530A75F225FF36A"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationTransactionTest-result.json",
+      "Bytes": 534,
+      "Sha256": "C0BCCA4589C70A96D3D4AB4A4C8FA3F876EFA9F6598320E4C64C738368969D7D"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationTransactionTest-suites.json",
+      "Bytes": 848,
+      "Sha256": "2F17764844575CE1CBE26D9561291C0B680AE15719FC9B1A3C8992BF240E3134"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationTransactionTest.log",
+      "Bytes": 233712,
+      "Sha256": "0DAF2E414949CF6C06B36CF59AC109AC3EFD5A0C5E9C8AA3C4C509AAC35F78F5"
+    },
+    {
+      "Path": "evidence\\owned-OperationalRecoveryEvidenceDbTest-ide-baseline.json",
+      "Bytes": 93,
+      "Sha256": "C18CA9C45A13495E1E63FA085268F2E97683D2F0E3F2531AD82B247DF428F95F"
+    },
+    {
+      "Path": "evidence\\owned-OperationalRecoveryEvidenceDbTest-jvm-observations.json",
+      "Bytes": 22318,
+      "Sha256": "67997BC550E78AE0506DC49C4D93B7B3E5ED00602F6221B41261D54C9970B3FB"
+    },
+    {
+      "Path": "evidence\\owned-OperationalRecoveryEvidenceDbTest-resources.json",
+      "Bytes": 19880,
+      "Sha256": "D0AE6A179588BE63DCC4400BE5EE2874E354D23464CED8074E5037A8E04F5BF4"
+    },
+    {
+      "Path": "evidence\\owned-OperationalRecoveryEvidenceDbTest-result.json",
+      "Bytes": 534,
+      "Sha256": "9A2EFA53DD302079984BFB3B6DD0D8B1F52721F27663A76DDBE57F61C0E3A609"
+    },
+    {
+      "Path": "evidence\\owned-OperationalRecoveryEvidenceDbTest-suites.json",
+      "Bytes": 799,
+      "Sha256": "ED594ACD915C1FA3B5C84B769089BD14F3600BC07D2AE34458A59819D5BFF9F0"
+    },
+    {
+      "Path": "evidence\\owned-OperationalRecoveryEvidenceDbTest.log",
+      "Bytes": 1531507,
+      "Sha256": "1E7718A6C7530041C3A467E518C63EC2FDE7406C646303E460898E3D773409AD"
+    },
+    {
+      "Path": "evidence\\owned-preflight.json",
+      "Bytes": 211,
+      "Sha256": "E9419FF61EC9914BF8132B69829143494CFA71CE9B1DF566E704F931B9937D70"
+    },
+    {
+      "Path": "evidence\\package-owned-summary.json",
+      "Bytes": 854,
+      "Sha256": "7D662194A7845FDD2CF30AA5C92DAAAB60FDFA6B513806A8735333BED351B772"
+    },
+    {
+      "Path": "evidence\\preflight-baseline.json",
+      "Bytes": 385,
+      "Sha256": "E0CCAF31F5ED1D78546BC807A838CEE1C2D34024E89786D504B018B0AEF8F37B"
+    },
+    {
+      "Path": "evidence\\preflight-dependencies-result.json",
+      "Bytes": 115,
+      "Sha256": "83F08F8B54D32C0EE90B711B596656084178A21AB7B0263009BB78DF71E0D1AC"
+    },
+    {
+      "Path": "evidence\\preflight-dependencies.log",
+      "Bytes": 210439,
+      "Sha256": "A2FBDF3C7B29EFF6BBFF77EEB295F4E885F00F8D420EDA1012EC2F0D4277E441"
+    },
+    {
+      "Path": "evidence\\preflight-processors.log",
+      "Bytes": 1606,
+      "Sha256": "77A6C3EEEA8CAF273E1A36A88E60C2B8CA5B9CBB244BBEF7891198CD7537E9C3"
+    },
+    {
+      "Path": "evidence\\preflight-tooling-dependencies-result.json",
+      "Bytes": 145,
+      "Sha256": "E56598EB643FEEB3E35A69AB16BDE4B51E9C88F13F29734479C63D1D57644D6E"
+    },
+    {
+      "Path": "evidence\\preflight-tooling-dependencies.log",
+      "Bytes": 1643,
+      "Sha256": "FEA4A30E396DEF8C5BCC302A413872CC9667B2426ADB085B13A3CD3470339C6E"
+    },
+    {
+      "Path": "evidence\\preparation-separation-error.log",
+      "Bytes": 0,
+      "Sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "Path": "evidence\\preparation-separation-output.log",
+      "Bytes": 199,
+      "Sha256": "4C48FAFC4F4262BF838B912953D5DD26CB031B3B1E857D6D6C24D57369E789F6"
+    },
+    {
+      "Path": "evidence\\preparation-separation-result.json",
+      "Bytes": 161,
+      "Sha256": "8261C6D3E62A6ADA6710F17698E6256A2BB31DED7D84943F0B2B24052CE6B0DE"
+    },
+    {
+      "Path": "evidence\\process-ownership-correction-static-checks.json",
+      "Bytes": 489,
+      "Sha256": "F93AE690CC8B2B1E28CE3DBBCA1B8A6DC2D0BF9587B2BB593D1DFE3E9848B510"
+    },
+    {
+      "Path": "evidence\\provider-preparation-approved-result.json",
+      "Bytes": 335,
+      "Sha256": "4024D4484E34D8823EFFAA672CD4D02059262E6F3ECC0C1213DA890DC65C6782"
+    },
+    {
+      "Path": "evidence\\provider-preparation-approved.log",
+      "Bytes": 1631,
+      "Sha256": "C575AB6E7D6D102A0EF88C7F71BADBE73883380453927312D8D2ABFA97BF6793"
+    },
+    {
+      "Path": "evidence\\remaining-jcmd-parent.json",
+      "Bytes": 149,
+      "Sha256": "9058993B310DB7A66C1178D83C7F731B82D47D7A998277F8DD45F7310A6BBA9C"
+    },
+    {
+      "Path": "evidence\\remaining-NotificationFoundationPersistenceTest-jvm-observations.json",
+      "Bytes": 8198,
+      "Sha256": "EFE789B05E7C97202274235FDF973665C5D61401D7BBB7C90C2C7974B781DADB"
+    },
+    {
+      "Path": "evidence\\remaining-NotificationFoundationPersistenceTest-resources.json",
+      "Bytes": 5429,
+      "Sha256": "88B6104CCC3F8FD061E19E932A8D1F757A0936ABC1C0A6A1C896F5DD506EE481"
+    },
+    {
+      "Path": "evidence\\remaining-NotificationFoundationPersistenceTest-result.json",
+      "Bytes": 487,
+      "Sha256": "D5E4B69CBEB49A289B6D6757B63A0AFE09A997CC212C6B95657FB55DDE1E1516"
+    },
+    {
+      "Path": "evidence\\remaining-NotificationFoundationPersistenceTest.log",
+      "Bytes": 6528,
+      "Sha256": "F291653CC9B06C8C57C1AD6B7A671CEB0E5171B3651A32E6F6387E4FACD6BEFB"
+    },
+    {
+      "Path": "evidence\\remaining-preflight.json",
+      "Bytes": 250,
+      "Sha256": "1091FB902E4728D1FCF77E6D60D29F6AD73A393B8B3FE2942AB97B99B1F34C10"
+    },
+    {
+      "Path": "evidence\\remaining-stop-cleanup.json",
+      "Bytes": 343,
+      "Sha256": "B9E63AC3D92292877006F3854BFABF240DBDFC28B24E800AD43A2FEA4A80A43E"
+    },
+    {
+      "Path": "evidence\\remediation-source.json",
+      "Bytes": 1960,
+      "Sha256": "804835A060D495A6378487CAA2AADE211834F750E45655AE2D776334A431764D"
+    },
+    {
+      "Path": "evidence\\root-attempt1-partial-artifacts.json",
+      "Bytes": 4217,
+      "Sha256": "3DCC6B8F78678367046FD5C997253504B1516054E148850B6525F84A3D0198F6"
+    },
+    {
+      "Path": "evidence\\root-resource-samples.json",
+      "Bytes": 389,
+      "Sha256": "E6004E88B3AA73B68EF6B8FACCA14FDC86C0A718E6A64B079F8244FDF9EB3A64"
+    },
+    {
+      "Path": "evidence\\root-retry1-partial-artifacts.json",
+      "Bytes": 104960,
+      "Sha256": "031E3D891D470DA075A30495D20F213AF6025A7EA229533696E3F6E249D8ED42"
+    },
+    {
+      "Path": "evidence\\root-retry1-resource-samples.json",
+      "Bytes": 4805,
+      "Sha256": "92BBBFAA8754C6816927F86BE0F0B0F5922AF55C532E3DE04CD6752802291D24"
+    },
+    {
+      "Path": "evidence\\root-retry1-result.json",
+      "Bytes": 168,
+      "Sha256": "4EED42081FA6B9019D09F3A98F3CB2762CB5CD0734065730E5CF78554FF47DED"
+    },
+    {
+      "Path": "evidence\\root-retry1.log",
+      "Bytes": 31027,
+      "Sha256": "C1EA05F7B349350E71F91750C999A7458F5F38707C8535E3CF6AB20673EDA9D1"
+    },
+    {
+      "Path": "evidence\\root-retry2-partial-artifacts.json",
+      "Bytes": 202374,
+      "Sha256": "114C98FF52A1AAE3035B3EC2EB1F6FD4F9C94F3DBB273E9667F2D6C19CA0AD04"
+    },
+    {
+      "Path": "evidence\\root-retry2-resource-samples.json",
+      "Bytes": 10184,
+      "Sha256": "14AE34D0C7F4113985DA3711953D7D5EA3373AA189889A97FF6CE64FB87F2C74"
+    },
+    {
+      "Path": "evidence\\root-retry2-result.json",
+      "Bytes": 183,
+      "Sha256": "6BC690093A54F77C295B6945ACEE02EF9B0F6F92529B1D3D7B6E43DDE101C0D9"
+    },
+    {
+      "Path": "evidence\\root-retry2-suite-results.json",
+      "Bytes": 2718,
+      "Sha256": "E3E40F265B15B5812A6F86D6FAA3AE05EA7F8829A16B0DAD20B70E9D73D63099"
+    },
+    {
+      "Path": "evidence\\root-retry2.log",
+      "Bytes": 372878,
+      "Sha256": "DD7B21117626B61F7E1426CF73C50DA437770BF85DED2DBDC2ADC8D8662A1572"
+    },
+    {
+      "Path": "evidence\\root-retry3-partial-artifacts.json",
+      "Bytes": 123497,
+      "Sha256": "3645269FDE11725F4E7138C93BD3F97432E1A21551AEC8E66BC300252DB1B41E"
+    },
+    {
+      "Path": "evidence\\root-retry3-resource-samples.json",
+      "Bytes": 19795,
+      "Sha256": "B40C340AF1ED156FBA5B395E475570EF84DE0B0D1A43B56C1F51BA24BBE78235"
+    },
+    {
+      "Path": "evidence\\root-retry3-result.json",
+      "Bytes": 183,
+      "Sha256": "9356CA67D4B9F7B1BCE0F837E33D4FA0821D5DFEC59BA9EC720463FFC96CE3CC"
+    },
+    {
+      "Path": "evidence\\root-retry3-suite-results.json",
+      "Bytes": 8281,
+      "Sha256": "250A21893B5B973DEC26AD665C2A09FCC87881C06D1DFAEB280ECD819DAA881D"
+    },
+    {
+      "Path": "evidence\\root-retry3.log",
+      "Bytes": 1120953,
+      "Sha256": "C20AA0C9169E9B81FCE8515B53DDB773792CAA683A02E85AB8F8A201EAAF6CF9"
+    },
+    {
+      "Path": "evidence\\root-separation-resources.json",
+      "Bytes": 36086,
+      "Sha256": "2696AAE92F11390DB0D5A92E826CCA69322C59278C1F717AEADF7AC44E474C0C"
+    },
+    {
+      "Path": "evidence\\root-separation-result.json",
+      "Bytes": 1352,
+      "Sha256": "4AAFBFB08D47932473A32A248F9C72BDA7BEC87E205CC4D094854D4B8CFE33B9"
+    },
+    {
+      "Path": "evidence\\root-separation-suites.json",
+      "Bytes": 28917,
+      "Sha256": "E01D5B78FDE70E8E3BA045CC94FF837767FDB075421FB11A702900185907AE44"
+    },
+    {
+      "Path": "evidence\\root-separation.log",
+      "Bytes": 1152176,
+      "Sha256": "7DFAA5248E160DD3D1B17747B7262B11084AFD8CB5D08BB87BD9E8F30CCD46BE"
+    },
+    {
+      "Path": "evidence\\root-test-catalog.json",
+      "Bytes": 10642,
+      "Sha256": "C211BEA476B37444DFDE571E8BA6BFCF389DCAD85B47050FB8929238AB47FFBA"
+    },
+    {
+      "Path": "evidence\\root-verify-result.json",
+      "Bytes": 168,
+      "Sha256": "EB34CE121A402B1FAA6CD2F74654CAA37EE01961681D9D851D9CF63BBF31D09B"
+    },
+    {
+      "Path": "evidence\\root-verify.log",
+      "Bytes": 7594,
+      "Sha256": "D742B7751C89CF1356CB6F14801D41B103A0F4C4A8ACD1D6F8CDF5762F31B2B0"
+    },
+    {
+      "Path": "evidence\\s1-ManagedRecoveryConfigurationDbTest-resources.json",
+      "Bytes": 3059,
+      "Sha256": "BB402B25A8A9D2878579EE68E889EE48FFC09E3F083039C7B429DD1774534B04"
+    },
+    {
+      "Path": "evidence\\s1-ManagedRecoveryConfigurationDbTest-result.json",
+      "Bytes": 473,
+      "Sha256": "FE18149B3256B3D8817B7FAFA315D0DAD15CEC9A4C86C02C90E46E0E080B2D1F"
+    },
+    {
+      "Path": "evidence\\s1-ManagedRecoveryConfigurationDbTest-suites.json",
+      "Bytes": 486,
+      "Sha256": "1AF4E72BE64E52388184A1A2B13DE026E7222FE5D2B9412FDECA9DD1C9CAC6E1"
+    },
+    {
+      "Path": "evidence\\s1-ManagedRecoveryConfigurationDbTest.log",
+      "Bytes": 507802,
+      "Sha256": "38456D63DBC6E9EF50A6D2CCDAB065BB456AE1B9334D5D4504A3DC22D3018733"
+    },
+    {
+      "Path": "evidence\\s1-ManagedRecoveryConfigurationRegistrationTest-resources.json",
+      "Bytes": 3059,
+      "Sha256": "72879671BC524E41C1029E6EFCF9FB10A3E2A8A3758F5E12778303BB07557891"
+    },
+    {
+      "Path": "evidence\\s1-ManagedRecoveryConfigurationRegistrationTest-result.json",
+      "Bytes": 473,
+      "Sha256": "E5E2604302A8802C81A4AD6DDCCAFD3062F87B205BA5A0ACB43FBAB63C102E4C"
+    },
+    {
+      "Path": "evidence\\s1-ManagedRecoveryConfigurationRegistrationTest-suites.json",
+      "Bytes": 470,
+      "Sha256": "B1E3761A65FAA011DE2C4F335D9F8F52AED37A77F5829DC87FEE48687BAA629A"
+    },
+    {
+      "Path": "evidence\\s1-ManagedRecoveryConfigurationRegistrationTest.log",
+      "Bytes": 345657,
+      "Sha256": "35D7D3487079D2C613D094B98BC655E89294AC7E9548F8D9F62F734840B09E48"
+    },
+    {
+      "Path": "evidence\\s1-NotificationFoundationMigrationTest-resources.json",
+      "Bytes": 2387,
+      "Sha256": "C6435C6B9FF53BD5D38B61CA0B9ECB5AA38BF0DA180A3B051E62A6CFAEE1104F"
+    },
+    {
+      "Path": "evidence\\s1-NotificationFoundationMigrationTest-result.json",
+      "Bytes": 488,
+      "Sha256": "B38B8B23DC26EC2767E9496DCE9CABD5056AB93997C78B56E49840EC9EFAC92B"
+    },
+    {
+      "Path": "evidence\\s1-NotificationFoundationMigrationTest.log",
+      "Bytes": 13522,
+      "Sha256": "AAACA40CF8CACDDAF8AAE0F86919C41BDF03191DAC1A7715905D1B2C3807A5CE"
+    },
+    {
+      "Path": "evidence\\s1-owned-summary.json",
+      "Bytes": 106,
+      "Sha256": "ED2917ED4958B97EAA923D2EC92195E5DBEE0CF1E193A94E826897FDAF4AEA66"
+    },
+    {
+      "Path": "evidence\\separation-source-after-stop.json",
+      "Bytes": 2057,
+      "Sha256": "A1C8A5086E6AAF743D284C00BFC1D2A4A5C4F3B126DFCE5BBCC2162FC8045BD0"
+    },
+    {
+      "Path": "evidence\\separation-source-manifest.json",
+      "Bytes": 4791,
+      "Sha256": "0FAE89EA175B720D774297024295F6D7E64C2F76FA9EC15C5DC582D5EFAA0125"
+    },
+    {
+      "Path": "evidence\\separation-stopped-summary.json",
+      "Bytes": 1439,
+      "Sha256": "86274C1540FB30878E23F86CFDD2428DC62FC2E16D8B41FD1A145007200AC14E"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueBoundaryTest-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2IssueBoundaryTest.xml",
+      "Bytes": 592429,
+      "Sha256": "10B61277CAAA65CF3D65732FF9AA86D9B248E7BA78BF5B724602367979BE6A70"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2IssueTransactionTest-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2IssueTransactionTest.xml",
+      "Bytes": 605236,
+      "Sha256": "34D9B4E9681FF89F541511C52C72DD769C899357016804409336437F8AD2C1B7"
+    },
+    {
+      "Path": "evidence\\b2-observer-corrected-B2ProtectedIssueReadTest-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2ProtectedIssueReadTest.xml",
+      "Bytes": 984373,
+      "Sha256": "662AB57B257F74D9C68C30084F20DBA92891D696D27A909C441DC039D94FDD72"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2FrozenSourceRegistrationTest-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2FrozenSourceRegistrationTest.xml",
+      "Bytes": 75372,
+      "Sha256": "C687C3CADC4968B5EA3E4908223EA9D9D39231164ACDF1A8BB32C0B953C15A6A"
+    },
+    {
+      "Path": "evidence\\b2-owned-B2ProtectedIssueReadTest-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2ProtectedIssueReadTest.xml",
+      "Bytes": 139464,
+      "Sha256": "801D0A074760640F547C16D606CDBCF93D9AAAA923ED25B8DD13CEA4FA659846"
+    },
+    {
+      "Path": "evidence\\b2-owned-coordinator-retained\\s1-b2-reference-78d64b49-3f38-4cef-be63-fe7fbb578d45.log",
+      "Bytes": 3679,
+      "Sha256": "CCBDF9AE23EA6334910393630BA7B318483361FAE660EFFA14C2B15639611B65"
+    },
+    {
+      "Path": "evidence\\b2-owned-coordinator-retained\\s1-b2-reference-c353af99-cc69-42d5-9406-7e3bf89ac5a1.log",
+      "Bytes": 3268,
+      "Sha256": "C6FB11C3BC6C0847641BC4EBF535A0C9FA8FC59D42CE12047C5D6866D8A6E9B7"
+    },
+    {
+      "Path": "evidence\\migration-jvm-observation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationMigrationTest.xml",
+      "Bytes": 618457,
+      "Sha256": "8301EB9A21FA7A618BA02827BB3BEBDDC20D42D3B870DA4805641371979BFA62"
+    },
+    {
+      "Path": "evidence\\negative-owned-empty-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2ProtectedIssueReadTest.xml",
+      "Bytes": 71122,
+      "Sha256": "B86BF2D11297683E17E86209A0D3C1955541EEB3B90F1BDCC731ADC54FC695E9"
+    },
+    {
+      "Path": "evidence\\negative-owned-missing-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2ProtectedIssueReadTest.xml",
+      "Bytes": 70928,
+      "Sha256": "24D30C9054158492496B2AC44A61E68CDD95AF0F4007C4878FFF4EEE26535E61"
+    },
+    {
+      "Path": "evidence\\negative-owned-nonexistent-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2ProtectedIssueReadTest.xml",
+      "Bytes": 71141,
+      "Sha256": "E8D964A47D1B3A96C3F09115E7DBDB941A66B1FCD5E75F4EEB879A33CADAD2E2"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationPersistenceTest-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationPersistenceTest.xml",
+      "Bytes": 337574,
+      "Sha256": "3178C65F5E7C44053A2033155319D94CC0224187AD259A30FAFB6AE5F1481195"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationRegistrationTest-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationRegistrationTest.xml",
+      "Bytes": 717893,
+      "Sha256": "634FCBFF6285290F38F69C6C3D93672EA8D749A984BBFE0FFADAACBC13C681B7"
+    },
+    {
+      "Path": "evidence\\owned-NotificationFoundationTransactionTest-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationTransactionTest.xml",
+      "Bytes": 304722,
+      "Sha256": "601461379DBBE1D708495D463B617F225CBB76448A77D376DA8108CBE927BC3A"
+    },
+    {
+      "Path": "evidence\\owned-OperationalRecoveryEvidenceDbTest-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.OperationalRecoveryEvidenceDbTest.xml",
+      "Bytes": 1603193,
+      "Sha256": "348D51FF74D5F6B7358DE1788CABD66970C65472560D2EF38AF163930DEBCAE3"
+    },
+    {
+      "Path": "evidence\\root-retry1-xml\\TEST-org.koikifw.architecture.KoikiModuleContractTest.xml",
+      "Bytes": 10793,
+      "Sha256": "0B1F9EA5D79DEAA9F49D291E56AB405519D47B61946F6AF8FA8C04D9A2B5699A"
+    },
+    {
+      "Path": "evidence\\root-retry1-xml\\TEST-org.koikifw.archunit.BusinessModuleRuleSetTest.xml",
+      "Bytes": 20368,
+      "Sha256": "50D5459EE2D731EBD98F1D847BEEE1AC6CE45BA856925A0411CE8A294B135B02"
+    },
+    {
+      "Path": "evidence\\root-retry1-xml\\TEST-org.koikifw.archunit.CompliantArchitectureRulesTest.xml",
+      "Bytes": 18552,
+      "Sha256": "6594C3D3619D725AA375618CA87201CF40807C3C3A4EDB264FF80533F7198AC1"
+    },
+    {
+      "Path": "evidence\\root-retry1-xml\\TEST-org.koikifw.archunit.FrameworkOwnershipRuleSetTest.xml",
+      "Bytes": 18083,
+      "Sha256": "09E9A47FAAF032A34FC68341960DD27DF6315222722ADC45978FAAF76DA59169"
+    },
+    {
+      "Path": "evidence\\root-retry1-xml\\TEST-org.koikifw.archunit.KoikiArchitectureRulesContractTest.xml",
+      "Bytes": 18558,
+      "Sha256": "53609AFB4E06DF5B41CAAE2F9296CB2A8F8B6E3F44AC286A0C41E855F89DE828"
+    },
+    {
+      "Path": "evidence\\root-retry1-xml\\TEST-org.koikifw.archunit.ModuleMetadataTest.xml",
+      "Bytes": 18207,
+      "Sha256": "58BCEA88908985310D6C6205BE5248EC055DAFD13480BB10BF3EE85195D7191B"
+    },
+    {
+      "Path": "evidence\\root-retry1-xml\\TEST-org.koikifw.archunit.PackageNameTest.xml",
+      "Bytes": 18472,
+      "Sha256": "4A519EC5B37FF4DF29BAC221E5DD6B3F22DE6563868FB75B610BE0168EEA1886"
+    },
+    {
+      "Path": "evidence\\root-retry1-xml\\TEST-org.koikifw.archunit.RequiredNegativeArchitectureRulesTest.xml",
+      "Bytes": 18569,
+      "Sha256": "35D9451A795A13F66C020443A9C848F3918759705DFDCB15B2F18D940914BE4A"
+    },
+    {
+      "Path": "evidence\\root-retry1-xml\\TEST-org.koikifw.archunit.RuleMessageTest.xml",
+      "Bytes": 18180,
+      "Sha256": "355FD267EAC04F95D1494C68913EC37DCFE04E51C5607637489AD052008BB71E"
+    },
+    {
+      "Path": "evidence\\root-retry1-xml\\TEST-org.koikifw.archunit.TierAndMvcRuleSetTest.xml",
+      "Bytes": 19876,
+      "Sha256": "6640DB58250E01CE89F7F0316F6EAED1BF8715C70725C9FE67794AF3AA08B654"
+    },
+    {
+      "Path": "evidence\\root-retry1-xml\\TEST-org.koikifw.validation.customer.CustomerModuleContractTest.xml",
+      "Bytes": 10555,
+      "Sha256": "576032A6D825B68BD110ED7F9BEF9EAE74AC70117F3579B9288A64086EB96C41"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.architecture.KoikiModuleContractTest.xml",
+      "Bytes": 10796,
+      "Sha256": "EB999F254834EB15FAB110521980F45C8AE740ED4FF24A94B579D2C8FCEDBA7E"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.archunit.BusinessModuleRuleSetTest.xml",
+      "Bytes": 20370,
+      "Sha256": "FF48FD4A709D751A2B40312FFCA4C7143793ABC40857F6207D5A0976C30600E8"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.archunit.CompliantArchitectureRulesTest.xml",
+      "Bytes": 18555,
+      "Sha256": "DCB62C2B620D2629A121466DE65BC3E5A6FD1A6D279627F9323EFA6D836F647F"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.archunit.FrameworkOwnershipRuleSetTest.xml",
+      "Bytes": 18086,
+      "Sha256": "B3CC13FFADF0CBDCBA6EFF0595458314DCB61416730117DDEAC4C09FAF9078E3"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.archunit.KoikiArchitectureRulesContractTest.xml",
+      "Bytes": 18559,
+      "Sha256": "3CA627910B9C64CAD304D08E63CE1C180B5B4BD728A34243A6BFC7D4DFB4CCD6"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.archunit.ModuleMetadataTest.xml",
+      "Bytes": 18209,
+      "Sha256": "1EBB1BE14DC7230D655A3899B6FE6FB35511B2B0E37ABFC9E4B100386E97EB1E"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.archunit.PackageNameTest.xml",
+      "Bytes": 18475,
+      "Sha256": "8004B5390C091243D6898F881EDB64D374383FEF1351D4E2691809E0D8A9A580"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.archunit.RequiredNegativeArchitectureRulesTest.xml",
+      "Bytes": 18575,
+      "Sha256": "1E4A4C20E763B9FD214FC15513419374BEF484A3BC26F16ED9437F9AE25C4A46"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.archunit.RuleMessageTest.xml",
+      "Bytes": 18183,
+      "Sha256": "868AE06089CE675DE4BAC87C27B38ECC0BAADD2A19A7AC6062405B84DDF23875"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.archunit.TierAndMvcRuleSetTest.xml",
+      "Bytes": 19878,
+      "Sha256": "790879CA3E60B01DD7710068F541D7EA9DA64C5A3FCF211EBABA06FE64BF3115"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.reference.expense.adapter.inbound.api.ExpenseApiControllerTest.xml",
+      "Bytes": 119382,
+      "Sha256": "BB1EC877CC04D4BB7BC07F35C6BF6987DED688BC89D4EF7B26636515FBA0BF34"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.reference.expense.adapter.inbound.api.ExpenseApiPostgreSqlIntegrationTest.xml",
+      "Bytes": 230051,
+      "Sha256": "853558CC9E59D4E795462A4C28FD7FDD08A54A5FFC97884ED3C564FA387AAAC4"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.reference.expense.application.ExpenseApplicationServiceMethodSecurityTest.xml",
+      "Bytes": 71055,
+      "Sha256": "75CF0B70852A9B21ABCF6A20F7BBE6F2BE93A8513B2FB37AFF580BBEABB05C97"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.reference.expense.application.ExpenseReadServiceMethodSecurityTest.xml",
+      "Bytes": 70683,
+      "Sha256": "EAFBAD6BAC05FDD5D8C9DC73ECFAB4F94826F5F995CAA647B7B5100652C2DD25"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.reference.expense.domain.model.ExpenseRequestTest.xml",
+      "Bytes": 70167,
+      "Sha256": "171D4C55787D5272F9BA6F43E8F7C928F6A8587DE59ADD25326C3AE50771EA32"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.reference.expense.ExpenseAuditRollbackPostgreSqlIntegrationTest.xml",
+      "Bytes": 187409,
+      "Sha256": "154831A0527FB280B0DAB1F1248F9B88746A46E60041E79A032BA04F3B009906"
+    },
+    {
+      "Path": "evidence\\root-retry2-xml\\TEST-org.koikifw.validation.customer.CustomerModuleContractTest.xml",
+      "Bytes": 10558,
+      "Sha256": "ADDE85EB7D856E69E0F0E6C36A8160DC4B41A033EEC467DAA6BA9C166E39F780"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-architecture-contract\\target\\surefire-reports\\TEST-org.koikifw.architecture.KoikiModuleContractTest.xml",
+      "Bytes": 10793,
+      "Sha256": "797A20A9867A6C12D885C3BC3B3D2CF855C3F8290045E69637C68AB323A03160"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-architecture-contract\\target\\surefire-reports\\TEST-org.koikifw.validation.customer.CustomerModuleContractTest.xml",
+      "Bytes": 10556,
+      "Sha256": "7F1EED2923DBF25CB49F2F08451863B2BDEDC5BD6EF60D5C627AAC5E20B02345"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.BusinessModuleRuleSetTest.xml",
+      "Bytes": 20371,
+      "Sha256": "6226A809EFC93C9F58F62859714A4E5AC49B615FBF0253F2B97540B9628573B7"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.CompliantArchitectureRulesTest.xml",
+      "Bytes": 18550,
+      "Sha256": "0557134B995518B0792DAA4F4CBEA4C24B984C8FFAF06CC9EFBFAA190882FB6F"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.FrameworkOwnershipRuleSetTest.xml",
+      "Bytes": 18085,
+      "Sha256": "C75DB5BCBD8F394CEAFBFE4B16994E7B20568E48640DA52F6580E71CF10B2EF6"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.KoikiArchitectureRulesContractTest.xml",
+      "Bytes": 18558,
+      "Sha256": "00665A1A5B36DB413FA2A08768B236FC3B46CA8798F09BFEE8751866361811DE"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.ModuleMetadataTest.xml",
+      "Bytes": 18207,
+      "Sha256": "6CA8AAC67AA1F66EFD3794FE49CA8A69BB46FD6CF3B91C864D2657F81909D348"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.PackageNameTest.xml",
+      "Bytes": 18471,
+      "Sha256": "C2ECF35B1A82C109DD31ABD1DFE9F4AC23F4B46CA716B34D8C6F8A371598E69B"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.RequiredNegativeArchitectureRulesTest.xml",
+      "Bytes": 18571,
+      "Sha256": "F6E627F2688B2B2C5EACF75B28288FD245CE8FD36BDD3FDF58BA15BE87E8C29C"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.RuleMessageTest.xml",
+      "Bytes": 18180,
+      "Sha256": "ACD55FC286A053361ADE8ABBD539964C3C647DE05C491335D44A1DD7DBF18747"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.TierAndMvcRuleSetTest.xml",
+      "Bytes": 19875,
+      "Sha256": "9B4738C54F3BB8DD6DA97D7F54F2341DDAC60FBFAB13F7D64305F7D9CC253AEE"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.adapter.inbound.api.ExpenseApiControllerTest.xml",
+      "Bytes": 119317,
+      "Sha256": "2D96498CDBFE45A57E876858F188F0FC5A0613B0905002A771B1C561B25324D3"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.adapter.inbound.api.ExpenseApiPostgreSqlIntegrationTest.xml",
+      "Bytes": 230442,
+      "Sha256": "173CB308C01367404423224E21DB697DB24E5F2CD5373D7B8E177A5D260AB640"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.application.ExpenseApplicationServiceMethodSecurityTest.xml",
+      "Bytes": 71055,
+      "Sha256": "B7B74941DC8251ABD537654C7A8FFABD351629B0EB435D964998AA9860625D5A"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.application.ExpenseReadServiceMethodSecurityTest.xml",
+      "Bytes": 70683,
+      "Sha256": "1ACAA20E5BDBE3169F4DEEE2DFD83155C906FA29FD5FFE01A015082C8DED0A29"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.domain.model.ExpenseRequestTest.xml",
+      "Bytes": 70167,
+      "Sha256": "EC3C2513E1F61CF1164F20833DC8E1CC0F47B6630424B68D040749DDACC05617"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.ExpenseAuditRollbackPostgreSqlIntegrationTest.xml",
+      "Bytes": 187292,
+      "Sha256": "0C667252AA264702248C7BAB8BE363E4B2D87220A9B37BE15663DFFC89A9B2A6"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.ExpensePostgreSqlIntegrationTest.xml",
+      "Bytes": 260072,
+      "Sha256": "274A03A9C97809DBBF15420DA63DE0EAE774F557C2FE1E5C74569A280B94C79B"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.ExpenseReadModelPostgreSqlIntegrationTest.xml",
+      "Bytes": 238013,
+      "Sha256": "ECDD0ED225F53E8DEECA6B6E750E828B675C2E9149254588491AF5AA54402F1F"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.adapter.inbound.web.IdentityManagementControllerTest.xml",
+      "Bytes": 75851,
+      "Sha256": "0690BAC5CFBB64C83640656CFF219DC2885A32C145F33D21C1583868D6A073B2"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.adapter.inbound.web.IdentityManagementExceptionHandlerTest.xml",
+      "Bytes": 70679,
+      "Sha256": "987031E218689CD1B758120A2118BE804A6D97299DDF9A96321DB21FAB6CA938"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.adapter.inbound.web.IdentityUrlSecurityTest.xml",
+      "Bytes": 109063,
+      "Sha256": "F961038F56935F657D560DC5A8F2573BC20681C5ACA149E671D4CAE86EA9D0A8"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.application.IdentityUserManagementMethodSecurityTest.xml",
+      "Bytes": 71630,
+      "Sha256": "F4A829C1E22429754A40FB4E05F39B355692BB96BC8BB0AF4A749E13A560ADAC"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.application.IdentityUserManagementTest.xml",
+      "Bytes": 71015,
+      "Sha256": "547160BF828C5A2A7AC676B52DAA5F1FBFEF0A3DC2490CB61944C902E0767494"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.configuration.ReferenceApiJwtDecoderTest.xml",
+      "Bytes": 69807,
+      "Sha256": "62719B0F32361F1502BED79DE33C94DF63A743A8F04FCB5BE9C2C1F75F94CBC7"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.configuration.ReferenceJwtAuthenticationConverterTest.xml",
+      "Bytes": 71089,
+      "Sha256": "79A0B6B9CCB6E552AF30F8E9A238B9FB6E3F9C2365ADB8B14013EE55059E2F17"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.configuration.ReferenceSecurityConfigurationTest.xml",
+      "Bytes": 69813,
+      "Sha256": "80758E7B13D30E77EBC48F4718E3351C5EF31CADDF4CD8CACEEEE6ECA138E40F"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.adapter.outbound.persistence.JpaMasterAvailabilityQueryTest.xml",
+      "Bytes": 70727,
+      "Sha256": "E8460E1687529D24E76A7C7C7A35D8F1D88651C9531BD8DCC7829021ECCDF638"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.application.MasterAdministrationMethodSecurityTest.xml",
+      "Bytes": 70696,
+      "Sha256": "AD5804FE9E7D7EFE47140005D95B9C4A62B375F2696029C8370E09A04813E67E"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.application.MasterAdministrationTest.xml",
+      "Bytes": 71154,
+      "Sha256": "FEC8F019BE9D2D7C5DAF738A8CA70EA5AF7D0BAAF90C76588C4D548D21E53DF9"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.application.MasterCatalogQueryMethodSecurityTest.xml",
+      "Bytes": 70697,
+      "Sha256": "395C9BD41ACE77EDF224E3413103112A8CE6C21A142F7072D0227F59807F2405"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.DepartmentDeactivationPostgreSqlIntegrationTest.xml",
+      "Bytes": 190848,
+      "Sha256": "1BDE04FAD53C066B86D6C9E95EEB756BC54EA754468B3723E168C742481CA732"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.MasterPostgreSqlIntegrationTest.xml",
+      "Bytes": 172073,
+      "Sha256": "090A9B71B86C65853CD1F706D192FA6C2CA7989EB7BD59B711FAD7022F477F80"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.MasterReadModelPostgreSqlIntegrationTest.xml",
+      "Bytes": 169311,
+      "Sha256": "BBD0159DCD8F694C920548C118C5B9295E77553FB7741502480A57E8AFB57994"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2FrozenSourceRegistrationTest.xml",
+      "Bytes": 75070,
+      "Sha256": "C9DEC64768349E2432E31E31D401B043552F8440BF3DA3BD8D5B076FAA34D6BB"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2IssueBoundaryTest.xml",
+      "Bytes": 2316,
+      "Sha256": "D15187DEB004B1B8E106758C96115A94414FF273D7C63F0160C6A1DCF2C6CC47"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2IssueTransactionTest.xml",
+      "Bytes": 2431,
+      "Sha256": "3A49FCC244F14EDAFB60E24B5AB5B6CE28F97BEB06129844EFFE3B4CCAA9C305"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2ProtectedIssueReadTest.xml",
+      "Bytes": 3273,
+      "Sha256": "621E1C85B82BB1FC5F4DC1B3FD405AEF640FD3EF4D14A0481BD50CDD1F8E2D48"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.domain.model.RecoveryConsumptionTest.xml",
+      "Bytes": 69995,
+      "Sha256": "6BE458AB8D672427A71649EC8788591C5FF624F219094A306E39F84832B02CE7"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.domain.model.RecoveryPermitTest.xml",
+      "Bytes": 71280,
+      "Sha256": "E188632ADC12CB53A4ACB8CFBDE3B431D10AC455AEFB2223F22A75EDDF1F37B4"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryConfigurationDbTest.xml",
+      "Bytes": 72998,
+      "Sha256": "E8BDE0832F3C3D93CB5728367A0FAE83618D66993B1FD844B8922C2C3ABE53B1"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryConfigurationLoaderTest.xml",
+      "Bytes": 71406,
+      "Sha256": "B57848E494D2B3368B4FEF017188EEA11C7C0BD20A446737D8DF783A9CE15AB5"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryConfigurationRegistrationTest.xml",
+      "Bytes": 73018,
+      "Sha256": "87E85B980FC984F524E9C940F18CAB72166602096FDB6F2A81005F4116727763"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryScopeAdapterTest.xml",
+      "Bytes": 70675,
+      "Sha256": "7CB481197A4010D89EFC48E15442F146E5AF1FD8FF690660586041791F53CE35"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryTtlPolicyAdapterTest.xml",
+      "Bytes": 70756,
+      "Sha256": "0423409F6A08329299C8C337A5F42B98ECFF525FE227FA5F8B4191DC76BE93EB"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationMigrationTest.xml",
+      "Bytes": 70506,
+      "Sha256": "609C33D2AD89EC1471A6651AC4CF2209AC003E0BF83638265883063122E96CF7"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationPersistenceTest.xml",
+      "Bytes": 73004,
+      "Sha256": "D2984D3B05276A3C4BE534BFFC97EDF4C6F20D6C6E8B7DA944894177FE52CE7C"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationRegistrationTest.xml",
+      "Bytes": 70653,
+      "Sha256": "52A38E13B0CF76F908249EEE1C3E870FC33F5BCA47981FE6713069F9099D33A9"
+    },
+    {
+      "Path": "evidence\\root-retry3-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationTransactionTest.xml",
+      "Bytes": 73003,
+      "Sha256": "B82405ADA40C043BD309D1A4F0F0EBC81734F067EC250C6B3EFEC194E9099D69"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-architecture-contract\\target\\surefire-reports\\TEST-org.koikifw.architecture.KoikiModuleContractTest.xml",
+      "Bytes": 10926,
+      "Sha256": "AE9EF67307A6F42BC5D6EE4B0E230B4CC353E77A85A483F2F8F94964EDD2077F"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-architecture-contract\\target\\surefire-reports\\TEST-org.koikifw.validation.customer.CustomerModuleContractTest.xml",
+      "Bytes": 10689,
+      "Sha256": "544C0306B0814EA8FF7A09BDB4F9030AF350679DE9506BBE6395FCB99A6FA3E0"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.BusinessModuleRuleSetTest.xml",
+      "Bytes": 20523,
+      "Sha256": "87CFE920441334A78912144507C211F6E89957E17DFBD853622AAEF0F3CD3BA3"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.CompliantArchitectureRulesTest.xml",
+      "Bytes": 18704,
+      "Sha256": "0E162F356A4E96F748FAC6F9ADB52CED106C0975199E83D26A80B6517A6F5D3D"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.FrameworkOwnershipRuleSetTest.xml",
+      "Bytes": 18236,
+      "Sha256": "7F966A3FF86DDE63FD0A0FE01F300A67E2248E900F36855CA5360AB835D72039"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.KoikiArchitectureRulesContractTest.xml",
+      "Bytes": 18710,
+      "Sha256": "01C6B3A4BCC11A7A05EF9D9AE79C9863B2000D8CFC8F54796AE55636956AB1E4"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.ModuleMetadataTest.xml",
+      "Bytes": 18358,
+      "Sha256": "DC1FEE7524808A51F70099894CD898888371826CB02C9BFA30C99EBFFAB0FD5D"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.PackageNameTest.xml",
+      "Bytes": 18624,
+      "Sha256": "4B8733155957EE40D835D616E22FDD1BBFC2CE0391496DDFD564AF0FEC34B3FF"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.RequiredNegativeArchitectureRulesTest.xml",
+      "Bytes": 18724,
+      "Sha256": "5CD81945848365F3F6B220D6C6CE5B77164E8E5916BEA4B74DCC3D7BDB1E232C"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.RuleMessageTest.xml",
+      "Bytes": 18332,
+      "Sha256": "6D719A786AD3A643BD7468D341841F6F4EFC84C2A006A96D2B73A92B072340CD"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-archunit-rules\\target\\surefire-reports\\TEST-org.koikifw.archunit.TierAndMvcRuleSetTest.xml",
+      "Bytes": 20028,
+      "Sha256": "5A53853A1D44CB1E09295A5CC80B70733E6BAA5F6E4BBF409F0AED1FA5B459E3"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.adapter.inbound.api.ExpenseApiControllerTest.xml",
+      "Bytes": 119768,
+      "Sha256": "499C85FCB16BF18317527F1C589F3F26CDEFB871DD5E8EDDB7C290770FF77FD9"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.adapter.inbound.api.ExpenseApiPostgreSqlIntegrationTest.xml",
+      "Bytes": 230828,
+      "Sha256": "D212B5E76268B71EA0C844B3906349103243AEF1325D6B886EC3BA32CB68AC40"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.application.ExpenseApplicationServiceMethodSecurityTest.xml",
+      "Bytes": 71429,
+      "Sha256": "E6284F52175053B24699F980640E3BA4914D37A1FDBA9C40FF8A14B1FA25824B"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.application.ExpenseReadServiceMethodSecurityTest.xml",
+      "Bytes": 71058,
+      "Sha256": "06166C64DFD01A65BBFA9A3B9D3475BD48A833D0038DE43F35E98F33BDBFFBEF"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.domain.model.ExpenseRequestTest.xml",
+      "Bytes": 70542,
+      "Sha256": "F24F117A58D383E12306048F15187043F13675F9B19843F379EB75653CFF98B7"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.ExpenseAuditRollbackPostgreSqlIntegrationTest.xml",
+      "Bytes": 187795,
+      "Sha256": "D67CBC97890432983D5DAD19F22E4286AD65AE01F42C82EDE7F6AA4C4029C10C"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.ExpensePostgreSqlIntegrationTest.xml",
+      "Bytes": 260457,
+      "Sha256": "720E06BC801A0DA19F81790417C598D68660F32876DAF2421FE027894DDDA036"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.expense.ExpenseReadModelPostgreSqlIntegrationTest.xml",
+      "Bytes": 238816,
+      "Sha256": "A9046C9417AD8BC24F7E6525697D27D2AD44CE6386B9581A9F2E6C91BF1D8772"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.adapter.inbound.web.IdentityManagementControllerTest.xml",
+      "Bytes": 76226,
+      "Sha256": "66015CF7001BDB899B02DA45D013D4B9DDF4C1EED1BBF924D2F7EE0DAC146AFD"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.adapter.inbound.web.IdentityManagementExceptionHandlerTest.xml",
+      "Bytes": 71054,
+      "Sha256": "8967785068EB212CD6FD3F1AFB022D52943751DEBC36AAF1FE28D3D3CE8D919E"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.adapter.inbound.web.IdentityUrlSecurityTest.xml",
+      "Bytes": 109449,
+      "Sha256": "33629660FC2295F35FD30AFA5D71941DF6D455F4F13747C6FAE83C8058136631"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.application.IdentityUserManagementMethodSecurityTest.xml",
+      "Bytes": 72006,
+      "Sha256": "969DCDB84D9EEDE729B0C8EEFC181308516C98CB02AD6F45656E15CDC85F3488"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.application.IdentityUserManagementTest.xml",
+      "Bytes": 71390,
+      "Sha256": "2390BC8262A4A5DA173495E2A1B5708F6D7BCEA1E0872AB8127B513310A01946"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.configuration.ReferenceApiJwtDecoderTest.xml",
+      "Bytes": 70182,
+      "Sha256": "171DBC7EC0398596F7F2DAF2F3674C8AC0877481E2A49A700E93CFFDD00DEAC1"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.configuration.ReferenceJwtAuthenticationConverterTest.xml",
+      "Bytes": 71462,
+      "Sha256": "B73A1F4DBC6F2E1E9CB33F4E52CB3B908FA700ECB85D434BB3A0C109872959D0"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.identity.configuration.ReferenceSecurityConfigurationTest.xml",
+      "Bytes": 70188,
+      "Sha256": "8304BC2379CA2CE70080E0F944A2C94326A7E85AF7FDF6618B8AD6A7689081C7"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.adapter.outbound.persistence.JpaMasterAvailabilityQueryTest.xml",
+      "Bytes": 71102,
+      "Sha256": "9F6073E35E1488B887D53B4AA6E8E33D3E8125530EE83E1DA69BF11806A58C7D"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.application.MasterAdministrationMethodSecurityTest.xml",
+      "Bytes": 71071,
+      "Sha256": "4413ACCBF33CEDB3DF5A7BF203212289EFC42260F8AC652EEDB16E515E676373"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.application.MasterAdministrationTest.xml",
+      "Bytes": 71529,
+      "Sha256": "62A39B07F3BFA8F042C1978D4B522BC4232711E0198E410360886B732751989F"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.application.MasterCatalogQueryMethodSecurityTest.xml",
+      "Bytes": 71072,
+      "Sha256": "39B7388D1AB5E831946006424AE0F3D5A83077142F6330D0DB3D2E10D7E24797"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.DepartmentDeactivationPostgreSqlIntegrationTest.xml",
+      "Bytes": 191238,
+      "Sha256": "793511CBE88899E8CE238524E8A3A7537F0178654C15A7AE301F18DA1C6E9475"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.MasterPostgreSqlIntegrationTest.xml",
+      "Bytes": 172458,
+      "Sha256": "019132C15FE776E5ABFB4903CBD4822F64749E6B930278499699FED0B3638841"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.master.MasterReadModelPostgreSqlIntegrationTest.xml",
+      "Bytes": 169596,
+      "Sha256": "0DA58C761EEBAEF01509F19512D5897924B87ADB4397C84DBE61FD65F380CC46"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2FrozenSourceRegistrationTest.xml",
+      "Bytes": 75444,
+      "Sha256": "DC8BF4C42284A6BFC11774E9D87B01F9BFC42925C8A34F992066781CDAE53465"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2IssueBoundaryTest.xml",
+      "Bytes": 2316,
+      "Sha256": "3010710C78046C15B418E8A86420B33292C6F85944C3F9A7D86DEEE6E81801D3"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2IssueTransactionTest.xml",
+      "Bytes": 2431,
+      "Sha256": "3A49FCC244F14EDAFB60E24B5AB5B6CE28F97BEB06129844EFFE3B4CCAA9C305"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.B2ProtectedIssueReadTest.xml",
+      "Bytes": 3273,
+      "Sha256": "5E76EA55D133F77CD1ACC7BBD0161DCD41F30798014BC8623AB0636997D26B88"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.domain.model.RecoveryConsumptionTest.xml",
+      "Bytes": 70369,
+      "Sha256": "D13E56A7C60C0BADEE62084573F61F4A6BCCD6C4FB212350D1FD3077E03320BA"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.domain.model.RecoveryPermitTest.xml",
+      "Bytes": 71655,
+      "Sha256": "7AC8CA7407F1F2E30038C6409BD870359F675C0C35EB958C36B1D4E944B11EAD"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryConfigurationDbTest.xml",
+      "Bytes": 2105,
+      "Sha256": "AA5AE5231B0F57502311AF297833633A63F47FC50023C7549AE9443E63C96F12"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryConfigurationLoaderTest.xml",
+      "Bytes": 71781,
+      "Sha256": "773E762CD55C6E270E79730276527D96F08F33655C702E48EC3CCF2583D8AE38"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryConfigurationRegistrationTest.xml",
+      "Bytes": 2149,
+      "Sha256": "84B4F6E48A8D0913762F39F5AAD8F3E0B32983AF5C0C9BCCEDC9AC334CBBB373"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryScopeAdapterTest.xml",
+      "Bytes": 71052,
+      "Sha256": "21B0ADE871057B95D1A3EDF39716D9D634CD5332A6F9BBD80144EEA62EBA3CA1"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryTtlPolicyAdapterTest.xml",
+      "Bytes": 71131,
+      "Sha256": "057532F99DB829D007B386DC97BF5C83FDEB1C5AB6447733FA67D8C36D6D7ECF"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationMigrationTest.xml",
+      "Bytes": 1783,
+      "Sha256": "D910AF96A478A027B3B3D030898C040A15D0BA4DE463B2B85372A9FD36BC8EEB"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationPersistenceTest.xml",
+      "Bytes": 3729,
+      "Sha256": "7296BB8A7B4B1076F5DCAA32D6D2CE59D0DE092559B148D5682E876B951AD12B"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationRegistrationTest.xml",
+      "Bytes": 2391,
+      "Sha256": "FF005DAF45E250F986939396EE19BCA6B1D3EFE854DD1D3EFE9E1D68D12108FA"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.NotificationFoundationTransactionTest.xml",
+      "Bytes": 4816,
+      "Sha256": "0EC36CD9AC53A582FEE1C810787A821968A4C3D6473CA09684AA30D191D20998"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.OperationalRecoveryEvidenceDbTest.xml",
+      "Bytes": 3787,
+      "Sha256": "0427E63F7A857C27DCAC9C11735180F39449BD32742C50BAFC52C16BC7A16392"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.OperationalRecoveryEvidenceStoreTest.xml",
+      "Bytes": 71491,
+      "Sha256": "0EE9CDEE83AD4C7FF35A44535E767A54FD44A57FEFFB8653E91BA19CE4E712A3"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.OperationalRecoveryProviderEvidenceTest.xml",
+      "Bytes": 71226,
+      "Sha256": "885A3549DE3D89481977C071F94DCD2A0DB62B9BC7C876CE4E5186013BBAD2AE"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.OperationalRecoveryStopEvidenceTest.xml",
+      "Bytes": 71145,
+      "Sha256": "BB5796D96BD8B476C49E2A064331AE4ABE0A4716932D2A8239C2C5F958D012BF"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.OperationalRecoveryTargetContractTest.xml",
+      "Bytes": 71415,
+      "Sha256": "357AF6D568CE0F9963E33A0548715837609E36D41DAD854A80D6CBB4DC9A8B14"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.ReferenceArchitectureTest.xml",
+      "Bytes": 70533,
+      "Sha256": "F861BA99BCE3997FBA16AC19137ACDAE8F1BE554C4E31F443F714098C66C290B"
+    },
+    {
+      "Path": "evidence\\root-separation-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.referenceacceptance.web.ReferenceBusinessUrlSecurityTest.xml",
+      "Bytes": 118541,
+      "Sha256": "85D0A1B2A31DCC3D4676A582949200240B813EE1426A9818EB71819AC4EDEFF7"
+    },
+    {
+      "Path": "evidence\\s1-ManagedRecoveryConfigurationDbTest-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryConfigurationDbTest.xml",
+      "Bytes": 578203,
+      "Sha256": "2A531B9DD17B3E9C14CBF96692C5D5C8845BBB0BE80904E791B439514DA5AB00"
+    },
+    {
+      "Path": "evidence\\s1-ManagedRecoveryConfigurationRegistrationTest-xml\\koiki-reference-app\\target\\surefire-reports\\TEST-org.koikifw.reference.notification.ManagedRecoveryConfigurationRegistrationTest.xml",
+      "Bytes": 416089,
+      "Sha256": "72643A1D9B12EA4BAD3E60232B8680CF223C2CDFB71CD0DC7A81C5E395B1C7DF"
+    },
+    {
+      "Path": "evidence/final-owner-acceptance.json",
+      "Bytes": 838,
+      "Sha256": "899A0DF6E77FBBB42F75A49A5762EF2B88F500D608F3037DA6DB4D967A077FEA"
+    }
+  ],
+  "RawContentsIncluded": false,
+  "CommitExecuted": false,
+  "RemoteExecuted": false,
+  "LocalCommitApproval": {
+    "Date": "2026-10-09",
+    "Scope": "22 files, current branch, one local commit",
+    "Canonical": "docs/development/phase4-s1-b2-normal-build-fixed-results-commit-review-20261009.md#6",
+    "RemoteAuthorized": false,
+    "ExecutionDelegated": true
+  }
+}

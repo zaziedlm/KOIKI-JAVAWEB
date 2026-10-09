@@ -88,3 +88,9 @@ S1のDoD PASS候補提出には、正常・負例の結果、人による照合�
 - [B2通常build対策引継ぎ](phase4-s1-b2-normal-build-remediation-session-handoff-20261009.md)：A案の具体化と独立した対策・検証。
 
 次に具体化する資料はB2通常build対策のOwnerレビュー案とR0開始判断資料である。本表の文書整理に伴う新しい実行検証、code・test・POM・SQL・CI変更、commit・remote操作は行っていない。
+
+## 7 通常build対策の完了と次作業（2026-10-09）
+
+後続の個別承認により、通常buildからS1専用64件・B2 process28件を分離し、必要なfixture準備・明示classpathと専用再現を実施した。Windows通常root257 PASS／予定無効92、専用100 PASS／skip0、前提負例・package整合・cleanupは`COMPLETE / OWNER ACCEPTED`。[最終Evidenceと受入§23〜24](../architecture/validation/phase4-s1-b2-normal-build-remediation-20261009.md#24-最終結果のowner受入承認)を正本とする。§4と§6の未承認・未実施表現は資料作成時点の履歴で、今回完了を上書き否定しない。
+
+次は[成果固定commitレビュー](phase4-s1-b2-normal-build-fixed-results-commit-review-20261009.md)でsource・承認記録・hash導線を固定し、その後にR0開始判断資料を具体化する。今回の結果受入はcommit／remoteやR1のruntime・code・依存・migration・検証開始を兼ねない。R0資料作成の方針承認とR1実行開始を区別し、R0〜R5・DoD・未決事項の境界を維持する。

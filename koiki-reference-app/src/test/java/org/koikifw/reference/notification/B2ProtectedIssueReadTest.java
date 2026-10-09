@@ -3,6 +3,7 @@ package org.koikifw.reference.notification;
 import static org.assertj.core.api.Assertions.*;
 import java.util.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.koikifw.referenceacceptance.notification.*;
 import org.koikifw.reference.notification.application.*;
 import org.koikifw.reference.notification.application.port.outbound.*;
@@ -10,6 +11,7 @@ import org.koikifw.reference.notification.application.query.RecoveryTarget;
 import org.koikifw.reference.notification.adapter.outbound.configuration.FrozenRecoverySourceSettings;
 import org.koikifw.reference.notification.adapter.outbound.operational.JdbcProtectedRecoveryTargetAdapter;
 
+@EnabledIfSystemProperty(named="koiki.b2.reference-acceptance.enabled", matches="true")
 class B2ProtectedIssueReadTest {
     B2ReadConnectionHarness h;
     private boolean closed;
