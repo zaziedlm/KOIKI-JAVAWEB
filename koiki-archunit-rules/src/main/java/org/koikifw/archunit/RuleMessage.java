@@ -12,7 +12,7 @@ final class RuleMessage {
     private static final Set<Integer> FAILURE_RULE_IDS = Set.of(
             1, 2, 3, 4, 5, 6, 7, 8, 9,
             11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24,
-            28, 38, 39);
+            28, 29, 38, 39);
 
     private final int ruleId;
     private final List<String> authorities;

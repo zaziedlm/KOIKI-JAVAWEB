@@ -23,7 +23,7 @@ import org.koikifw.archunit.fixture.compliant.ownership.reference.ReferenceConsu
 class KoikiArchitectureRulesContractTest {
 
     @Test
-    void exposesOneFinalFacadeWithTwoPublicStaticMethodsAndNoPublicConstructor() {
+    void exposesOneFinalFacadeWithThreePublicStaticSignaturesAndNoPublicConstructor() {
         assertTrue(isPublic(KoikiArchitectureRules.class.getModifiers()));
         assertTrue(isFinal(KoikiArchitectureRules.class.getModifiers()));
         assertTrue(Arrays.stream(KoikiArchitectureRules.class.getDeclaredConstructors())
@@ -32,14 +32,19 @@ class KoikiArchitectureRulesContractTest {
         List<Method> publicMethods = Arrays.stream(KoikiArchitectureRules.class.getDeclaredMethods())
                 .filter(method -> isPublic(method.getModifiers()))
                 .toList();
-        assertEquals(2, publicMethods.size());
+        assertEquals(3, publicMethods.size());
         assertTrue(publicMethods.stream().allMatch(method -> isStatic(method.getModifiers())));
         assertEquals(
-                List.of("businessModuleRules", "frameworkOwnershipRules"),
-                publicMethods.stream().map(Method::getName).sorted().toList());
+                List.of("businessModuleRules(java.lang.String)",
+                        "businessModuleRules(java.lang.String,java.util.Map)",
+                        "frameworkOwnershipRules(java.lang.String,java.lang.String[])"),
+                publicMethods.stream().map(method -> method.getName() + "("
+                        + String.join(",", Arrays.stream(method.getParameterTypes())
+                                .map(Class::getTypeName).toList()) + ")").sorted().toList());
         assertTrue(publicMethods.stream().allMatch(method -> method.getReturnType().equals(ArchRule.class)));
 
         assertFalse(isPublic(BusinessModuleRuleSet.class.getModifiers()));
+        assertFalse(isPublic(ModuleEventSelection.class.getModifiers()));
         assertFalse(isPublic(FrameworkOwnershipRuleSet.class.getModifiers()));
         assertFalse(isPublic(ModuleMetadata.class.getModifiers()));
         assertFalse(isPublic(PackageName.class.getModifiers()));

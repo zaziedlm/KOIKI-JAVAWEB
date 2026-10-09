@@ -199,7 +199,7 @@ OpenSpecは、Repositoryに採用済みのchangeが存在する場合に限り�
 同期eventの不存在は検査しない。特定Reference listenerの違反除外を行わない。
 code／test最大24 file、新規40 case候補、規約module120 invocation以内・root400以内、累積60分、追加再実行0回とし、
 その他の資源・検証集合・停止／cleanupは同票§6〜7に従う。Ownerは同票内の使い捨てDB・今回所有の子JVM／browser・cleanupを委任する。
-同日の[接続上限訂正承認](docs/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)により、通常rootだけDB client接続上限12、他phaseは8を維持する。
+同日の[接続上限訂正承認（アーカイブ§11）](docs/archive/phase4-s1-r0-20261010/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md#11-通常rootの接続上限追加1回の限定訂正owner-approved)により、通常rootだけDB client接続上限14、他phaseは8を維持する。
 訂正文書4件の追加local commit1回と残56分内のpreflight再開はOwner承認済み。他上限・追加再実行0回・既存test／pool不変更を維持する。
 実行環境の権限付き承認手順を維持し、副Agentを使用しない。不足依存取得、scope拡大・上限超・失敗は停止して別判断へ戻す。
 Reference code／test／POM／SQL／runtime、他Framework module／依存、Root Reactor／CI／remoteを変更しない。
@@ -207,3 +207,5 @@ R0-C結果受入・成果commit・R1開始、DoD・正式受渡し・Phase 4全�
 文書source固定commitも同票§7.1のOwner別承認／操作とし、条件未成立でcode・検証を先行しない。
 
 同訂正票§5の個別Owner承認によりpreflight上限だけ15分へ訂正する。総60分、既計上810秒・残2790秒、cleanup300秒予約と他条件を維持する。指定文書4件を追加local commit1回で固定し、既実施準備を反復せずsource／環境差分確認後、成立時に承認済み限定実装・初回検証へ進める。
+
+2026-10-10のOwner見直しにより、R0の次作業は[現行最小検証計画](docs/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)に従う。監視pure74例・追加網羅・root自動反復を停止し、履歴の許可／残予算を再開許可に流用しない。Rules107成立済みとroot未成立を区別し、S1／B2専用92件は通常buildの分離確認だけとする。Ownerは文書2点の訂正を含むRules16＋文書8＝24ファイルのlocal成果固定commit1回を承認した。成果固定はR0全体の結果受入・R1／remote開始を意味しない。

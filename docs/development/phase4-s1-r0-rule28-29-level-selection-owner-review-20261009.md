@@ -144,7 +144,7 @@ RL-01〜06の個別判断後、採用した§8正本差分・ADR・承認記録�
 
 通常rootの予定無効S1 64／B2 process28は、規約改訂のPASS件数へ加算しない。S1／B2専用process再現は本票に含めず、そのsource不変を照合する。module testとroot重複を種類数へ二重加算しない。
 
-最大同時JVM4、PostgreSQL container1、rootに限ってRyuk2・他phaseはRyuk1、今回所有接続は通常rootだけ12・他phase8（2026-10-09の接続上限訂正承認による）。既存testの承認済みpool／資源制限を使い、変更しない。既存critical journeyのbrowser1／context1、child1を直列実行する。memory8 GiB／disk10 GiBの空きを開始条件、raw100 MiB／run全体2 GiBを容量上限とする。追加browser／libraryのinstallは行わない。
+最大同時JVM4、PostgreSQL container1、rootに限ってRyuk2・他phaseはRyuk1、今回所有接続は通常rootだけ14・他phase8（2026-10-09の[接続上限訂正票§11の承認記録](../archive/phase4-s1-r0-20261010/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md#11-通常rootの接続上限追加1回の限定訂正owner-approved)による）。既存testの承認済みpool／資源制限を使い、変更しない。既存critical journeyのbrowser1／context1、child1を直列実行する。memory8 GiB／disk10 GiBの空きを開始条件、raw100 MiB／run全体2 GiBを容量上限とする。追加browser／libraryのinstallは行わない。
 
 予算・件数・資源超過、旧APIの意味変更、規約検出の抜け、公開signature不一致、source／artifact混同、Reference差分、test失敗、観測・cleanup失敗では停止する。得た結果と原因・有限訂正・残予算をOwnerへ示し、未消費時間から再実行を推定しない。
 
@@ -187,8 +187,15 @@ Ownerは本票を指定して「規約レビュー案 を承認します。」�
 
 ### 9.3 通常root接続上限の訂正承認（2026-10-09）
 
-Ownerは[限定訂正レビュー案](phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)を「確認、承認いたします」と明示した。通常root接続だけ8→12、他上限・既存test／pool不変更・追加再実行0回を維持し、訂正文書4件の追加local commit1回と残56分内のpreflight再開を承認した。新sourceのroot実測・規約結果受入・R1開始を認定しない。
+Ownerは[限定訂正レビュー案（履歴）](../archive/phase4-s1-r0-20261010/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)を「確認、承認いたします」と明示した。通常root接続だけ8→12、他上限・既存test／pool不変更・追加再実行0回を維持し、訂正文書4件の追加local commit1回と残56分内のpreflight再開を承認した。新sourceのroot実測・規約結果受入・R1開始を認定しない。
 
 ### 9.4 preflight時間枠の限定訂正承認（2026-10-09）
 
-Ownerは訂正票§5について「この限定訂正で進めてよいです」と明示した。preflightだけ15分へ訂正し、総60分、既計上810秒・残2790秒、cleanup300秒予約、他条件を維持する。指定文書4件の追加local commit1回・source固定後差分確認と成立時の限定実装／初回検証を承認した。
+Ownerは[訂正票§5（履歴）](../archive/phase4-s1-r0-20261010/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md#5-再開後のpreflight時間計上限定訂正owner-approved)について「この限定訂正で進めてよいです」と明示した。preflightだけ15分へ訂正し、総60分、既計上810秒・残2790秒、cleanup300秒予約、他条件を維持する。指定文書4件の追加local commit1回・source固定後差分確認と成立時の限定実装／初回検証を承認した。
+
+### 9.5 通常root接続14・追加1回の訂正承認（2026-10-09）
+
+Ownerは[訂正票§11](../archive/phase4-s1-r0-20261010/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md#11-通常rootの接続上限追加1回の限定訂正owner-approved)を「確認、承認いたします」と明示した。通常root接続上限12→14、他条件維持、残2262秒・cleanup300秒予約内の追加root1回と、成立時の既承認未実行集合への継続を承認済み。既存pool／test／sourceは不変、新たなcommit／成果受入／R1／remoteは含まない。
+
+
+その後の停止・権限診断・途中結果・旧残予算は[アーカイブ](../archive/phase4-s1-r0-20261010/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)に保存する。本節の承認時点の予算・追加1回は歴史記録で、現在の再実行許可ではない。[現行計画](phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)と[現行結果表](../architecture/validation/phase4-s1-r0-rules-source-fixed-preflight-20261009.md)を次作業の入口とする。

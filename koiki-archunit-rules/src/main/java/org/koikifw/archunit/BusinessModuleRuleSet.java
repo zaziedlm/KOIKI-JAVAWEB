@@ -4,8 +4,10 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 import com.tngtech.archunit.core.domain.Dependency;
 import com.tngtech.archunit.core.domain.JavaAccess;
+import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaConstructorCall;
+import com.tngtech.archunit.core.domain.JavaEnumConstant;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaMethodCall;
 import com.tngtech.archunit.core.domain.JavaModifier;
@@ -60,6 +62,15 @@ final class BusinessModuleRuleSet {
     }
 
     static ArchRule rules(PackageName basePackage) {
+        return rulesWithEventPolicy(basePackage, rule28(basePackage));
+    }
+
+    static ArchRule rules(PackageName basePackage, ModuleEventSelection selection) {
+        return CompositeArchRule.of(rulesWithEventPolicy(basePackage, rule28(basePackage, selection)))
+                .and(rule29(basePackage));
+    }
+
+    private static ArchRule rulesWithEventPolicy(PackageName basePackage, ArchRule eventPolicy) {
         return CompositeArchRule.of(rule1(basePackage))
                 .and(rule2(basePackage))
                 .and(rule3(basePackage))
@@ -80,7 +91,7 @@ final class BusinessModuleRuleSet {
                 .and(rule21(basePackage))
                 .and(rule22(basePackage))
                 .and(rule24(basePackage))
-                .and(rule28(basePackage))
+                .and(eventPolicy)
                 .and(rule38(basePackage))
                 .and(rule39(basePackage));
     }
@@ -500,6 +511,72 @@ final class BusinessModuleRuleSet {
             }
         };
         return classes().should(condition).because(message.description()).allowEmptyShould(true);
+    }
+
+    static ArchRule rule28(PackageName basePackage, ModuleEventSelection selection) {
+        RuleMessage message = RuleMessage.of(28, List.of("ADR-005", "ADR-050"),
+                "非同期listenerの選択または標準契約が不明確になる",
+                "moduleをLevel 2へ明示選択し、上書きのない標準@ApplicationModuleListenerを使う");
+        ArchCondition<JavaClass> condition = new ArchCondition<>("declare only explicitly selected standard module listeners") {
+            @Override
+            public void check(JavaClass item, ConditionEvents events) {
+                if (!basePackage.containsPackage(item.getPackageName())) {
+                    return;
+                }
+                for (JavaMethod method : item.getMethods()) {
+                    if (!isTransactionalEventListener(method)
+                            && !method.isMetaAnnotatedWith(APPLICATION_MODULE_LISTENER)) {
+                        continue;
+                    }
+                    boolean standard = method.isAnnotatedWith(APPLICATION_MODULE_LISTENER);
+                    boolean propagationOverride = standard && !hasStandardPropagation(method);
+                    boolean methodOverride = method.getAnnotations().stream()
+                            .anyMatch(annotation -> overridesModuleListener(annotation.getRawType()));
+                    boolean classOverride = item.getAnnotations().stream()
+                            .anyMatch(annotation -> overridesModuleListener(annotation.getRawType()))
+                            || item.getAllRawSuperclasses().stream().anyMatch(parent -> parent.getAnnotations().stream()
+                                    .anyMatch(annotation -> overridesModuleListener(annotation.getRawType())));
+                    if (!selection.allowsLevel2(item) || !standard || propagationOverride || methodOverride || classOverride) {
+                        addViolation(events, method, message, method.getDescription()
+                                + " requires explicit Level 2 and an unmodified direct standard module listener");
+                    }
+                }
+            }
+        };
+        return classes().should(condition).because(message.description()).allowEmptyShould(true);
+    }
+
+    private static boolean hasStandardPropagation(JavaMethod method) {
+        JavaAnnotation<?> listener = method.getAnnotationOfType(APPLICATION_MODULE_LISTENER);
+        @Nullable Object propagation = listener.get("propagation").orElse(null);
+        return propagation instanceof JavaEnumConstant constant
+                && constant.name().equals("REQUIRES_NEW")
+                && constant.getDeclaringClass().getName().equals(
+                        "org.springframework.transaction.annotation.Propagation");
+    }
+
+    private static boolean overridesModuleListener(JavaClass annotationType) {
+        if (annotationType.getName().equals(APPLICATION_MODULE_LISTENER)) {
+            return false; // The standard annotation's own meta annotations are its contract.
+        }
+        return Stream.of(TRANSACTIONAL_EVENT_LISTENER, APPLICATION_MODULE_LISTENER,
+                        "org.springframework.transaction.annotation.Transactional",
+                        "org.springframework.scheduling.annotation.Async", EVENT_LISTENER)
+                .anyMatch(name -> annotationType.getName().equals(name)
+                        || annotationType.isMetaAnnotatedWith(name));
+    }
+
+    static ArchRule rule29(PackageName basePackage) {
+        RuleMessage message = RuleMessage.of(29, List.of("ADR-005", "ADR-050"),
+                "同期listenerが外部Adapterへ直接依存しcommandと外部副作用が結合する",
+                "Application Use CaseとPortを介し、副作用の間接経路は別途reviewする");
+        return dependencyRule("not depend from synchronous listeners on business outbound adapters", message,
+                source -> basePackage.containsPackage(source.getPackageName())
+                        && source.getMethods().stream().anyMatch(method ->
+                                (method.isAnnotatedWith(EVENT_LISTENER) || method.isMetaAnnotatedWith(EVENT_LISTENER))
+                                        && !isTransactionalEventListener(method)
+                                        && !method.isMetaAnnotatedWith(APPLICATION_MODULE_LISTENER)),
+                target -> isInRole(target, basePackage, "adapter.outbound"));
     }
 
     static ArchRule rule38(PackageName basePackage) {
