@@ -189,3 +189,17 @@ raw／再実行上限・cleanup／停止条件に限定して対象に含む。�
 
 OpenSpecは、Repositoryに採用済みのchangeが存在する場合に限り、変更固有の要求、設計、タスクの
 正本として参照できる。Phase 3の必須tooling、Maven build、CIまたはConsumerの前提にはしない。
+
+## Phase 4 S1 R0-B：Rule 28／29の条件付き限定開始（2026-10-09）
+
+[規約限定改訂票§9.2](docs/development/phase4-s1-r0-rule28-29-level-selection-owner-review-20261009.md)のOwner承認により、
+採用済み正本・ADR・承認記録の文書commitとclean source固定、同票preflight成立後に限り、
+`koiki-archunit-rules`のmodule単位Level選択API・enum、Rule 28選択対応・Rule 29、当該test／fixtureとEvidenceを作成・検証できる。
+旧1引数APIと未指定／Level 0／1の拒否条件を維持し、明示選択したmoduleだけLevel 2の標準listenerを許容する。
+同期eventの不存在は検査しない。特定Reference listenerの違反除外を行わない。
+code／test最大24 file、新規40 case候補、規約module120 invocation以内・root400以内、累積60分、追加再実行0回とし、
+その他の資源・検証集合・停止／cleanupは同票§6〜7に従う。Ownerは同票内の使い捨てDB・今回所有の子JVM／browser・cleanupを委任する。
+実行環境の権限付き承認手順を維持し、副Agentを使用しない。不足依存取得、scope拡大・上限超・失敗は停止して別判断へ戻す。
+Reference code／test／POM／SQL／runtime、他Framework module／依存、Root Reactor／CI／remoteを変更しない。
+R0-C結果受入・成果commit・R1開始、DoD・正式受渡し・Phase 4全体は別判断。
+文書source固定commitも同票§7.1のOwner別承認／操作とし、条件未成立でcode・検証を先行しない。

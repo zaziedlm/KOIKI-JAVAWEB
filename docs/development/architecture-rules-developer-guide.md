@@ -225,7 +225,20 @@ Rule 019は代表的な書き方だけを見る近似検査です（§5）。
 | 業務規則、権限、Audit、transaction、DBの正しさ | 静的な依存の検査では分かりません。unit test、実DB test、HTTP testで確認します |
 | `pom.xml`へのdependency追加 | 追加したlibraryの利用がルールに触れない限り検出しません（例えば`RestTemplate`以外のHTTP clientやMyBatisのlibrary追加自体）。dependencyの追加はreviewで確認します |
 
-Level 2（非同期event）向けのRule 028 / 029候補はTooling上で試験中であり、現行ルールは変わっていません（[PL2検証Evidence](../architecture/validation/phase4-pl2-level2-verification.md)）。
+現行artifactのRule 028はLevel選択を持たず、Rule 029は未実装です。[PL2検証Evidence](../architecture/validation/phase4-pl2-level2-verification.md)は候補比較の材料です。2026-10-09に[R0規約票](phase4-s1-r0-rule28-29-level-selection-owner-review-20261009.md)・[ADR-050](../architecture/adr/ADR-050-module-event-level-selection.md)で以下の仕様を承認しましたが、code・検証・結果受入は未了です。
+
+採用済み仕様の使用例（現行artifactでは利用できません）：
+
+```java
+KoikiArchitectureRules.businessModuleRules("org.koikifw.reference", Map.of(
+        "master", ModuleEventLevel.LEVEL_1,
+        "expense", ModuleEventLevel.LEVEL_1,
+        "notification", ModuleEventLevel.LEVEL_2));
+```
+
+keyはbusiness root直下のpackage名です。未指定とLevel 0／1は現行拒否条件を維持し、同期eventの不存在は検査しません。Level 2だけ直接の標準module listenerを許容し、raw／meta transactional listenerや標準契約の上書きを拒否します。null・不正key・未import moduleを拒否し、指定Mapは防御copyします。旧API・他の規則は維持します。
+
+新APIのRule 029は同期listenerからoutbound Adapterへの直接依存を検査します。Use Case／Port経由の間接副作用は検出できず、reviewと動作testで確認します。Level指定はruntime登録・配信保証・開始承認を代替しません。`frameworkOwnershipRules`の併用も引き続き必要です。
 
 ## 6. ルールを外したくなったら
 
