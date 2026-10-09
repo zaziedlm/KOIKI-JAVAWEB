@@ -135,7 +135,7 @@ RL-01〜06の個別判断後、採用した§8正本差分・ADR・承認記録�
 
 | 区分 | 有限集合／上限 |
 |---|---|
-| preflight／classpath・source台帳 | 10分。開始条件未成立なら停止 |
+| preflight／classpath・source台帳 | 15分（訂正票§5承認）。開始条件未成立なら停止 |
 | Rules module全test | 既存＋新規40、120 invocation以内、1回／15分。Docker不要 |
 | 通常root `clean verify` | 1回／15分。基点349＋新規40＝389 invocation候補、旧予定無効92を維持、実行候補297。400以内、fresh XMLで集合照合 |
 | PL2既存規約候補4件 | 既存`Rule28And29CandidateTest`だけ、1回／5分。Docker／runtime実験は行わない。旧候補と正式APIを区別して報告 |
@@ -188,3 +188,7 @@ Ownerは本票を指定して「規約レビュー案 を承認します。」�
 ### 9.3 通常root接続上限の訂正承認（2026-10-09）
 
 Ownerは[限定訂正レビュー案](phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)を「確認、承認いたします」と明示した。通常root接続だけ8→12、他上限・既存test／pool不変更・追加再実行0回を維持し、訂正文書4件の追加local commit1回と残56分内のpreflight再開を承認した。新sourceのroot実測・規約結果受入・R1開始を認定しない。
+
+### 9.4 preflight時間枠の限定訂正承認（2026-10-09）
+
+Ownerは訂正票§5について「この限定訂正で進めてよいです」と明示した。preflightだけ15分へ訂正し、総60分、既計上810秒・残2790秒、cleanup300秒予約、他条件を維持する。指定文書4件の追加local commit1回・source固定後差分確認と成立時の限定実装／初回検証を承認した。

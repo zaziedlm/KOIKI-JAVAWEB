@@ -205,3 +205,5 @@ code／test最大24 file、新規40 case候補、規約module120 invocation以�
 Reference code／test／POM／SQL／runtime、他Framework module／依存、Root Reactor／CI／remoteを変更しない。
 R0-C結果受入・成果commit・R1開始、DoD・正式受渡し・Phase 4全体は別判断。
 文書source固定commitも同票§7.1のOwner別承認／操作とし、条件未成立でcode・検証を先行しない。
+
+同訂正票§5の個別Owner承認によりpreflight上限だけ15分へ訂正する。総60分、既計上810秒・残2790秒、cleanup300秒予約と他条件を維持する。指定文書4件を追加local commit1回で固定し、既実施準備を反復せずsource／環境差分確認後、成立時に承認済み限定実装・初回検証へ進める。
