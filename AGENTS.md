@@ -199,6 +199,8 @@ OpenSpecは、Repositoryに採用済みのchangeが存在する場合に限り�
 同期eventの不存在は検査しない。特定Reference listenerの違反除外を行わない。
 code／test最大24 file、新規40 case候補、規約module120 invocation以内・root400以内、累積60分、追加再実行0回とし、
 その他の資源・検証集合・停止／cleanupは同票§6〜7に従う。Ownerは同票内の使い捨てDB・今回所有の子JVM／browser・cleanupを委任する。
+同日の[接続上限訂正承認](docs/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)により、通常rootだけDB client接続上限12、他phaseは8を維持する。
+訂正文書4件の追加local commit1回と残56分内のpreflight再開はOwner承認済み。他上限・追加再実行0回・既存test／pool不変更を維持する。
 実行環境の権限付き承認手順を維持し、副Agentを使用しない。不足依存取得、scope拡大・上限超・失敗は停止して別判断へ戻す。
 Reference code／test／POM／SQL／runtime、他Framework module／依存、Root Reactor／CI／remoteを変更しない。
 R0-C結果受入・成果commit・R1開始、DoD・正式受渡し・Phase 4全体は別判断。

@@ -144,7 +144,7 @@ RL-01〜06の個別判断後、採用した§8正本差分・ADR・承認記録�
 
 通常rootの予定無効S1 64／B2 process28は、規約改訂のPASS件数へ加算しない。S1／B2専用process再現は本票に含めず、そのsource不変を照合する。module testとroot重複を種類数へ二重加算しない。
 
-最大同時JVM4、PostgreSQL container1、rootに限ってRyuk2・他phaseはRyuk1、今回所有接続8。既存testの承認済みpool／資源制限を使い、変更しない。既存critical journeyのbrowser1／context1、child1を直列実行する。memory8 GiB／disk10 GiBの空きを開始条件、raw100 MiB／run全体2 GiBを容量上限とする。追加browser／libraryのinstallは行わない。
+最大同時JVM4、PostgreSQL container1、rootに限ってRyuk2・他phaseはRyuk1、今回所有接続は通常rootだけ12・他phase8（2026-10-09の接続上限訂正承認による）。既存testの承認済みpool／資源制限を使い、変更しない。既存critical journeyのbrowser1／context1、child1を直列実行する。memory8 GiB／disk10 GiBの空きを開始条件、raw100 MiB／run全体2 GiBを容量上限とする。追加browser／libraryのinstallは行わない。
 
 予算・件数・資源超過、旧APIの意味変更、規約検出の抜け、公開signature不一致、source／artifact混同、Reference差分、test失敗、観測・cleanup失敗では停止する。得た結果と原因・有限訂正・残予算をOwnerへ示し、未消費時間から再実行を推定しない。
 
@@ -184,3 +184,7 @@ Ownerは`LEVEL_0`指定でも同期eventの不存在を検査しない点を理�
 Ownerは本票を指定して「規約レビュー案 を承認します。」と明示した。RL-01〜06、§3〜5のPublic API／Rule契約・互換性、§6〜7の有限対象・40新規case候補／60分枠・停止／cleanup、§8正本整合を採用し、文書source固定・clean／preflight成立後のR0-B限定作成・検証を承認したものとして記録する。
 
 §7.1の文書local commitは別承認／Owner操作という条件を維持する。承認記録・ADR・正本差分を先に文書だけで反映し、そのcommit対象を提示する。承認時点でcode／Public API実装・Maven／Docker検証・commit／remoteは未実施。R0-C結果受入、成果commit、R1／Reference runtime・POM／SQL、DoD／正式受渡し／Phase 4全体は承認範囲外。
+
+### 9.3 通常root接続上限の訂正承認（2026-10-09）
+
+Ownerは[限定訂正レビュー案](phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)を「確認、承認いたします」と明示した。通常root接続だけ8→12、他上限・既存test／pool不変更・追加再実行0回を維持し、訂正文書4件の追加local commit1回と残56分内のpreflight再開を承認した。新sourceのroot実測・規約結果受入・R1開始を認定しない。
