@@ -1,0 +1,20 @@
+{
+  "ArchivedOn": "2026-10-10",
+  "Purpose": "Superseded minimal execution preparation and stop history, not current progress",
+  "Files": [
+    {
+      "OriginalPath": "docs/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md",
+      "OriginalSha256": "28EDF56AD942FD144E08BC2F704EC31683D032996A676431F6C099DBE271A7CE",
+      "ArchivedPath": "docs/archive/phase4-s1-r0-20261010/minimal-execution/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md",
+      "ArchivedSha256": "B33B97364CA8C16BE893C36CC41A9F2FAFAF3D988FE63C2DD013D19EF20B9B55",
+      "Transform": "Relative Markdown links relocated; historical text retained"
+    },
+    {
+      "OriginalPath": "docs/architecture/validation/phase4-s1-r0-rules-source-fixed-preflight-20261009.md",
+      "OriginalSha256": "D48D71B2CF74B6C6DC7390C1CC5D80DC3EF792ECCA0F6EDC6A5B26D0BAA48337",
+      "ArchivedPath": "docs/archive/phase4-s1-r0-20261010/minimal-execution/validation/phase4-s1-r0-rules-source-fixed-preflight-20261009.md",
+      "ArchivedSha256": "88E82C5D88219B4B16F029D1B5AB851F482E34F7C48BB406704068C1413F1789",
+      "Transform": "Relative Markdown links relocated; historical text retained"
+    }
+  ]
+}

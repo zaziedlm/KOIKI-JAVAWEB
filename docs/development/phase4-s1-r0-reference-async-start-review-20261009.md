@@ -2,6 +2,8 @@
 
 **状態：DRAFT / OWNER REVIEW PENDING。** R0資料作成の指示に基づく提案。Reference Level 2 runtime、依存、code、SQL、正本改訂、検証の開始承認は未取得。本書の作成で開始制限を解除しない。
 
+**現行位置（2026-10-10）：規約限定改訂・必要最小限の検証はOwner受入済み。** 次は[区切り・残作業引継ぎ](phase4-s1-r0-closeout-remaining-tasks-handoff-20261010.md)に従い本草案を再確定する。以下のsourceは草案作成時の基点で、次回開始sourceではない。§6〜7の件数・回帰範囲・資源／予算は未承認候補であり、現行実装・最小ケース方針へ合わせ直す。
+
 **source：** `feature/phase4-s1-reference-foundation` / `fe93b5da76a85fd6a4c41409c725c35661fac007`。資料作成開始時のworktreeはclean。通常build対策22件のlocal commit後を基点とする。remote操作は本作業に含まない。
 
 **入力：** [S1目的対応表](phase4-s1-purpose-dod-stage-mapping-20261009.md)、[軌道修正のOwner採用§9](phase4-s1-async-reference-direction-correction-draft-20261008.md#9-ownerによる方針採用2026-10-09)、[S1完遂方針](phase4-s1-completion-direction-decision-20261002.md)、[DoD実演計画](phase4-s1-dod-demonstration-plan-20261005.md)、[通常build対策の最終受入§24](../architecture/validation/phase4-s1-b2-normal-build-remediation-20261009.md#24-最終結果のowner受入承認)。
@@ -12,7 +14,7 @@
 
 ReferenceだけにModulith JDBC publication registryを限定採用し、既存expense承認から値eventを発行してnotificationへ接続する。最初はpackage済みReferenceと独立したローカルprovider stubで正常経路を成立させる。既存permitのconsume／close接続はR4へ残す。
 
-**開始前のblocking事項：現行Rule 28は`@ApplicationModuleListener`を直接拒否する。** 通常構成でlistener beanを無効にしても静的Architecture testの拒否は残る。§3.3の正式なLevel選択対応を先に審査・実装・受入し、本票を実契約へ合わせるまでR1を開始しない。
+**残る開始前事項：本票を受入済みLevel選択契約へ合わせ、R1の採用条件・必要ケース・資源枠を再確定する。** 未指定／Level 0／1の拒否を維持する規約改訂と、指定moduleのLevel 2選択は成立・Owner受入済み。規約検証を開始前の未成立事項として残さない。
 
 | 判断ID | 今回の推奨案 | 承認される範囲／後段の境界 |
 |---|---|---|
@@ -26,7 +28,7 @@ ReferenceだけにModulith JDBC publication registryを限定採用し、既存e
 | R0-08 reviewの粒度 | 本票に開始条件・上限・対象を集約。小さな実装調整は承認範囲内で処理、段階出口でEvidence／manifestを集約 | 不一致・失敗・scope拡大・予算超過は停止して訂正案を提示。追加実行は残時間だけで許可しない |
 | R0-09 Rule 28／29 blocking review | §3.3の正式Level選択対応を先に審査する。未指定Level 0／1の拒否を維持し、指定moduleだけLevel 2を許容 | 別票でFramework Rules／Public APIの限定改訂を個別判断。受入・本票再確定まではR1停止。Reference違反例外を採らない |
 
-R0-09の規約契約と条件付きR0-B限定開始は別票§9.2で承認済み。規約実装・結果受入と、本票R0-01〜08／R1開始は未承認の段階を残す。規約の承認からReference開始を推定しない。
+R0-09の規約契約と条件付きR0-B限定開始は別票§9.2で承認済み。規約実装・必要検証と結果受入は2026-10-10に完了した。本票R0-01〜08／R1開始は未承認。規約の承認・結果受入からReference開始を推定しない。
 
 ## 2 現行実装からの追加点
 
@@ -81,7 +83,7 @@ Spring Modulith `2.1.1`の公式文書では、JDBC starterはJPA applicationで
 
 ### 3.3 Rule 28／29：正式Level選択対応を先行させる
 
-現行[BusinessModuleRuleSet](../../koiki-archunit-rules/src/main/java/org/koikifw/archunit/BusinessModuleRuleSet.java)のRule 28と`isTransactionalEventListener`は直接／metaのtransactional listenerおよび`ApplicationModuleListener`を拒否する。Level選択引数はこの規則にない。Rule 29は未実装。[P4-F提案§3](KOIKI-JavaWeb-FW_Phase4_P4-F限定開始Gate提案_v0.1.md)が要求する同時blocking reviewを、次の選択で具体化する。
+草案作成時はLevel選択とRule 29が未実装だった。現行source `c11dbbceb0241f1257f9bfc153105d8f55125c1c`では[BusinessModuleRuleSet](../../koiki-archunit-rules/src/main/java/org/koikifw/archunit/BusinessModuleRuleSet.java)を含む規約改訂・旧API互換性・必要最小限の検証が成立し、Owner受入済み。Level 0／1の共通拒否を維持し、明示選択したmoduleにLevel 2を許容する。[P4-F提案§3](KOIKI-JavaWeb-FW_Phase4_P4-F限定開始Gate提案_v0.1.md)の規約blocking reviewを再度未実施として扱わず、以下の経緯と採用済み契約をR1へ反映する。
 
 当初は指定listenerのRule 28違反1件を認めるReference限定案を推奨候補にしたが、Ownerは局所的な対処の恒久化と非同期取り込みの安定を重視した。2026-10-09の指示を受け、その案は不採用方向へ訂正する。特定FQCN／methodの違反filter・package除外・test無効化を実装しない。
 
@@ -166,13 +168,15 @@ case一覧はR1の有限対象であり網羅性証明ではない。D02はprovi
 
 ### 7.2 新規予算と実行集合
 
+**再確定が必要（2026-10-10）。** 下表は旧候補で、実行指示ではない。通常rootの現行基点は389 invocation＝297実行＋92skip。新規20件とS1専用64件の必要性・実行時期、通常rootと選択非同期経路の資源枠（旧案Ryuk1／client8に対してR0通常rootはRyuk2／client14）を再評価し、R1個別開始票で有限条件を確定する。
+
 旧B2の残時間・再実行枠は利用しない。R1に新規90分を提案する。Owner待ち／文書作成を除く検証・環境管理の累積wall timeで、cleanup予約5分を必ず残す。
 
 | 区分 | 有限実行／時間上限 |
 |---|---|
 | preflight／準備 | 10分。必要取得は承認済み一覧だけ各1回。準備失敗を反復しない |
 | 新規Reference16件・影響回帰 | 15分。新規4 classと既存expense／Architecture／Security関連を1回ずつ。rootと重複したcaseを独立種類へ加算しない |
-| 通常root `clean verify` | 1回／15分。基点349 invocation＋新規通常16＝365候補。既存予定無効92、実行候補273。E2E moduleの専用4件はroot件数へ含めない。実XMLと集合で再集計 |
+| 通常root `clean verify` | 旧候補1回／15分。349＋16＝365／実行273の旧集計は失効。現行389を基点に採用する新規case・予定無効を再集計する。専用E2Eはroot件数へ含めない |
 | 既存S1専用64件 | 1回／10分。共通専用harnessを明示選択。64全件成立・skip0を確認 |
 | 通常／async packageとP01〜P04 | 各artifact準備1回、専用4件1回／25分。2種類のJAR・dependencies・migration identityを区別。既存package済みcritical journey1件も明示実行 |
 | 最終package／証拠／cleanup | 10分＋cleanup予約5分。fixture非混入、source／artifact hash、今回のprocess・DB終了を確認 |

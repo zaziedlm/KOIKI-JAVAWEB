@@ -1,6 +1,6 @@
 # Phase 4 S1 R0：Rule 28／29のLevel選択対応・限定改訂Ownerレビュー案（2026-10-09）
 
-**状態：OWNER APPROVED / 文書source固定・preflight条件付きR0-B限定開始（2026-10-09、§9.2）。** RL-01〜06と正本整合を承認済み。文書commit・clean source固定／preflightは未成立で、code／検証は未開始。R1・Reference runtime開始は別判断。
+**現行状態：COMPLETE / OWNER ACCEPTED（2026-10-10）。** RL-01〜06の限定改訂・source固定・必要最小限の検証と結果受入は完了。R1・Reference runtime開始は別判断。以下のsource・§9.1〜9.5は各判断時点の履歴として保持する。次作業は[区切り・残作業引継ぎ](phase4-s1-r0-closeout-remaining-tasks-handoff-20261010.md)を入口とする。
 
 **source：** `feature/phase4-s1-reference-foundation` / `fe93b5da76a85fd6a4c41409c725c35661fac007`。開始時は先行R0資料と目的対応表の文書差分2件だけ。これらを保全して本票と相互整合させる。local commit・remoteは別承認。
 
@@ -198,4 +198,8 @@ Ownerは[訂正票§5（履歴）](../archive/phase4-s1-r0-20261010/development/
 Ownerは[訂正票§11](../archive/phase4-s1-r0-20261010/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md#11-通常rootの接続上限追加1回の限定訂正owner-approved)を「確認、承認いたします」と明示した。通常root接続上限12→14、他条件維持、残2262秒・cleanup300秒予約内の追加root1回と、成立時の既承認未実行集合への継続を承認済み。既存pool／test／sourceは不変、新たなcommit／成果受入／R1／remoteは含まない。
 
 
-その後の停止・権限診断・途中結果・旧残予算は[アーカイブ](../archive/phase4-s1-r0-20261010/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)に保存する。本節の承認時点の予算・追加1回は歴史記録で、現在の再実行許可ではない。[現行計画](phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)と[現行結果表](../architecture/validation/phase4-s1-r0-rules-source-fixed-preflight-20261009.md)を次作業の入口とする。
+その後の停止・権限診断・途中結果・旧残予算は[アーカイブ](../archive/phase4-s1-r0-20261010/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)に保存する。本節の承認時点の予算・追加1回は歴史記録で、現在の再実行許可ではない。[現行受入票](phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)と[現行結果表](../architecture/validation/phase4-s1-r0-rules-source-fixed-preflight-20261009.md)へ最終結果を集約する。
+
+### 9.6 最終結果のOwner受入（2026-10-10）
+
+Ownerは「最終結果を確認し、Owner受け入れを承認します。」と明示した。Rules107、PL2既存4、package・旧Consumer、Reference既存E2E1、通常root297実行＋専用92skipとsource／artifact／資源／cleanup照合の限定結果を受入済みとする。code／testは`c11dbbceb0241f1257f9bfc153105d8f55125c1c`で固定済み。受入記録と履歴分離の追加local commitは未実施、R1開始・remote・実運用／DoD／Phase 4全体は別判断。
