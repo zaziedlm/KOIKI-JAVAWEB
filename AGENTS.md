@@ -1,6 +1,16 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
-## 現行追加判断：S1 R1条件付き限定開始（2026-10-12）
+## 現行追加判断：S1 R1限定結果のOwner受入（2026-10-13）
+
+R1正常非同期経路・通常構成保護の限定結果は`COMPLETE / OWNER ACCEPTED`。
+[結果文書§13〜15](docs/architecture/validation/phase4-s1-r1-implementation-and-early-verification-20261012.md#15-r1限定結果のowner受入承認2026-10-13)を現行結果・機能説明・受入承認の入口とする。
+通常root300実行＋専用92skip、通常／async artifact静的照合、新規9件（root3＋Tooling6）と既存Critical Journey1件が成立した。
+過去の停止と後続cleanup観測、source／artifact epochを区別して保持する。ローカルstubを含む選択正常経路の受入であり、
+実provider配信・停止／再送／復旧・R2〜R5・全DoD・正式受渡し・Phase 4全体へ拡張しない。
+次は成果固定のGit差分・対象点検と、別承認／Owner操作によるlocal commit。remote操作は個別承認を維持する。
+以下の2026-10-12開始条件と過去承認は判断時点の履歴で、追加実行・残予算の許可へ流用しない。
+
+### R1条件付き限定開始の承認条件（2026-10-12）
 
 Ownerは[R1必要最小限の開始票§8](docs/development/phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)を承認した。
 R0の規約限定改訂・最小検証・結果受入は完了。承認済み正本・ADR-051・承認記録の文書commit、

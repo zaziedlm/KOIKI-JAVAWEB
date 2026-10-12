@@ -19,6 +19,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.springframework.modulith</groupId>
+      <artifactId>spring-modulith-events-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.koikifw</groupId>
       <artifactId>koiki-architecture-contract</artifactId>
     </dependency>
@@ -83,6 +87,18 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>s1-reference-async</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.springframework.modulith</groupId>
+          <artifactId>spring-modulith-starter-jdbc</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>

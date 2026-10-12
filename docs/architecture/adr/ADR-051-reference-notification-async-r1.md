@@ -1,6 +1,8 @@
 # ADR-051：Reference notification正常非同期経路の限定採用
 
-**状態：ACCEPTED DESIGN / IMPLEMENTATION PENDING（2026-10-12）。** Architecture Owner：Shuichi Kataoka。[R1開始票§8](../../development/phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)の承認によるReference限定判断。正本文書commit・新R1 branchでのclean source固定・preflight成立後にだけ作成／検証できる。
+**状態：ACCEPTED DESIGN / R1 LIMITED IMPLEMENTATION COMPLETE / OWNER ACCEPTED（2026-10-13）。** Architecture Owner：Shuichi Kataoka。[R1開始票§8](../../development/phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)で2026-10-12に条件付き限定開始を承認し、正本文書commit・新R1 branchでのclean source固定・preflight成立後に作成／検証した。
+
+[結果文書§13〜15](../validation/phase4-s1-r1-implementation-and-early-verification-20261012.md#15-r1限定結果のowner受入承認2026-10-13)に、通常root・別固定通常／async artifact・新規9件・既存Critical Journey1件の限定成立、機能説明とOwner受入承認を記録する。ローカルstubの受理とpublication completionまでの選択正常経路の受入であり、実provider配信・停止／再送／復旧・R2〜R5・全DoD・正式受渡し・Phase 4全体へ拡張しない。成果固定local commitとremote操作は別判断を維持する。
 
 ## 背景と理由
 

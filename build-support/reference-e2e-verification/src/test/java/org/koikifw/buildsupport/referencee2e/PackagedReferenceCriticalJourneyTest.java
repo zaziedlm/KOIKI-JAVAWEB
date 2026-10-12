@@ -437,6 +437,14 @@ class PackagedReferenceCriticalJourneyTest {
             throws Exception {
         try (var connection = DriverManager.getConnection(
                         postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+                var statement = connection.createStatement();
+                var rows = statement.executeQuery(
+                        "SELECT count(*) FROM pg_namespace WHERE nspname='kkref_notification_async'")) {
+            assertTrue(rows.next());
+            assertEquals(0L, rows.getLong(1), "Normal artifact created async publication schema");
+        }
+        try (var connection = DriverManager.getConnection(
+                        postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
                 var statement = connection.createStatement()) {
             try (var rows = statement.executeQuery("""
                     select request.status,

@@ -25,7 +25,17 @@ public class ReferencePostgreSqlTestConfiguration {
     @Bean
     @ServiceConnection
     PostgreSQLContainer postgreSqlContainer() {
+        String normalRootLimits = System.getProperty("koiki.reference.normal-root.db-limits.enabled", "false");
+        if (!normalRootLimits.equals("true") && !normalRootLimits.equals("false")) {
+            throw new IllegalArgumentException("Invalid normal-root DB limits property");
+        }
         if (!resourceLimitsEnabled()) {
+            if (normalRootLimits.equals("true")) {
+                return new PostgreSQLContainer("postgres:17-alpine")
+                        .withCommand("postgres", "-c", "max_connections=16")
+                        .withCreateContainerCmdModifier(command -> java.util.Objects.requireNonNull(command.getHostConfig())
+                                .withMemory(1073741824L).withNanoCPUs(1000000000L));
+            }
             return new PostgreSQLContainer("postgres:17-alpine");
         }
         if (!"4".equals(System.getProperty("spring.datasource.hikari.maximum-pool-size"))

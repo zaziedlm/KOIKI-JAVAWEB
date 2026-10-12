@@ -5,13 +5,17 @@ description: Orient work in KOIKI-JavaWeb-FW by identifying the current phase, o
 
 # KOIKI Project Overview
 
-## 現行S1の限定開始位置（2026-10-12）
+## 現行S1の限定結果受入位置（2026-10-13）
 
 R0規約と最小検証のOwner受入を入力に、[R1開始票§8](../../../development/phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)をOwner承認済み。
-Reference正常非同期経路だけの条件付き追加開始である。[ADR-051](../../../architecture/adr/ADR-051-reference-notification-async-r1.md)、
-正本・承認記録の文書commit→新R1 branchでclean source固定→同票preflight成立→限定作成検証の順に従う。
+Reference正常非同期経路だけの条件付き追加開始に従い、[ADR-051](../../../architecture/adr/ADR-051-reference-notification-async-r1.md)、
+正本・承認記録の文書commit→新R1 branchでclean source固定→同票preflight成立→限定作成検証の順で実施した。
 同票の必要ケース・資源／時間・環境操作委任・停止／cleanupを正本とし、旧R0残予算・監視網羅を再利用しない。
-R1結果は未成立、R2〜R5・正式受渡し・Phase 4全体・local commit／remoteは同票の別判断条件を維持する。
+R1限定結果は`COMPLETE / OWNER ACCEPTED`。
+[結果文書§13〜15](../../../architecture/validation/phase4-s1-r1-implementation-and-early-verification-20261012.md#15-r1限定結果のowner受入承認2026-10-13)を現行結果・機能説明・受入承認の入口とする。
+通常root300実行＋専用92skip、別固定通常／async artifact、新規9件と既存Critical Journey1件の限定成立を保持する。
+停止履歴・後続cleanup観測・source／artifact epochを区別し、実運用保証や網羅完了へ読み替えない。
+次は成果固定対象の点検と別承認／Owner操作によるlocal commit。R2〜R5・正式受渡し・Phase 4全体・remoteは別判断を維持する。
 
 KOIKIでの作業位置を最初に確定し、所有権やPhaseを越えた実装を防ぐ。
 
