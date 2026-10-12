@@ -4,6 +4,8 @@
 
 **現行進捗（2026-10-10）：R0規約限定改訂・必要最小限の検証はCOMPLETE / OWNER ACCEPTED。** §10までの開始待ち説明は当時の履歴。次作業は[区切り・残作業引継ぎ](phase4-s1-r0-closeout-remaining-tasks-handoff-20261010.md)を入口にR1開始案を再確定する。S1全体・DoDやR1開始の承認ではない。
 
+2026-10-12、Ownerは[R1必要最小限の開始票§8](phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)を承認した。正常経路・通常構成保護の9新規候補と既存影響回帰／最終root、有限70分・資源／停止／cleanupを採用し、旧草案の全件回帰を実行指示から外した。正本・ADR・承認文書commit→新R1 branchのclean source固定→preflight成立後だけ作成検証できる。R1結果未成立、R2〜R5・全体DoDは未達。
+
 S1の出口は、Referenceのexpense承認からnotification・provider stubへつなぎ、通知失敗の分離、停止後の配信完遂、重複抑止、復旧操作の統制、保持・追跡を用途限定で実証することである。2026-10-09のOwner採用方針に従い、最小の非同期経路を先に組み込み、正常系から異常系・停止後回復へ進める。permit基盤はR4の認可・Audit付き復旧へ接続する。
 
 B1／B2は限定範囲でOwner受入済みである。Referenceの配送・復旧を通したDoD 4-1／4-2／4-3／4-4／4-5／4-12のPASSは本表では認定しない。本表は計画整理であり、後続のcode・POM・SQL・検証・local commit・remote操作の開始承認ではない。

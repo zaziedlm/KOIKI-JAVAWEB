@@ -5,6 +5,15 @@ description: Plan, implement, and review KOIKI business-module changes by decidi
 
 # KOIKI Business Feature Work
 
+## Reference R1の個別承認（2026-10-12）
+
+[R1開始票§8](../../../development/phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)と
+[ADR-051](../../../architecture/adr/ADR-051-reference-notification-async-r1.md)により、Reference expense値event／notification標準listenerの正常経路だけを条件付き採用した。
+R0規約結果受入済みの正式Level選択APIを使い、特定listenerの違反除外を行わない。
+正本・承認記録の文書commit、新R1 branchでのclean source固定・preflight成立前にcode／依存／SQLを作成しない。
+対象・必要ケース・回帰・資源／時間・停止／cleanupは開始票に従い、Framework／Customer一般採用やR2〜R5へ拡張しない。
+以下のLevel 2先行制限にはこの個別承認範囲だけを例外として適用し、Security／Audit／同期veto・既存permit契約を維持する。
+
 業務変更を、モジュール境界と内部責務を崩さずに設計・実装・レビューする。
 
 ## 変更前に判断する

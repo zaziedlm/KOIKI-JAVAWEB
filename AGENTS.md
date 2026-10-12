@@ -1,5 +1,22 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行追加判断：S1 R1条件付き限定開始（2026-10-12）
+
+Ownerは[R1必要最小限の開始票§8](docs/development/phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)を承認した。
+R0の規約限定改訂・最小検証・結果受入は完了。承認済み正本・ADR-051・承認記録の文書commit、
+新R1 branchでのclean source固定と同票preflight成立後にだけ、Reference-owned expense承認値event、
+notification非同期listener／送信Port／loopback stub接続Adapter、Reference限定Modulith JDBC依存・追加publication migration・
+条件付き登録と当該有限test／Evidenceを作成・検証できる。通常無効、既存Security／Identity／master同期veto／
+expense認可・Audit／既存permit契約を維持し、Framework API／Rules／依存・Root Reactor／CIを変更しない。
+対象差分28 file以内、文書12 file以内、新規4 class／9 invocation候補、最終通常root1回、検証70分・cleanup5分予約。
+JVM4／PG1、通常rootと既存E2EはRyuk2／client14、新規ToolingはRyuk1／client8。他の資源・phase・停止／cleanupは同票に従う。
+Ownerは今回所有の使い捨てDB・専用schema／role・loopback stub・package子JVM／browser・有限cleanupを同票内で委任する。
+権限付き実行は実行環境の承認手順を維持し、副Agent・旧監視74例の拡張・root自動反復を行わない。
+S1／B2専用92件は通常build分離を維持し専用全件再検証をしない。直接影響が判明した場合だけ必要部分を別判断する。
+不足依存取得・追加再実行は同票の個別条件に従う。local commitはOwner操作または操作前承認、remoteは個別承認。
+R2〜R5、肯定consume／close、停止後再送・復旧runner、実provider送信、DoD・正式受渡し・Phase 4全体へ拡張しない。
+以下の過去承認・R0旧予算は各判断時点の履歴で、再開許可・残予算として流用しない。
+
 このRepositoryでは、`KOIKI-JavaWeb-FW グランドデザイン v0.2`の
 `ACCEPTED（Phase 0 Architecture Baseline）`を上位設計とする。
 

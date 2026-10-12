@@ -1,5 +1,7 @@
 # KOIKI-JavaWeb-FW Phase 4 実施計画 見直し草案 v0.1
 
+**現行限定追加（2026-10-12）：** [R1開始票§8](phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)・[ADR-051](../architecture/adr/ADR-051-reference-notification-async-r1.md)のReference正常非同期経路だけをOwnerが条件付き承認した。文書commit→新R1 branchでclean source固定→preflight→有限作成検証の順に進む。9新規候補・影響回帰・最終root・70分と資源／停止・cleanupは開始票に従う。Reference Level 2正式受渡し前制限への限定例外であり、Framework／Customer一般採用・R2〜R5・Phase 4全体開始／DoD完了は認めない。R0は結果受入済み、R1結果は未成立。
+
 **状態:** DRAFT / R1〜R7 OWNER REVIEW COMPLETE（計画詳細はP4-PL1 / PL2で継続）。Phase 4開始・実装・配布は未承認  
 **作成日:** 2026年9月26日  
 **作業branch:** `docs/phase4-execution-plan-review`  

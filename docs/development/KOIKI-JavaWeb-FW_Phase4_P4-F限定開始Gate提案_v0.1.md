@@ -1,6 +1,8 @@
 # KOIKI-JavaWeb-FW Phase 4 P4-F限定開始Gate提案 v0.1
 
-**状態:** Gate P4-F設置・ST-C初回Reference基盤のみAPPROVE LIMITED START（2026-10-06）。正式作成検証開始は文書commit・clean source固定／preflight成立条件付きOWNER APPROVED。Phase 4全体開始は未承認。
+**現行追加判定（2026-10-12）：** 設置済みGate P4-Fに[R1開始票§8](phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)のReference正常非同期経路だけを`APPROVE LIMITED START`として追加する。R0規約・最小検証はOwner受入済み。正本・[ADR-051](../architecture/adr/ADR-051-reference-notification-async-r1.md)・承認文書commit、新R1 branchでのclean source固定とpreflight成立後にだけ同票の作成／検証へ進む。CP-F1／CP-F2の部分開始であり、復旧・R2〜R5・Gate全体完了・Phase 4全体開始は未承認／未達を維持する。必要集合・環境操作・資源／70分／停止・cleanupは開始票を正本とする。
+
+**2026-10-06の判定:** Gate P4-F設置・ST-C初回Reference基盤のみAPPROVE LIMITED START。正式作成検証開始は文書commit・clean source固定／preflight成立条件付きOWNER APPROVED。
 **作成日:** 2026年9月26日  
 **判断の起点:** [Phase 4見直し草案 R1〜R7](KOIKI-JavaWeb-FW_Phase4実施計画_見直し草案_v0.1.md#7-architecture-owner-review票)。R6は本提案書の作成だけを承認した。
 

@@ -2,6 +2,8 @@
 
 **状態：DRAFT / OWNER REVIEW PENDING。** R0資料作成の指示に基づく提案。Reference Level 2 runtime、依存、code、SQL、正本改訂、検証の開始承認は未取得。本書の作成で開始制限を解除しない。
 
+**2026-10-12：現行開始条件は[R1必要最小限の開始票§8](phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)。** Ownerは同票を承認し、R0-01〜08のReference限定採用を同票・ADR-051の有限契約で置き換えた。本書は旧設計案・検討経緯として保持する。新規20件／90分／S1専用64件全件再検証と旧予算を現行の実行指示に使わない。本文の未承認表示は旧案の判断時点で、現行は文書commit・新R1 branchのclean source固定・preflight条件付き限定開始である。
+
 **現行位置（2026-10-10）：規約限定改訂・必要最小限の検証はOwner受入済み。** 次は[区切り・残作業引継ぎ](phase4-s1-r0-closeout-remaining-tasks-handoff-20261010.md)に従い本草案を再確定する。以下のsourceは草案作成時の基点で、次回開始sourceではない。§6〜7の件数・回帰範囲・資源／予算は未承認候補であり、現行実装・最小ケース方針へ合わせ直す。
 
 **source：** `feature/phase4-s1-reference-foundation` / `fe93b5da76a85fd6a4c41409c725c35661fac007`。資料作成開始時のworktreeはclean。通常build対策22件のlocal commit後を基点とする。remote操作は本作業に含まない。

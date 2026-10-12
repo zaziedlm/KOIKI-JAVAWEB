@@ -1,5 +1,7 @@
 # KOIKI-JavaWeb-FW Phase 4 PL2 — P4-F判定資料 v0.1
 
+**現行限定判断（2026-10-12）：** R0規約・最小検証はOwner受入済み。[R1開始票§8](phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)・[ADR-051](../architecture/adr/ADR-051-reference-notification-async-r1.md)によるReference正常非同期経路だけを条件付き追加開始する。正本文書commit・新R1 branchでclean source固定・preflight成立が先行条件。既存「未達なら後続開始しない」条件への例外はR1正常経路の部分開始だけで、CP-F1／CP-F2全体、正式A2・復旧・DoD・正式受渡し／Phase 4全体の完了／開始を認定しない。以下の旧Rules未変更・Gate未設置等の記述は当時の調査／計画記録として保持する。
+
 **状態:** WORKING DRAFT / F-1〜F-3記入済み、F-4の見積境界とF-5改訂差分案を作成。Gate P4-Fの設置・通過、Phase 4 production実装、正式配布を承認する資料ではない。
 
 **入力:** [Phase 4見直し草案](KOIKI-JavaWeb-FW_Phase4実施計画_見直し草案_v0.1.md)、
@@ -244,7 +246,8 @@ Phase 0のPhase共通25〜40標準人日にはSAML、Storage、ECSなども含�
 |---|---|---|
 | CP-F0 採用規模 | D1／D2のS1経路方針採用を記録し、正式対象・Gate判定と分ける。Reference対象event、DoD影響、Owner・復旧条件は後段も追跡 | 限定範囲が曖昧ならREWORK。初回基盤の了承をS1全体開始・実案件需要確定にしない。S0／S2再評価と対象外条件は維持 |
 | CP-F1 A1 blocking review | 初回保存基盤部分はP4-F提案§3のモデル／登録／DDL・grant／認可・Audit／検証上限を前置。store／Rules／依存／複数instance復旧安全条件は当該後段接続前に審査 | 初回部分の成立をCP-F1全体完了にしない。未成立の接続を開始せず、既存Level 1構成を維持。未承認migration／APIを作らない |
-| R0-B 規約部分（2026-10-09承認） | [規約票§9.2](phase4-s1-r0-rule28-29-level-selection-owner-review-20261009.md)とADR-050によるmodule単位Level選択・Rule 28／29。文書commit／clean source固定・preflight後の有限作成検証を条件付き承認 | 旧API・未指定Level 0／1拒否を維持。実装／結果受入未了、CP-F1全体未完了。Reference R1・runtime／migration開始を兼ねない |
+| R0-B 規約部分（2026-10-10受入済み） | [規約票§9.6](phase4-s1-r0-rule28-29-level-selection-owner-review-20261009.md#96-最終結果のowner受入2026-10-10)とADR-050によるmodule単位Level選択・Rule 28／29、旧API互換性・最小検証を受入済み | CP-F1全体未完了。規約受入だけでReference開始を認定しない |
+| Reference R1部分（2026-10-12条件付き承認） | [開始票§8](phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)。文書commit・新branch clean source固定・preflight後、正常経路・通常保護・有限9新規候補と影響回帰だけを作成検証 | 結果未成立。CP-F1／CP-F2の部分開始、R2〜R5・正式受渡し・全体DoDは未達。local commit／remoteは別判断 |
 | CP-F2 A1検証 | Toolingと正式候補を分け、初回保存基盤・認可／Audit・既存Reference保護の部分Evidenceを固定。故障・復旧・パージ・相関は後段で検証 | 初回部分だけでCP-F2全体完了にしない。同時再送・lock喪失・受理不明が未解決なら後続A2を開始しない。schema／cleanupのreviewを維持 |
 | CP-F3 A2実証 | Reference `notification`をpackageし、stubの冪等key・送信受理不明・再送を実演 | Reference実演が成立しなければ通知候補を有効化しない。実案件providerの契約・費用は当該Applicationの採用前に判断 |
 | CP-F4 D1観測 | metric / alert / trace / logをReference検証sinkで照合し、cardinalityと非露出を確認 | 検証sinkで相関不能なら次へ進めない。実運用sink・alert体制は各Application採用前に判断 |
