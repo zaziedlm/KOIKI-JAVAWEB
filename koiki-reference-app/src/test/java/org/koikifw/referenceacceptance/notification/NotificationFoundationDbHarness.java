@@ -128,7 +128,7 @@ public final class NotificationFoundationDbHarness implements AutoCloseable {
             context.getBeanFactory().registerSingleton("s1TestClock", clock);
             if (finitePorts) context.getBeanFactory().registerSingleton("s1FinitePorts", ports);
             if (finiteEvidence) {
-                context.getBeanFactory().registerSingleton("s1ManagedTestTargets", (RecoveryTargetPort) ports::current);
+                context.getBeanFactory().registerSingleton("s1ManagedTestTargets", (RecoveryTargetPort) ports);
                 context.getBeanFactory().registerSingleton("s1ManagedTestEvidence", new RecoveryEvidencePort() {
                     @Override public Optional<ConsumptionProof> consumption(UUID permit, RecoveryTarget target, UUID operation, String worker) {
                         return ports.consumption(permit, target, operation, worker);

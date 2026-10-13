@@ -12,7 +12,7 @@ class OperationalRecoveryStopEvidenceTest {
     final Model model = new Model(clock, target);
     final StopReceipt receipt = model.stop(target);
     boolean valid() { return model.validStop(receipt, target); }
-    @Test void S01RequiresStoppedDrainedAndControlledGeneration() { assertThat(valid()).isTrue(); model.controlGeneration++; assertThat(valid()).isFalse(); }
+    @Test void S01RequiresStoppedDrainedAndControlledGeneration() { assertThat(valid()).isTrue(); model.controlGeneration = receipt.controlGeneration() + 1; assertThat(valid()).isFalse(); }
     @Test void S02RejectsAliveOrUndrainedProcess() { model.processStopped = false; assertThat(valid()).isFalse(); model.processStopped = true; model.drained = false; assertThat(valid()).isFalse(); }
     @Test void S03RejectsOtherProcessOrGeneration() { model.process = "other"; assertThat(valid()).isFalse(); model.process = receipt.process(); model.generation = "next"; assertThat(valid()).isFalse(); }
     @Test void S04RejectsDeployTargetAndIssuerMismatch() {

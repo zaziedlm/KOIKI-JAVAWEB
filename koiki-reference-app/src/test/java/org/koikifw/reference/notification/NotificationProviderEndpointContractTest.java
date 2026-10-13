@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.sun.net.httpserver.HttpServer;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.UUID;
@@ -22,8 +23,9 @@ class NotificationProviderEndpointContractTest {
                     () -> new HttpNotificationProviderAdapter(URI.create(invalid)));
         }
         var accepted = new AtomicInteger();
-        var target = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        var redirect = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        var loopbackV4 = InetAddress.getByAddress(new byte[] {127, 0, 0, 1});
+        var target = HttpServer.create(new InetSocketAddress(loopbackV4, 0), 0);
+        var redirect = HttpServer.create(new InetSocketAddress(loopbackV4, 0), 0);
         target.createContext("/notifications", exchange -> {
             accepted.incrementAndGet();
             exchange.sendResponseHeaders(204, -1);
