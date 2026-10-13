@@ -41,7 +41,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 /** Only test-owned setup, real HTTP auth, child process and SELECT observations. */
 final class AsyncReferenceFixture implements AutoCloseable {
     final PostgreSQLContainer db = NotificationProviderContractTest.postgres();
-    final LocalNotificationProviderStub stub;
+    LocalNotificationProviderStub stub;
     final UUID applicant = UUID.randomUUID();
     final UUID secondApplicant = UUID.randomUUID();
     final UUID approver = UUID.randomUUID();
@@ -50,7 +50,7 @@ final class AsyncReferenceFixture implements AutoCloseable {
     private final String password = "R1-" + UUID.randomUUID();
     private final String hmac = Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8));
     private final KeyPair key;
-    private final HttpServer issuer;
+    private HttpServer issuer;
     private final HttpClient bearer = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
     private final HttpClient session = HttpClient.newBuilder()
             .cookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL))
@@ -58,6 +58,7 @@ final class AsyncReferenceFixture implements AutoCloseable {
     private final Path log;
     private Process process;
     private String base;
+    private boolean expectNoProvider;
 
     AsyncReferenceFixture() throws Exception {
         var generator = KeyPairGenerator.getInstance("RSA");
@@ -65,13 +66,9 @@ final class AsyncReferenceFixture implements AutoCloseable {
         key = generator.generateKeyPair();
         log = Files.createTempFile(Path.of(System.getProperty("koiki.reference.async.verification.normal-jar"))
                 .getParent(), "r1-child-", ".log");
-        db.start();
         try {
+            db.start();
             stub = new LocalNotificationProviderStub(db);
-        } catch (Exception exception) {
-            db.stop();
-            throw exception;
-        }
         issuer = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         String url = issuerUrl();
         issuer.createContext("/.well-known/openid-configuration", exchange -> {
@@ -91,6 +88,10 @@ final class AsyncReferenceFixture implements AutoCloseable {
             exchange.close();
         });
         issuer.start();
+        } catch (Exception | Error failure) {
+            try { close(); } catch (Throwable cleanup) { failure.addSuppressed(cleanup); }
+            throw failure;
+        }
     }
 
     private String issuerUrl() {
@@ -127,6 +128,9 @@ final class AsyncReferenceFixture implements AutoCloseable {
         env.put("KOIKI_REFERENCE_API_AUDIENCE", "koiki-reference-api");
         env.put("DEBUG", "false");
         process = builder.start();
+        Files.writeString(log.resolveSibling(log.getFileName() + ".ownership"),
+                "pid=" + process.pid() + "\ncreation=" + process.info().startInstant().orElseThrow()
+                        + "\ncontainer=" + db.getContainerId() + "\nartifact=" + jar + "\n");
     }
 
     void readyAndSeed(boolean publications) throws Exception {
@@ -134,7 +138,7 @@ final class AsyncReferenceFixture implements AutoCloseable {
         Pattern port = Pattern.compile("Tomcat started on port (\\d+)");
         while (Instant.now().isBefore(deadline)) {
             if (!process.isAlive()) { throw new AssertionError("Reference startup failed; retained bounded child log"); }
-            String output = Files.readString(log);
+            String output = childLog();
             var match = port.matcher(output);
             if (match.find()) {
                 base = "http://127.0.0.1:" + match.group(1);
@@ -144,6 +148,7 @@ final class AsyncReferenceFixture implements AutoCloseable {
                 seed();
                 stub.grantApplicationObservation(publications);
                 login();
+                assertResourceSample();
                 return;
             }
             Thread.sleep(100);
@@ -217,6 +222,12 @@ final class AsyncReferenceFixture implements AutoCloseable {
     }
 
     UUID approve(UUID user) throws Exception {
+        UUID request = submittedRequest(user);
+        assertEquals(302, approveRequest(request, 2).statusCode());
+        return request;
+    }
+
+    UUID submittedRequest(UUID user) throws Exception {
         String body = "{\"departmentId\":\"" + department + "\",\"claimedAmount\":1200,\"lines\":[{"
                 + "\"expenseCategoryId\":\"" + category + "\",\"usageDate\":\"2026-09-12\","
                 + "\"description\":\"R1 train\",\"purpose\":\"R1 notification\",\"amount\":1200}]}";
@@ -227,12 +238,188 @@ final class AsyncReferenceFixture implements AutoCloseable {
         UUID request = UUID.fromString(match.group(1));
         assertEquals(204, bearerPost("/api/v1/expense-requests/" + request + "/submit",
                 "{\"expectedVersion\":1}", user).statusCode());
-        String approval = "/expenses/approvals/" + request;
-        var page = session.send(HttpRequest.newBuilder(URI.create(base + approval)).GET().build(),
+        return request;
+    }
+
+    HttpResponse<String> approveRequest(UUID request, long version) throws Exception {
+        return csrfPost("/expenses/approvals/" + request + "/approve", "expectedVersion=" + version);
+    }
+
+    private HttpResponse<String> csrfPost(String route, String form) throws Exception {
+        var page = session.send(HttpRequest.newBuilder(URI.create(base + "/")).GET().build(),
                 HttpResponse.BodyHandlers.ofString());
         assertEquals(200, page.statusCode());
-        assertEquals(302, formPost(approval + "/approve", "expectedVersion=2&_csrf=" + encode(csrf(page.body()))).statusCode());
-        return request;
+        return formPost(route, form + "&_csrf=" + encode(csrf(page.body())));
+    }
+
+    void loginAs(UUID user) throws Exception {
+        try (var c = stub.admin(); var s = c.prepareStatement("""
+                INSERT INTO koiki_password_credential(user_id,encoded_password,version)
+                VALUES (?,'{bcrypt}' || crypt(?,gen_salt('bf',10)),0)
+                ON CONFLICT(user_id) DO NOTHING
+                """)) {
+            s.setObject(1, user); s.setString(2, password); s.executeUpdate();
+        }
+        var page = session.send(HttpRequest.newBuilder(URI.create(base + "/login")).GET().build(),
+                HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, page.statusCode());
+        var response = formPost("/login", "username=" + encode(user + "@example.test")
+                + "&password=" + encode(password) + "&_csrf=" + encode(csrf(page.body())));
+        assertEquals(302, response.statusCode());
+        assertFalse(response.headers().firstValue("Location").orElse("").contains("error"));
+    }
+
+    void removeApproverScope() throws Exception {
+        try (var c = stub.admin(); var s = c.prepareStatement(
+                "DELETE FROM kkref_expense_approver_scope WHERE approver_user_id=?")) {
+            s.setObject(1, approver); assertEquals(1, s.executeUpdate());
+        }
+    }
+
+    HttpResponse<String> deactivateDepartment() throws Exception {
+        UUID role = UUID.randomUUID(); UUID permission = UUID.randomUUID();
+        try (var c = stub.admin(); var s = c.createStatement()) {
+            s.execute("INSERT INTO koiki_role(role_id,role_code,version) VALUES ('" + role + "','R2_MASTER',0)");
+            s.execute("INSERT INTO koiki_permission(permission_id,permission_code,version) VALUES ('"
+                    + permission + "','MASTER:ADMIN',0)");
+            s.execute("INSERT INTO koiki_role_permission(role_id,permission_id) VALUES ('" + role + "','" + permission + "')");
+            s.execute("INSERT INTO koiki_user_role(user_id,role_id) VALUES ('" + approver + "','" + role + "')");
+        }
+        loginAs(approver);
+        return csrfPost("/master/departments/" + department + "/deactivate", "expectedVersion=0");
+    }
+
+    void assertDepartmentUnchanged() throws Exception {
+        try (var c = stub.observer(); var s = c.prepareStatement(
+                "SELECT active,version FROM kkref_department WHERE department_id=?")) {
+            s.setObject(1, department);
+            try (var rows = s.executeQuery()) {
+                assertTrue(rows.next()); assertTrue(rows.getBoolean(1)); assertEquals(0, rows.getLong(2));
+            }
+        }
+        assertEquals(0, successfulAuditCount(department, "DEACTIVATE_DEPARTMENT"));
+    }
+
+    long successfulAuditCount(UUID request, String action) throws Exception {
+        try (var c = stub.observer(); var s = c.prepareStatement("""
+                SELECT count(*) FROM koiki_audit_event
+                WHERE audit_type='BUSINESS' AND resource_id=? AND action=? AND result='SUCCESS'
+                """)) {
+            s.setString(1, request.toString()); s.setString(2, action);
+            try (var rows = s.executeQuery()) { rows.next(); return rows.getLong(1); }
+        }
+    }
+
+    void assertSubmittedWithoutNotification(UUID request) throws Exception {
+        assertState(request, "SUBMITTED", 2);
+        assertEquals(0, successfulAuditCount(request, "APPROVE_EXPENSE"));
+        Instant end = Instant.now().plusSeconds(5);
+        do {
+            assertEquals(0, publicationCount(request));
+            assertEquals(0, stub.arrivalCount()); assertEquals(0, stub.receiptCount());
+            assertResourceSample(); Thread.sleep(100);
+        } while (Instant.now().isBefore(end));
+        expectNoProvider = true;
+    }
+
+    long publicationCount(UUID request) throws Exception {
+        try (var c = stub.observer(); var s = c.prepareStatement("""
+                SELECT count(*) FROM kkref_notification_async.event_publication
+                WHERE event_type='org.koikifw.reference.expense.domain.event.ExpenseApprovedEvent'
+                  AND serialized_event::jsonb->>'expenseRequestId'=?
+                """)) {
+            s.setString(1, request.toString());
+            try (var rows = s.executeQuery()) { rows.next(); return rows.getLong(1); }
+        }
+    }
+
+    void assertNormalDenialComparison(UUID request, HttpResponse<String> response) throws Exception {
+        int status = response.statusCode();
+        String expected = System.getProperty("koiki.reference.async.r2.comparison.expected-status");
+        if (expected != null) { assertEquals(Integer.parseInt(expected), status); }
+        assertTrue(status == 403 || status == 500, "Comparison did not reach the selected denial boundary");
+        assertFalse(response.body().contains("AuthorizationDeniedException"));
+        assertFalse(response.body().contains("org.springframework.security"));
+        assertState(request, "SUBMITTED", 2);
+        assertEquals(0, successfulAuditCount(request, "APPROVE_EXPENSE"));
+        Instant end = Instant.now().plusSeconds(5);
+        do {
+            assertEquals(0, schemas("kkref_notification_async"));
+            assertEquals(0, stub.arrivalCount()); assertEquals(0, stub.receiptCount());
+            assertResourceSample(); Thread.sleep(100);
+        } while (Instant.now().isBefore(end));
+        expectNoProvider = true;
+        String output = childLog();
+        boolean globalFallback = output.contains("KoikiProblemDetailsExceptionHandler")
+                && output.contains("Unexpected request processing failure");
+        boolean methodDenial = output.contains("AuthorizationDeniedException: Access Denied");
+        if (status == 500) {
+            assertTrue(globalFallback, "Unexpected 500 without the selected global fallback");
+            assertTrue(methodDenial, "Unexpected 500 without method-security denial");
+            assertTrue(response.body().contains("KOIKI-INTERNAL-001"));
+        }
+        Files.writeString(log.getParent().resolve("normal-denial-observation.json"),
+                "{\"asyncEnabled\":false,\"httpStatus\":" + status
+                        + ",\"methodDenialLogged\":" + methodDenial
+                        + ",\"globalFallbackLogged\":" + globalFallback
+                        + ",\"state\":\"SUBMITTED\",\"version\":2,\"approvalAuditCount\":0,"
+                        + "\"asyncSchemaCount\":0,\"arrivals\":0,\"receipts\":0,"
+                        + "\"childLog\":\"" + log.getFileName() + "\"}");
+    }
+
+    void assertState(UUID request, String state, long version) throws Exception {
+        try (var c = stub.observer(); var s = c.prepareStatement(
+                "SELECT status,version FROM kkref_expense_request WHERE expense_request_id=?")) {
+            s.setObject(1, request);
+            try (var rows = s.executeQuery()) {
+                assertTrue(rows.next()); assertEquals(state, rows.getString(1)); assertEquals(version, rows.getLong(2));
+            }
+        }
+    }
+
+    void assertFailedNotification(UUID request) throws Exception {
+        Instant end = Instant.now().plusSeconds(30);
+        boolean failed = false;
+        do {
+            try (var c = stub.observer(); var s = c.prepareStatement("""
+                    SELECT id,listener_id,status,completion_date FROM kkref_notification_async.event_publication
+                    WHERE serialized_event::jsonb->>'expenseRequestId'=?
+                    """)) {
+                s.setString(1, request.toString());
+                try (var rows = s.executeQuery()) {
+                    if (rows.next() && "FAILED".equals(rows.getString(3))) {
+                        assertTrue(rows.getObject(1, UUID.class) != null);
+                        assertTrue(rows.getString(2).contains("ExpenseApprovalListener"));
+                        assertTrue(rows.getObject(4) == null); assertFalse(rows.next()); failed = true;
+                    }
+                }
+            }
+            if (failed) { break; }
+            assertResourceSample(); Thread.sleep(100);
+        } while (Instant.now().isBefore(end));
+        assertTrue(failed, "Target listener failure not observed");
+        assertState(request, "APPROVED", 3);
+        assertEquals(1, successfulAuditCount(request, "APPROVE_EXPENSE"));
+        assertEquals(1, publicationCount(request));
+        assertEquals(1, stub.arrivalCount());
+        assertEquals(1, stub.rejectedCount("expense-approved:v1:" + request + ":3:applicant"));
+        assertEquals(0, stub.receiptCount());
+        assertTrue(childLog().contains("Local notification provider did not acknowledge"));
+    }
+
+    void assertResourceSample() throws Exception {
+        var host = db.getContainerInfo().getHostConfig();
+        assertEquals(1073741824L, host.getMemory()); assertEquals(1000000000L, host.getNanoCPUs());
+        try (var c = stub.observer(); var s = c.createStatement();
+                var rows = s.executeQuery("SELECT count(*) FROM pg_stat_activity WHERE datname=current_database()")) {
+            rows.next(); long clients = rows.getLong(1); assertTrue(clients <= 8, "DB client limit exceeded");
+            System.out.println("R2_RESOURCE container=" + db.getContainerId() + " clients=" + clients);
+        }
+    }
+
+    private String childLog() throws Exception {
+        assertTrue(Files.size(log) <= 10 * 1024 * 1024, "Child log limit exceeded");
+        return Files.readString(log);
     }
 
     private void login() throws Exception {
@@ -257,8 +444,10 @@ final class AsyncReferenceFixture implements AutoCloseable {
 
     private static String csrf(String html) {
         var match = Pattern.compile("name=\"_csrf\"[^>]*value=\"([^\"]+)\"").matcher(html);
-        if (!match.find()) { throw new AssertionError("CSRF form token absent"); }
-        return match.group(1);
+        if (match.find()) { return match.group(1); }
+        var meta = Pattern.compile("name=\"_csrf\"[^>]*content=\"([^\"]+)\"").matcher(html);
+        if (meta.find()) { return meta.group(1); }
+        throw new AssertionError("CSRF token absent");
     }
 
     void assertApproval(UUID request, UUID user, boolean publications) throws Exception {
@@ -325,21 +514,42 @@ final class AsyncReferenceFixture implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        try {
+        Throwable failure = null;
+        failure = cleanup(failure, () -> {
             if (process != null && process.isAlive()) {
                 process.destroy();
                 if (!process.waitFor(30, TimeUnit.SECONDS)) { process.destroyForcibly(); }
                 assertTrue(process.waitFor(5, TimeUnit.SECONDS));
             }
-        } finally {
-            try { stub.close(); } finally {
-                issuer.stop(0); bearer.close(); session.close(); db.stop();
-                assertFalse(db.isRunning());
-                String output = Files.readString(log);
-                assertFalse(output.contains(password)); assertFalse(output.contains(hmac));
-                String clean = output.replace(db.getPassword(), "[REDACTED]");
-                Files.writeString(log, clean);
+        });
+        failure = cleanup(failure, () -> {
+            if (expectNoProvider && stub != null) {
+                assertEquals(0, stub.arrivalCount()); assertEquals(0, stub.receiptCount());
             }
-        }
+        });
+        failure = cleanup(failure, () -> { if (issuer != null) { issuer.stop(0); } });
+        failure = cleanup(failure, () -> { if (stub != null) { stub.close(); } });
+        failure = cleanup(failure, bearer::close);
+        failure = cleanup(failure, session::close);
+        failure = cleanup(failure, () -> { db.stop(); assertFalse(db.isRunning()); });
+        failure = cleanup(failure, () -> {
+            String output = childLog();
+            Files.writeString(log, output.replace(db.getPassword(), "[REDACTED]")
+                    .replace(password, "[REDACTED]").replace(hmac, "[REDACTED]"));
+            assertFalse(output.contains(password)); assertFalse(output.contains(hmac));
+        });
+        if (failure instanceof Exception exception) { throw exception; }
+        if (failure instanceof Error error) { throw error; }
     }
+
+    private static Throwable cleanup(Throwable first, Cleanup action) {
+        try { action.run(); } catch (Throwable failure) {
+            if (first == null) { return failure; }
+            first.addSuppressed(failure);
+        }
+        return first;
+    }
+
+    @FunctionalInterface
+    private interface Cleanup { void run() throws Exception; }
 }

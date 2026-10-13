@@ -1,6 +1,6 @@
 # Phase 4 S1 目的とDoDと実証段階の対応表
 
-**現行R2限定判断（2026-10-13）：** R1正常経路・通常保護は`COMPLETE / OWNER ACCEPTED`、成果`610c589`・引継ぎ`18cb8b6`はOwnerによりcommit／push済み。[R2開始票§8](phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)により、設置済みGate P4-FへTooling-owned失敗分離だけを条件付き追加開始する。文書commit（別承認／Owner操作）→新R2 branchのclean source固定→preflight成立後だけ、Tooling4 file以内・新規8＋直接回帰4件・45分（cleanup5分予約）と同票の所有／資源／停止条件で作成検証する。同期承認・Audit／publicationの同transaction保存とcommit後の非同期通知を維持し、production／POM／migration／依存／Security／CIは変更しない。R2結果は未成立、R3〜R5・復旧／再送・consume／close・全体DoD・正式受渡し・実案件受入・Phase 4全体・remoteは別判断。以下のR1未成立／R2未承認等は各時点の履歴として扱う。
+**現行R2限定判断（2026-10-13）：** R1正常経路・通常保護は`COMPLETE / OWNER ACCEPTED`、成果`610c589`・引継ぎ`18cb8b6`はOwnerによりcommit／push済み。R2選択失敗分離・通常構成保護も[結果文書§5](../architecture/validation/phase4-s1-r2-selected-seven-case-results-and-acceptance-input-20261013.md#5-r2限定結果のowner受入承認2026-10-13)で`COMPLETE / OWNER ACCEPTED`。局所再throw後の通常root303実行＋専用92skip、JAR対照、後段7件PASSを、初回FAIL・停止とepoch別に保持する。同期承認・Audit／publicationの同transaction保存とcommit後の非同期通知を維持する。R2の成果固定commit／remote、R3〜R5・復旧／再送・consume／close・全体DoD・正式受渡し・実案件受入・Phase 4全体は別判断。以下のR2開始条件やR1未成立／R2未承認等は各時点の履歴として扱う。
 
 作成日：2026-10-09。状態：`DRAFT / OWNER REVIEW INPUT`。
 

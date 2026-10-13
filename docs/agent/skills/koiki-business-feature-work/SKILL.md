@@ -5,6 +5,12 @@ description: Plan, implement, and review KOIKI business-module changes by decidi
 
 # KOIKI Business Feature Work
 
+## R2限定結果のOwner受入（2026-10-13）
+
+[R2結果文書§5](../../../architecture/validation/phase4-s1-r2-selected-seven-case-results-and-acceptance-input-20261013.md#5-r2限定結果のowner受入承認2026-10-13)により、選択失敗分離と通常構成保護は`COMPLETE / OWNER ACCEPTED`。
+同期のexpense承認・同transactionのAudit／publication保存とcommit後の非同期通知を維持し、実provider・再送／復旧・R3〜R5・DoD全体・正式受渡しへ受入を広げない。
+次は成果固定対象の点検であり、commit／remote・追加検証は別判断。以下の条件付き開始記述は開始時点の履歴として読む。
+
 ## R2失敗分離の条件付き限定開始（2026-10-13）
 
 [R2開始票§8](../../../development/phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)をOwner承認済み。

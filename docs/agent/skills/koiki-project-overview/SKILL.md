@@ -5,6 +5,13 @@ description: Orient work in KOIKI-JavaWeb-FW by identifying the current phase, o
 
 # KOIKI Project Overview
 
+## 現行R2限定結果の受入（2026-10-13）
+
+[R2結果文書§5](../../../architecture/validation/phase4-s1-r2-selected-seven-case-results-and-acceptance-input-20261013.md#5-r2限定結果のowner受入承認2026-10-13)で、選択失敗分離・通常構成保護は`COMPLETE / OWNER ACCEPTED`。
+初回FAILと停止履歴を残し、訂正後の通常root303実行＋専用92skip、通常／async JAR対照、後段7件PASSを各source／artifact／epochの限定証拠として扱う。
+次は成果固定対象の点検。local commit・remoteは別判断。R3〜R5、再送・復旧、DoD全体、正式受渡し、Phase 4全体は未承認。
+以下のR2開始条件とR1結果はそれぞれの時点の履歴として読む。
+
 ## 現行R2の条件付き開始承認（2026-10-13）
 
 R1限定結果はOwner受入・成果commit／push済み。新PCは引継ぎ`18cb8b6`を確認した。

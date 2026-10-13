@@ -1,5 +1,22 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行追加判断：S1 R2限定結果のOwner受入（2026-10-13）
+
+R2の選択失敗分離・通常構成保護の限定結果は`COMPLETE / OWNER ACCEPTED`。
+[結果文書§5](docs/architecture/validation/phase4-s1-r2-selected-seven-case-results-and-acceptance-input-20261013.md#5-r2限定結果のowner受入承認2026-10-13)を受入と現行結果の入口とする。
+初回R2-04のFAIL・root停止を履歴として保持し、局所再throw後の通常root303実行＋専用92skip、通常／async JAR対照、後段7件PASSをsource／artifact／epoch別に扱う。
+実provider配信・停止後再送／復旧・UNKNOWN照合・R3〜R5・DoD全体・正式受渡し・Phase 4全体へ拡張しない。
+次はGit差分と成果固定対象の点検。local commitは別承認／Owner操作、remoteは個別承認とする。以下の開始条件・停止判断・未受入記述は各時点の履歴であり、追加実行や残予算の許可に流用しない。
+
+## R2局所再throwの限定訂正承認（2026-10-13）
+
+Ownerは[限定訂正開始票](docs/development/phase4-s1-r2-local-rethrow-limited-correction-start-review-20261013.md)の§2〜5を承認した。
+expense MVCの局所AccessDenied再throwだけをproduction1 file、MVC test1 file／新規3件、既存Tooling観測1 fileの訂正差分として採用する。
+既存Tooling4 fileを含む未commit採用差分をisolated snapshot・hashで固定し、preflight成立後だけ早期3件・通常root1回・package7件を実行する。
+新規45分（cleanup5分予約）、phase別資源・所有／停止／cleanupは同票に従う。通常root／C01のRyuk2／client14とR2のRyuk1／client8を区別する。
+Framework API／依存／Security設定／Rules／migration変更、拒否Audit新設・一般Framework修正・追加再実行・remoteは含めない。
+以下のTooling-only条件への例外はこの個別承認範囲だけ。旧FAIL・比較source／artifact・予算を上書き／流用しない。
+
 ## 現行追加判断：S1 R2失敗分離の条件付き限定開始（2026-10-13）
 
 Ownerは[R2開始票§8](docs/development/phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)を承認した。
