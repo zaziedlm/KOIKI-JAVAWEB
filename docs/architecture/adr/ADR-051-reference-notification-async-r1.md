@@ -1,5 +1,7 @@
 # ADR-051：Reference notification正常非同期経路の限定採用
 
+**R2追加限定判断（2026-10-13）：** [R2開始票§8](../../development/phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)をOwner承認済み。R1採用設計・受入結果を維持し、Tooling-onlyの失敗分離実証へ条件付き開始する。同期承認transactionの状態／Audit／publication保存と、commit後の非同期通知を置き換えず、保存失敗rollback・通知失敗時の承認保持・拒否／同期vetoを確認する。文書commit（別承認）→新R2 branchでclean source固定→preflight後だけ同票の新規8＋直接回帰4件・45分・所有／停止／cleanupに従う。production／POM／migration／依存変更、R3〜R5・復旧・全体DoDは別判断。以下のR2未開始記述はこの限定判断前の履歴として扱う。
+
 **状態：ACCEPTED DESIGN / R1 LIMITED IMPLEMENTATION COMPLETE / OWNER ACCEPTED（2026-10-13）。** Architecture Owner：Shuichi Kataoka。[R1開始票§8](../../development/phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)で2026-10-12に条件付き限定開始を承認し、正本文書commit・新R1 branchでのclean source固定・preflight成立後に作成／検証した。
 
 [結果文書§13〜15](../validation/phase4-s1-r1-implementation-and-early-verification-20261012.md#15-r1限定結果のowner受入承認2026-10-13)に、通常root・別固定通常／async artifact・新規9件・既存Critical Journey1件の限定成立、機能説明とOwner受入承認を記録する。ローカルstubの受理とpublication completionまでの選択正常経路の受入であり、実provider配信・停止／再送／復旧・R2〜R5・全DoD・正式受渡し・Phase 4全体へ拡張しない。成果固定local commitとremote操作は別判断を維持する。

@@ -1,5 +1,7 @@
 # KOIKI-JavaWeb-FW Phase 4 PL2 — P4-F判定資料 v0.1
 
+**現行R2限定判断（2026-10-13）：** R1正常経路・通常保護は`COMPLETE / OWNER ACCEPTED`、成果`610c589`・引継ぎ`18cb8b6`はOwnerによりcommit／push済み。[R2開始票§8](phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)により、設置済みGate P4-FへTooling-owned失敗分離だけを条件付き追加開始する。文書commit（別承認／Owner操作）→新R2 branchのclean source固定→preflight成立後だけ、Tooling4 file以内・新規8＋直接回帰4件・45分（cleanup5分予約）と同票の所有／資源／停止条件で作成検証する。同期承認・Audit／publicationの同transaction保存とcommit後の非同期通知を維持し、production／POM／migration／依存／Security／CIは変更しない。R2結果は未成立、R3〜R5・復旧／再送・consume／close・全体DoD・正式受渡し・実案件受入・Phase 4全体・remoteは別判断。以下のR1未成立／R2未承認等は各時点の履歴として扱う。
+
 **現行限定判断（2026-10-12）：** R0規約・最小検証はOwner受入済み。[R1開始票§8](phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)・[ADR-051](../architecture/adr/ADR-051-reference-notification-async-r1.md)によるReference正常非同期経路だけを条件付き追加開始する。正本文書commit・新R1 branchでclean source固定・preflight成立が先行条件。既存「未達なら後続開始しない」条件への例外はR1正常経路の部分開始だけで、CP-F1／CP-F2全体、正式A2・復旧・DoD・正式受渡し／Phase 4全体の完了／開始を認定しない。以下の旧Rules未変更・Gate未設置等の記述は当時の調査／計画記録として保持する。
 
 **状態:** WORKING DRAFT / F-1〜F-3記入済み、F-4の見積境界とF-5改訂差分案を作成。Gate P4-Fの設置・通過、Phase 4 production実装、正式配布を承認する資料ではない。

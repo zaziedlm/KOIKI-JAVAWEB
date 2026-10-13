@@ -1,5 +1,19 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行追加判断：S1 R2失敗分離の条件付き限定開始（2026-10-13）
+
+Ownerは[R2開始票§8](docs/development/phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)を承認した。
+R1は`COMPLETE / OWNER ACCEPTED`、成果`610c589`・引継ぎ`18cb8b6`はOwnerによりcommit／push済み。
+設置済みGate P4-FへR2失敗分離だけを条件付き追加する。必要正本・承認文書commit（別承認／Owner操作）、
+新R2 branchのclean source固定、同票preflight成立後だけTooling4 file以内・新規1 class／8件＋直接回帰4件を作成検証できる。
+新規45分（cleanup5分予約）、JVM4／PG1／Ryuk1／DB client8、各集合初回1回・追加再実行0回。
+今回所有の隔離DB／role／対象限定trigger、loopback stub、HTTP認証fixture、package子JVMと有限cleanupを同票内で委任する。
+同期承認・同transactionのAudit／publication保存、commit後の非同期通知という境界を維持する。故障注入はToolingに閉じる。
+production／Framework API／Rules／POM／依存／migration／Security／CI変更を行わない。
+対象外修正・条件不成立・上限超過・観測／cleanup不成立では停止しOwner判断へ戻す。
+R3〜R5・実provider・再送／復旧・consume／close・DoD全体・正式受渡し・Phase 4全体・remoteは別判断。
+旧予算・runnerを流用せず、副Agentや検証網羅の拡張を行わない。以下のR1開始／成果固定待ちは各時点の履歴として扱う。
+
 ## 現行追加判断：S1 R1限定結果のOwner受入（2026-10-13）
 
 R1正常非同期経路・通常構成保護の限定結果は`COMPLETE / OWNER ACCEPTED`。
@@ -178,6 +192,11 @@ Architecture Ownerは、今後のAIセッションで検証実行が権限エラ
 実行環境が権限付き実行の承認を要求する場合はその手順に従い、拒否された操作を迂回しない。
 
 ### ローカルDocker検証
+
+2026-10-13の[R2条件付き限定開始承認](docs/development/phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)により、
+文書commit・新R2 branchのclean source固定後のpreflightと、成立後の同票のReference packageおよび
+`build-support/reference-e2e-verification/`の12件限定検証に必要な使い捨てcontainerの起動・停止を対象に含む。
+対象・所有・資源・停止／cleanupは同票に従い、実行環境の権限付き承認手順を維持する。
 
 Architecture Ownerは、Repository内の承認済み検証に必要なローカルDocker診断と
 Testcontainers実行について、Docker named pipeへ接続できる権限付き実行を許可している。

@@ -5,6 +5,16 @@ description: Orient work in KOIKI-JavaWeb-FW by identifying the current phase, o
 
 # KOIKI Project Overview
 
+## 現行R2の条件付き開始承認（2026-10-13）
+
+R1限定結果はOwner受入・成果commit／push済み。新PCは引継ぎ`18cb8b6`を確認した。
+[R2開始票§8](../../../development/phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)で
+Tooling-owned失敗分離の条件付き限定開始をOwner承認した。同期承認と非同期通知の境界を維持する。
+文書commit（別承認／Owner操作）→新R2 branchのclean source固定→preflight成立→Tooling作成検証の順で進める。
+新規8＋直接回帰4件・4 file以内・45分と資源／所有／停止／cleanupを同票の正本へ追跡し、旧予算やR1 runnerを流用しない。
+production修正・追加再実行・取得・remoteは別判断。R3〜R5／全体DoD／正式受渡し／Phase 4全体へ拡張しない。
+以下のR1成果固定待ち・R2未承認記述は当時の履歴として扱う。
+
 ## 現行S1の限定結果受入位置（2026-10-13）
 
 R0規約と最小検証のOwner受入を入力に、[R1開始票§8](../../../development/phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)をOwner承認済み。

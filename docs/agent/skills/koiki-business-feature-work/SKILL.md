@@ -5,6 +5,16 @@ description: Plan, implement, and review KOIKI business-module changes by decidi
 
 # KOIKI Business Feature Work
 
+## R2失敗分離の条件付き限定開始（2026-10-13）
+
+[R2開始票§8](../../../development/phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)をOwner承認済み。
+同期のexpense承認・同transactionのAudit／publication保存と、commit後の非同期notificationを維持する。
+publication／承認Audit保存失敗のrollback、provider失敗後の承認保持、権限／scope／version拒否と同期vetoを
+Tooling-owned helper・stub・隔離DBの対象限定triggerで実証する。productionへ故障switchを置かない。
+文書commit（別承認／Owner操作）・新R2 branchのclean source固定・preflight成立後だけ、同票の12件・有限資源／45分／停止・cleanupに従って作成検証する。
+R1受入を保持し、production修正・復旧／再送・consume／close・R3〜R5・Framework昇格は別判断とする。
+詳細契約・検証手順は同票を正本とし、以下のR1だけの開始承認は各時点の履歴として扱う。
+
 ## Reference R1の個別承認（2026-10-12）
 
 [R1開始票§8](../../../development/phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)と

@@ -1,5 +1,7 @@
 # Phase 4 S1 目的とDoDと実証段階の対応表
 
+**現行R2限定判断（2026-10-13）：** R1正常経路・通常保護は`COMPLETE / OWNER ACCEPTED`、成果`610c589`・引継ぎ`18cb8b6`はOwnerによりcommit／push済み。[R2開始票§8](phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)により、設置済みGate P4-FへTooling-owned失敗分離だけを条件付き追加開始する。文書commit（別承認／Owner操作）→新R2 branchのclean source固定→preflight成立後だけ、Tooling4 file以内・新規8＋直接回帰4件・45分（cleanup5分予約）と同票の所有／資源／停止条件で作成検証する。同期承認・Audit／publicationの同transaction保存とcommit後の非同期通知を維持し、production／POM／migration／依存／Security／CIは変更しない。R2結果は未成立、R3〜R5・復旧／再送・consume／close・全体DoD・正式受渡し・実案件受入・Phase 4全体・remoteは別判断。以下のR1未成立／R2未承認等は各時点の履歴として扱う。
+
 作成日：2026-10-09。状態：`DRAFT / OWNER REVIEW INPUT`。
 
 **現行進捗（2026-10-10）：R0規約限定改訂・必要最小限の検証はCOMPLETE / OWNER ACCEPTED。** §10までの開始待ち説明は当時の履歴。次作業は[区切り・残作業引継ぎ](phase4-s1-r0-closeout-remaining-tasks-handoff-20261010.md)を入口にR1開始案を再確定する。S1全体・DoDやR1開始の承認ではない。
