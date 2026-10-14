@@ -51,7 +51,7 @@ R3-Aのstub保証は今回のfresh DBが生きている間の同key契約だけ�
 | 順 | 明示実行候補 | 最低限の確認 |
 |---|---|---|
 | 1〜3 | A01 PUBLISHED送信前、A02 PROCESSING到着前、A03受理直後の3件 | それぞれ実停止・同じ対象のCOMPLETED・論理受理1。A03は元receipt再利用。停止位置と時間を独立記録 |
-| 4〜7 | A04a 元listener生存／停止未確認、A04b古いstatus／試行回数、A04c別publication、A04d専用復旧processのlock競合の4件 | 拒否された復旧processからのprovider要求0、対象外のstatus／試行回数不変。競合者はlistenerへ入らない。生存中の元listenerや先行復旧者自身の送信と区別 |
+| 4〜7 | A04a 元listener生存／停止未確認、A04b古いstatus／試行回数、A04c別publication、A04d既占有advisory lockによる単発復旧process拒否の4件 | A04a〜cは拒否された復旧processからのprovider要求0、対象外のstatus／試行回数不変。A04dはToolingの独立DB接続が同じlock keyを保持した状態で復旧processを1つだけ起動し、lock拒否理由、provider到着・受理増分0、対象publicationのstatus／試行回数不変、lock解放を確認する。復旧process同士の競合成立は主張しない |
 | 8〜10 | 既存C02 `PackagedReferenceAsyncNotificationTest#asyncArtifactDisabledPreservesApprovalWithoutPublications`、D01 `NotificationProviderContractTest#reusesTheOriginalReceiptForIdenticalRequests`、C04 `PackagedReferenceAsyncNotificationTest#correlatesTwoIndependentApprovalNotificationsToCompletedPublications`の3件 | 通常起動の非接続、stub契約、既存正常経路。R2／R1の過去XMLを今回のPASSに転記しない |
 | 条件付き最終 | Reference通常rootを1回 | Reference production差分に対する既存保護。S1／B2専用skipを実行件数に加えず、fresh XML全件・failure／error0を確認 |
 
@@ -106,3 +106,9 @@ Ownerは本票§5.1の具体化を確認し、「その実証方式を承認い�
 新規method名は実装前に`PackagedReferenceAsyncRecoveryTest`内のA01〜A04dへ1対1で割り当て、選択実行リストとXMLを照合する。Reference単発入口とModulith 2.1.1のpredicateが対象1件に限定できるかは作成前のsource確認とA01の実動作で判定する。predicateが別publicationを動かす、または入口を非Web・通常無効にできない場合は方式変更として停止する。90分は停止を伴う上限であり、10件完遂の所要時間を保証する値ではない。
 
 本判断案が採用されても、文書2件のlocal commitとR3 branch作成、source／環境preflightを順に証拠化する。preflightの成立前にcode／test／SQL／POMを作成しない。文書固定だけではR3-Aの実証PASSやR3全体・DoDの受入としない。
+
+## 10 A04d単一復旧processへの訂正判断（2026-10-13）
+
+Architecture Ownerは、[A04d方式の再整理案](../architecture/validation/phase4-s1-r3a-implementation-and-a01-stop-20261013.md#11-単一復旧process前提でのa04d再整理案owner提起2026-10-13)を受け、R3-Aを単一の専用復旧processとして扱い、A04dの目的を**「advisory lockが既に占有された状態では、単発の復旧processをprovider送信前に拒否する」**と定めた。これに従い§5のA04d名称と最低限の確認を訂正する。§2 S4の通常process全停止、§4 T3のlock取得後再照合と競合時拒否は維持する。選択10件という数は変えない。
+
+A04dでToolingのDB接続がlockを保持することは既占有条件の注入であり、実際の先行復旧processを意味しない。R3-Aの受入主張に復旧process同士の競合実証や正式運用での二重起動防止を含めない。A04dの実行、残りcase・通常root、R3-Aの受入・commitは[検証記録§9](../architecture/validation/phase4-s1-r3a-implementation-and-a01-stop-20261013.md#9-残りcase通常rootとコミット位置の判断入力)の未承認の判断点として残る。

@@ -4,6 +4,7 @@ import java.util.List;
 import org.koikifw.identity.IdentityQuery;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ import tools.jackson.databind.ObjectMapper;
 
 /** P3-C1 Reference-only stateless Bearer boundary for {@code /api/**}. */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(
         prefix = "koiki.reference.api.bearer",
         name = "enabled",
