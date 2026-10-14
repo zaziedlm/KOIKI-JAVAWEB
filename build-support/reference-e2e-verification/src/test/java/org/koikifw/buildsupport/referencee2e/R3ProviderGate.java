@@ -65,19 +65,24 @@ final class R3ProviderGate implements AutoCloseable {
             }
             if (position == Position.BEFORE_ARRIVAL) {
                 reached.countDown();
-                released.await(5, TimeUnit.SECONDS);
+                if (!released.await(5, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("Provider gate was not released before deadline");
+                }
                 if (abort.get()) return;
             }
             HttpRequest request = HttpRequest.newBuilder(stubEndpoint).timeout(Duration.ofSeconds(5))
                     .header("Content-Type", "application/json")
                     .header("Idempotency-Key", required(exchange, "Idempotency-Key"))
                     .header("X-Koiki-Event-Id", required(exchange, "X-Koiki-Event-Id"))
+                    .header("X-Recipient-Id", required(exchange, "X-Recipient-Id"))
                     .header("X-Payload-SHA256", required(exchange, "X-Payload-SHA256"))
                     .POST(HttpRequest.BodyPublishers.ofByteArray(body)).build();
             HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
             if (position == Position.AFTER_RECEIPT) {
                 reached.countDown();
-                released.await(5, TimeUnit.SECONDS);
+                if (!released.await(5, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("Provider gate was not released before deadline");
+                }
                 if (abort.get()) return;
             }
             exchange.sendResponseHeaders(response.statusCode(), response.body().length);

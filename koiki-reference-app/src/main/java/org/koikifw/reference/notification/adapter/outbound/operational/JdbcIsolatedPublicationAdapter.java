@@ -132,6 +132,18 @@ public final class JdbcIsolatedPublicationAdapter implements IsolatedPublication
         }
 
         @Override
+        public ExpenseApprovedEvent event() {
+            assertUnchanged();
+            try {
+                Row row = read();
+                if (row == null) throw new IllegalStateException("Isolated recovery event absent");
+                return decode(row.serializedEvent);
+            } catch (SQLException exception) {
+                throw new IllegalStateException("Isolated recovery event unavailable", exception);
+            }
+        }
+
+        @Override
         public void awaitCompleted(Duration timeout) {
             Instant deadline = Instant.now().plus(timeout);
             while (Instant.now().isBefore(deadline)) {

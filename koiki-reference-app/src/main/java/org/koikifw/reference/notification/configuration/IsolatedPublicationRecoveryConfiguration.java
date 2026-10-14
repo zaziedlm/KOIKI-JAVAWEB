@@ -6,7 +6,9 @@ import java.util.UUID;
 import javax.sql.DataSource;
 import org.koikifw.reference.notification.adapter.outbound.operational.JdbcIsolatedPublicationAdapter;
 import org.koikifw.reference.notification.application.SinglePublicationRecoveryService;
+import org.koikifw.reference.notification.application.RecoveryHoldException;
 import org.koikifw.reference.notification.application.port.outbound.IsolatedPublicationPort;
+import org.koikifw.reference.notification.application.port.outbound.NotificationProviderPort;
 import org.koikifw.reference.notification.application.query.IsolatedRecoverySelection;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,8 +33,8 @@ public class IsolatedPublicationRecoveryConfiguration {
 
     @Bean
     SinglePublicationRecoveryService singlePublicationRecoveryService(IsolatedPublicationPort port,
-            IncompleteEventPublications publications) {
-        return new SinglePublicationRecoveryService(port, publications);
+            IncompleteEventPublications publications, NotificationProviderPort provider) {
+        return new SinglePublicationRecoveryService(port, publications, provider);
     }
 
     @Bean
@@ -44,6 +46,9 @@ public class IsolatedPublicationRecoveryConfiguration {
                 service.recover(selection);
                 LoggerFactory.getLogger(IsolatedPublicationRecoveryConfiguration.class)
                         .info("Isolated publication recovery completed publication={}", selection.publicationId());
+            } catch (RecoveryHoldException hold) {
+                LoggerFactory.getLogger(IsolatedPublicationRecoveryConfiguration.class).error("{}", hold.evidenceLine());
+                throw hold;
             } finally {
                 context.close();
             }

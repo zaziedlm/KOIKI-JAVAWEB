@@ -65,13 +65,15 @@ final class R3RecoveryFixture implements AutoCloseable {
                 String payload = "{\"schemaVersion\":1,\"expenseRequestId\":\"" + request
                         + "\",\"applicantUserId\":\"" + applicant
                         + "\",\"approvalVersion\":3,\"claimedAmount\":1200}";
-                return new R3RecoveryTarget(environmentId, request, id, event, listener, status,
+                return new R3RecoveryTarget(environmentId, request, id, event, applicant, listener, status,
                         attempts, key, LocalNotificationProviderStub.sha256(payload));
             }
         }
     }
 
     void authorize(R3RecoveryTarget target) throws Exception {
+        base.stub.registerContract(target.key(), target.payloadHash(), target.recipientId(),
+                Instant.now().plusSeconds(300));
         try (var connection = base.stub.admin(); var statement = connection.createStatement()) {
             statement.execute("CREATE SCHEMA kkref_r3_recovery");
             statement.execute("""
@@ -121,6 +123,31 @@ final class R3RecoveryFixture implements AutoCloseable {
         assertTrue(process.waitFor(120, TimeUnit.SECONDS), "Rejected recovery process did not exit");
         assertTrue(process.exitValue() != 0, "Invalid recovery was accepted");
         assertEquals(before, base.stub.arrivalCount(), "Rejected recovery sent to provider");
+    }
+
+    void expectHold(R3RecoveryTarget target, StopReceipt stop, String reason) throws Exception {
+        long arrivalsBefore = base.stub.arrivalCount();
+        long receiptsBefore = base.stub.receiptCount();
+        var process = base.launchRecovery(asyncJar, target, base.stub.endpoint(), stop.pid(), stop.start());
+        assertTrue(process.waitFor(120, TimeUnit.SECONDS), "HOLD recovery process did not exit");
+        assertTrue(process.exitValue() != 0, "HOLD recovery completed unexpectedly");
+        String child = Files.readString(base.recoveryLogPath());
+        assertTrue(child.contains("R3B_HOLD reason=" + reason), "Structured HOLD absent");
+        assertTrue(child.contains("publication=" + target.publicationId()));
+        assertTrue(child.contains("event=" + target.eventId()));
+        assertTrue(child.contains("keyHash=" + target.payloadHash()));
+        assertEquals(arrivalsBefore, base.stub.arrivalCount(), "HOLD sent to provider");
+        assertEquals(receiptsBefore, base.stub.receiptCount(), "HOLD changed provider receipt ledger");
+        assertEquals(target, snapshot(target.requestId(), target.recipientId()),
+                "HOLD changed selected publication");
+        Path evidence = base.recoveryLogPath().resolveSibling("r3b-hold-" + target.publicationId() + ".json");
+        Files.writeString(evidence, "{\"reason\":\"" + reason + "\",\"publicationId\":\""
+                + target.publicationId() + "\",\"eventId\":\"" + target.eventId()
+                + "\",\"keyHash\":\"" + target.payloadHash() + "\",\"observedAt\":\""
+                + Instant.now() + "\",\"next\":\"inspect-provider-ledger-and-reference-publication\""
+                + ",\"arrivalsBefore\":" + arrivalsBefore + ",\"arrivalsAfter\":" + base.stub.arrivalCount()
+                + ",\"receiptsBefore\":" + receiptsBefore + ",\"receiptsAfter\":"
+                + base.stub.receiptCount() + ",\"childExit\":" + process.exitValue() + "}");
     }
 
     void assertCompleted(R3RecoveryTarget target) throws Exception {

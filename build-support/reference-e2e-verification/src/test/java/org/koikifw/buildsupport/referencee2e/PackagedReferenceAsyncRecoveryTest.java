@@ -78,7 +78,8 @@ class PackagedReferenceAsyncRecoveryTest {
             gate.abortAfterStop();
             fixture.authorize(target);
             fixture.recover(target, stop);
-            assertEquals(2, fixture.base.stub.arrivalCount());
+            assertEquals(1, fixture.base.stub.arrivalCount(),
+                    "R3-B accepted receipt must complete without a second POST");
             assertEquals(receipt, fixture.base.stub.receipt(target.key()));
         }
     }
@@ -123,7 +124,8 @@ class PackagedReferenceAsyncRecoveryTest {
             gate.abortAfterStop();
             fixture.authorize(current);
             var stale = new R3RecoveryTarget(current.environmentId(), current.requestId(),
-                    current.publicationId(), current.eventId(), current.listenerId(), current.status(),
+                    current.publicationId(), current.eventId(), current.recipientId(),
+                    current.listenerId(), current.status(),
                     current.attempts() + 1, current.key(), current.payloadHash());
             fixture.expectRejected(stale, stop.pid(), stop.start(), true);
             assertTrue(Files.readString(fixture.base.recoveryLogPath())
