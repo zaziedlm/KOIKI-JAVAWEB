@@ -1,6 +1,6 @@
 # KOIKI Architecture Rules（ArchUnit）開発者向け説明
 
-**状態:** REVIEW DRAFT。2026-09-30時点の`koiki-archunit-rules`実装と照合済みです。実チームによる読み合わせは未実施です。
+**状態:** OWNER APPROVED / 2026-09-30（Architecture Owner review完了）。2026-09-30時点の`koiki-archunit-rules`実装と照合済みです。実チームによる読み合わせは未実施です。
 **対象:** KOIKIを使ってCustomer Applicationを開発する人、およびそのcodeをreviewする人。
 
 ## この文書の使い方

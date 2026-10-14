@@ -7,8 +7,8 @@
 
 - [アプリ開発チーム向け引継ぎガイド](application-team-handoff-guide.md): Phase履歴を知らない開発者が、提供物／非提供物、構成・Starter選択、Reference実行、最初のCustomer-owned module、copy禁止、拡張分類、診断およびFramework側への戻し条件を一本道で確認する第一入口
 - [開発環境構築手順](application-team-development-environment-guide.md): 端末前提、社内Proxy証明書、Framework / Customer別Repositoryの配置、KOIKI Parent接続、R2 isolated stage build、ローカル起動までの共通手順。VS Codeを採用する場合の設定例と、Dev Container / Linux環境で想定される事項の付記を含む
-- [アプリケーション開発者ガイド（草案）](application-developer-guide.md): 初回build後に業務機能を1つ完成させるための、package構成、`@KoikiModule`、migration、Use Case / Controller / eventの置き方、test、詰まったときの相談方法
-- [Architecture Rules説明（草案）](architecture-rules-developer-guide.md): Customer projectへのArchitecture Rules testの組み込み方、違反messageの読み方、`KOIKI-ARCH-nnn`全25件の違反例と直し方、検出しない範囲
+- [アプリケーション開発者ガイド](application-developer-guide.md): 初回build後に業務機能を1つ完成させるための、package構成、`@KoikiModule`、migration、Use Case / Controller / eventの置き方、test、詰まったときの相談方法とFAQ。2026-09-30 Owner review完了
+- [Architecture Rules説明](architecture-rules-developer-guide.md): Customer projectへのArchitecture Rules testの組み込み方、違反messageの読み方、`KOIKI-ARCH-nnn`全25件の違反例と直し方、検出しない範囲。2026-09-30 Owner review完了
 - [P4-AR6 業務アプリチーム向け説明・対話資料](p4-ar6-application-team-briefing-20260928.md): Frameworkの現実装、frontendとSecurityの案件責任、VS Code / Maven構成案、外部project試行の証拠を9月28日の対話順に整理
 - [UI / Authentication Profile Selection Guide](frontend-authentication-profile-guide.md): MVC単一JAR、same-origin React、Next.js BFF、direct Token SPAおよびALB edge認証のUI / Session / Token / SSO責任選択
 - [Phase 2 Developer Journey](phase2-developer-journey.md): Security Starter、認証profile、Ownership、診断および検証入口の詳細
@@ -20,6 +20,13 @@
 正式Maven release、実チーム受入完了、P4-AR7、Gate P4-ARまたはPhase 4開始を意味しません。
 
 ## Phase 4計画作業（途中記録）
+
+2026-10-02の今後の作業は[作業順序案§11](pre-phase4-framework-independent-work-review-20260930.md#11-作業3の区切りと今後の作業一覧2026-10-02)に一覧化しています。作業4aは[認証profileガイド](frontend-authentication-profile-guide.md)への文書反映 COMPLETE / OWNER APPROVED（2026-10-02、[承認範囲](pre-phase4-framework-independent-work-review-20260930.md#12-作業4aの文書反映とreview範囲2026-10-02)）。次の計画整理は作業4b・5・7です。依存関係制御の検証は保留し、日常開発方式の実装は別判断待ちです。
+
+- [作業2：日常開発の反復方式の比較・推奨案](daily-development-workflow-options-20261001.md): IDEとCLIの依存解決、日常用stageの所有権・更新・破棄、R2との使い分けを整理（2026-10-01 文書承認済み。方式採用・Tooling実装は別承認）
+- [作業3：依存関係の制御の論点整理](dependency-control-issues-20261001.md): Parent / BOMとArchitecture Rulesの検出範囲、誤選択防止とアプリ型による構成選択の候補、作業4bへ渡す判断事項（2026-10-02 文書承認済み。方式採用・実装は未決定）
+- [依存関係制御：構成宣言・検査の比較と検証方式案](dependency-control-design-options-20261002.md): A案を有力候補として保持。案の共有・認識合わせを進め、検証作業は保留する方針をOwnerが了解（2026-10-02）。最初のPOM構成・Starter選択を具体化する前段で再開。方式案はDRAFT、検証実行は未承認
+- [依存関係制御：次回作業引継ぎ](dependency-control-next-session-handoff-20261002.md): 作業1〜3の経緯、別端末での再開手順、実効性のある構成選択・制約案へ深掘りする検討順序と承認境界
 
 2026年9月30日時点のFramework側の現在地と、実案件チームの回答待ちと並行して進める作業の順序案は
 [Pre-Phase 4 Framework側の現在地と作業順序案](pre-phase4-framework-independent-work-review-20260930.md)（2026-09-30 OWNER APPROVED）に

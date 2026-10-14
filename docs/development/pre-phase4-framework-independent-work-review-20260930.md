@@ -1,7 +1,8 @@
 # Pre-Phase 4 Framework側の現在地と作業順序案（2026-09-30）
 
 **状態:** OWNER APPROVED / 2026-09-30。承認範囲は§7のとおり。個別タスク、承認CP（作業6）、Phase 4開始判断は別途提案する。
-**作業branch:** `docs/adoption-developer-guides-and-plan`（`main` / `6788ecd`から作成）
+**初稿作成branch:** `docs/adoption-developer-guides-and-plan`（`main` / `6788ecd`から作成。PR #41で`main`へ反映済み）
+**継続作業branch:** `docs/daily-development-workflow`（`main` / `217cd0c`から作成。作業1〜3の進捗は§8〜§10、2026-10-02の今後の作業一覧は§11）
 **関係する既存の順序表:** [Development README「次の着手順（2026年9月29日時点）」](README.md#次の着手順2026年9月29日時点)。本書§5で対応を示す。
 
 ## 0. 要約
@@ -92,12 +93,14 @@ flowchart LR
 
 ## 1. 現在地
 
+作業1の状態は2026-10-01の進捗を反映した。その他は2026-09-30時点の記録である。
+
 | 領域 | 到達点 | 未完了・境界 |
 |---|---|---|
 | Phase 3 | Reference Vertical Sliceとremote closeoutは`COMPLETE / ACCEPTED` | 再オープンしない |
 | P4-AR（Framework側） | AR-1〜AR-7は`COMPLETE / OWNER APPROVED`。R2受渡し契約とToolingを検証済み | [実チーム受入worksheet](p4-ar6-actual-team-reception-worksheet.md)は`PENDING`。AR-D10、Gate P4-ARは未完了 |
 | 外部project検証 | 外部ReferenceとReference非依存のgreenfield bootstrapで、隔離Maven stageからbuild / runを実証 | 検証projectはGit未管理のfixture。実案件Repositoryでの結果ではない |
-| 開発者向け文書 | [引継ぎガイド](application-team-handoff-guide.md)と[開発環境構築手順](application-team-development-environment-guide.md)は社内Repositoryへ同期済み。本branchで[アプリケーション開発者ガイド](application-developer-guide.md)と[Architecture Rules説明](architecture-rules-developer-guide.md)を作成し、`f81a02f`でcommit済み | 新設2冊は`main`へ未反映で、社内Repositoryにも未同期。Linux / WSL手順は実チームが試行予定。IDE依存解決の方式は未決定 |
+| 開発者向け文書 | [アプリケーション開発者ガイド](application-developer-guide.md)と[Architecture Rules説明](architecture-rules-developer-guide.md)のOwner reviewは2026-09-30完了。PR #41で`main`反映、PR #42でREADME整合済み。既存の引継ぎガイド・開発環境構築手順に加え、新設2冊の社内Repository同期も完了（Owner報告）。FAQ配置方針を決定し、作業1は完了（§8） | 本branchの承認状態・FAQ節等の文書更新は後続の`main`反映・社内同期対象。Linux / WSL手順は実チームが試行予定。IDE依存解決の方式は未決定 |
 | Phase 4計画 | [見直し草案](KOIKI-JavaWeb-FW_Phase4実施計画_見直し草案_v0.1.md)のR1〜R7、PL1 REST境界、PL2非配布検証・F-5台帳を整理済み。CP-F0の暫定基準はS0（Level 1維持） | Gate P4-Fは提案段階で、対象はLevel 2のA1 / A2 / D1に限られる。S0の暫定基準、Level 2、DoD変更、production実装、正式配布は未承認 |
 | 実案件との接点 | 9月28日の説明会でfrontend / backend分離、BFF + REST、JWT、Repository並列配置の方向性を共有 | 認証終端、IdP方式、API範囲、実チームのbuild / run / diagnosis結果は未取得 |
 
@@ -278,10 +281,10 @@ IDの番号は追加した順であり、実行の順序は「段階」列で示
 
 | ID | 段階 | 項目 | 区分 | 前提・待ち | 出口（成果または判断） | 状態 |
 |---|---|---|---|---|---|---|
-| 作業1 | 1 | 開発者向けガイド2冊の仕上げと提供 | 採用支援 | なし | Owner review、`main`反映と社内同期（remote操作は個別承認）、FAQの置き場所の決定 | 初稿を`f81a02f`でcommit済み。Owner review前 |
-| 作業2 | 1 | 日常開発の反復方式 | 採用支援 | なし | 選択肢の比較と推奨案 → Owner判断。Toolingの実装は承認後 | 着手可能（本書承認済み） |
-| 作業3 | 1 | 依存関係の制御の論点整理 | 採用支援 | なし | 論点整理。作業4bへの入力。方針の決定は継続検討 | 着手可能（本書承認済み） |
-| 作業4a | 1 | 認証profileガイドへの設計観点の反映 | 採用支援 | なし | 見直し草案§8.5の1・2の記載。認証詳細設計の相談の前提資料 | 着手可能（本書承認済み） |
+| 作業1 | 1 | 開発者向けガイド2冊の仕上げと提供 | 採用支援 | なし | Owner review、`main`反映と社内同期（remote操作は個別承認）、FAQの置き場所の決定 | COMPLETE / OWNER APPROVED（2026-10-01）。Owner reviewは2026-09-30完了、`main`反映・社内同期済み、FAQ配置方針決定（§8） |
+| 作業2 | 1 | 日常開発の反復方式 | 採用支援 | なし | 選択肢の比較と推奨案 → Owner判断。Toolingの実装は承認後 | 文書化 COMPLETE / OWNER APPROVED（2026-10-01）。方式採用・Tooling実装等は後続の別承認（§9） |
+| 作業3 | 1 | 依存関係の制御の論点整理 | 採用支援 | なし | 論点整理。作業4bへの入力。方針の決定は継続検討 | 論点整理は文書化 COMPLETE / OWNER APPROVED（2026-10-02）。後続の検証方式案を`b3b6adf`で記録。A案を有力候補として保持し検証作業は保留。方式採用・実装は未決定（§11） |
+| 作業4a | 1 | 認証profileガイドへの設計観点の反映 | 採用支援 | なし | 見直し草案§8.5の1・2の記載。認証詳細設計の相談の前提資料 | 文書反映 COMPLETE / OWNER APPROVED（2026-10-02、§12）。実案件の方式採用・実環境検証は対象外 |
 | 作業4b | 1 | Phase 4入口の再整理とFramework先行範囲の再検討 | Phase 4本体 | 作業3の論点、作業5・7の結果 | package分類の確定案、案1 / 案2の材料、見直し草案の改訂差分案 | 分類案を§3.1.2に記載 |
 | 作業5 | 1 | CP-F0の判断材料とS0時の再計画案 | Phase 4本体 | 作業4bの分類 | CP-F0の判断材料、DoD延期・変更案、C1・Batchの順序案 | PL2でF-5台帳と暫定S0まで作成済み |
 | 作業7 | 1 | PL2での全packageの分解 | Phase 4本体 | なし（作業4b・5と並行） | A1 / A2 / D1以外の各packageの設計論点、blocking review、検証環境、DoDの実演単位、概算 | A1 / A2 / D1だけF-4で見積境界まで作成済み |
@@ -449,7 +452,7 @@ Phase 3のGate Cとremote closeoutに相当する完了判定の方法を、作�
 | 認証の終端とIdP方式 | 顧客確認（[PL1-Q6](KOIKI-JavaWeb-FW_Phase4_PL1_REST利用境界差分台帳_v0.1.md#3-p4-ar6へ渡す確認事項)、P4-04、P4-EDGE） | 認証の詳細設計を実チームと相談し、既存profileで足りるか、Framework gapかを判断する。見直し草案§8.5の3の採否判断へ入力する |
 | Linux / WSLでのbuild | 実チームによる[開発環境構築手順](application-team-development-environment-guide.md)のLinux付記の試行結果 | PASS / FAILと手順の不足を確認し、開発環境構築手順のLinux付記を更新する。Framework gapがあれば分類して扱う |
 | 実チームの受入（build / run / diagnosis） | 実チーム環境での実行結果（[worksheet](p4-ar6-actual-team-reception-worksheet.md)） | findingを分類し、AR-D10とGate P4-ARの判断材料にする |
-| 実チームからの問い合わせ | 都度 | 公開済みの使い方の説明、Customer側の設計事項、再現可能なFramework gapに分類する。回答で繰り返し現れた論点は、開発者ガイドまたはFAQへ反映する。FAQの置き場所は作業1で決める |
+| 実チームからの問い合わせ | 都度 | 公開済みの使い方の説明、Customer側の設計事項、再現可能なFramework gapに分類する。回答で繰り返し現れた論点は、開発者ガイドまたは[FAQ（アプリケーション開発者ガイド§8）](application-developer-guide.md#8-faq)へ反映する。問い合わせが増えたらFAQを独立文書へ分ける |
 
 ## 5. 9月29日の順序表との対応
 
@@ -501,3 +504,98 @@ Architecture Ownerは本書をreviewし、図式化により前後関係、タ�
 | §4の入力待ち事項の扱い、§5の役割分担（採用支援トラックは本書、Phase 4本体トラックは作業4bで確定） | Gate P4-AR、Gate P4-F、Phase 4開始、正式artifact配布、remote操作、見直し草案・F-5文案の改訂 |
 
 本承認により、段階1の作業（作業1〜5・7・15）に着手できる。個別タスクと承認CPは、作業6で提案する。
+
+## 8. 作業1の完了記録と次の作業（2026-10-01）
+
+§7は作業順序案の承認時点の記録として維持する。作業1について、その後確認した進捗と個別判断を以下に記録する。
+
+| 項目 | 状況 | 根拠 |
+|---|---|---|
+| ガイド2冊のOwner review | 完了 / OWNER APPROVED（2026-09-30） | 2026-10-01にArchitecture Ownerが完了日を2026-09-30として確認 |
+| ガイド2冊の`main`反映・README整合 | 完了 | PR #41（merge commit `8bfe670`）で2冊と本書を反映。PR #42（merge commit `217cd0c`）でREADMEを整合 |
+| 社内Repositoryへの同期 | 完了（Owner報告） | 2026-10-01にOwnerが同期完了を報告。Agentによる同期先の直接検証は未実施 |
+| FAQの置き場所 | 決定 / OWNER APPROVED（2026-10-01） | アプリケーション開発者ガイドにFAQ節を追加し、問い合わせが増えたら独立文書へ分ける方針をOwnerが採用 |
+
+以上により、作業1を`COMPLETE / OWNER APPROVED`とする。実チームによるガイドの試用・読み合わせは未実施であり、以後の改訂は問い合わせを材料に継続する。
+
+本branchで追加した承認状態の記載、FAQ節および進捗記録は、既に同期済みの文書に対する後続差分であり、今後の`main`反映・社内同期の対象とする。
+次は本branchで作業2（日常開発の反復方式の比較・推奨案）へ進む。方式の決定はOwner判断、Toolingの実装は承認後とする（§3）。
+
+## 9. 作業2の比較・推奨案（2026-10-01）
+
+[日常開発の反復方式の比較・推奨案](daily-development-workflow-options-20261001.md)を作成し、Architecture Ownerが2026-10-01に内容確認・文書承認した。作業2は比較・推奨案の文書化までを完了とし、commit pointとする。
+毎回R2、通常の`~/.m2`へのinstall、commit別の日常用stage、managed Maven repositoryを比較し、移行期には開発者専用のcommit別stageを推奨候補とした。
+IDEとCLIの解決先一致を採用条件とし、受渡し確認は既存R2を維持する。Tooling実装、方式採用、実チームでの再現性は未承認・未実証である。
+検証対象として進める判断、Tooling実装範囲と担当Owner、初期検証条件は後続の別承認とし、実チームの試用条件は先方と調整する。承認範囲は[比較・推奨案§8](daily-development-workflow-options-20261001.md#8-文書承認記録2026-10-01)に記録した。
+
+## 10. 作業3の論点整理（2026-10-01）
+
+[依存関係の制御の論点整理](dependency-control-issues-20261001.md)の草案を作成した。Parent / BOMとArchitecture Rulesのsourceから、依存追加・version変更そのものと、利用コードの構造違反を分けて整理した。
+依存変更reviewと既存検査の実行を基本とし、具体的な問題に応じて追加の機械検査を検討する案を記載した。新しいfixtureによる実測、アプリチームのCI確認は未実施。
+論点整理の文書全般は2026-10-02にOwner承認済み。制御方式と追加検査の採用・実装は未決定。配置先・責任・Phase 4 packageへの対応を作業4bの判断材料とする。
+
+2026-10-02のOwner reviewで、Framework由来のモジュール／BOMをCustomer POMへ不用意に記載する懸念を確認した。個別記載への制約と、アプリ型に対応したFramework定義からType宣言だけを記載する方式を、論点整理§4.1の比較対象へ追加した。方式の採用・実装は未決定である。
+
+作業3は論点整理の文書化までを完了とする。次回は別端末で、ここまでの経緯を元に案を深掘りし実効性のあるものにする分析・設計へ進む。[次回作業引継ぎ](dependency-control-next-session-handoff-20261002.md)に再開情報を記録した。
+
+## 11. 作業3の区切りと今後の作業一覧（2026-10-02）
+
+§10末尾の引継ぎ後、[依存関係制御の検証方式案](dependency-control-design-options-20261002.md)を整理し、Ownerが更新内容を確認して問題なしとした。Ownerによるcommit `b3b6adf`で本書とは別の検証方式案とDevelopment READMEを記録した。
+A案（個別記載への検査）を有力候補として保持し、案の共有・認識合わせを進め、検証作業を保留する。最初のCustomer POM構成・Starter選択を具体的に検討し始める前段で再開する。検証方式の採用・実行、Framework成果物の変更は未承認である。
+アプリチームへの報告・認識合わせの実施結果は未確認。過去の引継ぎ文書は時点記録として維持し、再開方針は検証方式案§8を参照する。
+
+**次に進める作業として4a（認証profileガイドへの設計観点の反映）を提案し、Ownerの着手指示により文書へ反映した（§12）。** §7の承認範囲内で、見直し草案§8.5の1・2を対象とする。顧客の認証終端・IdP方式やP4-04 / P4-EDGEの採否は決めない。4aの文書reviewを区切りに、作業4b・5・7の計画整理へ進む。
+
+### 11.1 次に進める作業と判断待ち
+
+次の一覧は§3・§3.2の既存IDと依存関係を、今回の区切り時点で整理したもの。新しい実装開始・Gate・期限の承認ではない。Ownerの記録とRepositoryで確認できた範囲を示し、外部の実施結果は未確認として扱う。
+
+| 順・扱い | ID / 作業 | 現在の状態 | 次の成果・判断 / 前提 |
+|---|---|---|---|
+| 完了済み | 作業1：開発者ガイド2冊 | COMPLETE / OWNER APPROVED。main反映・社内同期済み（Owner報告） | 問い合わせに応じてガイド・FAQを更新。本branchの後続差分は別の反映対象 |
+| 判断待ち | 作業2：日常開発の反復方式 | 比較・推奨案の文書化は承認済み。方式採用・Tooling実装は未承認 | commit別の日常用stage案を検証対象に進めるか、Ownerが別判断。依存制御の保留と同じ扱いにはしない |
+| 報告・保留 | 作業3：依存関係制御 | 文書整理を区切り。A案を保持し検証作業保留 | Ownerがアプリチームへ経緯・保留・再開条件を報告。POM構成検討の前段で再開 |
+| 文書作業完了 | 作業4a：認証profileガイド | COMPLETE / OWNER APPROVED（2026-10-02） | ALB + BFF、認証情報・claim、Session / logout、判断記録様式を文書承認。案件の採否は入力A待ち（§12） |
+| 4a後の計画整理 | 作業4b：Phase 4入口と先行範囲 | package分類案まで作成済み | 採用支援 / 本体の区別、顧客入力への依存、案1 / 案2を整理。作業5・7と合わせてreview材料にする |
+| 4bと一体 | 作業5：CP-F0・S0時の再計画 | F-5台帳と暫定S0まで作成済み。S0は未確定 | S0 / S1 / S2、DoD差分、通知とBatch等の順序を整理。需要・運用Ownerの未取得を明示 |
+| 4b・5と並行可能 | 作業7：PL2全package分解 | A1 / A2 / D1以外の分解が残る | 設計論点、前提、blocking review、検証環境、DoD実演単位、概算をまとめる。production実装は開始しない |
+| 材料が揃ってから | OR：Owner review | 未実施 | 作業4b・5・7を入力にCP-F0とFramework先行範囲を判断 |
+| OR後 | 作業6：タスク・承認CP案 | 未着手 | Owner、Evidence、停止条件、作業量、remote操作の個別承認点を提案 |
+| OR後・条件付き | 作業8：P4-F判定資料 | 対象・上限の再整理が必要 | S1 / S2または案2を選ぶ場合に作成。不要となる場合もORで記録 |
+| OR後 | 作業9：判断に伴う正本改訂 | OR待ち | 承認した判断に合わせ、計画・ADR・必要なAgent guidance等の改訂をreview |
+| OR後 | 作業10：P4-PL3統合計画案 | 未開始 | 作業7とORを入力にOwner、依存、工数、成果物・DoD、release経路、完了判定を整理 |
+| 条件付きGate | Gate P4-F | 提案段階・未承認 | OR、作業8・9の改訂承認が前提。承認packageだけの限定開始 |
+
+### 11.2 入力を待つ作業と後続Gate
+
+| 項目 | 待っている入力 | 入力後に行うこと |
+|---|---|---|
+| 認証終端・IdP方式（入力A） | 顧客回答（PL1-Q6） | 認証詳細設計の相談、P4-04 / P4-EDGEの採否。4aの文書反映と採否判断を区別 |
+| Linux / WSL（入力B） | 実チームの試行結果 | 開発環境構築手順の未検証付記をEvidenceに基づき更新し、gapを分類 |
+| P4-AR6実チーム受入（入力C） | 実チーム環境でのbuild / run / diagnosis。PENDING | 作業11（finding是正）・12（AR-D10責任分担案）へ進む |
+| 問い合わせ（入力D） | 都度 | 分類・回答、ガイド / FAQ更新。既存契約の欠陥は影響を別review |
+| 作業13：P4-PL3確定 | 作業10・11・12 | 実チーム入力を反映した統合計画を確定review |
+| Gate P4-AR | 作業13とAR-D10のOwner承認 | Adoption Readinessを判断。現時点は未完了 |
+| 作業14・Gate P4-START | Gate P4-ARと確定計画 | 開始申請資料を作成し、Phase 4 production開始を判断 |
+| Phase 4実行・完了判定 | Gate P4-START、または承認済みGate P4-Fの対象範囲 | 承認work packageを実行し、EvidenceとDoDで完了判定 |
+
+### 11.3 文書の提供とremote操作
+
+本branchの文書差分について、push、PR、main反映、社内同期は別途の提供作業である。今回のローカル確認では`b3b6adf`までcommit済みで作業ツリーはclean、remote追跡情報より1commit先行していた。fetchによるremote最新状態の確認は未実施。
+作業3の報告や今後の一覧整理を、remote操作の承認へ読み替えない。必要な操作と差分を提示してOwnerの個別判断に従う。
+
+## 12. 作業4aの文書反映とreview範囲（2026-10-02）
+
+Ownerの着手指示に基づき、[認証profileガイド](frontend-authentication-profile-guide.md)へ次を反映した。Architecture Ownerは2026-10-02にALBまわりの記載内容を確認し、問題なしとして承認した。作業4aの文書反映を**COMPLETE / OWNER APPROVED**とする。既存の2026-09-18の文書承認とは別の承認記録である。
+
+| 見直し草案§8.5の対象 | 反映先 | 内容 |
+|---|---|---|
+| 1：Profile E＋Bと認証情報の比較 | ガイド§8.1・§8.2 | 認証終端、ALBがOAuth Clientとなる配置、IdP JWT / opaque token / ALB署名claim / BFF自身の認証情報の区別 |
+| 1：Cognitoのclaim条件 | ガイド§9.1 | Reference所有の`aud` / `token_use` / `koiki_user_id`との違い、API対象とclient制限、外部subjectとIdentityの対応 |
+| 1：Session / logout | ガイド§8.3 | 各SessionとToken期限、refresh責任、上流IdP logoutとToken revokeの限界、残存時間の判断 |
+| 2：判断記録様式 | ガイド§12 | ALBをBFF前段に置く場合の認証情報・validator、署名者・鍵、refresh、Session境界、Token残存時間、review / Evidence |
+
+確認はReference source、AWS / Spring公式資料（2026-10-02参照）、文書差分と参照先の整合確認に限る。実環境の認証・logout・negative testは未実施。production code、Public API、dependency、migration、CIの変更は行っていない。
+§8.5の3（P4-04 / P4-EDGEの採否・受入条件）は顧客確認待ちのまま維持する。
+
+文書reviewの対象は、通常のBFFとALB前段BFFの責務、Referenceと案件の条件差、Session終了とAPI Token失効の区別、未取得事項を残す判断記録様式である。今回の承認は文書化の範囲に限り、案件の方式選定、実環境検証、P4-04 / P4-EDGEの採用、Phase 4開始、remote操作を含まない。次の計画作業は4b・5・7とし、採否・開始範囲は後続のOwner判断で定める。
