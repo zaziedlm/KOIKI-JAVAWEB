@@ -30,6 +30,12 @@ P3-A4 Level 1同期eventとGate Aを`COMPLETE / ACCEPTED`、P3-B0 MVC / HTMX con
 Gate Cは`COMPLETE / ACCEPTED`です。PR #35はmerge commit方式で`main`へmergeされ、merge後CI 7 / 7 jobsと
 Java Runtime Compatibility 2 / 2 jobsも成功しています。Phase 3 remote closeoutにblocking itemはありません。
 
+### Pre-Phase 4 S1局所検証
+
+| 対象 | 状態 | 検証記録 |
+|---|---|---|
+| S1初回preflight / L1 DB保護・単発消費 / L2競合 / L3相関・対象選別 / L4mode組立 | LOCAL PASS / 11 / 9 / 8 / 12 tests、各failures・errors・skipped 0。正式採用・DoD / Gateは未検証 | [初回局所検証Evidence](validation/phase4-s1-minimum-local-verification-20261005.md) |
+
 ### Phase 3 Reference Vertical Slice
 
 | Work Package / Gate | 状態 | 検証記録 |

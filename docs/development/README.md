@@ -5,6 +5,7 @@
 
 ## 現在の入口
 
+- [Frameworkローカル開発のartifact準備・整備検討案](framework-local-artifact-readiness-options-20261006.md): 共通／用途別資材、取得・local install・offline確認、cache更新／復旧の検討案。選択Toolingの不足解消とoffline再開は最小実証済み。恒常方式の実装・採用は未完了
 - [アプリ開発チーム向け引継ぎガイド](application-team-handoff-guide.md): Phase履歴を知らない開発者が、提供物／非提供物、構成・Starter選択、Reference実行、最初のCustomer-owned module、copy禁止、拡張分類、診断およびFramework側への戻し条件を一本道で確認する第一入口
 - [開発環境構築手順](application-team-development-environment-guide.md): 端末前提、社内Proxy証明書、Framework / Customer別Repositoryの配置、KOIKI Parent接続、R2 isolated stage build、ローカル起動までの共通手順。VS Codeを採用する場合の設定例と、Dev Container / Linux環境で想定される事項の付記を含む
 - [アプリケーション開発者ガイド](application-developer-guide.md): 初回build後に業務機能を1つ完成させるための、package構成、`@KoikiModule`、migration、Use Case / Controller / eventの置き方、test、詰まったときの相談方法とFAQ。2026-09-30 Owner review完了
@@ -21,7 +22,33 @@
 
 ## Phase 4計画作業（途中記録）
 
-**S1の現在の再開入口（2026-10-05）:** [最小候補・初回局所検証開始の引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)。局所候補と初回ST-Bのfixture作成・実行はOwner承認済み。次はpreflightとL1作成。正式Reference実装・Tier確定・DoD / Gateは後続判断です。以下の一覧は検討順の履歴を含み、各文書冒頭の現在参照先と[方式票](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)を優先してください。
+**別端末・次回実装開始の入口（2026-10-06）:** [S1 Reference基盤の次回引継ぎ](phase4-s1-reference-foundation-next-session-handoff-20261006.md)。承認文書commit `371f024`をclean確認済み。preflight・実装・正式検証は未開始。別端末のsource／offline artifact／Docker／Chromium／資源確認と、検証専用設定→baseline→初回実装の順序、登録／migration／権限／Auditの初期確認点を案内する。
+
+**引継ぎの入口（2026-10-06）:** [追加局所検証A・引継ぎ](phase4-s1-additional-a-next-session-handoff-20261005.md)、[狭いJPA共有モデル候補の継続検討](phase4-s1-jpa-candidate-continuation-after-a-20261006.md)。A／B受入とCの開始承認・実行結果を反映済み。
+
+- [追加局所検証B・専用開始票](phase4-s1-additional-b-start-review-20261006.md): 候補文書確認後のB進行指示を受け、test限定依存・Spring transaction・認可／actor／失効・schema／grant・31件案と回帰／上限を具体化。作成／実行の具体条件review用
+
+**追加検証の再開入口（2026-10-06）:** A18件・B31件・[C38件＋同profile回帰89件はすべてCOMPLETE / OWNER APPROVED](../architecture/validation/phase4-s1-additional-c-web-mode-20261006.md#6-owner受入承認2026-10-06)。次はA／B／Cを入力として狭いJPA共有モデル候補の責務・正式接続条件を整理する。正式Tier／Reference／DoD／Gateは未採用。
+
+**実装前の検討入口（2026-10-06）:** [既存Referenceを保護する責務・正式接続・初回実装範囲](phase4-s1-reference-safe-integration-design-draft-20261006.md)。Ownerの安全側の拡張指示を共通前提とし、通常構成の登録／migration／Security／依存影響と既存回帰を各段階の受入へ結ぶ。DRAFT、正式開始票へ具体化する入力。
+
+**正式開始の審査入口（2026-10-06）:** [S1 Reference保存・認可・Audit基盤の正式開始票](phase4-s1-reference-foundation-formal-start-review-20261006.md)。`feature/phase4-s1-reference-foundation`で初回対象・条件付き登録・追加migration・55件／既存25 class＋E2E回帰・上限・判断欄を具体化したDRAFT。J1／J8と現行Gateの整合・採用事項・実行開始は未判断。
+
+**具体採用の判断入口（2026-10-06）:** [初回採用判断表D1〜D6はOWNER APPROVED](phase4-s1-reference-foundation-adoption-decisions-20261006.md#8-owner採用判断2026-10-06)。経路・正本差分準備方針、scope／TTLの初回契約・拒否と運用供給元／値の後段化、Audit／DDL設計を採用済み。次はJ1／J8の提出物・正本差分準備。Gate判定・具体正本改訂・実装／実行開始は別判断。
+
+**正本改訂・残条件の審査入口（2026-10-06）:** [S1 Reference基盤の正本改訂差分・残条件](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md)。commit `f9ea06a`を入力に、P4-AR／AGENTS／P4-F等への具体文案、初回前置と後段接続前review、Tier／登録／grant案を整理。既存DB fixture／E2Eの資源制限未設定を残条件として明示。改訂採用・正本反映・Gate／実行開始は未成立。
+
+**最新状態:** 上記文案は対話で初回技術・検証・管理条件を採用し、限定条件の正本改訂をOwner承認して[§9の対象へ反映済み](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#9-正本改訂のowner承認反映記録2026-10-06)。Gate設置／限定判定・正式実行開始、method対応・具体実行手順・source固定／preflightは残る。Docker対象拡大は環境実行承認時に反映する。
+
+**残判断の入口:** [S1 Reference基盤・初回実行資料](phase4-s1-reference-foundation-execution-review-20261006.md)。6 class／55件のmethod対応、classごとのMaven実行とDB停止確認、設定・接続配分・cleanup・F-1〜F-5を具体化。実行資料採用／Gate初回限定判定／source固定・preflight条件付き正式開始を審査する。
+
+**後続承認:** 初回実行資料§6の手順採用と§7のGate P4-F設置・初回限定APPROVE LIMITED STARTをOwner承認済み。正式作成検証開始だけを残る判断とし、文書source固定／preflightは未実施。後段・Phase 4全体・remoteを開始しない。
+
+**正式開始の最終承認:** [初回実行資料§8](phase4-s1-reference-foundation-execution-review-20261006.md#8-source固定preflight条件付き正式開始承認2026-10-06)で文書commit・clean source固定後のpreflightと、成立時の採用済み初回作成・検証をOwner承認済み。AGENTSのDocker対象追加も反映済み。次は文書commit・source固定→preflight。未成立条件や対象外の変更は停止・差分提示する。
+
+**接続条件の具体化案（2026-10-05）:** [S1責務・認可／失効・Audit・mode／DB権限案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)。承認済み方針をもとに文書案を作成。観察と確認終了、通知読取とSession／Auditの必要更新、権限失効窓・不明保全を分けて整理。具体案はreview待ち、追加検証・正式実装は未開始。
+
+**S1の現在の再開入口（2026-10-05）:** [初回局所検証後の後続タスク](phase4-s1-follow-up-tasks-after-local-verification-20261005.md)。commit `5252124`にpreflight / 初回L1〜4のLOCAL PASS（11 / 9 / 8 / 12 tests）と方式票への結果反映を記録済み。Tier・認可・Audit・正式Reference接続の4項目の候補継続・残条件具体化はOwner承認済み（[方式票§8.3](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#83-owner方針レビュー承認記録2026-10-05)）。次は接続条件の具体化、その後に追加検証契約へ進みます。正式実装・Tier確定・DoD / Gateは後続判断です。初回の経緯は[開始引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)を参照してください。以下の一覧は検討順の履歴を含みます。
 
 2026-10-02の今後の作業は[作業順序案§11](pre-phase4-framework-independent-work-review-20260930.md#11-作業3の区切りと今後の作業一覧2026-10-02)に一覧化しています。作業4aは[認証profileガイド](frontend-authentication-profile-guide.md)への文書反映 COMPLETE / OWNER APPROVED（2026-10-02、[承認範囲](pre-phase4-framework-independent-work-review-20260930.md#12-作業4aの文書反映とreview範囲2026-10-02)）。当時の次の計画整理は作業4b・5・7でした。現在の局所検証開始範囲は上記引継ぎを参照してください。依存関係制御の検証は保留し、日常開発方式の実装は別判断待ちです。
 
@@ -46,8 +73,10 @@
 - [S1最小方式：許可DB保護・executor相関・結果確認起動条件](phase4-s1-permission-db-executor-startup-review-20261005.md): role / 列権限と巻戻し防止の区別、requestId限定decoratorへの追加相関、送信機能を持たない確認Webとmigration分離（DRAFT。保護方式・実executor・mode実動は未判定）
 - [S1最小方式：保護方式・相関経路・起動境界の成立性確認](phase4-s1-minimum-boundary-feasibility-review-20261005.md): 許可＋append-only消費記録を優先比較、標準再送overload / executor経路のbytecode照合、Reference Web Security・scan境界の不足（DRAFT。実動PASS・方式 / Tier採用は未判定）
 - [S1最小候補：Tier・保存／権限・検証手順の整理](phase4-s1-minimum-tier-storage-verification-review-20261005.md): 残る不変条件から狭いRICHを優先review、2種類recordとrow lockの修正権限、V0〜7とE01〜21対応（DRAFT。Tier / schema / 開始未採用、全段階未実施）
-- [S1最小候補：採用候補・残条件・変更一覧と個別開始範囲](phase4-s1-minimum-change-and-start-scope-draft-20261005.md): K1〜6・CH-01〜08・ST-A〜Eへ統合。Tooling局所検証と正式実装 / Gateを分けた判定材料（正式方式は未採用。初回局所作成・実行は承認済み、未実施）
-- [S1方式採用票・初回局所検証契約案](phase4-s1-method-ballot-and-local-verification-contract-20261005.md): B1〜6、予定4 testの枝 / 合格条件、順次実行commandと局所資源 / 上限。局所候補と初回fixture作成・実行はOWNER APPROVED（2026-10-05）。Tier正式確定・Web認証・実trace / OS crash等は後続。test未作成・実行なし
+- [S1最小候補：採用候補・残条件・変更一覧と個別開始範囲](phase4-s1-minimum-change-and-start-scope-draft-20261005.md): K1〜6・CH-01〜08・ST-A〜Eへ統合。Tooling局所検証と正式実装 / Gateを分けた判定材料（正式方式は未採用。初回局所作成・実行は承認済み、L1〜4 LOCAL PASS）
+- [S1方式採用票・初回局所検証契約案](phase4-s1-method-ballot-and-local-verification-contract-20261005.md): B1〜6、予定4 testの枝 / 合格条件、順次実行commandと局所資源 / 上限。局所候補と初回fixture作成・実行はOWNER APPROVED（2026-10-05）。Tier正式確定・Web認証・実trace / OS crash等は後続。初回L1〜4作成・11 / 9 / 8 / 12 tests成功。正式方式／Tier・Reference接続は後続review
+- [S1初回局所検証Evidence](../architecture/validation/phase4-s1-minimum-local-verification-20261005.md): preflight、L1 DB保護・単発消費・原子的記録、L2競合・結果不明、L3実executor相関・対象選別、L4mode組立・起動時副作用のLOCAL PASS。11 / 9 / 8 / 12 tests、各failures / errors / skipped 0。正式認証 / Audit・実trace・DoD / Gateは未検証
+- [S1局所結果の方式票反映・正式接続の残条件review](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#7-局所結果の方式票への反映2026-10-05): B1〜6へ結果を反映し、Tier・認可・Audit・Reference起動境界の4論点と次の具体化順を整理。結果不明の再起動引継ぎ・実JPA／Recorder・実Reference接続は未検証。方針候補はOwner判定待ち
 - [作業5：CP-F0判断材料・S0時の再計画案](phase4-cpf0-and-s0-replan-options-20261002.md): Framework実証と案件導入を分けたS0 / S1 / S2比較、S1成立条件、S0の未達DoD保持、accounting / Batch依存と再計画（DRAFT。S1候補化は上記承認済み。具体的採用・DoD変更・開始は未承認）
 - [作業3：依存関係の制御の論点整理](dependency-control-issues-20261001.md): Parent / BOMとArchitecture Rulesの検出範囲、誤選択防止とアプリ型による構成選択の候補、作業4bへ渡す判断事項（2026-10-02 文書承認済み。方式採用・実装は未決定）
 - [依存関係制御：構成宣言・検査の比較と検証方式案](dependency-control-design-options-20261002.md): A案を有力候補として保持。案の共有・認識合わせを進め、検証作業は保留する方針をOwnerが了解（2026-10-02）。最初のPOM構成・Starter選択を具体化する前段で再開。方式案はDRAFT、検証実行は未承認

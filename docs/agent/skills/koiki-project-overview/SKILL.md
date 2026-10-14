@@ -150,6 +150,17 @@ package済みReference、検証ToolingおよびDeveloper Journeyを受渡し候�
 見直し後Phase 4準備で判断する。Project TemplateはPhase 5境界を維持する。
 Phase 4開始は未承認であり、未承認のremote変更を先行せず、後続Gateと個別承認を順守する。
 
+S1初回Reference保存・認可・Audit基盤の限定経路は、2026-10-06の
+[正本改訂承認記録](../../../development/phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#9-正本改訂のowner承認反映記録2026-10-06)と
+[正式開始票](../../../development/phase4-s1-reference-foundation-formal-start-review-20261006.md)を参照する。
+必要Gate／個別review・実行開始判断が成立した対象だけ開始し、改訂承認だけで開始しない。
+Phase 4全体開始・Level 2 runtime開始は別判断である。
+後続の[Gate判定記録](../../../development/phase4-s1-reference-foundation-execution-review-20261006.md#7-gate-p4-f設置初回限定判定2026-10-06)で
+Gate P4-F設置・初回限定APPROVE LIMITED STARTはOwner承認済み。正式作成検証開始・source固定／preflightは別に確認する。
+後続の[正式開始承認](../../../development/phase4-s1-reference-foundation-execution-review-20261006.md#8-source固定preflight条件付き正式開始承認2026-10-06)により、
+文書commit・clean source固定後のpreflightと、成立時の採用済み初回範囲の作成・検証は承認済み。
+source固定・preflight成立の実証前に作成・検証を先行せず、資源／artifact不足・安全条件不成立では停止して必要差分を提示する。
+
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
 Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは
 Remote Gateの個別承認を必要とする。

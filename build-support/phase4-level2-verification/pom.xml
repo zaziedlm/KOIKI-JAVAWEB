@@ -63,6 +63,49 @@
 
   <profiles>
     <profile>
+      <id>s1-web</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.koikifw</groupId>
+          <artifactId>koiki-starter-session-jdbc</artifactId>
+          <version>0.1.0-SNAPSHOT</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-webmvc</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-webmvc-test</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-security-test</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>s1-contract</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.koikifw</groupId>
+          <artifactId>koiki-starter-identity</artifactId>
+          <version>0.1.0-SNAPSHOT</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.koikifw</groupId>
+          <artifactId>koiki-starter-audit</artifactId>
+          <version>0.1.0-SNAPSHOT</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>jdbc</id>
       <activation><activeByDefault>true</activeByDefault></activation>
       <dependencies>

@@ -249,13 +249,17 @@ R6で作成を承認された[Gate P4-F提案 v0.1](KOIKI-JavaWeb-FW_Phase4_P4-F
 
 | 判断項目 | P4-F案 |
 |---|---|
-| 開始対象 | Framework共通のP4-A1 Level 2基盤、Referenceで契約を実証するP4-A2通知、P4-D1非同期観測。P4-PL1 / PL2の計画作業も継続 |
-| 開始前Evidence | Phase 3 accepted baseline、P4-AR1〜AR5とFramework側P4-AR6準備の結果、clean source identity、対象packageの設計・工数・blocking review、独立した検証計画 |
+| 開始対象 | P4-FのS1候補はA1／A2／D1非同期。最初の承認対象はST-CのReference保存・認可・Audit基盤のみ。A1／D1全体の設計は計画資料として追跡し、publication・復旧・通知・観測の実装開始は当該review後の別判断とする |
+| 開始前Evidence | Phase 3 accepted baseline、P4-AR1〜AR5とFramework側P4-AR6準備の結果、clean source identity、対象packageの設計・工数・blocking review、独立した検証計画。初回の責務・登録・DDL／grant・既存Reference回帰・作成実行上限を採用し、後段前置条件を明記する |
 | 保留する対象 | P4-B2実案件BFF、実案件IdP / SSO、正式artifact受渡し、P4-E1、Customer-specific integration。P4-AR6、AR-D10とGate P4-ARは完了扱いにしない |
 | 個別停止点 | Public API、dependency、migration、Starter、workflow、Security既定、Remote Gateは各packageのblocking reviewと個別承認に従う。P4-C0を通る前にMyBatisを追加しない |
 | Phase 4全体の完了 | 当初DoD 4-1〜4-12の実演、採否変更のOwner記録、P4-AR6 / Gate P4-ARの責任分担と受渡し判断を別途必要とする |
 
 P4-Fを採用しない場合は現行Gateの順序を維持し、P4-PL0〜PL2の計画・read-only調査を進める。
+
+**2026-10-06正本改訂:** 上表の初回限定範囲と前置／後段条件への具体化は
+[Owner承認・反映記録](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#9-正本改訂のowner承認反映記録2026-10-06)に基づく。
+Gate設置／限定判定・実行開始は未成立。採用事項・上限は[正式開始票](phase4-s1-reference-foundation-formal-start-review-20261006.md)へ追跡する。
 採用する場合もPhase 3を再オープンせず、Customerの開発開始承認や実案件の受入PASSへ読み替えない。
 
 ## 5. 次のOwner判断に必要な事項

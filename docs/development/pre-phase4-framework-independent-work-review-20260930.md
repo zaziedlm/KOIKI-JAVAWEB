@@ -802,3 +802,79 @@ Ownerは初期計画の記述がAIエージェントを迷わせる懸念を示�
 方式票の冒頭判定表を承認結果へ統一し、当時の未判定と現在の承認が二重に見える状態を解消した。旧本文は検討履歴として保持し、最小構成・Tier候補・初回作成／実行承認と、正式Reference実装・DoD / Gateの残判断を読み分ける。
 
 今回のコミット単位はsource照合から最小候補の絞り込み・Owner承認・導線整備までの文書群。fixture作成・実行・production変更・remoteは含めない。次作業は承認済みpreflightとL1からの順次検証である。
+
+## 38. 承認済みpreflight・L1 DB保護／単発消費検証（2026-10-05）
+
+Ownerの指示で承認済み初回範囲のpreflightとL1を実施した。Docker未起動をOwnerが解消した後、sandbox接続拒否・メモリ診断拒否は権限付きの同じ診断で確認。Java 21・端末資源・既存image digest、offline effective POM / dependency treeを記録し、新artifact install / publishは行わなかった。
+
+Toolingのtest-only classと明示適用DDLで用途別login role、row lockのversion列限定権限、対象／actor改変・消費更新／削除拒否、一意消費、消費／Audit相当の原子性を検証した。初回image名形式ERROR、形式修正後PASS、不要AtomicInteger警告修正後の最終11 tests / failures 0 / errors 0 / skipped 0を[Evidence](../architecture/validation/phase4-s1-minimum-local-verification-20261005.md)へ記録した。全11 method名とXMLを照合、DB／Ryuk cleanupを確認した。
+
+L1 LOCAL PASSであり、正式JPA／Audit／認証、競合・executor相関・mode・DoD／Gateは未実証。既存source・POM・正式migration・runtime権限・remoteは変更していない。次はL2競合検証で、今回L2〜4は未作成・未実行。
+
+## 39. L2同許可／同対象・確認／取消・結果不明の競合検証（2026-10-05）
+
+Ownerの継続指示により承認済み初回範囲のL2を作成・実行した。同許可消費・同対象の別許可発行はbarrierで開始し、確認／取消と消費の両先行順序は実DBのロック待ちを観測してから先行transactionを解放した。結果不明は実際のcommit / rollback両方で再開・取消・次許可を拒否する。commit後runner終了は送信前停止の局所模擬とした。
+
+最終9 tests / failures 0 / errors 0 / skipped 0、初回成功。XMLのprefix別件数と4件のDBロック待ち・前後状態を[Evidence§5](../architecture/validation/phase4-s1-minimum-local-verification-20261005.md#5-l2競合検証)へ記録し、DB / Ryuk cleanupを確認した。L1 source・専用SQLと保存済み証拠はchecksum不変。
+
+L2 LOCAL PASSはTooling内の保守的な操作経路の成立であり、正式Reference接続・人の最終解決・実OS crash / commit応答喪失・executor相関・DoD / Gateの認定ではない。既存source・POM・正式migration・runtime権限・remoteは変更していない。次はL3、L3〜4は未作成・未実行。
+
+## 40. L3実executor相関・publication厳密対象選別（2026-10-05）
+
+Ownerの継続指示でL3を作成・実行した。test専用明示Bean構成でModulith JDBC registry・標準async proxy・単一ThreadPoolTaskExecutorを接続し、publication UUID／FAILED／attempt／event型・IDで選別した。同event別listenerと別eventのpublicationを含め、targetだけの送信、context欠落・不一致拒否、例外後のthread再利用とcontext非残留を確認した。
+
+options版batch1がfilterより先に候補を制限しtargetが未選定となる負例も実確認した。初回8 tests / failures 0 / errors 0 / skipped 0。XML件数・source checksum・cleanupを確認し、[Evidence§6](../architecture/validation/phase4-s1-minimum-local-verification-20261005.md#6-l3実executor相関厳密対象選別)へ記録した。
+
+L3 LOCAL PASSはtest専用operationの実executor伝播と選別の局所成立で、実trace・真正な許可・正式認証／Audit／JPA・DoD／Gateの認定ではない。既存Framework decorator・Source・POM・migration・runtime権限・remoteは変更していない。次はL4目的別mode組立、L4未作成・未実行。
+
+## 41. L4目的別mode・起動時副作用と初回局所結果の出口（2026-10-05）
+
+Ownerの継続指示でL4を作成・実行した。test専用明示Bean構成をSpring Bootで起動し、通常modeの送信経路、確認modeのsender／listener／runner不在、復旧modeの対象ID付きrunnerの実起動1回と送信0、誤mode／ID欠落・不正の起動拒否を確認した。DB／Web認証は使わず、Bean集合とin-memory副作用probeの局所契約を検証した。
+
+初回12 tests / failures 0 / errors 0 / skipped 0。XML件数とL1〜3 source／保存証拠のchecksum不変を確認し、[Evidence§7・8](../architecture/validation/phase4-s1-minimum-local-verification-20261005.md#7-l4目的別mode組立起動時副作用)へ記録した。初回L1〜4の最終結果は順次実行で計40 invocation成功。既存全test・単一combined runのPASSではない。
+
+次はB1／B4／B5への局所結果差戻しと、B2 Tier・B3認可／Audit・正式Reference接続と追加範囲のreview。正式方式／Tier・ST-C〜E・DoD／Gateは未認定。既存Source・POM・migration・runtime権限・remote変更はなく、今回Docker起動もない。
+
+## 42. 局所結果の方式票反映と正式接続の残条件review（2026-10-05）
+
+Ownerの継続指示により[方式票§7・8](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#7-局所結果の方式票への反映2026-10-05)へL1〜4の結果を反映した。B1の2種類記録、B4のexecutor相関／目的別構成、B5の有限predicate方式を局所成立性の根拠付きで継続候補とし、B2正式Tier・B3認可／Audit・Reference接続を4論点へ整理した。
+
+L2の結果不明はtest入力であり別process再起動後の保全を実証せず、L4の復旧runnerはID準備までで実復旧を実行しない点を明記した。実JPAの列権限適合、認証済み許可と現在権限／失効、Business Audit同一transactionとSecurity Audit別transaction、正式modeのscan／Security／DB副作用が残条件である。管理機能一式へ拡張せず、人の総合判断と最小構成を維持する。
+
+次は上記の方針候補をOwner reviewし、配置・permission／scope・Audit対応・mode別Bean／権限表、変更一覧、追加検証の個別開始票へ具体化する。今回文書のみ更新し、正式Tier採用・Reference code／POM／migration・追加fixture／検証実行・環境／remote・Gate判定は行っていない。
+
+## 43. 初回局所検証コミット後の後続タスク整理（2026-10-05）
+
+Ownerが初回検証成果をcommitした。`docs/daily-development-workflow` / `5252124`、整理開始時cleanを確認し、[後続タスク一覧](phase4-s1-follow-up-tasks-after-local-verification-20261005.md)を作成した。Owner方針レビュー、接続条件、追加局所契約／検証、正式開始判断／基盤実装、通知／観測、統合実演、DoD／Gate判断の順に成果物と開始条件を整理した。
+
+READMEと旧引継ぎへ現在の入口を置き、変更一覧の初回ST-B未開始表記を完了へ更新した。追加範囲・ST-C〜Eの未開始を維持し、過去の工数／上限を残作業へ流用しない。次は方式票§8の4論点のOwner方針レビュー。今回文書整理のみで、追加test／正式実装・環境／remote・Gate判断は行っていない。
+
+## 44. 4項目の方針候補継続・残条件具体化のOwner承認（2026-10-05）
+
+OwnerはTier・認可・Audit・正式Reference接続の4項目の方針候補を継続し、記載された残条件の具体化へ進める方針を承認した。[方式票§8.3](phase4-s1-method-ballot-and-local-verification-contract-20261005.md#83-owner方針レビュー承認記録2026-10-05)を承認記録の正本とし、後続タスク・README・引継ぎを更新した。
+
+正式Tier採用・追加検証実行・正式Reference実装開始は後続の証拠と個別判断に委ねる。追加fixture作成、Framework Public API／Rule、依存／migration採用・Gate／remoteも承認へ含めない。最小構成、人の総合判断、結果不明の保全を維持する。次は責務配置・認可条件・Audit対応・mode別Bean／DB権限表の文書具体化。今回承認記録と導線のみ更新し、検証実行・正式実装・環境／remote操作は行っていない。
+
+## 45. 責務・認可／失効・Audit・mode／DB権限の具体化案（2026-10-05）
+
+Ownerの指示により[正式接続条件の具体化案](phase4-s1-responsibility-authorization-audit-mode-draft-20261005.md)を作成した。notification候補のDomain／Application／Adapter／Configurationと人の判断を分け、既存IdentityQuery・Audit Public契約・Security構成と局所SQLから能力別の認可、失効・拒否、Audit分類／actor・原子性、mode別Beanと論理DB権限を整理した。
+
+観察用確認と確認終了の更新を分け、通知読取modeでもSession／認証Auditの必要更新がある点、Identity再照会だけで失効窓が消えない点、復旧listenerの登録／通常経路抑止、結果不明の再起動保全を残条件へ明記した。具体案review後に追加検証契約・必要差分／再見積へ渡す。正式名称・permission／Auditコード・期限値・資源上限は未固定。文書のみ変更し、fixture作成／実行・正式code／POM／migration・環境／remote・Gate判断は行っていない。
+
+## 46. 追加局所検証契約・再見積案（2026-10-05）
+
+Ownerは具体化案を確認し、追加検証契約・再見積への継続を指示した。[追加契約案](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md)を作成し、A：実JPA／制限role、B：実Identity／Audit、C：実Web／DB mode・context再起動保全に分けた。現行ToolingのJPA利用と、Identity追加時のSecurity依存を照合し、B／Cのtest依存profile・前置条件を別判断へ残した。
+
+必須枝・順次command・資源／待機／停止・Evidenceと回帰条件を提示。A8〜16、B16〜32、C12〜24の合計36〜72標準時間は追加局所の低確度技術量案で、全S1残量・予算・納期ではない。最初はAだけの作成／実行／上限を個別reviewする。全class未作成、POM・正式source／migration・診断／検証実行・環境／remoteは変更していない。
+
+## 47. A単位の作成・実行・上限のOwner承認（2026-10-05）
+
+Ownerのcommit `f145e37`と判断記録開始時cleanを確認した。OwnerはA単位のfixture作成・実行・契約記載の上限を承認し、開始前preflight・必須枝対応・証拠固定、不成立／上限到達／範囲拡大時の再判断を条件とした。[追加契約§6.1](phase4-s1-additional-local-verification-contract-and-estimate-draft-20261005.md#61-a単位のowner開始判定記録2026-10-05)へ対象path・A1〜5・単独実行・資源／8〜16標準時間枠・4時間時点の確認・除外を記録した。
+
+B／C・正式Tier採用・正式Reference実装を含めない。本日は判断記録まで、実作業は次回開始する指示を維持。README・方式票・引継ぎ・後続タスクを次回preflightの入口へ更新した。今回fixture作成・SQL／POM変更・preflight／検証実行・環境／remote操作は行っていない。
+
+## 48. 本日の区切りと次回A開始の引継ぎ（2026-10-05）
+
+Ownerは本日の区切りとし、必要な引継ぎを作成して承認記録と一緒にcommit、remote pushまで予定すると指示した。[次回用引継ぎ](phase4-s1-additional-a-next-session-handoff-20261005.md)へ経過・現在branch／HEAD・追跡先・承認範囲・preflightからの順序・上限／停止条件をまとめた。整理時HEADは`f145e37`、追跡先は`origin/docs/daily-development-workflow`。
+
+引継ぎ作成時点で今回のcommit／pushは未実行。次回はOwnerの実結果と実際のGit状態を確認する。文書のみ更新し、Aの作成／検証・環境起動・remote操作は行っていない。

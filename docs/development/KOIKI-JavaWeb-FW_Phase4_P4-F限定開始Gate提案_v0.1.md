@@ -1,8 +1,15 @@
 # KOIKI-JavaWeb-FW Phase 4 P4-F限定開始Gate提案 v0.1
 
-**状態:** DRAFT / P4-PL2 INPUT。Gate P4-Fの設置・通過、Phase 4 production開始は未承認  
+**状態:** Gate P4-F設置・ST-C初回Reference基盤のみAPPROVE LIMITED START（2026-10-06）。正式作成検証開始は文書commit・clean source固定／preflight成立条件付きOWNER APPROVED。Phase 4全体開始は未承認。
 **作成日:** 2026年9月26日  
 **判断の起点:** [Phase 4見直し草案 R1〜R7](KOIKI-JavaWeb-FW_Phase4実施計画_見直し草案_v0.1.md#7-architecture-owner-review票)。R6は本提案書の作成だけを承認した。
+
+**2026-10-06正本改訂:** S1初回の限定範囲と前置／後段review区分は
+[Owner承認・反映記録](phase4-s1-reference-foundation-canonical-delta-and-start-conditions-20261006.md#9-正本改訂のowner承認反映記録2026-10-06)に基づき具体化した。
+[正式開始票](phase4-s1-reference-foundation-formal-start-review-20261006.md)の採用事項・上限へ追跡する。
+正本改訂承認はGate設置／限定判定・実行開始の承認ではない。
+
+**後続Gate判定:** Ownerは[初回実行資料§7](phase4-s1-reference-foundation-execution-review-20261006.md#7-gate-p4-f設置初回限定判定2026-10-06)の範囲でGate設置・初回限定APPROVE LIMITED STARTを承認した。対象外・後段条件を維持し、source固定／preflightと正式作成検証開始判断は残る。以下の提案時の未承認・判定不能記載は当時の履歴として扱う。
 
 ## 1. 提案の目的と現行Gateとの差分
 
@@ -39,14 +46,28 @@ DoD 4-2・4-4・4-5・4-12はA1単体でPASSとせず、A1・A2・D1の統合実
 P4-C1 accounting、P4-B1 SPA、P4-B2 Customer BFF、実案件IdP / SSO、P4-E1正式受渡しはP4-Fの開始対象外とする。
 MyBatis adoption Gate、当初DoD 4-8 / 4-9、P4-AR6とGate P4-ARの未完了状態を維持する。
 
+**S1初回の承認対象範囲:** ST-CのReference-owned notificationの許可・append-only消費保存、
+認可、Audit、条件付き登録とReference-owned追加migration・検証に限定する。
+通常起動では無効とし、既存identity／master／expense・Securityを保護する。
+初回ではWeb／CLI受付・sender・listener・復旧runner・expense event接続・publication schema・
+Modulith runtime・Framework API／Rules／依存変更を開始しない。A1／D1全体の設計は計画として追跡し、
+後段の実装は当該接続前reviewと個別開始判断を必要とする。
+
 ## 3. 現行baselineと未決定の技術判断
 
-| 領域 | 現行baseline | P4-F前のblocking review |
+前置条件は承認対象範囲に対応付ける。初回に作らない機能のreviewは下表の接続前条件として維持し、
+初回基盤の受入だけで当該機能を開始しない。
+
+| review | 初回基盤開始前に必要 | 後段の該当接続前に必要 |
 |---|---|---|
-| Module event | [P3-A4](../architecture/validation/phase3-p3-a4-level1-synchronous-event.md)は同期`@EventListener`でcommand整合を実証し、非同期・Level 2を導入していない | 同期veto経路と非同期side effectを分け、transaction境界、event payload、publication保存と復旧を設計する。Rule 28 / 29の変更範囲を確認 |
-| Modulith依存 | [BOM](../../koiki-dependencies-bom/pom.xml)はSpring Modulithを管理するが、Level 0 / 1ではruntime Level 2基盤を提供しない | 利用するSpring Modulith機能、依存scope、Reference / Framework配置、migration、障害時の挙動を比較し、選定理由を記録 |
-| 観測 | [Observability Starter](../../koiki-starters/koiki-starter-observability/README.md)は構造化log、Servlet `requestId`、TaskDecorator、healthを提供する | HTTP request外のevent / retry / job相関、metric、trace、個人情報非露出、exporterの責任境界を定義 |
-| 単一実行 | [Phase 1b CP8](../architecture/validation/phase1b-cp8-single-execution.md)はCustomer-like Consumerで単一実行を実証し、Framework Java APIは追加していない | publicationパージへ契約を再利用できるか、Batchとの共通実行基盤が必要かを判定。CP8 fixtureを正式artifactへ自動昇格しない |
+| Module／モデル | notification RICH／JPA SHARED、Domain／Application／Adapter責務、公開境界、既存Rules適合 | expense承認event、payload、同期vetoと非同期side effect、Rule 28／29・Level選択 |
+| 保存／migration | 許可・消費2 table、JPA transaction／Audit、列権限、V4配置と既存履歴整合を実証する計画 | publication store・completion方式・schema／履歴所有・依存選択・パージ |
+| 認可／安全 | 現在Identity能力、scope／TTL契約と未接続拒否、Audit、既定無効・Entity／Bean登録抑制 | 本人認証の運用受付、scope供給元・TTL値、停止／drain真正性、fencing、provider受理不明 |
+| 観測／運用 | 安全なlog・DB／Audit突合、実行資源・cleanup・未知結果保全 | 実trace／sink、FAILED滞留・alert、相関、retention、単一実行パージ |
+
+現行baselineは[P3-A4](../architecture/validation/phase3-p3-a4-level1-synchronous-event.md)、
+[BOM](../../koiki-dependencies-bom/pom.xml)、[Observability Starter](../../koiki-starters/koiki-starter-observability/README.md)、
+[CP8](../architecture/validation/phase1b-cp8-single-execution.md)を維持する。CP8等のfixtureは正式artifactへ昇格しない。
 
 [Data Starter](../../koiki-starters/koiki-starter-data/README.md)はFramework migrationを`db/migration/koiki`、Customer migrationを`db/migration/customer`に分ける。
 publication tableをFramework所有にするかReference側へ置くかでmigrationの配置と配布義務が変わる。
@@ -82,6 +103,14 @@ OpenTelemetry exporterの配布既定はこの段階で固定しない。
 | F-3 | DoD 4-1〜4-5・4-12の実演手順。process kill、再起動後配信、重複配信、外部送信失敗、FAILED観測、再送、パージ、相関を含む | 成功・失敗・復旧をpackage済みReferenceと独立した検証手段で再現できる計画がある |
 | F-4 | commit pointとrollback方針、Framework / Reference / Tooling限定作業のmodule別概算範囲または上限、実施Owner、検証環境・Evidence保管先 | 対象と工数をDoD実演単位へ追跡できる。限定作業のOwner・上限が未記入ならGateを開催しない。実案件固有のprovider・運用・CI総額は各Application採用時へ分ける案 |
 | F-5 | P4-AR計画・`AGENTS.md`の改訂差分、P4-AR6 / AR-D10 / Gate P4-ARとの関係、停止条件 | 現行承認との衝突と残す義務が見える |
+
+S1初回のF-2は§2・3と正式開始票の配置・除外／後段reviewへ対応付ける。F-3には新規6 class／55件、
+既存25 class／package済み主要操作E2E保護と、下記DoD実演の未達を並べる。
+初回testを通知・復旧実演の代替にせず、当初DoD 4-1〜4-5・4-12の出口を維持する。
+
+初回基盤だけを承認対象とする場合、F-4は初回の概算・上限・Owner・環境を確定し、後段の見積未確定と
+再審査時点を明記する。採用済み初回24〜40標準時間をS1全体の予算としない。
+初回の上限が未採用なら限定開始を判定しない。後段の作成・実演開始前には当該範囲の概算または上限を再審査する。
 
 F-3の実演単位は次のように分ける。失敗を注入する仕組みはToolingまたは非配布fixtureに置き、正式Framework artifactへ含めない。
 
@@ -154,6 +183,8 @@ FAILED遷移からの滞留時間、非同期相関、Rule 28 / 29、
 ## 5. Gate提案時の判定と停止条件
 
 Gate P4-Fの判定案は`APPROVE LIMITED START`、`REWORK`、`REJECT`のいずれかとし、承認時は対象commit point、Owner、Evidence、停止点を明記する。
+S1初回では承認範囲・残るCP／DoD・後段禁止・期限または上限も記録する。
+Gate設置だけで実行を開始せず、正式開始票の個別reviewと初回preflight成立を実行条件とする。
 Public API、dependency、migration、Starter、Security既定、workflow、remote push / PR / merge、snapshot publishは、それぞれ既存のblocking reviewと個別承認を要する。
 実案件要件への依存、P4-AR6で責任分担未決の変更、DoD変更、FrameworkへのCustomer / Reference codeの無審査昇格を検出した場合は、対象packageの開始を停止して再reviewする。
 
