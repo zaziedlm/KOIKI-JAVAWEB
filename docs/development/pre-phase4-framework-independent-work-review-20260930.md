@@ -5,6 +5,8 @@
 **継続作業branch:** `docs/daily-development-workflow`（`main` / `217cd0c`から作成。作業1〜3の進捗は§8〜§10、2026-10-02の今後の作業一覧は§11）
 **関係する既存の順序表:** [Development README「次の着手順（2026年9月29日時点）」](README.md#次の着手順2026年9月29日時点)。本書§5で対応を示す。
 
+**後続判断（2026-10-02）:** S1検証完遂を目指す進め方の候補化をOwnerが決定・承認した（§15・[決定記録](phase4-s1-completion-direction-decision-20261002.md)）。§0〜§7の暫定S0等は初稿時点の記録として保持し、現在の計画具体化は後続判断を入力とする。個別実行・Gate / 開始は別判断。
+
 ## 0. 要約
 
 - 実案件チームはReference Applicationの起動などに着手した。実案件開始は2026年11月予定。
@@ -556,8 +558,8 @@ A案（個別記載への検査）を有力候補として保持し、案の共�
 | 判断待ち | 作業2：日常開発の反復方式 | 比較・推奨案の文書化は承認済み。方式採用・Tooling実装は未承認 | commit別の日常用stage案を検証対象に進めるか、Ownerが別判断。依存制御の保留と同じ扱いにはしない |
 | 報告・保留 | 作業3：依存関係制御 | 文書整理を区切り。A案を保持し検証作業保留 | Ownerがアプリチームへ経緯・保留・再開条件を報告。POM構成検討の前段で再開 |
 | 文書作業完了 | 作業4a：認証profileガイド | COMPLETE / OWNER APPROVED（2026-10-02） | ALB + BFF、認証情報・claim、Session / logout、判断記録様式を文書承認。案件の採否は入力A待ち（§12） |
-| 4a後の計画整理 | 作業4b：Phase 4入口と先行範囲 | package分類案まで作成済み | 採用支援 / 本体の区別、顧客入力への依存、案1 / 案2を整理。作業5・7と合わせてreview材料にする |
-| 4bと一体 | 作業5：CP-F0・S0時の再計画 | F-5台帳と暫定S0まで作成済み。S0は未確定 | S0 / S1 / S2、DoD差分、通知とBatch等の順序を整理。需要・運用Ownerの未取得を明示 |
+| 計画整理中 | 作業4b：Phase 4入口と先行範囲 | 全件の入力・Owner候補・DoDと2案の比較を文書化 / DRAFT（§13） | 作業5・7の結果を加え、先行対象・Gate差分・見積材料を一体でORへ提出 |
+| 4bと一体・review入力 | 作業5：CP-F0・S0時の再計画 | 比較・成立条件・未達DoDと依存再計画を文書化 / DRAFT（§14）。S1完遂を目指す進め方の候補化はOWNER APPROVED（§15） | S1の具体的実行条件を作業7で揃え、4bと合わせてORへ提出。具体的採用・Gate / 開始、S2採用は別判断 |
 | 4b・5と並行可能 | 作業7：PL2全package分解 | A1 / A2 / D1以外の分解が残る | 設計論点、前提、blocking review、検証環境、DoD実演単位、概算をまとめる。production実装は開始しない |
 | 材料が揃ってから | OR：Owner review | 未実施 | 作業4b・5・7を入力にCP-F0とFramework先行範囲を判断 |
 | OR後 | 作業6：タスク・承認CP案 | 未着手 | Owner、Evidence、停止条件、作業量、remote操作の個別承認点を提案 |
@@ -599,3 +601,204 @@ Ownerの着手指示に基づき、[認証profileガイド](frontend-authenticat
 §8.5の3（P4-04 / P4-EDGEの採否・受入条件）は顧客確認待ちのまま維持する。
 
 文書reviewの対象は、通常のBFFとALB前段BFFの責務、Referenceと案件の条件差、Session終了とAPI Token失効の区別、未取得事項を残す判断記録様式である。今回の承認は文書化の範囲に限り、案件の方式選定、実環境検証、P4-04 / P4-EDGEの採用、Phase 4開始、remote操作を含まない。次の計画作業は4b・5・7とし、採否・開始範囲は後続のOwner判断で定める。
+
+## 13. 作業4bの入口・先行範囲整理（2026-10-02）
+
+作業4aの文書承認はcommit `dbee2bf`で記録済み。Ownerの継続指示により、[Phase 4入口・Framework先行範囲の整理案](phase4-entry-and-forward-scope-options-20261002.md)を作成した。状態はDRAFT / 作業4bのreview入力である。
+全packageについて顧客入力・運用 / platform入力・採用triggerを区別し、Owner候補・DoD・依存を整理した。CP-F0と先行範囲を別軸で扱い、案1の現行Gate維持と案2の対象再定義を比較した。
+作業5のS0再計画と作業7の全件分解・概算は未完了であり、作業4b全体の完了やOR提出完了にはしない。次は作業5の判断材料を具体化し、作業7の結果と合わせて対象・Gate差分・見積材料を更新する。既存R1〜R7、F-5文案、Gate規定とproduction成果物は変更していない。
+
+Ownerは本整理案を読む目的として、案件アプリチーム・顧客判断を意識しながらも、独立して成立させられるFramework側の範囲を着実に進捗させる意図を示した。協調とFAQ対応を続け、フィージビリティを継続確認する。この目的を整理案§1・§4.1へ反映し、案2を具体化の検討軸とする提案に更新した。案2の正式採用、Gate改訂と開始対象は未承認である。
+
+## 14. 作業5のCP-F0判断材料・再計画案（2026-10-02）
+
+[CP-F0判断材料・S0時の再計画案](phase4-cpf0-and-s0-replan-options-20261002.md)を作成した。Framework自身の当初成果物・DoDと案件導入を分け、S1の成立条件を具体化する提案とS0選択時の未達DoD保持・依存再計画を記載した。C1の永続化実証と非同期連携の分離、C3の通知非依存jobを比較材料にした。
+状態はDRAFT / 作業5のreview入力。既存PL2の暫定S0記録は維持し、S1の採用やMyBatis trigger成立、job選定、DoD変更は決定していない。担当・上限・環境等は作業7で具体化し、作業4bと合わせてORへ提出する。新しい実測・production変更は行っていない。
+
+本節は作業5の初回文書化時点の記録である。その後のS1候補化判断は§15を参照し、現在の計画状態へ反映する。
+
+## 15. S1検証完遂を目指す候補化判断と対話記録（2026-10-02）
+
+Architecture Ownerは「S1を完遂する進め方を、候補とすることは決定事項とし承認します」と明示した。候補化判断を**DECIDED / OWNER APPROVED**とし、[S1計画方針・案件協働とnon-Web境界の決定記録](phase4-s1-completion-direction-decision-20261002.md)に経緯、承認範囲、S1完遂の検証軸、案件でS2が必要な場合の並走協働、non-Web / Web同居の分岐、Batch点検材料を集約した。
+
+次の中心作業はS1（A1 / A2 / D1）の具体的実行条件を作業7で揃えることである。C3 / C4のnon-Web＋Batch連携は関連入力として整理し、Batch整備へS1の目的を置き換えない。S1成立が難しい場合のS0再計画材料も保持するが、切替はOwner判断とする。
+
+今回の承認は候補化の判断に限る。具体的対象・担当・上限・環境、CP-F0残項目、先行Gate・blocking review・production開始、S2共通提供、Batch正式依存、DoD変更およびremote操作は別判断である。作業4b / 5 / 7全体の承認やS1完了とは扱わない。
+
+その後Ownerは決定記録の内容を確認し、問題なしとして文書承認した。大きな決定事項のcommit pointとして作業を区切り、[次回作業引継ぎ](phase4-s1-next-session-handoff-20261002.md)を作成した。文書承認によって上記の実行・Gate等の承認範囲は拡張しない。次回は作業7の具体化から再開する。
+
+## 16. 作業7のA1 / A2 / D1照合（2026-10-05）
+
+Ownerの着手指示により、[A1 / A2 / D1とS1限定範囲の照合](phase4-s1-a1-a2-d1-scope-mapping-20261005.md)を作成した。状態はDRAFT / 作業7の第一段階。S1対象・成果物Ownership・現行sourceとの差分・DoDとreview論点を整理した。
+
+Referenceの現行migrationは`db/migration/kkref` / `kkref_flyway_history`であり、既存PL2のApplication配置案との整合をA1 reviewへ渡す。承認event / notification / Level 2 runtimeは未実装。既存requestId伝播と、永続event・別process復旧・実traceの差分も後続設計へ残した。
+
+次は安全性・復旧条件、実演単位、担当・環境・上限を具体化し、他package分解と合わせて作業4b・5のOR入力を揃える。今回の文書化で作業7全体・S1・ORを完了扱いにしない。production code、POM、Rules、migration、Gate規定とremoteは変更していない。
+
+## 17. 作業7の安全性・復旧条件具体化（2026-10-05）
+
+Ownerは前段の照合文書を確認し、次段階への継続を指示した。[S1安全性・復旧条件の具体化](phase4-s1-safety-and-recovery-conditions-20261005.md)をDRAFT / blocking review入力として作成した。前段への確認・継続指示を、具体的な復旧方式や実装開始の承認へ拡張しない。
+
+停止証拠の真正性、通常listener / 復旧者の競合、lock喪失窓、同じ論理通知の冪等keyとprovider受理不明、DB確定順、非HTTP主体の認可 / Audit、上限・監視・保持をS-01〜11へ整理した。FAILEDでも元実行の停止は状態だけでは判断できないこと、再送操作の識別子と外部重複抑止keyを同一視しないことを明示した。
+
+次は各条件をDoD実演単位・構成・証拠・PASS / FAIL / BLOCKED条件へ対応付ける。新しい実行検証、方式採用、blocking review通過、作業7 / S1完了、Gate・production開始は行っていない。
+
+## 18. 人の総合判断を前提とするDoD実演分解（2026-10-05）
+
+Ownerは、DB状態だけで再送要否・処理到達点を捉えることには限界があり、実運用担当者による確認と総合判断を前提に、Framework機能と組み合わせて非同期復旧を運用として成立させる方針を示した。この方向での継続指示に従い、安全条件文書へ方針を反映し、[S1 DoD実演計画・人による確認判断](phase4-s1-dod-demonstration-plan-20261005.md)をDRAFTとして作成した。
+
+21 caseで正常配信・停止後復旧・重複・競合・受理不明・認可 / Audit・パージ・相関を分解し、担当者の確認材料、判断理由、保留・調査・エスカレーションと証拠を組み込んだ。安全な保留のcase PASSと、核心DoDの配信完遂を区別する。全caseは未実施であり、具体的方式・担当・環境・上限・Gate開始の承認ではない。
+
+次は実施 / review / 復旧担当、検証環境・cleanup、作業分解・概算 / 上限、順序と停止点を揃える。作業7全体・OR・S1・DoD判定は未完了。production codeとremoteは変更していない。
+
+## 19. DoD実演caseのOwner了解（2026-10-05）
+
+Ownerは[DoD実演計画§3](phase4-s1-dod-demonstration-plan-20261005.md#3-caseとdodの対応)のcase構成を了解した。caseが多様・複雑であり、この時点のOwner reviewでは網羅判定を言い切れないため、以降の検証で十分に確認されていくことへOwnerも注視・集中する方針を記録した。
+
+case構成の了解を網羅性の確定、全文の一括承認、検証実行開始、blocking review・Gate通過、DoD PASSへ拡張しない。後続検証の結果・証拠、不足case・未検証枝・残るリスクを継続確認し、必要なcaseを見直す。次の担当・環境・作業量 / 上限の具体化と、作業7全体の未完了状態を維持する。
+
+## 20. S1担当・環境・残作業概算と実施順の具体化（2026-10-05）
+
+Ownerの継続指示により、[S1担当・検証環境・作業量／上限・実施順案](phase4-s1-execution-resources-and-sequence-draft-20261005.md)をDRAFTとして作成した。担当責務・兼務条件、人による復旧判断、ローカル隔離環境とcleanup、残作業10単位、段階別の出口・停止点を整理した。
+
+Agentによる低確度の残技術作業概算は176〜344標準作業時間。既存47〜80標準人日の換算やAI所要時間ではなく、作成済み計画を除いた今回のWBSからの提案である。Owner / 他担当のreview参加・人の実演参加時間と外部待ちを分離し、担当者・稼働・実環境・費用・上限承認・運用数値はOPENとして保持する。予算・完了保証・Gate提出条件成立を意味しない。
+
+次は他packageを同様に分解し、作業4b・5と合わせて先行対象・優先順・Gate差分のOR材料へ統合する。S1の担当・環境・上限取得は並行管理する。今回、production / Tooling実装、新しいMaven / Docker検証、commit・remote操作は行っていない。
+
+**担当実体の注記（2026-10-05）:** Ownerは上記資料§2の責務整理に合意した。実際はOwner一人＋Codexの協働で各責務を兼務し、本計画も同じ陣容で進める。サブエージェントは現時点で使わず、タスクを順次・同期的に進め、Ownerが理解を保つ方針を利点とする。役割表は維持して軽い注記を追加し、別担当者の配置待ちとは扱わない。各作業の分担・稼働・権限、環境・上限・開始の個別判断は残る。
+
+## 21. S1計画commit後の他package分解（2026-10-05）
+
+Owner実施のcommit `eaf944d`にS1計画文書4件とREADME・本書が反映されたこと、再開時作業treeがcleanであることを確認した。commitは計画材料の記録であり、具体的方式・予算・実装開始の承認ではない。
+
+継続指示により、[S1以外のpackage分解・比較材料](phase4-other-packages-breakdown-draft-20261005.md)をDRAFTとして作成した。独立候補の対象・Ownership・依存 / review・正常 / 負例・環境・残作業概算、入力 / trigger待ち全件、共通費の重複と未算定範囲を整理した。Owner＋Codexで順次・同期的に進める方針を維持する。
+
+次はS1と他packageを作業4b・5の先行範囲 / CP-F0材料へ統合する。全件分解の追加資料は作成したが、選定対象の実行条件・未算定部分・共有費配賦・詳細設計・上限判断が残り、作業7全体とORは未完了。実装・新規実行検証・remoteは行っていない。
+
+## 22. 作業4b・5・7の統合判断材料（2026-10-05）
+
+Ownerは他package分解文書を確認し、S1との統合を指示した。[先行範囲／CP-F0統合判断材料](phase4-forward-scope-cpf0-integrated-review-draft-20261005.md)をDRAFTとして作成し、作業4b・5へ導線を追加した。S1候補化・case構成了解・人による総合判断・Owner＋Codexの順次実施を確定入力として保持した。
+
+初回対象をS1へ絞る案、C2等の独立準備候補、現行Gate / Level 2限定P4-F案 / 案2の比較、共通費と未算定、OR-1〜6の判断事項を統合した。案2やGate設置を採用済みとせず、初回範囲・開始経路・詳細設計 / 環境 / 再見積・上限の判断を残す。
+
+次はOwner確認を踏まえ初回対象・Gate経路・残判断の工程を絞り、選定対象の具体的条件を揃える。作業4b・5・7全体・OR・S1・Gateは未完了。既存R1〜R7 / F-5・AGENTS / Skill・Gate規定・code・remoteは変更していない。
+
+## 23. 初回対象・Gate経路・残判断への具体化（2026-10-05）
+
+Ownerは統合順序案を受領し、初回対象・Gate経路・残判断へ進む意向を示した。[初回S1対象・Gate経路・残判断の具体化案](phase4-initial-scope-gate-and-open-decisions-draft-20261005.md)をDRAFTとして作成した。初回をS1に限定し既存Level 2限定P4-F案を具体化するAgent推奨、案2追加対象の後続判断、残判断J1〜8と工程・出口を示した。
+
+既存P4-F提案の前置blocking reviewとPL2の個別開始CPの順序・条件は、作業8・9で整合させる事項として明記し、推測でGate工程を変更していない。次はW01 / W02相当のread-only詳細設計材料を揃え、核心DoD解釈・環境 / 稼働・再見積 / 上限・正本差分へ接続する。OR結果前に作業6 / 8 / 9へ正式移行したとは扱わない。
+
+統合順序案の受領を具体的対象・経路採用、Gate設置 / 通過、blocking review・実装開始の承認へ拡張しない。新しい実行検証・code変更・remoteは行っていない。
+
+## 24. W01 / W02のread-only詳細source照合（2026-10-05）
+
+Owner実施のcommit `e75a70a`に前段7文書が反映されたことと、再開時cleanな作業treeを確認した。継続指示により[W01 / W02 source照合](phase4-s1-w01-w02-source-design-review-draft-20261005.md)を作成した。
+
+Data StarterのApplication設定上書き契約からkkref履歴維持を優先比較する案、依存 / Rule互換、限定環境停止 / drain・安定key / provider照合を整理した。復旧fixtureの選別はpublication単位だが終端待ちはevent単位であることを確認し、当該publication / 試行の誤終端を防ぐ負例をE13へ追記した。これはsource上のリスク推論で、動作再現・fixture修正結果ではない。
+
+次は方式候補の確認と、核心DoD解釈・非HTTP運用 / Audit・観測 / 保持・実環境 / 再見積条件を具体化する。W01 / W02・blocking review完了、初回対象 / Gate採用、実装開始は未承認。今回は文書とread-only source調査のみである。
+
+## 25. 方式・DoD解釈・運用 / Audit・観測条件の具体化（2026-10-05）
+
+OwnerはW01 / W02 source照合を確認し、次段階への継続を指示した。[方式候補・DoD解釈・運用／Audit・観測条件案](phase4-s1-method-dod-operations-observation-draft-20261005.md)をDRAFTとして作成した。限定環境停止 / drain・専用lock・安定keyを初回比較候補とし、人の総合確認、復旧全体 / 操作時間、Audit分類・actor / Application操作台帳、別process trace / alert・保持を具体化した。
+
+Auditの現行MANDATORY / REQUIRES_NEW契約、SUCCESS / FAILUREのみの結果、Framework-owned SYSTEM actorとObservabilityの提供範囲をsource・承認契約で照合し、正式API / schemaの先行拡張を避けた。E04〜07 / E16 / E20へ採取条件を追記したが、方式採用・数値確定・実演 / DoD判定は行っていない。
+
+次は非HTTP復旧主体・停止確認 / 専用process・実観測構成のreview案を絞り、環境・再見積 / 上限・Gate判断材料へ接続する。新しい実行検証、production / Tooling実装・remoteは行っていない。
+
+## 26. 非HTTP主体・専用process・実観測のreview案（2026-10-05）
+
+Ownerは前段内容の大枠を認識し、詳細を全て見切った承認とはせず次段階への継続を指示した。[非HTTP復旧主体・専用process・実観測構成review案](phase4-s1-nonhttp-process-observation-review-draft-20261005.md)を作成した。
+
+Security Starterのmethod security構成はServlet条件内、local認証APPLICATION source protectionはWebAuthenticationDetailsを要求することをsourceで確認した。認証済みReference要求からnonHTTP実行へ分ける方式を優先候補とし、現在の権限 / user有効性・要求消費・actor / Audit、専用Bean / executor・非Web終了、tracing integration / exporter・隔離sinkの残条件をR-N1〜5に整理した。
+
+次は既存Public契約への接続と変更責務を確認し、実装前review票・環境preflight案・再見積差分へまとめる。方式採用・詳細承認・Gate / 実装開始を推定せず、今回の作業は文書とread-only調査に限定する。
+
+## 27. Public接続・実装前review票・preflight / 見積差分（2026-10-05）
+
+Ownerの継続指示により[実装前review票・環境preflight案・再見積差分](phase4-s1-preimplementation-review-preflight-estimate-draft-20261005.md)を作成した。IdentityQuery / IdentityUserのPublic契約で現在のACTIVE状態・permission集合を照合できることをsource確認し、本人認証・要求真正性 / 競合消費・照会後失効の窓とは区別した。
+
+RV-1〜7の具体的判断票、PF-1〜6の診断 / build / 隔離実演とcleanup、既存W01〜10への要求・nonWeb・観測の差分配賦を整理した。純追加量は設計・sink未選定のため未算定であり、0追加や既存176〜344時間以内の確定としない。次は対象票・方式候補を絞り、schema / 依存・環境 / 上限の残条件を閉じる。
+
+票は未判定、preflight・実動検証は未実施。今回の作業は文書とread-only source調査で、正式code / API・POM・migration・Gate規定・remoteは変更していない。
+
+## 28. 方式候補・復旧要求保存・依存と環境上限の具体化（2026-10-05）
+
+Ownerの指示により[方式候補・復旧要求の保存構造・依存構成・検証環境上限案](phase4-s1-request-storage-dependencies-environment-draft-20261005.md)を作成した。認証済み要求＋IdentityQuery再確認を比較基準とし、要求・試行・対象実行権・人の判断履歴、単発消費と不明時の非自動解除を具体化した。notificationの状態遷移・競合制御に伴うTier 2 RICH / JPA共有モデルへの見直しは新たな採用候補で、決定ではない。
+
+Modulith JDBCとBoot OpenTelemetry Starter・Tooling Collectorの依存候補を整理した。環境には4 JVM、memory / CPU・接続・容量・要求期限・待機 / 回数の数値仮値を置き、PF実測と超過時の停止を条件とした。元WBSとの比較用純追加24〜48時間・総量200〜392時間を低確度案として提示し、既実施量未控除・予算未承認を明記した。
+
+次は方式 / Tier / 仮上限のOwner確認から、permission・Audit分類、DDL / 権限・依存固定案、Gate整合へ順次進める。人の総合判断とOwner一人＋Codexの同期的協働を維持する。正式code / API・POM・migration・環境実行・Gate / remote変更は行っていない。
+
+## 29. S1最小構成と将来管理機能の分離方針への合意（2026-10-05）
+
+Ownerは復旧要求管理一式がWeb Frameworkの機能範囲として過大にならないかを確認し、S1実証の最小構成と将来の運用管理機能を分け直すこと、notificationのTierは最小構成後に判断することに同意した。[最小構成の再整理](phase4-s1-minimum-demonstration-scope-review-20261005.md)へ方針と対象を記録した。
+
+要求・試行・対象実行権・判断履歴の4種record、Tier 2見直し、追加24〜48時間 / 比較総量200〜392時間は拡張方式の参考材料へ戻し、初回採用前提から外す。安全条件・人の総合判断・E01〜21の目的は維持し、non-Web許可引渡し・対象試行識別・不明時記録を中心に最小候補を再reviewする。Tier 1確定や無認可復旧の許可ではない。
+
+次は既存契約との照合と最小方式比較、その後にTier・保存 / 依存・見積 / 上限を順次判断する。今回の合意は計画方針で、具体方式・Gate・実装開始の承認ではない。文書のみ変更した。
+
+## 30. 最小許可引渡し・対象試行の識別照合（2026-10-05）
+
+Ownerの最小構成資料確認・継続指示により[non-Web許可引渡し・対象試行識別案](phase4-s1-minimum-permission-and-attempt-review-20261005.md)を作成した。認証済み経路で発行する1件の許可recordと原子的消費を優先比較し、署名file / token、オンライン確認との追加負担を整理した。結果不明の許可を再使用・期限だけで解除しない条件を維持し、4種台帳の必須化は戻していない。
+
+ローカルModulith 2.1.1 JARのjavapと公式API / referenceでpublication ID・attempts・最終再送時刻を確認した。再送APIはvoid、EventPublicationにlistener ID・operation IDはなく、対象listenerへの実operation相関は未実証である。再送前FAILED・別publication終端を今回結果としない観測条件、不明時の最小証拠とcase対応を整理した。
+
+次は許可DB保護 / 単発消費、対象試行への実相関、確認終了時の起動条件を閉じてからTier・保存・依存・見積へ進む。API署名のread-only確認であり、runtime PASS・Maven test / Docker実行ではない。code・POM・migration・Gate / remoteは変更していない。
+
+## 31. 許可DB保護・実executor相関・確認modeの具体化（2026-10-05）
+
+Ownerの継続指示により[許可DB保護・executor相関・結果確認起動条件](phase4-s1-permission-db-executor-startup-review-20261005.md)を作成した。用途別role / 列権限と消費巻戻し不可を別条件とし、1 recordの狭い保護とappend-only消費recordを比較する。table数1のための過剰設計を避け、最小機能方針を維持した。
+
+現行KOIKI decoratorは独立ContextRegistryでrequestIdだけを伝播することをsource確認し、Application-owned不変operation contextと標準trace伝播の共存・実executor選択をEX-1 / 2へ整理した。結果確認は既存認証を使い、送信listener / Adapter・auto再送・通常業務更新を起動しない限定Web modeを候補とする。Data StarterがPrimary DataSourceでmigrationする点から、runtime最小権限と事前migrationの整合も条件へ追加した。
+
+DB-1 / 2・EX-1 / 2・ST-1は未実演。次は保護方式と相関 / 起動境界の成立性を確認してからTier・DDL / 依存・見積へ戻す。文書とread-only source確認のみで、権限変更・code / POM / migration・環境起動・Gate / remoteは実施していない。
+
+## 32. 最小保護方式・標準再送経路・起動境界の成立性照合（2026-10-05）
+
+Ownerの継続指示により[成立性確認](phase4-s1-minimum-boundary-feasibility-review-20261005.md)を作成した。許可と一意INSERT-only消費の2種類記録を優先比較し、消費取消しを避ける保護と人による確認終了の責務を区別した。1種類＋triggerは代案、4種管理台帳は初回必須にしない。
+
+Modulith 2.1.1のローカルbytecodeでregistry→target listenerの逐次呼出しを確認し、実async executorへのcontext captureが成立候補となる根拠を得た。predicate版は未完了collection、options版はFAILED候補をbatch制限後にfilterする経路であり、対象未選定と取得量の条件を追加した。実相関は未実証。ReferenceSecurityConfigurationにServlet条件がないこととroot / Entity scan境界をsource確認し、目的別Bean構成の変更点を整理した。
+
+次は2種類記録・目的別起動を最小候補としてreviewし、Tier・DDL / 権限・executor / case検証手順へつなぐ。source上の成立候補でありruntime PASS・Owner採用決定ではない。code・POM・migration・権限設定・環境起動・Gate / remoteは変更していない。
+
+## 33. 最小候補のTier・保存 / 権限・検証順整理（2026-10-05）
+
+Ownerの継続指示により[Tier・保存／権限・検証手順](phase4-s1-minimum-tier-storage-verification-review-20261005.md)を作成した。notificationへ残る許可間・許可 / 消費間の不変条件から、狭いTier 2 RICH / JPA共有モデルを優先review候補とした。機能を追加する提案ではなく、Tier採用は未判定である。Tier 1を維持する場合も最小業務ルールの配置と単純性を説明し、安全条件を削らない。
+
+2種類recordの論理field / 制約・用途別権限とtransaction境界を整理した。PostgreSQLのFOR UPDATEにUPDATE権限が必要なため、前段の復旧role SELECT-onlyとrow lockの組合せを修正し、技術version列だけUPDATEする候補とした。V0〜7でDB・競合・mode / Security・実相関、配信完遂・運用負例・保持をE01〜21へ対応付けた。
+
+全段階未実施。次はTier・保存 / 権限・検証順のreviewから変更一覧・個別開始範囲へつなぐ。拡張方式の見積は流用せず、今回code・POM・migration・DB権限・検証実行・環境 / remote操作は行っていない。
+
+## 34. 最小候補・変更一覧・個別開始範囲の統合（2026-10-05）
+
+Ownerの継続指示により[採用候補・残条件・変更一覧と個別開始範囲](phase4-s1-minimum-change-and-start-scope-draft-20261005.md)を作成した。許可＋append-only消費、狭いTier review、認証済み発行 / 現在権限、目的別mode / 実相関、JDBC publication / 有限predicate選別をK1〜6へまとめ、Reference / Framework / Toolingの変更をCH-01〜08へ整理した。
+
+ST-A文書、ST-B非配布局所検証、ST-C正式基盤、ST-D通知 / 観測、ST-E統合実演へ開始範囲を分けた。STは既存CP / Gateの改訂ではなく、局所Tooling PASSからReference実動 / P4-F通過を認定しない。permission・Audit・権限 / DDL・依存・実相関 / 起動・上限と再見積・J1 / J8の残条件を開始時点別に整理した。
+
+直近は方式採用票とST-Bの具体的fixture / test・command / 資源 / 上限 / Evidenceをreview可能な形にする。方式未採用、ST-B以降未開始。文書のみ変更し、code・POM・migration・DB権限・検証 / 環境・remoteは実施していない。
+
+## 35. 方式採用票・初回局所test / 実行・資源契約（2026-10-05）
+
+Ownerの継続指示により[方式採用票・初回局所検証契約案](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)を作成した。B1〜6で局所検証候補了解と正式採用を分け、ST-B初回は既存非配布Toolingのtest-only追加4 class / 専用support・resourcesを候補とした。既存Source・V1 / V2・POMを変更しない起点とし、追加が必要なら票へ戻す。
+
+DB role / 単発消費 / 競合、実Modulith executor相関・対象選定、mode組立の枝と合否・Evidence、Surefireの予定順次commandを用意した。初回は1 test fork / 1 DB、有限20 publication、待機 / 保存 / 再試行・作成16〜32標準時間の仮上限を提示し、実測前・未承認を明記した。正式Reference Web認証・実tracer / exporter・OS crash・独立providerを初回PASS範囲へ含めない。
+
+票は未判定、4 testは未作成、command / 診断 / 実行は未実施。次はB票と初回作成・実行範囲のOwner判定へ戻し、その結果に従う。今回文書のみ変更し、code・POM・migration・DB権限・環境 / remote操作は行っていない。
+
+## 36. 方式票・初回局所作成／実行契約のOwner承認（2026-10-05）
+
+Ownerはレビュー支援の見解を了承し、[方式採用票・初回局所検証契約案](phase4-s1-method-ballot-and-local-verification-contract-20261005.md)の判断を承認した。B1 / B4 / B5は局所検証候補了解、B2は狭いRICH / JPA共有モデルをTier候補として継続、B3は方向性了解と残条件の具体化継続として記録した。
+
+B6は票全体の承認として、記載されたST-B初回fixture作成・実行の両方を対象とする。対象path・4 test / support / 専用resources、preflight・実効設定と必須枝の確認、資源／待機／再試行上限・Evidenceを適用する。16〜32時間は完了保証ではなく8時間時点で見直す。依存追加・範囲拡大・上限超過は再判断する。
+
+人の総合判断を維持し、局所PASSから正式Tier・Reference実装・Framework Public API・DoD / Gate通過を認定しない。次は承認済み初回範囲のpreflightとfixture作成から順次進める。この記録時点では4 test未作成・全command未実行で、文書のみ変更した。
+
+## 37. コミット前の現在／履歴導線の整合（2026-10-05）
+
+Ownerは初期計画の記述がAIエージェントを迷わせる懸念を示し、整理・記述整備・コミットを指示した。[現在の局所検証開始引継ぎ](phase4-s1-local-verification-start-handoff-20261005.md)を作成し、READMEの入口、旧引継ぎ・Tier 1開始案・拡張4種記録／環境／見積・各設計資料の現在参照先を整備した。
+
+方式票の冒頭判定表を承認結果へ統一し、当時の未判定と現在の承認が二重に見える状態を解消した。旧本文は検討履歴として保持し、最小構成・Tier候補・初回作成／実行承認と、正式Reference実装・DoD / Gateの残判断を読み分ける。
+
+今回のコミット単位はsource照合から最小候補の絞り込み・Owner承認・導線整備までの文書群。fixture作成・実行・production変更・remoteは含めない。次作業は承認済みpreflightとL1からの順次検証である。
