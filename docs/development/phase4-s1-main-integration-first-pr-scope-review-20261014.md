@@ -2,7 +2,7 @@
 
 状態：**LOCAL REVIEW DRAFT / OWNER INTEGRATION DECISION PENDING**。Architecture Ownerは、R3-Bを待たずに統合計画と最初のPR範囲の点検を始める方針を採用した。本書はローカルGit履歴に基づく判断入力であり、push・PR作成・merge・CI変更・R3-B開始の承認ではない。
 
-現行判断は§10を参照する。上の状態は本書作成時点の履歴である。
+現行判断は§11を参照する。上の状態は本書作成時点の履歴である。
 
 ## 1. 点検基点と統合の意味
 
@@ -130,3 +130,21 @@ Architecture Ownerは§8の順序で進める方針と、最後のReference非�
 順2と順5は複数の限定結果を1 PRへまとめるが、各commitとOwner受入・未達の境界をPR本文で個別に示す。特に順5ではR3-BのB03a自動完了FAILを残した人手HOLD、E08残枝、DoD 4-2／4-3未達、通常rootの通常構成保護という限界を明記する。順3はB2を通常build分離まで含む成立断面で切り、順4はFramework-owned規約codeをReference非同期実装と分けて先に統合する。
 
 実行方法は§8の1 PRずつの確認を維持する。各段階で差分とhead・base、required checks、mainへのmerge後CIを確認し、意図外差分・失敗・conflictでは次段を止める。順2の93 fileと順5の86 fileはレビュー負荷が大きいため、内容やCIで切り分けが困難になった場合は§8の元の境界へ戻す。既存branchをrewind／force pushしない。今回の採用は後続PR操作・追加検証・R4／R5・Phase 4全体受入の一括承認ではない。
+
+## 11. 最終判断：旧7段階を前段3 PR＋非同期2 PRへ統合（2026-10-14）
+
+Architecture Ownerは番号が**§8の旧7段階**を指すことを確認し、旧①＋②、旧③、旧④＋⑤を前段3 PR、旧⑥、旧⑦をReference非同期実装の2 PRとする**計5 PR**を最終方針として採用した。§10の別の5段階案は当時の判断履歴であり、以後のPR境界には用いない。文書26件のPR #44はmainへmerge済みで、以下はその後に順次統合する候補範囲である。
+
+| 順 | §8の統合元・履歴範囲 | 対象とレビュー境界 | 固定済み履歴の差分規模 |
+|---:|---|---|---:|
+| 1 | 旧①＋②：`be4bce1..08f4740` | S1局所検証ToolingとReference初回基盤、scope／TTL、対象・運用Evidence。Tooling／Referenceの所有をPR内で分けて点検 | 17 commit／114 file／10,745追加・29削除行 |
+| 2 | 旧③：`08f4740..6af0d3e` | B1読取接続と選択検証 | 4 commit／23 file／2,550追加・6削除行 |
+| 3 | 旧④＋⑤：`6af0d3e..5f31d41` | B2保護issue／read・通常build分離と、Framework規約R0。B2の成立点`fe93b5d`をPR内のレビュー境界とし、`koiki-archunit-rules`をFramework-owned変更として個別点検 | 14 commit／86 file／10,445追加・9削除行 |
+| 4 | 旧⑥：`5f31d41..66d9b8f` | Reference非同期R1正常経路＋R2失敗分離 | 5 commit／53 file／3,322追加・9削除行 |
+| 5 | 旧⑦：`66d9b8f..`最終PR head | R3-A単発全停止復旧＋R3-B受理log／UNKNOWN／人手HOLD、手動HTTP証拠、および本書の最終更新 | R3-B手動HTTPまでの`1d32b43`は6 commit／40 file／3,396追加・36削除行。後続の本書commitを加えた最終差分はPR作成時に再計測 |
+
+Ownerは、既存の各段階の限定検証・通常構成保護、変更なしのCI workflow、現時点の静的差分点検を入力に、**予見できるCIエラーのリスクは少ない**と整理した。これはLinux CIを含む全PR成功の保証ではない。特に順1と順3は1万追加行超のため、commit単位で所有・受入境界を示す。順3はB2通常build分離を含むheadまで切り、Windowsで成立済みの通常rootとLinux CIの結果を区別する。`git diff --check`は上表の固定済み5範囲で指摘0だが、compile／test結果の代替にはしない。
+
+各PRは直前PRのmergeとmain CI結果を確認してから、次の専用integration branchで差分・base／head・required checksを点検し、1件ずつmergeする。失敗・conflict・意図外差分では次段を止める。順4と順5の限定受入をPR本文で分け、順5にはB03a自動完了FAILを残した人手HOLD、E08残枝、DoD 4-2／4-3未達、通常rootの通常構成保護という限界を明記する。通常CIの成功をopt-in非同期経路の追加実証とみなさない。
+
+**本書の現行内容は、最終の順5 PRに含めてmainへ統合する。** R3-Bのソース成果境界は`1d32b43`で、その後の本書commit `09549ed`、`f37ad35`と今回の更新commitも対象に含める。自己参照でheadを更新し続けないよう、この節では最終headのhashを固定しない。最終PR作成時にremote branchの実際のhead、対象file、PR差分を照合して確定する。最終PRのmerge後にしか分からないCI結果等を文書へ追加する必要が生じた場合は、別の記録・統合判断として扱う。今回の文書commit／pushは後続5 PRの即時作成・merge、追加検証、R4／R5・Phase 4全体受入の一括承認ではない。
