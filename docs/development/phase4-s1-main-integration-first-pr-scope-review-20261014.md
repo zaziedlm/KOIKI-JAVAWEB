@@ -2,7 +2,7 @@
 
 状態：**LOCAL REVIEW DRAFT / OWNER INTEGRATION DECISION PENDING**。Architecture Ownerは、R3-Bを待たずに統合計画と最初のPR範囲の点検を始める方針を採用した。本書はローカルGit履歴に基づく判断入力であり、push・PR作成・merge・CI変更・R3-B開始の承認ではない。
 
-現行判断は§9を参照する。上の状態は本書作成時点の履歴である。
+現行判断は§10を参照する。上の状態は本書作成時点の履歴である。
 
 ## 1. 点検基点と統合の意味
 
@@ -114,3 +114,19 @@ Owner指示により文書26件／4 commitを専用branch `integration/phase4-s1
 Architecture Ownerは§8の順序で進める方針と、最後のReference非同期実装を**R1＋R2、続いてR3-A＋R3-Bの2段階でmainへ統合する方針**を了承した。CIに時間がかかることを認識した上で、PRごとの確認を維持する。これにより、Framework規約R0を非同期実装より先に独立して統合する。最終段まで成立すれば、mainにはコミット済みR3-B成果`1d32b43`までが反映されるが、未commit差分、R4／R5、Phase 4全体受入は含めない。
 
 今回の作業は、本書の了承記録を現R3-B branchでlocal commit・remote pushして保全し、既存の文書26件[PR #44](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/44)のCI完了・PR差分・merge条件を確認して、成立時に当該PRをmainへmergeするところまでとする。§8の後続7 PRは次回以降に各差分とCIを確認しながら順次進め、今回作成・push・mergeしない。PR #44のCI失敗、意図外差分、merge条件不成立があればmergeせず停止し、原因と次の判断を記録する。
+
+## 10. Owner採用：残sourceを5段階で統合（2026-10-14）
+
+§8〜9の7段階・非同期2段階案は判断時点の履歴である。Architecture Ownerは、**旧②＋③を1 PR、旧⑥＋⑦を1 PRにまとめ、残sourceを次の5段階で統合する**方針を採用した。文書26件の[PR #44](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/44)はCI全9件成功を確認後、merge commit `fcb1fcc1ab00a485c6f438fcdbdc1c88f291bda9`としてmainへ統合済み。下表はその後の順序であり、後続PRの作成・実行をこの記録だけで開始しない。
+
+| 順 | 履歴範囲・head候補 | 統合する主題 | 差分規模 |
+|---:|---|---|---:|
+| 1 | `be4bce1..f5e2672` | S1局所検証A／B／CのToolingとEvidence | 4 commit／45 file／5,007追加・15削除行 |
+| 2 | `f5e2672..6af0d3e` | Reference初回基盤、scope／TTL、対象・運用Evidence、B1読取接続 | 17 commit／93 file／8,289追加・21削除行 |
+| 3 | `6af0d3e..fe93b5d` | B2保護issue／read、結果受入、通常build分離まで | 9 commit／47 file／7,347追加・1削除行 |
+| 4 | `fe93b5d..5f31d41` | Framework規約R0：Rule 28／29とLevel選択 | 5 commit／41 file／3,098追加・8削除行 |
+| 5 | `5f31d41..1d32b43` | Reference非同期R1正常経路、R2失敗分離、R3-A全停止復旧、R3-B受理log／UNKNOWN／人手HOLD、手動HTTP証拠 | 11 commit／86 file／6,694追加・21削除行 |
+
+順2と順5は複数の限定結果を1 PRへまとめるが、各commitとOwner受入・未達の境界をPR本文で個別に示す。特に順5ではR3-BのB03a自動完了FAILを残した人手HOLD、E08残枝、DoD 4-2／4-3未達、通常rootの通常構成保護という限界を明記する。順3はB2を通常build分離まで含む成立断面で切り、順4はFramework-owned規約codeをReference非同期実装と分けて先に統合する。
+
+実行方法は§8の1 PRずつの確認を維持する。各段階で差分とhead・base、required checks、mainへのmerge後CIを確認し、意図外差分・失敗・conflictでは次段を止める。順2の93 fileと順5の86 fileはレビュー負荷が大きいため、内容やCIで切り分けが困難になった場合は§8の元の境界へ戻す。既存branchをrewind／force pushしない。今回の採用は後続PR操作・追加検証・R4／R5・Phase 4全体受入の一括承認ではない。
