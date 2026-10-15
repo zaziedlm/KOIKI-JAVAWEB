@@ -202,10 +202,33 @@ try {
     }
     $actualInventory = ($inventoryOutput -join "`n") + "`n"
     $expectedInventoryText = [System.IO.File]::ReadAllText($expectedInventory).Replace("`r`n", "`n")
-    if ($actualInventory -ne $expectedInventoryText) {
+    # Preserve the Phase 1a inventory. R0 approves only these additive Rules signatures.
+    $approvedR0Additions = @(
+        'METHOD static com.tngtech.archunit.lang.ArchRule org.koikifw.archunit.KoikiArchitectureRules#businessModuleRules(java.lang.String,java.util.Map)'
+        'TYPE enum org.koikifw.archunit.ModuleEventLevel'
+        'ENUM org.koikifw.archunit.ModuleEventLevel LEVEL_0'
+        'ENUM org.koikifw.archunit.ModuleEventLevel LEVEL_1'
+        'ENUM org.koikifw.archunit.ModuleEventLevel LEVEL_2'
+    )
+    $seenR0Additions = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $legacyLines = [System.Collections.Generic.List[string]]::new()
+    $duplicateR0Addition = $false
+    foreach ($line in $inventoryOutput) {
+        $inventoryLine = [string]$line
+        if ($approvedR0Additions -ccontains $inventoryLine) {
+            if (-not $seenR0Additions.Add($inventoryLine)) {
+                $duplicateR0Addition = $true
+            }
+        } else {
+            $legacyLines.Add($inventoryLine)
+        }
+    }
+    $legacyInventory = ($legacyLines.ToArray() -join "`n") + "`n"
+    if ($duplicateR0Addition -or $seenR0Additions.Count -ne $approvedR0Additions.Count -or
+            -not [string]::Equals($legacyInventory, $expectedInventoryText, [StringComparison]::Ordinal)) {
         $actualInventoryPath = Join-Path $temporaryRoot 'public-api.actual.txt'
         [System.IO.File]::WriteAllText($actualInventoryPath, $actualInventory, $utf8WithoutBom)
-        throw 'Public API inventory differs from public-api.txt.'
+        throw 'Public API inventory differs from the Phase 1a baseline plus approved R0 additions.'
     }
 
     $comparisonResults = foreach ($artifact in $artifacts) {
@@ -235,7 +258,11 @@ try {
         [pscustomobject]@{
             Artifact = $artifact.Name
             Access = 'public'
-            Modifications = 'NONE'
+            Modifications = if ($artifact.ArtifactId -eq 'koiki-archunit-rules') {
+                'APPROVED_R0_ADDITIONS'
+            } else {
+                'NONE'
+            }
             ExitCode = 0
         }
     }
@@ -246,7 +273,7 @@ try {
     $hashResults | ForEach-Object {
         Write-Output "$($_.Artifact) | $($_.Timestamp) | $($_.Sha256) | $($_.Result)"
     }
-    Write-Output 'Inventory: MATCH (5 public types; 4 annotation elements; 2 Rules methods)'
+    Write-Output 'Inventory: MATCH (Phase 1a baseline + approved R0 overload and 3-value enum)'
     Write-Output 'japicmp 0.26.1 comparisons:'
     $comparisonResults | ForEach-Object {
         Write-Output "$($_.Artifact) | access=$($_.Access) | modifications=$($_.Modifications) | exit=$($_.ExitCode)"
