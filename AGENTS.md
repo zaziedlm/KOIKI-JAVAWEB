@@ -95,6 +95,24 @@ assertion・件数・資源上限・停止条件を維持し、新規52件・結
 canonical command propertyへ揃え、source／環境差分確認・compile後に選択IT2件を1回確認する。
 数値・秘密のenv供給・transaction／migration／業務assertion・件数を維持し、起動初期からの実値を確認する。
 不一致・回帰失敗・上限超・cleanup失敗では停止し、追加修正・新規52件・結果受入・remoteへ拡張しない。
+2026-10-08の[B-2初回issue／readの条件付き限定開始承認](docs/development/phase4-s1-stage-b2-issue-read-limited-start-review-20261008.md#13-owner承認条件付き限定開始2026-10-08)により、
+承認文書commit・clean source固定後のpreflightと、成立時のReference-owned保護Port／outer service／
+SELECT専用JDBC target Adapter・有限設定・条件付き登録の新規main5件と既存Configuration Import1件、
+Tooling test所有のcoordinator／凍結protocol／専用SQL・新規6 class／54件・当該Evidence等の作成・検証を許可する。
+全差分は同票の新規18件＋既存2件、回帰301件を含む355件、最大4 JVM／DB1／接続8、検証90分と累積予算・
+作業量／raw・再実行上限・cleanup／停止条件に限定する。Ownerが限定環境管理責任を兼務し、Agentへ条件成立後の
+当該fixture準備・通常子終了・writer NOLOGIN／権限取消・接続確認・凍結証明登録・隔離DB／子JVM操作を委任する。
+通常無効・未接続拒否、既存Identity／scope／TTL／保存・Auditを維持し、consume／closeの証拠Portはemptyのままとする。
+既存B1 source／test／SQL、既存Service／Port／Repository／Domain・migration・Security／通常properties、
+POM／依存・Root Reactor／Framework／CIは変更しない。肯定consume／close・送信／復旧／worker委譲・Reference Level 2・
+実運用／DoD／正式受渡し／Phase 4全体・remoteに拡張しない。副Agentは使用しない。
+local commitはOwner操作または操作前確認、結果受入は別判断とする。文書commit・clean source固定前に実装・検証を先行しない。
+2026-10-08の[B2結果受入記録](docs/architecture/validation/phase4-s1-stage-b2-issue-read-20261008.md#19-b2限定検証結果のowner受入承認2026-10-08)により、
+初回issue／readの新規54＋回帰301件・artifact整合／package／cleanupは`COMPLETE / OWNER ACCEPTED`。
+保存結果と整合後検証のartifact epochを区別し、肯定consume／close・実運用／DoD・Phase 4全体へ拡張しない。
+source固定対象・端末内証拠／artifactの所在・再実行条件と残課題は
+[B2成果固定・次作業引継ぎ](docs/development/phase4-s1-stage-b2-fixed-results-next-session-handoff-20261008.md)を参照する。
+受入はlocal commit／remoteや後続操作の開始承認を兼ねず、成果固定commitは操作前のOwner確認に従う。
 P4-ARではFramework本体だけでなく、Customer-like Consumer、package済みReference Application、検証Toolingおよび
 Developer Journeyを受渡し候補として棚卸しし、業務アプリ開発チームの受入側視点でbuild / run / operation / diagnosisを実証する。
 正式な受渡し対象はP4-AR Evidenceを入力とする見直し後Phase 4準備で判断し、Project TemplateはPhase 5境界を維持する。
@@ -151,6 +169,9 @@ cleanup・停止条件に従う。既存P4-PL2許可の流用ではなく、こ�
 2026-10-08のB-1読取接続限定開始票§11で承認された条件成立後のMaven／隔離Docker・当該子JVM検証も、
 同票の専用schema／role・fixture準備副作用、検証集合・上限・cleanup・停止条件に限定して対象に含む。
 文書commit・clean source固定前に実行せず、環境の権限付き承認要求を迂回しない。
+2026-10-08のB-2初回issue／read限定開始票§13で承認された条件成立後のMaven／隔離Docker・当該coordinator／
+通常子JVM検証も、同票のfixture準備・専用schema／role・writer遮断・有限操作、355件・資源／時間／作業量・
+raw／再実行上限・cleanup／停止条件に限定して対象に含む。文書commit・clean source固定前に実行しない。
 
 通常のsandboxで`npipe:////./pipe/docker_engine`への接続を拒否された場合は、
 それだけでRancher DesktopまたはDocker Engineの障害と判定しない。
@@ -168,3 +189,23 @@ cleanup・停止条件に従う。既存P4-PL2許可の流用ではなく、こ�
 
 OpenSpecは、Repositoryに採用済みのchangeが存在する場合に限り、変更固有の要求、設計、タスクの
 正本として参照できる。Phase 3の必須tooling、Maven build、CIまたはConsumerの前提にはしない。
+
+## Phase 4 S1 R0-B：Rule 28／29の条件付き限定開始（2026-10-09）
+
+[規約限定改訂票§9.2](docs/development/phase4-s1-r0-rule28-29-level-selection-owner-review-20261009.md)のOwner承認により、
+採用済み正本・ADR・承認記録の文書commitとclean source固定、同票preflight成立後に限り、
+`koiki-archunit-rules`のmodule単位Level選択API・enum、Rule 28選択対応・Rule 29、当該test／fixtureとEvidenceを作成・検証できる。
+旧1引数APIと未指定／Level 0／1の拒否条件を維持し、明示選択したmoduleだけLevel 2の標準listenerを許容する。
+同期eventの不存在は検査しない。特定Reference listenerの違反除外を行わない。
+code／test最大24 file、新規40 case候補、規約module120 invocation以内・root400以内、累積60分、追加再実行0回とし、
+その他の資源・検証集合・停止／cleanupは同票§6〜7に従う。Ownerは同票内の使い捨てDB・今回所有の子JVM／browser・cleanupを委任する。
+同日の[接続上限訂正承認（アーカイブ§11）](docs/archive/phase4-s1-r0-20261010/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md#11-通常rootの接続上限追加1回の限定訂正owner-approved)により、通常rootだけDB client接続上限14、他phaseは8を維持する。
+訂正文書4件の追加local commit1回と残56分内のpreflight再開はOwner承認済み。他上限・追加再実行0回・既存test／pool不変更を維持する。
+実行環境の権限付き承認手順を維持し、副Agentを使用しない。不足依存取得、scope拡大・上限超・失敗は停止して別判断へ戻す。
+Reference code／test／POM／SQL／runtime、他Framework module／依存、Root Reactor／CI／remoteを変更しない。
+R0-C結果受入・成果commit・R1開始、DoD・正式受渡し・Phase 4全体は別判断。
+文書source固定commitも同票§7.1のOwner別承認／操作とし、条件未成立でcode・検証を先行しない。
+
+同訂正票§5の個別Owner承認によりpreflight上限だけ15分へ訂正する。総60分、既計上810秒・残2790秒、cleanup300秒予約と他条件を維持する。指定文書4件を追加local commit1回で固定し、既実施準備を反復せずsource／環境差分確認後、成立時に承認済み限定実装・初回検証へ進める。
+
+2026-10-10のOwner見直しにより、R0の次作業は[現行最小検証計画](docs/development/phase4-s1-r0-root-connection-limit-correction-owner-review-20261009.md)に従う。監視pure74例・追加網羅・root自動反復を停止し、履歴の許可／残予算を再開許可に流用しない。Rules107成立済みとroot未成立を区別し、S1／B2専用92件は通常buildの分離確認だけとする。Ownerは文書2点の訂正を含むRules16＋文書8＝24ファイルのlocal成果固定commit1回を承認した。成果固定はR0全体の結果受入・R1／remote開始を意味しない。

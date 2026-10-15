@@ -1971,9 +1971,11 @@ Level 2 到達までの期間、次を規約とする。
 
 - **`@TransactionalEventListener` の直接使用を禁止する。**同期 `@EventListener` のみを許可する
 
-**理由** — Level 2 で Event Publication Registry を有効化した時点で、既存の `@TransactionalEventListener` がすべて永続化対象となり、意図しない DB 書き込みと性能変化が発生する。Spring Modulith は `@TransactionalEventListener` と `@ApplicationModuleListener` の**両方**を追跡するため、一部だけを除外する段階移行はできない。
+**理由** — Event Publication Registryの既定対象に既存のtransactional listenerが含まれると、意図しないDB書き込みと性能変化が発生し得る。静的なmodule Level指定だけではruntimeの永続化対象は変わらない。registry対象・登録・migrationの選択はruntime開始前の個別reviewで決める。
 
 コミット後の副作用が必要になった時点で、Level 2 への移行を判断する（§6.4）。
+
+**2026-10-09の規約仕様採用（実装未了）：** [ADR-050](../adr/ADR-050-module-event-level-selection.md)により、旧1引数APIと未指定／Level 0／1の拒否条件を維持し、module単位の明示選択でLevel 2の標準`ApplicationModuleListener`だけを許容する規約改訂を採用した。Level 0／1は今回のevent検査上共通で、同期eventの不存在は検査しない。新APIのRule 29は同期listenerのoutbound Adapterへの直接依存を検査し、間接副作用の保証はreview／動作testで補う。特定classの違反を除外しない。実装・検証は[R0規約票](../../development/phase4-s1-r0-rule28-29-level-selection-owner-review-20261009.md)の文書source固定・preflight後に限定し、runtime・Reference非同期開始は別判断とする。
 
 ---
 

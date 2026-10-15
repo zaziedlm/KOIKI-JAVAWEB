@@ -21,9 +21,12 @@ pwsh -NoProfile -File build-support/api-compatibility/verify-public-api-compatib
 
 PATはsecure promptから入力するか、実行processの`KOIKI_PACKAGES_TOKEN`環境変数へ設定する。
 scriptはPAT scopeをGitHub APIで検査し、GUID付きtemporary directoryと隔離Maven local
-repositoryを作成する。C1 JARのSHA-256、現行JARから生成した`public-api.txt`との一致、
-japicmp 0.26.1による全Public API modificationなしを確認後、認証情報とtemporary directoryを
-`finally`で削除する。
+repositoryを作成する。C1 JARのSHA-256を確認し、現行JARのPublic APIからR0で承認された
+RulesのMap overloadと3値enumの5行だけを除いた結果がPhase 1aの`public-api.txt`と
+完全一致することを検査する。追加行の欠落・重複や、他の公開API変更は拒否する。
+japicmp 0.26.1ではArchitecture Contractの変更ゼロと、Rulesのbinary／source互換性を
+検査する。Rulesの追加APIだけはinventoryの厳密照合で制限する。認証情報とtemporary
+directoryは`finally`で削除する。
 
 `pom.xml`と`PublicApiInventory.java`はこのscriptからだけ利用するTooling実装であり、
 FrameworkまたはConsumer向けartifactではない。

@@ -128,3 +128,11 @@ Ownerは、未定という回答が実際のシステム連携・機能連携を
 本書の「実運用供給元」は、この限定単位ではTooling所有の隔離process・DB・provider stubから実値を取得する接続を意味する。実案件の本番供給元の取得を今回の必須条件とした説明は修正する。実案件の連携は後続対象であり、Toolingの所有権・非配布境界を維持する。
 
 既存Toolingの停止file・advisory lock・event IDだけのprovider登録・process内証拠mapには不足がある。供給元の採用だけで肯定接続可能とは扱わず、B-C01〜B-C10・D11／D12と網羅性懸念を保持し、補強差分・接続方式・実操作担当・上限を次にreviewする。今回の指示は供給元選択と文書具体化であり、code／SQL・process停止／起動・通信の開始承認ではない。
+
+## 11. B1受入後のB2 review資料（2026-10-08）
+
+B1の限定検証結果は[Evidence§24](../architecture/validation/phase4-s1-stage-b1-read-connection-20261008.md#24-b1完了記録のowner承認2026-10-08)で `COMPLETE / OWNER APPROVED`。§5〜§10の未着手・未承認表記は当該提出時の履歴であり、B1の現在状態は同EvidenceとB1開始票の承認記録で確認する。実運用・B2の不足まで解消したとは扱わない。
+
+Ownerの次工程への指示を受け、[B2使用境界・操作別接続review案](phase4-s1-stage-b2-use-boundary-review-draft-20261008.md)を作成した。現行Service／PortとB1観測契約を照合し、初回の使用境界実証＋issue／read、限定fixtureの不変期間を第一候補として提出する。方式・初回操作範囲はreview待ち、具体実装・検証開始は個別開始票で判断する。D11／D12・網羅性懸念・UNKNOWNを保持する。
+
+後続の方式review§9で上記2点はOwner承認済み。具体path・protocol・保護手順・新規54件＋回帰301件・予算・cleanupを[B2限定開始票案](phase4-s1-stage-b2-issue-read-limited-start-review-20261008.md)へ記録した。具体開始は同票§10のOwner判断待ちであり、方式承認を実行開始へ読み替えない。

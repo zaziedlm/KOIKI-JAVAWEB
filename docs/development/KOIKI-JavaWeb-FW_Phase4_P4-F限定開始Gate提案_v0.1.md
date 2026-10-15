@@ -74,6 +74,8 @@ publication tableをFramework所有にするかReference側へ置くかでmigrat
 [現行Rule 28](../../koiki-archunit-rules/src/main/java/org/koikifw/archunit/BusinessModuleRuleSet.java)はtransactional listenerを拒否し、Rule 29は未実装である。
 Level 2を採用する際は、Rule 28の適用条件とRule 29の導入を同じblocking reviewで扱う。
 
+**2026-10-09のR0規約部分承認：** [規約票§9.2](phase4-s1-r0-rule28-29-level-selection-owner-review-20261009.md)でmodule単位Level選択Public API、Rule 28／29、旧API互換と有限検証を採用した。[ADR-050](../architecture/adr/ADR-050-module-event-level-selection.md)と正本・承認文書commit／clean source固定、preflight成立後にR0-Bの規約作成・検証だけを開始できる。特定Reference listenerの違反例外を採らない。実装・結果受入は未了で、CP-F1全体・runtime／Reference R1開始・Gate全体完了は未成立。規約受入・source固定後にReference開始票を再確定し、R1個別判断へ進む。
+
 ### 3.1 PL2で比較する実装方式
 
 [Spring Modulith 2.1のEvent Publication Registry](https://docs.spring.io/spring-modulith/reference/events.html)はtransactional listener向けpublicationを元の業務transactionで記録し、未完了・失敗・再送・パージのAPIを提供する。

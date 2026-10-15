@@ -81,6 +81,7 @@ ADR-001〜ADR-045は、Architecture Ownerによるreviewを2026年8月15日に�
 | ADR-047 | Audit contract / transaction境界 | P2-B1で検証 | `../validation/phase2-p2-b1-contract-review.md`、`../validation/phase2-p2-b1-t4-verification.md`（単一Audit Starter、Public API 6型、Business `MANDATORY`、Security `REQUIRES_NEW`、JPA `persist + flush`、DB正本） | ACCEPTED |
 | ADR-048 | Session JDBC / cleanup / single execution境界 | P2-B3で検証 | `../validation/phase2-p2-b3-contract-review.md`、`../validation/phase2-p2-b3-b3-6-closeout.md`（optional Starter、Session Public API 3型、Framework 2 table、全Session失効、Spring標準cleanup、PostgreSQL internal advisory lock、Web / non-web process Evidence） | ACCEPTED |
 | ADR-049 | Reference module collaboration / table Ownership境界 | P3-A0で承認 | `../validation/phase3-p3-a0-contract-review.md`（command event / current-value queryの分離、master-owned contract、Reference 6 tableのOwnership、V1〜V3、module内FKのみ） | ACCEPTED |
+| ADR-050 | Architecture Rulesのmodule単位event Level選択 | R0で設計承認 | [決定本文](ADR-050-module-event-level-selection.md)：旧API互換、Level 0／1共通条件、Level 2明示選択、Rule 29の検出限界。文書source固定／preflight後の有限実装検証。runtime・Reference開始は別判断 | ACCEPTED DESIGN / IMPLEMENTATION PENDING（2026-10-09） |
 
 ADR-018とADR-021は欠番であり、有効ADR数へ含めない。
 

@@ -121,6 +121,10 @@ Adapterまたは所有tableを直接参照せず、この例外をFramework Publ
 
 Level 2到達前に非同期実装が必要になった場合は停止し、Spring Modulith採用Levelと耐久性・冪等性・監視を設計判断として扱う。`@TransactionalEventListener`を暫定手段として追加しない。
 
+2026-10-09に[R0-Bの規約限定改訂](../../../development/phase4-s1-r0-rule28-29-level-selection-owner-review-20261009.md)を条件付き承認した。
+module単位Level選択の仕様採用であり、実装・検証は文書source固定／preflight後だけ。Level 0／1は共通条件で同期eventを許容し、Level 2だけ明示選択で標準listenerを許容する。
+静的Level指定はruntime登録・耐久配信・冪等性・認可／Auditの保証を代替しない。Reference非同期の作成開始はR0-C受入後のR1個別判断まで先行しない。
+
 ## 7. ViewとAPIの境界を守る
 
 - Controllerをリクエスト受信、形式検証、Use Case呼出、HTTP応答整形に限定する。

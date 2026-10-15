@@ -161,6 +161,11 @@ Gate P4-F設置・初回限定APPROVE LIMITED STARTはOwner承認済み。正式
 文書commit・clean source固定後のpreflightと、成立時の採用済み初回範囲の作成・検証は承認済み。
 source固定・preflight成立の実証前に作成・検証を先行せず、資源／artifact不足・安全条件不成立では停止して必要差分を提示する。
 
+2026-10-09の[R0-B規約限定改訂承認](../../../development/phase4-s1-r0-rule28-29-level-selection-owner-review-20261009.md)により、
+文書commit・clean source固定と同票preflight成立後だけ、`koiki-archunit-rules`のmodule単位Level選択・Rule 28／29と当該testを作成・検証できる。
+承認済み仕様と未実装artifactを区別し、旧API・未指定Level 0／1拒否を維持する。Reference非同期runtime開始は別判断。
+source固定commit・資源／時間／停止条件・結果受入は同票とAGENTS.mdの限定条件に従う。
+
 個別のPublic API、module、Starter、migration、dependency、workflowまたは既定規約は、対応するblocking reviewと
 Evidenceより前に先行生成しない。remote push / PR / merge、ruleset変更、workflow dispatchおよびsnapshot publishは
 Remote Gateの個別承認を必要とする。
