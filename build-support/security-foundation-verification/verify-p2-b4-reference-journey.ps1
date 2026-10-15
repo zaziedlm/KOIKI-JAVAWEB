@@ -505,7 +505,7 @@ function Assert-ReferenceArtifactBoundary {
     try {
         $entryNames = @($archive.Entries.FullName)
         $referenceMigrationPattern =
-            '^BOOT-INF/classes/db/migration/kkref/[^/]+[.]sql$'
+            '^BOOT-INF/classes/db/migration/(?:kkref|kkref-notification)/[^/]+[.]sql$'
         $unexpectedMigrationOrSql = @($entryNames | Where-Object {
                 -not $_.EndsWith('/') -and
                 (($_ -match '^BOOT-INF/classes/db/migration/' -and
@@ -565,7 +565,7 @@ function Assert-ReferenceArtifactBoundary {
     foreach ($source in $referenceSql) {
         $relativePath = [System.IO.Path]::GetRelativePath(
             $referenceMain, $source.FullName).Replace('\', '/')
-        if ($relativePath -notmatch '^resources/db/migration/kkref/[^/]+[.]sql$') {
+        if ($relativePath -notmatch '^resources/db/migration/(?:kkref|kkref-notification)/[^/]+[.]sql$') {
             throw "The Reference source contains SQL outside its migration location: $relativePath."
         }
     }

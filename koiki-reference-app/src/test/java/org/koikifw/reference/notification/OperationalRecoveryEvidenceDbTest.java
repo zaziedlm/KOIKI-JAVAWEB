@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
 import org.koikifw.reference.notification.application.RecoveryPermitService;
 import org.koikifw.reference.notification.application.query.RecoveryTarget;
@@ -22,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /** Real persistence/Identity/Audit; operational facts and post-commit execution decision remain test-owned. */
+@EnabledIfSystemProperty(named = "koiki.reference.verification.resource-limits.enabled", matches = "true")
 class OperationalRecoveryEvidenceDbTest extends NotificationDbTest {
     static final UUID OTHER_USER = UUID.fromString("76000000-0000-0000-0000-000000000001");
     static final UUID OTHER_ROLE = UUID.fromString("76000000-0000-0000-0000-000000000002");

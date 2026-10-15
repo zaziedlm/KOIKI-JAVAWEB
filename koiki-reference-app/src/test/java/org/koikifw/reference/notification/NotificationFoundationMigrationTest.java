@@ -23,12 +23,14 @@ import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.koikifw.reference.ReferenceApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /** Initial M01-M05 checks with real Reference startup and isolated PostgreSQL. */
+@EnabledIfSystemProperty(named = "koiki.reference.verification.resource-limits.enabled", matches = "true")
 class NotificationFoundationMigrationTest {
     static final String NORMAL = "classpath:db/migration/kkref";
     static final String EXTRA = "classpath:db/migration/kkref-notification";

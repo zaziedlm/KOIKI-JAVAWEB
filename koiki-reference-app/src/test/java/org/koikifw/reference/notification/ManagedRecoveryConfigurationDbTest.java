@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
 import org.koikifw.reference.notification.application.RecoveryPermitService;
 import org.koikifw.reference.notification.application.port.outbound.RecoveryTtlPolicyPort;
@@ -16,6 +17,7 @@ import org.koikifw.reference.notification.application.query.RecoveryTarget;
 import org.koikifw.referenceacceptance.notification.NotificationDbTest;
 import org.koikifw.referenceacceptance.notification.NotificationFoundationDbHarness.Mode;
 
+@EnabledIfSystemProperty(named = "koiki.reference.verification.resource-limits.enabled", matches = "true")
 class ManagedRecoveryConfigurationDbTest extends NotificationDbTest {
     @TempDir Path directory;
     private Path configuration() throws Exception { return file(directory, json(String.join(",", grant("ISSUE"), grant("READ"), grant("EXECUTE"), grant("CLOSE")))); }
