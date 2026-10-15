@@ -1,8 +1,12 @@
 # Phase 4 S1 目的とDoDと実証段階の対応表
 
+**現行R2限定判断（2026-10-13）：** R1正常経路・通常保護は`COMPLETE / OWNER ACCEPTED`、成果`610c589`・引継ぎ`18cb8b6`はOwnerによりcommit／push済み。R2選択失敗分離・通常構成保護も[結果文書§5](../architecture/validation/phase4-s1-r2-selected-seven-case-results-and-acceptance-input-20261013.md#5-r2限定結果のowner受入承認2026-10-13)で`COMPLETE / OWNER ACCEPTED`。局所再throw後の通常root303実行＋専用92skip、JAR対照、後段7件PASSを、初回FAIL・停止とepoch別に保持する。同期承認・Audit／publicationの同transaction保存とcommit後の非同期通知を維持する。R2の成果固定commit／remote、R3〜R5・復旧／再送・consume／close・全体DoD・正式受渡し・実案件受入・Phase 4全体は別判断。以下のR2開始条件やR1未成立／R2未承認等は各時点の履歴として扱う。
+
 作成日：2026-10-09。状態：`DRAFT / OWNER REVIEW INPUT`。
 
 **現行進捗（2026-10-10）：R0規約限定改訂・必要最小限の検証はCOMPLETE / OWNER ACCEPTED。** §10までの開始待ち説明は当時の履歴。次作業は[区切り・残作業引継ぎ](phase4-s1-r0-closeout-remaining-tasks-handoff-20261010.md)を入口にR1開始案を再確定する。S1全体・DoDやR1開始の承認ではない。
+
+2026-10-12、Ownerは[R1必要最小限の開始票§8](phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)を承認した。正常経路・通常構成保護の9新規候補と既存影響回帰／最終root、有限70分・資源／停止／cleanupを採用し、旧草案の全件回帰を実行指示から外した。正本・ADR・承認文書commit→新R1 branchのclean source固定→preflight成立後だけ作成検証できる。R1結果未成立、R2〜R5・全体DoDは未達。
 
 S1の出口は、Referenceのexpense承認からnotification・provider stubへつなぎ、通知失敗の分離、停止後の配信完遂、重複抑止、復旧操作の統制、保持・追跡を用途限定で実証することである。2026-10-09のOwner採用方針に従い、最小の非同期経路を先に組み込み、正常系から異常系・停止後回復へ進める。permit基盤はR4の認可・Audit付き復旧へ接続する。
 

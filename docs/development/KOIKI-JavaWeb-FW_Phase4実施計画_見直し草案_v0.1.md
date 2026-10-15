@@ -1,5 +1,9 @@
 # KOIKI-JavaWeb-FW Phase 4 実施計画 見直し草案 v0.1
 
+**現行R2限定判断（2026-10-13）：** R1正常経路・通常保護は`COMPLETE / OWNER ACCEPTED`、成果`610c589`・引継ぎ`18cb8b6`はOwnerによりcommit／push済み。[R2開始票§8](phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)により、設置済みGate P4-FへTooling-owned失敗分離だけを条件付き追加開始する。文書commit（別承認／Owner操作）→新R2 branchのclean source固定→preflight成立後だけ、Tooling4 file以内・新規8＋直接回帰4件・45分（cleanup5分予約）と同票の所有／資源／停止条件で作成検証する。同期承認・Audit／publicationの同transaction保存とcommit後の非同期通知を維持し、production／POM／migration／依存／Security／CIは変更しない。R2結果は未成立、R3〜R5・復旧／再送・consume／close・全体DoD・正式受渡し・実案件受入・Phase 4全体・remoteは別判断。以下のR1未成立／R2未承認等は各時点の履歴として扱う。
+
+**現行限定追加（2026-10-12）：** [R1開始票§8](phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)・[ADR-051](../architecture/adr/ADR-051-reference-notification-async-r1.md)のReference正常非同期経路だけをOwnerが条件付き承認した。文書commit→新R1 branchでclean source固定→preflight→有限作成検証の順に進む。9新規候補・影響回帰・最終root・70分と資源／停止・cleanupは開始票に従う。Reference Level 2正式受渡し前制限への限定例外であり、Framework／Customer一般採用・R2〜R5・Phase 4全体開始／DoD完了は認めない。R0は結果受入済み、R1結果は未成立。
+
 **状態:** DRAFT / R1〜R7 OWNER REVIEW COMPLETE（計画詳細はP4-PL1 / PL2で継続）。Phase 4開始・実装・配布は未承認  
 **作成日:** 2026年9月26日  
 **作業branch:** `docs/phase4-execution-plan-review`  

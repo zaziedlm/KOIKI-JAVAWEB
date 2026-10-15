@@ -5,6 +5,31 @@ description: Plan, implement, and review KOIKI business-module changes by decidi
 
 # KOIKI Business Feature Work
 
+## R2限定結果のOwner受入（2026-10-13）
+
+[R2結果文書§5](../../../architecture/validation/phase4-s1-r2-selected-seven-case-results-and-acceptance-input-20261013.md#5-r2限定結果のowner受入承認2026-10-13)により、選択失敗分離と通常構成保護は`COMPLETE / OWNER ACCEPTED`。
+同期のexpense承認・同transactionのAudit／publication保存とcommit後の非同期通知を維持し、実provider・再送／復旧・R3〜R5・DoD全体・正式受渡しへ受入を広げない。
+次は成果固定対象の点検であり、commit／remote・追加検証は別判断。以下の条件付き開始記述は開始時点の履歴として読む。
+
+## R2失敗分離の条件付き限定開始（2026-10-13）
+
+[R2開始票§8](../../../development/phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)をOwner承認済み。
+同期のexpense承認・同transactionのAudit／publication保存と、commit後の非同期notificationを維持する。
+publication／承認Audit保存失敗のrollback、provider失敗後の承認保持、権限／scope／version拒否と同期vetoを
+Tooling-owned helper・stub・隔離DBの対象限定triggerで実証する。productionへ故障switchを置かない。
+文書commit（別承認／Owner操作）・新R2 branchのclean source固定・preflight成立後だけ、同票の12件・有限資源／45分／停止・cleanupに従って作成検証する。
+R1受入を保持し、production修正・復旧／再送・consume／close・R3〜R5・Framework昇格は別判断とする。
+詳細契約・検証手順は同票を正本とし、以下のR1だけの開始承認は各時点の履歴として扱う。
+
+## Reference R1の個別承認（2026-10-12）
+
+[R1開始票§8](../../../development/phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)と
+[ADR-051](../../../architecture/adr/ADR-051-reference-notification-async-r1.md)により、Reference expense値event／notification標準listenerの正常経路だけを条件付き採用した。
+R0規約結果受入済みの正式Level選択APIを使い、特定listenerの違反除外を行わない。
+正本・承認記録の文書commit、新R1 branchでのclean source固定・preflight成立前にcode／依存／SQLを作成しない。
+対象・必要ケース・回帰・資源／時間・停止／cleanupは開始票に従い、Framework／Customer一般採用やR2〜R5へ拡張しない。
+以下のLevel 2先行制限にはこの個別承認範囲だけを例外として適用し、Security／Audit／同期veto・既存permit契約を維持する。
+
 業務変更を、モジュール境界と内部責務を崩さずに設計・実装・レビューする。
 
 ## 変更前に判断する

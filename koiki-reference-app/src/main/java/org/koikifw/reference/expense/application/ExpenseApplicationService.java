@@ -15,7 +15,9 @@ import org.koikifw.audit.BusinessAuditRecorder;
 import org.koikifw.identity.FrameworkPrincipal;
 import org.koikifw.identity.FrameworkUserId;
 import org.koikifw.reference.expense.application.port.outbound.ApproverScopePort;
+import org.koikifw.reference.expense.application.port.outbound.ExpenseApprovedEventPort;
 import org.koikifw.reference.expense.application.port.outbound.MasterAvailabilityPort;
+import org.koikifw.reference.expense.domain.event.ExpenseApprovedEvent;
 import org.koikifw.reference.expense.domain.model.ExpenseDomainException;
 import org.koikifw.reference.expense.domain.model.ExpenseLine;
 import org.koikifw.reference.expense.domain.model.ExpenseRequest;
@@ -45,19 +47,27 @@ public class ExpenseApplicationService {
     private final ApproverScopePort approverScope;
     private final BusinessAuditRecorder businessAuditRecorder;
     private final Clock clock;
+    private final ExpenseApprovedEventPort approvedEvents;
 
     @Autowired
     public ExpenseApplicationService(
             ExpenseRequestRepository requests,
             MasterAvailabilityPort masterAvailability,
             ApproverScopePort approverScope,
-            BusinessAuditRecorder businessAuditRecorder) {
+            BusinessAuditRecorder businessAuditRecorder,
+            ExpenseApprovedEventPort approvedEvents) {
         this(
                 requests,
                 masterAvailability,
                 approverScope,
                 businessAuditRecorder,
-                Clock.systemUTC());
+                Clock.systemUTC(), approvedEvents);
+    }
+
+    public ExpenseApplicationService(
+            ExpenseRequestRepository requests, MasterAvailabilityPort masterAvailability,
+            ApproverScopePort approverScope, BusinessAuditRecorder businessAuditRecorder) {
+        this(requests, masterAvailability, approverScope, businessAuditRecorder, event -> { });
     }
 
     ExpenseApplicationService(
@@ -66,12 +76,20 @@ public class ExpenseApplicationService {
             ApproverScopePort approverScope,
             BusinessAuditRecorder businessAuditRecorder,
             Clock clock) {
+        this(requests, masterAvailability, approverScope, businessAuditRecorder, clock, event -> { });
+    }
+
+    ExpenseApplicationService(
+            ExpenseRequestRepository requests, MasterAvailabilityPort masterAvailability,
+            ApproverScopePort approverScope, BusinessAuditRecorder businessAuditRecorder,
+            Clock clock, ExpenseApprovedEventPort approvedEvents) {
         this.requests = Objects.requireNonNull(requests, "requests");
         this.masterAvailability = Objects.requireNonNull(masterAvailability, "masterAvailability");
         this.approverScope = Objects.requireNonNull(approverScope, "approverScope");
         this.businessAuditRecorder =
                 Objects.requireNonNull(businessAuditRecorder, "businessAuditRecorder");
         this.clock = Objects.requireNonNull(clock, "clock");
+        this.approvedEvents = Objects.requireNonNull(approvedEvents, "approvedEvents");
     }
 
     @Transactional
@@ -154,7 +172,10 @@ public class ExpenseApplicationService {
                 request -> requireApproverScope(request, actor),
                 request -> request.approve(actor.value(), clock.instant()),
                 "APPROVE_EXPENSE",
-                actor);
+                actor,
+                request -> approvedEvents.publish(new ExpenseApprovedEvent(
+                        UUID.randomUUID(), request.expenseRequestId(), request.applicantUserId(),
+                        request.version(), request.claimedAmount().amount())));
     }
 
     @Transactional
@@ -218,6 +239,14 @@ public class ExpenseApplicationService {
             Consumer<ExpenseRequest> mutation,
             @Nullable String auditAction,
             FrameworkUserId actor) {
+        executeMutation(expenseRequestId, expectedVersion, authorization, mutation, auditAction,
+                actor, request -> { });
+    }
+
+    private void executeMutation(
+            UUID expenseRequestId, long expectedVersion, Consumer<ExpenseRequest> authorization,
+            Consumer<ExpenseRequest> mutation, @Nullable String auditAction,
+            FrameworkUserId actor, Consumer<ExpenseRequest> afterAudit) {
         execute(() -> {
             ExpenseRequest request = requests.findById(requireId(expenseRequestId))
                     .orElseThrow(() -> failure(ExpenseFailure.NOT_FOUND));
@@ -228,6 +257,7 @@ public class ExpenseApplicationService {
             if (auditAction != null) {
                 record(auditAction, request.expenseRequestId(), actor);
             }
+            afterAudit.accept(request);
             return null;
         });
     }

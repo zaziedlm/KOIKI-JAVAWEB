@@ -42,11 +42,15 @@ import org.koikifw.reference.master.application.MasterFailure;
 import org.koikifw.reference.master.application.MasterOperationException;
 import org.koikifw.reference.master.application.dto.DepartmentPage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.koikifw.starter.api.internal.KoikiApiAutoConfiguration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -55,6 +59,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest({HomeController.class, MasterManagementController.class, ExpenseWebController.class})
 @ContextConfiguration(classes = org.koikifw.reference.ReferenceApplication.class)
+@ImportAutoConfiguration(KoikiApiAutoConfiguration.class)
 @Import({
         ReferenceSecurityConfiguration.class,
         MasterWebExceptionHandler.class,
@@ -62,6 +67,47 @@ import org.springframework.test.web.servlet.MockMvc;
         ReferenceBusinessUrlSecurityTest.SessionTestConfiguration.class
 })
 class ReferenceBusinessUrlSecurityTest {
+
+    @Test
+    void returnsForbiddenForMethodDenialWithGlobalApiAdvicePresent() throws Exception {
+        UUID requestId = UUID.randomUUID();
+        doThrow(new AuthorizationDeniedException("Access Denied", new AuthorizationDecision(false)))
+                .when(expenseCommands).approve(requestId, 2L);
+        mockMvc.perform(post("/expenses/approvals/{id}/approve", requestId)
+                        .with(user("applicant").authorities(() -> "EXPENSE:APPLY"))
+                        .with(csrf()).param("expectedVersion", "2"))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string(not(containsString("AuthorizationDeniedException"))));
+    }
+
+    @Test
+    void preservesHtmxDenialResponseForMethodDenialWithGlobalAdvicePresent() throws Exception {
+        UUID requestId = UUID.randomUUID();
+        doThrow(new AuthorizationDeniedException("Access Denied", new AuthorizationDecision(false)))
+                .when(expenseCommands).approve(requestId, 2L);
+        mockMvc.perform(post("/expenses/approvals/{id}/approve", requestId)
+                        .with(user("applicant").authorities(() -> "EXPENSE:APPLY"))
+                        .with(csrf()).header("HX-Request", "true").param("expectedVersion", "2"))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(content().string(containsString("この操作は許可されていません。")))
+                .andExpect(content().string(not(containsString("AuthorizationDeniedException"))));
+    }
+
+    @Test
+    void preservesSafeUnexpectedFailureFromGlobalApiAdvice() throws Exception {
+        UUID requestId = UUID.randomUUID();
+        doThrow(new IllegalStateException("fixture-private-detail"))
+                .when(expenseCommands).approve(requestId, 2L);
+        mockMvc.perform(post("/expenses/approvals/{id}/approve", requestId)
+                        .with(user("approver").authorities(() -> "EXPENSE:APPROVE"))
+                        .with(csrf()).param("expectedVersion", "2"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(content().string(containsString("KOIKI-INTERNAL-001")))
+                .andExpect(content().string(not(containsString("fixture-private-detail"))))
+                .andExpect(content().string(not(containsString("IllegalStateException"))));
+    }
 
     @Autowired
     private MockMvc mockMvc;

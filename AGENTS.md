@@ -1,5 +1,63 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行追加判断：S1 R2限定結果のOwner受入（2026-10-13）
+
+R2の選択失敗分離・通常構成保護の限定結果は`COMPLETE / OWNER ACCEPTED`。
+[結果文書§5](docs/architecture/validation/phase4-s1-r2-selected-seven-case-results-and-acceptance-input-20261013.md#5-r2限定結果のowner受入承認2026-10-13)を受入と現行結果の入口とする。
+初回R2-04のFAIL・root停止を履歴として保持し、局所再throw後の通常root303実行＋専用92skip、通常／async JAR対照、後段7件PASSをsource／artifact／epoch別に扱う。
+実provider配信・停止後再送／復旧・UNKNOWN照合・R3〜R5・DoD全体・正式受渡し・Phase 4全体へ拡張しない。
+次はGit差分と成果固定対象の点検。local commitは別承認／Owner操作、remoteは個別承認とする。以下の開始条件・停止判断・未受入記述は各時点の履歴であり、追加実行や残予算の許可に流用しない。
+
+## R2局所再throwの限定訂正承認（2026-10-13）
+
+Ownerは[限定訂正開始票](docs/development/phase4-s1-r2-local-rethrow-limited-correction-start-review-20261013.md)の§2〜5を承認した。
+expense MVCの局所AccessDenied再throwだけをproduction1 file、MVC test1 file／新規3件、既存Tooling観測1 fileの訂正差分として採用する。
+既存Tooling4 fileを含む未commit採用差分をisolated snapshot・hashで固定し、preflight成立後だけ早期3件・通常root1回・package7件を実行する。
+新規45分（cleanup5分予約）、phase別資源・所有／停止／cleanupは同票に従う。通常root／C01のRyuk2／client14とR2のRyuk1／client8を区別する。
+Framework API／依存／Security設定／Rules／migration変更、拒否Audit新設・一般Framework修正・追加再実行・remoteは含めない。
+以下のTooling-only条件への例外はこの個別承認範囲だけ。旧FAIL・比較source／artifact・予算を上書き／流用しない。
+
+## 現行追加判断：S1 R2失敗分離の条件付き限定開始（2026-10-13）
+
+Ownerは[R2開始票§8](docs/development/phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)を承認した。
+R1は`COMPLETE / OWNER ACCEPTED`、成果`610c589`・引継ぎ`18cb8b6`はOwnerによりcommit／push済み。
+設置済みGate P4-FへR2失敗分離だけを条件付き追加する。必要正本・承認文書commit（別承認／Owner操作）、
+新R2 branchのclean source固定、同票preflight成立後だけTooling4 file以内・新規1 class／8件＋直接回帰4件を作成検証できる。
+新規45分（cleanup5分予約）、JVM4／PG1／Ryuk1／DB client8、各集合初回1回・追加再実行0回。
+今回所有の隔離DB／role／対象限定trigger、loopback stub、HTTP認証fixture、package子JVMと有限cleanupを同票内で委任する。
+同期承認・同transactionのAudit／publication保存、commit後の非同期通知という境界を維持する。故障注入はToolingに閉じる。
+production／Framework API／Rules／POM／依存／migration／Security／CI変更を行わない。
+対象外修正・条件不成立・上限超過・観測／cleanup不成立では停止しOwner判断へ戻す。
+R3〜R5・実provider・再送／復旧・consume／close・DoD全体・正式受渡し・Phase 4全体・remoteは別判断。
+旧予算・runnerを流用せず、副Agentや検証網羅の拡張を行わない。以下のR1開始／成果固定待ちは各時点の履歴として扱う。
+
+## 現行追加判断：S1 R1限定結果のOwner受入（2026-10-13）
+
+R1正常非同期経路・通常構成保護の限定結果は`COMPLETE / OWNER ACCEPTED`。
+[結果文書§13〜15](docs/architecture/validation/phase4-s1-r1-implementation-and-early-verification-20261012.md#15-r1限定結果のowner受入承認2026-10-13)を現行結果・機能説明・受入承認の入口とする。
+通常root300実行＋専用92skip、通常／async artifact静的照合、新規9件（root3＋Tooling6）と既存Critical Journey1件が成立した。
+過去の停止と後続cleanup観測、source／artifact epochを区別して保持する。ローカルstubを含む選択正常経路の受入であり、
+実provider配信・停止／再送／復旧・R2〜R5・全DoD・正式受渡し・Phase 4全体へ拡張しない。
+次は成果固定のGit差分・対象点検と、別承認／Owner操作によるlocal commit。remote操作は個別承認を維持する。
+以下の2026-10-12開始条件と過去承認は判断時点の履歴で、追加実行・残予算の許可へ流用しない。
+
+### R1条件付き限定開始の承認条件（2026-10-12）
+
+Ownerは[R1必要最小限の開始票§8](docs/development/phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)を承認した。
+R0の規約限定改訂・最小検証・結果受入は完了。承認済み正本・ADR-051・承認記録の文書commit、
+新R1 branchでのclean source固定と同票preflight成立後にだけ、Reference-owned expense承認値event、
+notification非同期listener／送信Port／loopback stub接続Adapter、Reference限定Modulith JDBC依存・追加publication migration・
+条件付き登録と当該有限test／Evidenceを作成・検証できる。通常無効、既存Security／Identity／master同期veto／
+expense認可・Audit／既存permit契約を維持し、Framework API／Rules／依存・Root Reactor／CIを変更しない。
+対象差分28 file以内、文書12 file以内、新規4 class／9 invocation候補、最終通常root1回、検証70分・cleanup5分予約。
+JVM4／PG1、通常rootと既存E2EはRyuk2／client14、新規ToolingはRyuk1／client8。他の資源・phase・停止／cleanupは同票に従う。
+Ownerは今回所有の使い捨てDB・専用schema／role・loopback stub・package子JVM／browser・有限cleanupを同票内で委任する。
+権限付き実行は実行環境の承認手順を維持し、副Agent・旧監視74例の拡張・root自動反復を行わない。
+S1／B2専用92件は通常build分離を維持し専用全件再検証をしない。直接影響が判明した場合だけ必要部分を別判断する。
+不足依存取得・追加再実行は同票の個別条件に従う。local commitはOwner操作または操作前承認、remoteは個別承認。
+R2〜R5、肯定consume／close、停止後再送・復旧runner、実provider送信、DoD・正式受渡し・Phase 4全体へ拡張しない。
+以下の過去承認・R0旧予算は各判断時点の履歴で、再開許可・残予算として流用しない。
+
 このRepositoryでは、`KOIKI-JavaWeb-FW グランドデザイン v0.2`の
 `ACCEPTED（Phase 0 Architecture Baseline）`を上位設計とする。
 
@@ -151,6 +209,11 @@ Architecture Ownerは、今後のAIセッションで検証実行が権限エラ
 実行環境が権限付き実行の承認を要求する場合はその手順に従い、拒否された操作を迂回しない。
 
 ### ローカルDocker検証
+
+2026-10-13の[R2条件付き限定開始承認](docs/development/phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)により、
+文書commit・新R2 branchのclean source固定後のpreflightと、成立後の同票のReference packageおよび
+`build-support/reference-e2e-verification/`の12件限定検証に必要な使い捨てcontainerの起動・停止を対象に含む。
+対象・所有・資源・停止／cleanupは同票に従い、実行環境の権限付き承認手順を維持する。
 
 Architecture Ownerは、Repository内の承認済み検証に必要なローカルDocker診断と
 Testcontainers実行について、Docker named pipeへ接続できる権限付き実行を許可している。

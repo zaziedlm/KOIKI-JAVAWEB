@@ -1,5 +1,9 @@
 # KOIKI-JavaWeb-FW Pre-Phase 4 Framework Adoption Readiness 計画
 
+**現行R2限定判断（2026-10-13）：** R1正常経路・通常保護は`COMPLETE / OWNER ACCEPTED`、成果`610c589`・引継ぎ`18cb8b6`はOwnerによりcommit／push済み。[R2開始票§8](phase4-s1-r2-purpose-and-minimal-verification-owner-review-20261013.md#8-owner承認記録と文書固定対象2026-10-13)により、設置済みGate P4-FへTooling-owned失敗分離だけを条件付き追加開始する。文書commit（別承認／Owner操作）→新R2 branchのclean source固定→preflight成立後だけ、Tooling4 file以内・新規8＋直接回帰4件・45分（cleanup5分予約）と同票の所有／資源／停止条件で作成検証する。同期承認・Audit／publicationの同transaction保存とcommit後の非同期通知を維持し、production／POM／migration／依存／Security／CIは変更しない。R2結果は未成立、R3〜R5・復旧／再送・consume／close・全体DoD・正式受渡し・実案件受入・Phase 4全体・remoteは別判断。以下のR1未成立／R2未承認等は各時点の履歴として扱う。
+
+**現行S1限定判断（2026-10-12）：** R0規約・最小検証のOwner受入を入力に、[R1開始票§8](phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)・[ADR-051](../architecture/adr/ADR-051-reference-notification-async-r1.md)によるReference正常非同期経路だけを条件付き追加開始する。文書commit・新R1 branchでclean source固定・preflight成立後の有限作成検証に限定する。専用fixture／stubと実provider／正式受渡しを区別し、既存Security・通常構成を保護する。R1結果・R2〜R5・DoD・Phase 4全体開始は未成立／未承認であり、P4-ARの受入責任・実案件由来判断を置き換えない。
+
 **状態:** P4-AR0 COMPLETE / OWNER APPROVED / EXECUTION AUTHORIZED AFTER PLAN MERGE AND CLEAN-MAIN SYNC  
 **作成日:** 2026年9月17日  
 **計画branch:** `docs/phase3-closeout-pre-phase4-readiness-plan`  

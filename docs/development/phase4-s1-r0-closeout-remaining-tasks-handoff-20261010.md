@@ -23,7 +23,7 @@ source固定branchは`feature/phase4-s1-reference-foundation`、HEADは`c11dbbce
 | 項目 | 状態・完了条件 |
 |---|---|
 | Owner受入の文書反映・次作業入口の整理 | 本書・受入票・結果表・規約票・目的対応表・R1草案へ反映済み |
-| 受入記録と履歴分離のGit固定 | 未実施。文書差分を点検し、Ownerの操作前承認またはOwner操作でlocal commitする。codeの再commitや変更破棄は不要 |
+| 受入記録と履歴分離のGit固定 | 完了。Ownerが`5f31d41`で文書10件をcommitし、push済みを報告。2026-10-12の再開時はclean・remote追跡差0／0を確認（live fetchなし）。R1文書の次のcommitとは別 |
 | 端末内証拠の保持 | 固定manifest／raw／JARを保持。受入前manifestは変更せず、受入記録を別ファイルへ保存。別端末へ移る場合だけ証拠移送と環境preflightを別途準備 |
 
 証拠所在は`tmp/r0-rules-9c41aa4-20261009-first/minimal-preparation-20261010/`。Gitだけでは端末内証拠・artifact・実行状態は移らない。最終検証予算は累計2567秒・残1033秒、cleanup予約300秒の時点で閉じる。残時間・旧再実行枠をR1へ引き継がない。
@@ -53,3 +53,7 @@ source固定branchは`feature/phase4-s1-reference-foundation`、HEADは`c11dbbce
 後段の候補ケースは各段階の開始時に必要性を確認する。監視の網羅拡張は具体的な未観測リスクが実行を妨げる場合だけ別途判断する。R0受入でDoD 4-1〜4-5／4-12、実provider配信、正式受渡し、Phase 4全体を完了扱いにしない。
 
 今回の区切り作業は文書反映・証拠の受入追記・差分点検まで。build／test・R1実装・local commit・remoteは実行しない。
+
+## 5 2026-10-12の再開位置
+
+Ownerは本ブランチで開始案再確定→承認・文書固定→新R1 branch→限定実装・最小検証の提案順序で再開するよう指示した。[R1開始票§8](phase4-s1-r1-minimal-start-owner-review-20261012.md#8-owner承認反映と文書source固定の対象2026-10-12)を確認・承認済み。旧20件・専用64件一括再検証を実行指示から外し、新規9件候補と既存影響回帰／最終rootを目的に対応させた。正本・ADRの条件付き開始反映は完了。次は同票§8の文書12件のlocal commit承認／操作、その固定sourceから新R1 branch作成とclean／preflight確認。文書commit・branch作成・実装検証は未実施。上記の「今回の区切り作業」は2026-10-10時点の実施境界として保持する。

@@ -80,13 +80,19 @@ class ExpenseApplicationServiceMethodSecurityTest {
         }
 
         @Bean
+        org.koikifw.reference.expense.application.port.outbound.ExpenseApprovedEventPort approvedEvents() {
+            return mock(org.koikifw.reference.expense.application.port.outbound.ExpenseApprovedEventPort.class);
+        }
+
+        @Bean
         ExpenseApplicationService expenseApplicationService(
                 ExpenseRequestRepository requests,
                 MasterAvailabilityPort masterAvailability,
                 ApproverScopePort approverScope,
-                BusinessAuditRecorder audit) {
+                BusinessAuditRecorder audit,
+                org.koikifw.reference.expense.application.port.outbound.ExpenseApprovedEventPort events) {
             return new ExpenseApplicationService(
-                    requests, masterAvailability, approverScope, audit);
+                    requests, masterAvailability, approverScope, audit, events);
         }
     }
 }
