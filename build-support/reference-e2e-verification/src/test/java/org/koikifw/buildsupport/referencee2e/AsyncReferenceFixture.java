@@ -57,6 +57,8 @@ final class AsyncReferenceFixture implements AutoCloseable {
             .connectTimeout(Duration.ofSeconds(2)).build();
     private final Path log;
     private Process process;
+    private Process recoveryProcess;
+    private Path recoveryLog;
     private String base;
     private boolean expectNoProvider;
 
@@ -99,19 +101,30 @@ final class AsyncReferenceFixture implements AutoCloseable {
     }
 
     void launch(Path jar, boolean async, boolean foundation) throws Exception {
+        launch(jar, async, foundation, stub.endpoint());
+    }
+
+    void launch(Path jar, boolean async, boolean foundation, URI providerEndpoint) throws Exception {
         assertTrue(Files.isRegularFile(jar), "Fixed Reference JAR missing");
         var arguments = new ArrayList<>(List.of(
                 Path.of(System.getProperty("java.home"), "bin", "java").toString(),
                 "-Xmx768m", "-XshowSettings:vm",
                 "-Dkoiki.reference.notification.async.enabled=" + async,
                 "-Dkoiki.reference.notification.foundation.enabled=" + foundation,
-                "-Dkoiki.reference.notification.async.provider-endpoint=" + stub.endpoint(),
+                "-Dkoiki.reference.notification.async.provider-endpoint=" + providerEndpoint,
                 "-jar", jar.toString()));
         if (foundation) {
             arguments.add("--spring.flyway.locations=classpath:db/migration/kkref,classpath:db/migration/kkref-notification");
         }
         var builder = new ProcessBuilder(arguments).redirectErrorStream(true).redirectOutput(log.toFile());
-        var env = builder.environment();
+        configureEnvironment(builder.environment());
+        process = builder.start();
+        Files.writeString(log.resolveSibling(log.getFileName() + ".ownership"),
+                "pid=" + process.pid() + "\ncreation=" + process.info().startInstant().orElseThrow()
+                        + "\ncontainer=" + db.getContainerId() + "\nartifact=" + jar + "\n");
+    }
+
+    private void configureEnvironment(java.util.Map<String, String> env) {
         env.put("SERVER_PORT", "0");
         env.put("SPRING_PROFILES_ACTIVE", "api-bearer");
         env.put("SPRING_DATASOURCE_URL", db.getJdbcUrl());
@@ -127,10 +140,56 @@ final class AsyncReferenceFixture implements AutoCloseable {
         env.put("KOIKI_REFERENCE_API_ISSUER", issuerUrl());
         env.put("KOIKI_REFERENCE_API_AUDIENCE", "koiki-reference-api");
         env.put("DEBUG", "false");
-        process = builder.start();
-        Files.writeString(log.resolveSibling(log.getFileName() + ".ownership"),
-                "pid=" + process.pid() + "\ncreation=" + process.info().startInstant().orElseThrow()
+    }
+
+    Process ownedProcess() {
+        return process;
+    }
+
+    Path childLogPath() {
+        return log;
+    }
+
+    Process launchRecovery(Path jar, R3RecoveryTarget target, URI providerEndpoint,
+            long previousPid, Instant previousStart) throws Exception {
+        return launchRecovery(jar, target, providerEndpoint, previousPid, previousStart, true);
+    }
+
+    Process launchRecovery(Path jar, R3RecoveryTarget target, URI providerEndpoint,
+            long previousPid, Instant previousStart, boolean requireStopped) throws Exception {
+        assertTrue(Files.isRegularFile(jar), "Fixed async Reference JAR missing");
+        if (requireStopped) assertFalse(process.isAlive(), "Original Reference still running");
+        recoveryLog = Files.createTempFile(log.getParent(), "r3-recovery-", ".log");
+        var args = new ArrayList<>(List.of(
+                Path.of(System.getProperty("java.home"), "bin", "java").toString(),
+                "-Xmx768m", "-XshowSettings:vm",
+                "-Dspring.main.web-application-type=none",
+                "-Dkoiki.reference.notification.async.enabled=true",
+                "-Dkoiki.reference.notification.async.provider-endpoint=" + providerEndpoint,
+                "-Dkoiki.reference.notification.recovery.enabled=true",
+                "-Dkoiki.reference.notification.recovery.expected-jdbc-url=" + db.getJdbcUrl(),
+                "-Dkoiki.reference.notification.recovery.environment-id=" + target.environmentId(),
+                "-Dkoiki.reference.notification.recovery.publication-id=" + target.publicationId(),
+                "-Dkoiki.reference.notification.recovery.event-id=" + target.eventId(),
+                "-Dkoiki.reference.notification.recovery.listener-id=" + target.listenerId(),
+                "-Dkoiki.reference.notification.recovery.status=" + target.status(),
+                "-Dkoiki.reference.notification.recovery.completion-attempts=" + target.attempts(),
+                "-Dkoiki.reference.notification.recovery.notification-key=" + target.key(),
+                "-Dkoiki.reference.notification.recovery.payload-sha256=" + target.payloadHash(),
+                "-Dkoiki.reference.notification.recovery.previous-pid=" + previousPid,
+                "-Dkoiki.reference.notification.recovery.previous-start-instant=" + previousStart,
+                "-jar", jar.toString()));
+        var builder = new ProcessBuilder(args).redirectErrorStream(true).redirectOutput(recoveryLog.toFile());
+        configureEnvironment(builder.environment());
+        recoveryProcess = builder.start();
+        Files.writeString(recoveryLog.resolveSibling(recoveryLog.getFileName() + ".ownership"),
+                "pid=" + recoveryProcess.pid() + "\ncreation=" + recoveryProcess.info().startInstant().orElseThrow()
                         + "\ncontainer=" + db.getContainerId() + "\nartifact=" + jar + "\n");
+        return recoveryProcess;
+    }
+
+    Path recoveryLogPath() {
+        return recoveryLog;
     }
 
     void readyAndSeed(boolean publications) throws Exception {
@@ -516,6 +575,13 @@ final class AsyncReferenceFixture implements AutoCloseable {
     public void close() throws Exception {
         Throwable failure = null;
         failure = cleanup(failure, () -> {
+            if (recoveryProcess != null && recoveryProcess.isAlive()) {
+                recoveryProcess.destroy();
+                if (!recoveryProcess.waitFor(30, TimeUnit.SECONDS)) { recoveryProcess.destroyForcibly(); }
+                assertTrue(recoveryProcess.waitFor(5, TimeUnit.SECONDS));
+            }
+        });
+        failure = cleanup(failure, () -> {
             if (process != null && process.isAlive()) {
                 process.destroy();
                 if (!process.waitFor(30, TimeUnit.SECONDS)) { process.destroyForcibly(); }
@@ -537,6 +603,15 @@ final class AsyncReferenceFixture implements AutoCloseable {
             Files.writeString(log, output.replace(db.getPassword(), "[REDACTED]")
                     .replace(password, "[REDACTED]").replace(hmac, "[REDACTED]"));
             assertFalse(output.contains(password)); assertFalse(output.contains(hmac));
+        });
+        failure = cleanup(failure, () -> {
+            if (recoveryLog != null) {
+                String output = Files.readString(recoveryLog);
+                assertTrue(output.length() <= 10 * 1024 * 1024, "Recovery child log limit exceeded");
+                Files.writeString(recoveryLog, output.replace(db.getPassword(), "[REDACTED]")
+                        .replace(password, "[REDACTED]").replace(hmac, "[REDACTED]"));
+                assertFalse(output.contains(password)); assertFalse(output.contains(hmac));
+            }
         });
         if (failure instanceof Exception exception) { throw exception; }
         if (failure instanceof Error error) { throw error; }

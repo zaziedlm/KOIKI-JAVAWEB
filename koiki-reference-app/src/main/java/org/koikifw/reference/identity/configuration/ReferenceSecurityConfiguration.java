@@ -3,6 +3,7 @@ package org.koikifw.reference.identity.configuration;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import java.nio.charset.StandardCharsets;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -32,6 +33,7 @@ public class ReferenceSecurityConfiguration {
 
     @Bean
     @Order(0)
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     SecurityFilterChain referenceIdentitySecurityFilterChain(
             HttpSecurity http, Customizer<HttpSecurity> koikiSessionLogoutCustomizer)
             throws Exception {

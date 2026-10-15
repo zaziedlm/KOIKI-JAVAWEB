@@ -1,16 +1,20 @@
 package org.koikifw.reference.notification.configuration;
 
 import java.net.URI;
+import javax.sql.DataSource;
 import org.koikifw.reference.notification.adapter.inbound.event.ExpenseApprovalListener;
 import org.koikifw.reference.notification.adapter.outbound.external.HttpNotificationProviderAdapter;
+import org.koikifw.reference.notification.adapter.outbound.persistence.JdbcNotificationReceiptLogAdapter;
 import org.koikifw.reference.notification.application.NotificationDispatchService;
 import org.koikifw.reference.notification.application.port.outbound.NotificationProviderPort;
+import org.koikifw.reference.notification.application.port.outbound.NotificationReceiptLogPort;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "koiki.reference.notification.async.enabled", havingValue = "true")
@@ -35,8 +39,15 @@ public class NotificationAsyncConfiguration {
     }
 
     @Bean
-    NotificationDispatchService notificationDispatchService(NotificationProviderPort provider) {
-        return new NotificationDispatchService(provider);
+    NotificationReceiptLogPort notificationReceiptLog(DataSource dataSource, PlatformTransactionManager manager) {
+        return new JdbcNotificationReceiptLogAdapter(dataSource, manager);
+    }
+
+    @Bean
+    NotificationDispatchService notificationDispatchService(NotificationProviderPort provider,
+            NotificationReceiptLogPort receiptLog, Environment environment) {
+        return new NotificationDispatchService(provider, receiptLog,
+                environment.getProperty("koiki.reference.notification.recovery.enabled", Boolean.class, false));
     }
 
     @Bean

@@ -21,15 +21,30 @@ public record ExpenseRequestDetail(
         Instant updatedAt,
         List<ExpenseRequestLineView> lines) {
 
-    public ExpenseRequestDetail {
-        Objects.requireNonNull(expenseRequestId, "expenseRequestId");
-        Objects.requireNonNull(applicantUserId, "applicantUserId");
-        Objects.requireNonNull(applicantEmail, "applicantEmail");
-        Objects.requireNonNull(departmentId, "departmentId");
-        Objects.requireNonNull(departmentCode, "departmentCode");
-        Objects.requireNonNull(departmentName, "departmentName");
-        Objects.requireNonNull(status, "status");
-        Objects.requireNonNull(updatedAt, "updatedAt");
-        lines = List.copyOf(lines);
+    public ExpenseRequestDetail(
+            UUID expenseRequestId,
+            UUID applicantUserId,
+            String applicantEmail,
+            UUID departmentId,
+            String departmentCode,
+            String departmentName,
+            long claimedAmount,
+            String status,
+            @Nullable String decisionReason,
+            long version,
+            Instant updatedAt,
+            List<ExpenseRequestLineView> lines) {
+        this.expenseRequestId = Objects.requireNonNull(expenseRequestId, "expenseRequestId");
+        this.applicantUserId = Objects.requireNonNull(applicantUserId, "applicantUserId");
+        this.applicantEmail = Objects.requireNonNull(applicantEmail, "applicantEmail");
+        this.departmentId = Objects.requireNonNull(departmentId, "departmentId");
+        this.departmentCode = Objects.requireNonNull(departmentCode, "departmentCode");
+        this.departmentName = Objects.requireNonNull(departmentName, "departmentName");
+        this.claimedAmount = claimedAmount;
+        this.status = Objects.requireNonNull(status, "status");
+        this.decisionReason = decisionReason;
+        this.version = version;
+        this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt");
+        this.lines = List.copyOf(lines);
     }
 }
