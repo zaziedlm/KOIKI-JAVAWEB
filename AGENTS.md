@@ -56,6 +56,45 @@ test所有の可変現在対象・停止制御model・provider観測stub・証�
 preflightで判明したD11の前提誤りは同開始票§10へ記録し、§11でOwner訂正承認済み（2026-10-08）。
 訂正・承認文書commit後のclean source再固定と成立済みpreflightからのsource／環境差分確認を経て、
 訂正後D11を含む承認済みtest作成・48件検証へ進む。同じ範囲の開始承認を再要求しない。
+2026-10-08の[B-1読取接続の条件付き限定開始承認](docs/development/phase4-s1-stage-b1-read-connection-limited-start-review-20261008.md#11-owner承認条件付き限定開始2026-10-08)により、
+承認文書commit・clean source固定後のpreflightと、成立時のTooling test所有の読取契約／collector／process台帳／
+独立schema証拠保管／SELECT専用JDBC reader、専用test SQL・新規6 class／52件・Evidenceを作成・検証できる。
+対象は`build-support/phase4-level2-verification/`。本票の使い捨てDB／専用schema・role、有限fixture準備、当該子JVMの
+起動・イベント発行・stub受理・当該終了待機・観測／証拠保存・cleanupを限定副作用として含む。
+Ownerが限定環境管理責任を兼務し、Agentへ開始条件成立後の本票内操作を委任する。
+選択PL2回帰6件・Reference関連143件・既存99件＋E2E、資源・時間・作業量・raw／再実行上限は同票に従う。
+Reference／Tooling main・既存test／migration・POM／依存・Root Reactor・Security・通常構成・CIは変更しない。
+B-2のReference Adapter／肯定Port登録・許可操作、外部送信／復旧runner／Reference Level 2・Phase 4全体・
+DoD／正式受渡し・remoteへ拡張せず、D11／D12と網羅性懸念・未達を保持する。副Agentは使用しない。
+local commitはOwner操作または操作前のOwner確認とし、実装結果の受入は別判断とする。
+2026-10-08の[同開始票§13の訂正承認](docs/development/phase4-s1-stage-b1-read-connection-limited-start-review-20261008.md#13-12訂正のowner承認2026-10-08)により、
+既存test-only依存を含む`jdbc,s1-contract,s1-web` profile補足と、Toolingの`PublicationRecoveryTest.java`／
+`ProcessCrashRecoveryIT.java`の最小資源設定・launch差分、test-only `B1ResourceLimits.java`1件追加を許可する。
+既存test変更禁止の例外はこの2ファイルの明示選択時の資源設定だけとし、assertion・件数・通常起動条件を維持する。
+訂正・承認文書commitとclean source再固定・source／環境差分確認後に、実効制限確認に必要な3ファイルを
+作成・限定検証する。制限成立前に新規52件のハーネス作成・検証を開始しない。
+検証集合・資源／時間／作業量・raw上限・停止条件・main／POM／migration等の除外は維持し、同じ訂正承認を再要求しない。
+2026-10-08の[同開始票§15のruntime profile訂正承認](docs/development/phase4-s1-stage-b1-read-connection-limited-start-review-20261008.md#15-14訂正のowner承認2026-10-08)により、
+`jdbc,s1-contract,s1-web`はoffline test-compile専用とし、既存4件と選択IT2件のruntimeは`jdbc`単独とする。
+§13の文書commit・clean source固定済み`fad5ded`を基点に、今回の承認記録・source／環境差分確認後、
+compile済みtest-classesのSurefire／Failsafe直接goalで既存4件の正常化・実効制限を確認し、成立時に選択IT2件へ進む。
+Tooling JARもjdbcのmain依存でpackage・確認する。既存失敗を保全し、code差分3件・検証集合・上限・停止条件を維持する。
+制限成立前の新規52件、main／POM／依存／migration追加変更へ拡張せず、同じ訂正承認を再要求しない。
+結果受入・B-2／実運用／remoteは別判断とする。
+2026-10-08の[同開始票§17の診断保全承認](docs/development/phase4-s1-stage-b1-read-connection-limited-start-review-20261008.md#17-16診断保全のowner承認2026-10-08)により、
+test-only `B1ResourceLimits.java`の失敗診断保全と選択IT2件の限定再検証を許可する。
+credential／接続情報を除去した有限量の子log・終了状態を既存cleanup前に保存し、子終了・元log cleanupを維持する。
+これまでの訂正経緯の点検は文書・差分・実行記録の照合だけとし、追加原因修正は別判断とする。
+assertion・件数・資源上限・停止条件を維持し、新規52件・結果受入・実運用・remoteへ拡張しない。
+同開始票§18へOwnerの点検記録確認と調査続行を記録した。helperの診断条件を変えた限定確認でも回帰失敗したため、
+追加実行・原因修正は停止し、残る保持接続の診断追加は同票§19のOwner判断を経る。
+2026-10-08の同開始票§20で§19採用をOwner承認済み。helperのpackage logger・起動中1回のSELECT診断と
+選択IT2件1回を実施できる。保持元の完全特定を目標とせず、得られる実値・DB状態を実装判断へ整理する。
+資源／migration／業務assertion・件数を維持し、診断反復・追加原因探索・原因修正を自動で先行しない。
+同開始票§22で§21の子pool設定供給訂正をOwner承認済み。helperの明示選択launchだけでHikari数値を
+canonical command propertyへ揃え、source／環境差分確認・compile後に選択IT2件を1回確認する。
+数値・秘密のenv供給・transaction／migration／業務assertion・件数を維持し、起動初期からの実値を確認する。
+不一致・回帰失敗・上限超・cleanup失敗では停止し、追加修正・新規52件・結果受入・remoteへ拡張しない。
 P4-ARではFramework本体だけでなく、Customer-like Consumer、package済みReference Application、検証Toolingおよび
 Developer Journeyを受渡し候補として棚卸しし、業務アプリ開発チームの受入側視点でbuild / run / operation / diagnosisを実証する。
 正式な受渡し対象はP4-AR Evidenceを入力とする見直し後Phase 4準備で判断し、Project TemplateはPhase 5境界を維持する。
@@ -109,6 +148,9 @@ cleanup・停止条件に従う。既存P4-PL2許可の流用ではなく、こ�
 同票の対象・資源・cleanup・停止条件と実行環境の権限付き承認手順に従う。
 2026-10-08の対象・運用証拠ハーネス限定開始票§9で承認された条件成立後のMaven／隔離Docker検証も、
 同票の対象・資源・cleanup・停止条件と実行環境の権限付き承認手順に従う。
+2026-10-08のB-1読取接続限定開始票§11で承認された条件成立後のMaven／隔離Docker・当該子JVM検証も、
+同票の専用schema／role・fixture準備副作用、検証集合・上限・cleanup・停止条件に限定して対象に含む。
+文書commit・clean source固定前に実行せず、環境の権限付き承認要求を迂回しない。
 
 通常のsandboxで`npipe:////./pipe/docker_engine`への接続を拒否された場合は、
 それだけでRancher DesktopまたはDocker Engineの障害と判定しない。

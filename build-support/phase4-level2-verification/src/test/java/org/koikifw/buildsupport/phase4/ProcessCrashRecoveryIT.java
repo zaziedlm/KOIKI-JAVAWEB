@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.Test;
+import org.koikifw.buildsupport.phase4.b1fixture.B1ResourceLimits;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /** Kills a separate JVM with a recorded publication, then restarts it. */
@@ -491,7 +492,7 @@ class ProcessCrashRecoveryIT {
         Path jar = Path.of("target", "phase4-level2-verification-0.1.0-SNAPSHOT.jar").toAbsolutePath();
         assertTrue(Files.isRegularFile(jar), "The packaged probe JAR is required");
 
-        try (var postgres = new PostgreSQLContainer("postgres:17-alpine")) {
+        try (var postgres = B1ResourceLimits.container()) {
             postgres.start();
             Process first = launch(jar, postgres, eventId,
                     afterSend ? null : marker, afterSend ? marker : null, firstLog);
@@ -521,21 +522,21 @@ class ProcessCrashRecoveryIT {
     private static Process launch(
             Path jar, PostgreSQLContainer postgres, UUID eventId,
             Path pauseBeforeSend, Path pauseAfterSend, Path log)
-            throws IOException {
+            throws IOException, InterruptedException, SQLException {
         return launch(jar, postgres, eventId, pauseBeforeSend, pauseAfterSend, null, log);
     }
 
     private static Process launch(
             Path jar, PostgreSQLContainer postgres, UUID eventId,
             Path pauseBeforeSend, Path pauseAfterSend, Path ready, Path log)
-            throws IOException {
+            throws IOException, InterruptedException, SQLException {
         return launch(jar, postgres, eventId, pauseBeforeSend, pauseAfterSend, ready, null, log);
     }
 
     private static Process launch(
             Path jar, PostgreSQLContainer postgres, UUID eventId,
             Path pauseBeforeSend, Path pauseAfterSend, Path ready, Path pauseBeforeAsync, Path log)
-            throws IOException {
+            throws IOException, InterruptedException, SQLException {
         String java = Path.of(System.getProperty("java.home"), "bin", "java.exe").toString();
         var command = new java.util.ArrayList<String>();
         command.add(java);
@@ -562,7 +563,7 @@ class ProcessCrashRecoveryIT {
         builder.environment().put("SPRING_DATASOURCE_URL", postgres.getJdbcUrl());
         builder.environment().put("SPRING_DATASOURCE_USERNAME", postgres.getUsername());
         builder.environment().put("SPRING_DATASOURCE_PASSWORD", postgres.getPassword());
-        return builder.start();
+        return B1ResourceLimits.start(builder, postgres, log);
     }
 
     private static Process launchRecovery(
