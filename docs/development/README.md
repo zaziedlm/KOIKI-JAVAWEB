@@ -5,6 +5,7 @@
 
 ## 現在の入口
 
+- [S1-07：FAILED監視の最小定義と人への引継ぎ（2026-10-16）](phase4-s1-failed-monitoring-handoff-boundary-review-20261016.md): 観測値の区別・引継ぎ方針と運用時適用をOwner承認（§6）。FAILED件数・publication年齢・初回検知からの未解決時間、取得不能と担当引受けの境界を整理。閾値/担当/通知先はOPEN、追加実装・監視運用なし
 - [S1-06：全停止型の最小確認とHOLD境界（2026-10-16）](phase4-s1-full-stop-operational-boundary-review-20261016.md): 最小確認・HOLD境界の方針と制限はOwner承認済み（§6）。対象範囲/元実行終了/非並走維持/再確認・引継ぎの四点、不明・変化時HOLD、通常再開の別判断を整理。実platform条件はOPEN、追加実装・実操作なし
 - [S1 E08：同一論理通知の逐次再要求・既存保証の整理（2026-10-16）](phase4-s1-e08-sequential-replay-boundary-review-20261016.md): 方針・制限と運用提供方向をOwner承認（§6）。同keyの受理一意性とReference正常完了を区別し、別event/payload不一致等は人手HOLD。§7の同key並行/通常listenerと復旧並走の限界と全停止/HOLD方針もOwner承認済み（§8）。E08実証は未完、追加実装・実行なし
 - [S1 R4：受理済みFAILED一件の人手HOLD引継ぎ案（2026-10-16）](phase4-s1-r4-human-hold-handoff-guide-20261016.md): §1〜6はOwner確認済み・OPEN維持を了解。§7の既存記録点検の結論と運用上の不十分を含む制限はOwner承認済み（§8）。照合材料は再利用し、担当/禁止事項/証拠参照を既存運用記録へ補う。§9の未閉鎖permitの保証範囲と別publicationの人手関連付け方針・制限もOwner承認済み（§10）。実保管条件はOPEN、実装・運用操作は含まない
