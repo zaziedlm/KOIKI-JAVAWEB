@@ -1,6 +1,6 @@
 # S1 R4：consume→単発復旧の接続実証 限定開始票（2026-10-16）
 
-状態：**OWNER APPROVED / SOURCE固定・fresh preflight条件付き限定開始（2026-10-16）**。承認記録は§7。文書commit・clean source固定とpreflightは未成立であり、code/test作成・検証は未開始。
+状態：**OWNER APPROVED / 限定結果 COMPLETE / OWNER ACCEPTED（2026-10-16）**。承認記録は§7、source固定・実行記録は§8。§1〜7の未開始・次手順は開始判断時点の記録として保持する。
 
 ## 1. 今回の出口と除外
 
@@ -110,3 +110,11 @@ Ownerは本票を確認して承認した。また、現時点で網羅不足が
 実行順は§6を維持する。まず承認記録とAGENTS/Skillの限定入口を反映し、**対象文書のlocal commitを別承認またはOwner操作で固定**する。その後に新実装branchのclean sourceとfresh preflightを確認し、成立時にだけ3 fileの作成・限定検証へ進む。本承認はlocal commit・remote操作・結果受入を兼ねない。
 
 追加受付tableの保留、新Bean/runner登録・FAILED対応・実配信・本番運用・R4/DoD/Phase4全体の除外は変更しない。承認は条件付き開始であり、現時点のcode/test作成・検証は未着手。
+
+## 8. Source固定・限定実行記録（2026-10-16）
+
+Ownerが承認文書10件を`c749e44b25690dff52eded5604808fc26f92ad1a`としてcommitした。そこから新実装branch `feature/phase4-s1-r4-consume-recovery-connection`をcleanな状態で作成した。19:19:27 JST開始のfresh preflightが成立し、19:22:47から対象3 fileを作成した。
+
+新規7件、直接回帰4件、通常root clean verifyを各初回一回・追加再実行なしで順に実施した。新規7/7 PASS、回帰4/4 PASS、通常root305実行PASS＋99 skip（404 invocation）、failure/error 0。19:45:52にXML集計、19:46:06にcontainer/今回JVM残存なし・保護process維持を確認し、承認phase枠と60分以内で終了した。code/testは実行前後のhash一致、既存code変更なし。
+
+結果・限界・資源と端末内証拠は[実証記録§5](../architecture/validation/phase4-s1-r4-consume-recovery-connection-20261016.md#5-限定結果のowner受入2026-10-16)を参照する。Q04の表現訂正を条件としたOwner受入を反映済みで、次は成果差分の点検。今回の実行済み予算を追加実行に流用しない。成果commit・remote・後続実装の承認は行っていない。

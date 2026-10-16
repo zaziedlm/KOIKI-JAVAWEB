@@ -1,6 +1,6 @@
 # S1 R4：FAILED処置と復旧操作接続の目的・境界レビュー（2026-10-16）
 
-状態：**設計レビュー整理済み / 接続実証はOwner条件付き承認**。実行範囲・上限・承認は[接続実証の限定開始票](phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md)を正本とする。文書source固定・fresh preflight待ちで、実装・検証は未開始。
+状態：**設計レビュー整理済み / 接続実証 COMPLETE / OWNER ACCEPTED**。実行範囲・上限・承認は[接続実証の限定開始票](phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md)、限定結果は[実証記録](../architecture/validation/phase4-s1-r4-consume-recovery-connection-20261016.md)を参照する。
 
 ## 1. 現行方針と採用判断
 
@@ -96,8 +96,8 @@ consume前の拒否Auditは既存契約を維持し、結果Auditを消費成功
 | --- | --- |
 | 運用を場合の数へ発散させない | Owner方針。最低限の区分・不用意な再投入抑止・人の確認を優先。C01〜08の全詳細化や全組合せ検証を前提にしない |
 | 追加受付table | Owner判断で保留。検討済みの方式/予算は[旧開始票](phase4-s1-r4-intake-read-limited-start-owner-review-20261016.md)に隔離して参照する |
-| 既存機構による接続実証 | [開始票§7](phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md#7-owner承認記録と網羅性の扱い2026-10-16)で条件付き承認。新規3 file・7件/直接回帰4件/root1回・60分。結果受入は別判断 |
+| 既存機構による接続実証 | [開始票§7](phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md#7-owner承認記録と網羅性の扱い2026-10-16)で条件付き承認。新規3 file・7件/直接回帰4件/root1回・60分。限定結果は実証記録§5でOwner受入済み |
 
-現在は承認記録を含む10文書の内容整理・固定対象点検中。local commitは別承認またはOwner操作、その後に新実装branch・clean source・fresh preflightへ進む。code/test作成・検証・remote操作は未開始。
+承認文書はOwnerが`c749e44`へcommitし、新実装branch・clean source・fresh preflightを経て新規3 fileを作成した。新規7件/直接回帰4件PASS、通常root305実行PASS＋99 skip、cleanup成立。限定結果はOwner受入済みで、現在は成果差分点検待ち。成果commit・remote・後続実装は別判断とする。
 
 C01の識別項目は[技術参照](phase4-s1-r4-c01-operation-binding-review-20261016.md)として残す。今回の開始条件は承認済み開始票に一本化し、旧案の詳細項目や「次は〜」を実行条件として読み替えない。

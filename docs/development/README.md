@@ -5,8 +5,8 @@
 
 ## 現在の入口
 
-- [S1 R4：consume→単発復旧の接続実証 限定開始票（2026-10-16）](phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md): Owner条件付き承認。追加tableなし、新規3 file・7ケース/直接回帰4件/root1回・60分。文書固定/clean source/fresh preflight待ち。網羅不足は都度見直す
-- [S1 R4：FAILED処置と復旧操作接続の目的・境界レビュー（2026-10-16）](phase4-s1-r4-failed-resolution-purpose-and-boundary-review-20261016.md): 現行入口。追加受付tableを保留し、一件の確認→許可→実行→結果確認を既存機構へ対応付け、接続上の不足を絞る。実装/検証未開始
+- [S1 R4：consume→単発復旧の接続実証 限定開始票（2026-10-16）](phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md): 承認範囲内の作成・検証終了。[結果](../architecture/validation/phase4-s1-r4-consume-recovery-connection-20261016.md)は新規7件/直接回帰4件PASS、root305実行PASS＋99 skip。限定結果はOwner受入済み、追加実行・成果commitは別判断
+- [S1 R4：FAILED処置と復旧操作接続の目的・境界レビュー（2026-10-16）](phase4-s1-r4-failed-resolution-purpose-and-boundary-review-20261016.md): 現行入口。追加受付tableを保留し、一件の確認→許可→実行→結果確認を既存機構へ対応付ける。接続実証はPASS、正式入口・FAILED完遂等は残課題
 - [S1 R4：処置記録の受付・照会 限定開始票案（保留）](phase4-s1-r4-intake-read-limited-start-owner-review-20261016.md): 追加受付table案の採用優位が未確認のためOwner判断でHOLD。記載の変更・検証・予算は実行根拠にしない
 - [Phase 4継続作業・残タスク棚卸し（2026-10-16）](phase4-continuation-task-inventory-20261016.md): 統合後mainと端末検証を基点に、R3限定受入・既知FAILとR4/R5、他package・採用支援の残タスク、着手条件を整理するOwner review入力
 - [Frameworkローカル開発のartifact準備・整備検討案](framework-local-artifact-readiness-options-20261006.md): 共通／用途別資材、取得・local install・offline確認、cache更新／復旧の検討案。選択Toolingの不足解消とoffline再開は最小実証済み。恒常方式の実装・採用は未完了

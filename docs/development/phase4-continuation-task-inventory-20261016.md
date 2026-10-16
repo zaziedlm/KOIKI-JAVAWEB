@@ -10,7 +10,7 @@
 - Owner指示：Phase 4継続に先立ち残タスクを丁寧に洗い出す。新branchを作り、端末環境の検証記録を引き継ぐ。
 - 引継ぎ文書：[この端末でのmain開発再開検証](../architecture/validation/main-local-development-readiness-20261016.md)。branch切替時に未追跡文書をそのまま保持した。検証対象sourceは分岐元mainであり、後から作ったbranchで再実行した結果とは扱わない。
 - Ownership：本書はFramework側の計画文書。将来のcodeはReference／Framework／Tooling／Customer別に対象を確定する。
-- 今回の操作はbranch作成・文書整理・既存文書とsourceの読取。commit・remote操作、Maven／Docker追加検証、production/test/POM/SQL/CI変更は行わない。文書は未commitで、branch上の成果固定は別判断。
+- 初回棚卸しはbranch作成・文書整理・既存source読取に限定した。その後、承認文書10件はOwnerが`c749e44`へcommitし、個別承認済み接続実証を新branchで実施した。現行結果と次作業は§6。remote操作は行っていない。
 
 以下は2026-10-16時点のRepository内で確認した状態。Customer・運用platformの外部状況は未取得をOPENとし、過去の予定日から完了を推定しない。
 
@@ -100,10 +100,11 @@
 | 現行R4設計 | [一件の復旧レビュー](phase4-s1-r4-failed-resolution-purpose-and-boundary-review-20261016.md)で確認→許可→実行→結果確認を既存permit/消費/Audit/単発復旧へ対応付けた。追加tableなしの呼出し接続に絞る |
 | 接続実証の承認 | [開始票§7](phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md#7-owner承認記録と網羅性の扱い2026-10-16)で**条件付き限定開始をOwner承認**。新規3 file・Q01〜Q07/直接回帰4件/root1回、新規60分（cleanup5分予約）。実DBのconsume/Auditとtest用復旧境界を使い、実配信・FAILED完遂とは分ける |
 | 網羅性 | 七ケースは初回の有限集合。Ownerは不足の可能性を認識し都度追加/見直しを想定。範囲・件数・path・予算を変える追加実行はその時点で判断する |
-| 次の作業 | 承認記録と導線を含む10文書を点検・source固定する。local commitは別承認またはOwner操作。その後、新実装branchのclean sourceとfresh preflightを確認し、成立時のみ作成/限定検証へ進む |
+| 限定実証の結果 | Owner文書commit`c749e44`から新branch `feature/phase4-s1-r4-consume-recovery-connection`を作成し、fresh preflight後に新規3 fileを作成。[結果](../architecture/validation/phase4-s1-r4-consume-recovery-connection-20261016.md)は新規7件/直接回帰4件PASS、root305実行PASS＋99 skip、cleanup成立 |
+| 次の作業 | 限定結果はOwner受入済み。次は成果差分点検。成果commit・remote・後続開始は別判断。実行済み開始票の予算は追加実行へ再利用しない |
 
 AGENTSと両Skillの現行入口には接続実証の限定承認を反映済み。目的対応表などに残るR2時点の案内・古い引継ぎは、後続受入/現行開始票と区別して参照する。C01の詳細識別は[技術参照](phase4-s1-r4-c01-operation-binding-review-20261016.md)に留め、全項目の実装や追加受付機能を開始条件にしない。
 
-現在は文書整理までで、code/test作成・追加検証・commit/remote操作は未実施。開始票の結果受入対象は接続順/非再実行・通常構成保護のみで、正式認証入口・FAILED整合・歴史close・本番運用・R4/DoD/Phase4全体は残課題である。
+現在は承認範囲のcode/test作成・限定検証まで終了し、限定結果はOwner受入済み。新規3 fileと結果反映文書は未commitで、remote操作は未実施。結果受入対象は接続順/非再実行・通常構成保護のみで、正式認証入口・FAILED整合・歴史close・本番運用・R4/DoD/Phase4全体は残課題である。
 
 本書は残タスクの入口であり、完了率・残工数総額・網羅性を確定しない。古い概算には完了分が含まれるため残予算として転用せず、対象を選んだ後に再見積する。
