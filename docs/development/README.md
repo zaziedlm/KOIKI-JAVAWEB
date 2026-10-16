@@ -5,6 +5,21 @@
 
 ## 現在の入口
 
+- [main統合とP4-B1以降のテーマ一覧](phase4-continuation-task-inventory-20261016.md#9-main統合後に進めるテーマ一覧2026-10-17): 今回の文書までcommit→PR/CI→main merge→確認/tagを先に行い、その後P4-B1へ移る。機能テーマ12区分と採用支援5区分を一覧化。B1以降の実施順は未確定、入力待ち・保留を区別
+- [直近13コミットの経緯とP4-B1への接続](phase4-continuation-task-inventory-20261016.md#83-直近コミットからp4-b1へ至る経緯2026-10-17確認): 接続実装の固定、人手補完の境界整理、今回の区切りをcommit参照付きで整理。過去の承認・検証結果を保持し、当初計画のSession SPA＋MVCへ移行する理由を明記
+- [Phase4残タスク棚卸し§8：非同期系の区切りと他タスクへの移行](phase4-continuation-task-inventory-20261016.md#8-非同期系の区切りと当初phase4残タスクへの移行2026-10-17): Owner指示により非同期系は現在の実装・限定結果で区切り、復旧は人手照合・HOLDを優先。以下の非同期提供準備・追加GET設計は継続必須としない。次は当初計画P4-B1の最小範囲・既存との差分確認
+- [S1：処理状態・関連記録の読取経路](phase4-s1-publication-read-path-minimal-design-review-20261017.md): §9の人手照合・HOLD引継ぎを参照。GET/権限追加は今回実装しない。担当・権限・記録先等の実運用準備はOPEN
+- [非同期基本機能の現品質・人手補完・残課題](phase4-s1-dod-integrated-status-owner-review-20261016.md): 限定結果・DoD未達・保証範囲を集約。非同期系の今回作業は区切り、具体的な不足が生じた場合に必要範囲だけ再開を判断する
+- [S1 R5：既存IDによる追跡と観測回復の境界（2026-10-16）](phase4-s1-r5-correlation-observation-recovery-review-20261016.md): 追跡/観測回復の方針と制限を運用設計時に反映する前提でOwner承認（§6）。既存ID/記録の照合経路、HOLD hashと実traceの限界、回復後の新材料による再照合を整理。追加基盤/実証/実操作なし
+- [S1 R5：残す記録と削除できない条件（2026-10-16）](phase4-s1-r5-retention-purge-boundary-review-20261016.md): 保持/削除境界と制限はOwner承認済み（§6）。未解決HOLD/未閉鎖permit/復旧・調査中の保全とCOMPLETED削除候補の除外条件を整理。保持日数/削除権限/競合制御はOPEN、パージ実装・実行なし
+- [S1-07：FAILED監視の最小定義と人への引継ぎ（2026-10-16）](phase4-s1-failed-monitoring-handoff-boundary-review-20261016.md): 観測値の区別・引継ぎ方針と運用時適用をOwner承認（§6）。FAILED件数・publication年齢・初回検知からの未解決時間、取得不能と担当引受けの境界を整理。§7のAudit失敗・上限・timeoutの非再投入/照合方針と制限もOwner承認済み（§8）。閾値/担当/通知先はOPEN、追加実装・監視運用なし
+- [S1-06：全停止型の最小確認とHOLD境界（2026-10-16）](phase4-s1-full-stop-operational-boundary-review-20261016.md): 最小確認・HOLD境界の方針と制限はOwner承認済み（§6）。対象範囲/元実行終了/非並走維持/再確認・引継ぎの四点、不明・変化時HOLD、通常再開の別判断を整理。実platform条件はOPEN、追加実装・実操作なし
+- [S1 E08：同一論理通知の逐次再要求・既存保証の整理（2026-10-16）](phase4-s1-e08-sequential-replay-boundary-review-20261016.md): 方針・制限と運用提供方向をOwner承認（§6）。同keyの受理一意性とReference正常完了を区別し、別event/payload不一致等は人手HOLD。§7の同key並行/通常listenerと復旧並走の限界と全停止/HOLD方針もOwner承認済み（§8）。E08実証は未完、追加実装・実行なし
+- [S1 R4：受理済みFAILED一件の人手HOLD引継ぎ案（2026-10-16）](phase4-s1-r4-human-hold-handoff-guide-20261016.md): §1〜6はOwner確認済み・OPEN維持を了解。§7の既存記録点検の結論と運用上の不十分を含む制限はOwner承認済み（§8）。照合材料は再利用し、担当/禁止事項/証拠参照を既存運用記録へ補う。§9の未閉鎖permitの保証範囲と別publicationの人手関連付け方針・制限もOwner承認済み（§10）。実保管条件はOPEN、実装・運用操作は含まない
+- [S1 R4：consume→単発復旧の接続実証 限定開始票（2026-10-16）](phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md): 承認範囲内の作成・検証終了。[結果](../architecture/validation/phase4-s1-r4-consume-recovery-connection-20261016.md)は新規7件/直接回帰4件PASS、root305実行PASS＋99 skip。限定結果はOwner受入済み、追加実行・成果commitは別判断
+- [S1 R4：FAILED処置と復旧操作接続の目的・境界レビュー（2026-10-16）](phase4-s1-r4-failed-resolution-purpose-and-boundary-review-20261016.md): 現行入口。追加受付tableを保留し、一件の確認→許可→実行→結果確認を既存機構へ対応付ける。接続実証はPASS、正式入口・FAILED完遂等は残課題
+- [S1 R4：処置記録の受付・照会 限定開始票案（保留）](phase4-s1-r4-intake-read-limited-start-owner-review-20261016.md): 追加受付table案の採用優位が未確認のためOwner判断でHOLD。記載の変更・検証・予算は実行根拠にしない
+- [Phase 4継続作業・残タスク棚卸し（2026-10-16）](phase4-continuation-task-inventory-20261016.md): 統合後mainと端末検証を基点に、R3限定受入・既知FAILとR4/R5、他package・採用支援の残タスク、着手条件を整理するOwner review入力
 - [Frameworkローカル開発のartifact準備・整備検討案](framework-local-artifact-readiness-options-20261006.md): 共通／用途別資材、取得・local install・offline確認、cache更新／復旧の検討案。選択Toolingの不足解消とoffline再開は最小実証済み。恒常方式の実装・採用は未完了
 - [アプリ開発チーム向け引継ぎガイド](application-team-handoff-guide.md): Phase履歴を知らない開発者が、提供物／非提供物、構成・Starter選択、Reference実行、最初のCustomer-owned module、copy禁止、拡張分類、診断およびFramework側への戻し条件を一本道で確認する第一入口
 - [開発環境構築手順](application-team-development-environment-guide.md): 端末前提、社内Proxy証明書、Framework / Customer別Repositoryの配置、KOIKI Parent接続、R2 isolated stage build、ローカル起動までの共通手順。VS Codeを採用する場合の設定例と、Dev Container / Linux環境で想定される事項の付記を含む

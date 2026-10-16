@@ -1,5 +1,28 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行判断：非同期系の作業を区切り、他のPhase4残タスクへ移行（2026-10-17）
+
+Owner指示により、非同期系は現時点の実装・限定検証と運用方針で今回の作業を区切る。復旧に苦慮する部分は人による照合・担当付きHOLDで補完する方針を優先し、追加の復旧機構・読取GET・提供手順の整備を他タスクへの移行条件にしない。
+既存の限定受入結果とDoD未達・運用準備のOPENは保持する。S1全体完了や本番運用成立とはしない。必要が具体化した場合に対象を限定して再開を判断し、自動でS1を継続しない。
+現行の作業入口は[残タスク棚卸し§8](docs/development/phase4-continuation-task-inventory-20261016.md#8-非同期系の区切りと当初phase4残タスクへの移行2026-10-17)。次は当初計画の他packageを対象に範囲・着手条件を確認する。次に進む対象はP4-B1：Session SPA＋MVC Reference。既存との差分確認から始め、実装・検証範囲はその結果に基づき定める。
+
+## 現行追加判断：S1 R4 consume→単発復旧の接続実証の条件付き限定開始（2026-10-16）
+
+承認文書はOwnerが`c749e44`へcommitし、cleanな新実装branch・fresh preflightを経て限定実行を終了した。
+[実証記録](docs/architecture/validation/phase4-s1-r4-consume-recovery-connection-20261016.md)は新規7件/直接回帰4件PASS、通常root305実行PASS＋99 skip、cleanup成立。**限定結果はCOMPLETE / OWNER ACCEPTED（実証記録§5）**。
+次は結果と成果差分の点検。以下の開始条件・予算は今回実行の根拠として保持し、追加実行へ再利用しない。成果commit・remote・後続開始は別判断。
+
+Ownerは[接続実証開始票§7](docs/development/phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md#7-owner承認記録と網羅性の扱い2026-10-16)を承認した。
+承認文書commit（別承認／Owner操作）・新実装branchのclean source固定・fresh preflight成立後に限り、
+Reference-ownedの未登録Application接続1 fileとtest/fixture2 fileを作成し、新規7件・直接回帰4件・通常root1回を実行できる。
+新規60分（cleanup5分予約）、phase別資源・限定副作用・停止／cleanupは同票に従う。Ownerは今回所有の隔離DB／role・
+finite fixture・二要求thread、専用roleの有限Audit INSERT権限操作とcleanupを同票内で委任する。実行環境の権限付き承認を維持する。
+新規consumeの正常復帰後だけ既存recoverを一回呼び、既消費・結果不明・例外から自動再実行しない。復旧先はtest用代替を含む限定実証。
+追加受付tableは保留。新table／migration／依存・既存code、Bean／runner登録・正式認証入口・FAILED整合・実provider・歴史closeを変更しない。
+7件は網羅確定ではなく、不足は都度提示し追加／見直しを判断する。実行範囲・件数・path・予算を変える追加や再実行は自動で先行しない。
+限定結果の受入は実証記録§5で成立。local成果commit・remote・R4／DoD／Phase4全体は別判断。副Agentは使用しない。
+以下のR2／R3未承認等は各時点の履歴とし、今回承認を別作業の開始や旧予算の再利用へ拡張しない。
+
 ## 現行追加判断：S1 R2限定結果のOwner受入（2026-10-13）
 
 R2の選択失敗分離・通常構成保護の限定結果は`COMPLETE / OWNER ACCEPTED`。
