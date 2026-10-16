@@ -102,7 +102,7 @@
 | 網羅性 | 七ケースは初回の有限集合。Ownerは不足の可能性を認識し都度追加/見直しを想定。範囲・件数・path・予算を変える追加実行はその時点で判断する |
 | 限定実証の結果 | Owner文書commit`c749e44`から新branch `feature/phase4-s1-r4-consume-recovery-connection`を作成し、fresh preflight後に新規3 fileを作成。[結果](../architecture/validation/phase4-s1-r4-consume-recovery-connection-20261016.md)は新規7件/直接回帰4件PASS、root305実行PASS＋99 skip、cleanup成立 |
 | FAILED対応の現行判断 | [R4レビュー§10](phase4-s1-r4-failed-resolution-purpose-and-boundary-review-20261016.md#10-aの設計候補留保人手hold維持のowner承認2026-10-16)で**Aは限定実証の設計候補に留め、現段階の正式運用判断は人の照合・担当付きHOLDを維持する方針をOwner承認**。運用配備済みの認定ではなく、FAILED完遂/E10a/DoD未達を維持 |
-| 次の作業 | 接続実証はOwner受入・`652e504`へ固定済み。今回の比較/設計・方針承認記録の差分を点検して区切る。Aの開始票作成・実装/検証を自動で進めず、再検討時は必要性と新しい限定範囲を別判断。成果commit・remoteは別判断 |
+| 次の作業 | 接続実証はOwner受入・`652e504`へ固定済み。方式比較/設計・方針承認はOwnerが`2dc6d9a`へ固定済み。次に[人手HOLD引継ぎ案](phase4-s1-r4-human-hold-handoff-guide-20261016.md)で、対象一件の最小記録・再投入禁止・担当/確認先を整理した（Owner確認済み、運用先/実担当等のOPEN維持を了解）。Aの開始票作成・実装/検証を自動で進めず、再検討時は必要性と新しい限定範囲を別判断。成果commit・remoteは別判断 |
 
 AGENTSと両Skillの現行入口には接続実証の限定承認を反映済み。目的対応表などに残るR2時点の案内・古い引継ぎは、後続受入/現行開始票と区別して参照する。C01の詳細識別は[技術参照](phase4-s1-r4-c01-operation-binding-review-20261016.md)に留め、全項目の実装や追加受付機能を開始条件にしない。
 
