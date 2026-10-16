@@ -5,6 +5,7 @@
 
 ## 現在の入口
 
+- [S1 R5：残す記録と削除できない条件（2026-10-16）](phase4-s1-r5-retention-purge-boundary-review-20261016.md): 保持/削除境界と制限はOwner承認済み（§6）。未解決HOLD/未閉鎖permit/復旧・調査中の保全とCOMPLETED削除候補の除外条件を整理。保持日数/削除権限/競合制御はOPEN、パージ実装・実行なし
 - [S1-07：FAILED監視の最小定義と人への引継ぎ（2026-10-16）](phase4-s1-failed-monitoring-handoff-boundary-review-20261016.md): 観測値の区別・引継ぎ方針と運用時適用をOwner承認（§6）。FAILED件数・publication年齢・初回検知からの未解決時間、取得不能と担当引受けの境界を整理。§7のAudit失敗・上限・timeoutの非再投入/照合方針と制限もOwner承認済み（§8）。閾値/担当/通知先はOPEN、追加実装・監視運用なし
 - [S1-06：全停止型の最小確認とHOLD境界（2026-10-16）](phase4-s1-full-stop-operational-boundary-review-20261016.md): 最小確認・HOLD境界の方針と制限はOwner承認済み（§6）。対象範囲/元実行終了/非並走維持/再確認・引継ぎの四点、不明・変化時HOLD、通常再開の別判断を整理。実platform条件はOPEN、追加実装・実操作なし
 - [S1 E08：同一論理通知の逐次再要求・既存保証の整理（2026-10-16）](phase4-s1-e08-sequential-replay-boundary-review-20261016.md): 方針・制限と運用提供方向をOwner承認（§6）。同keyの受理一意性とReference正常完了を区別し、別event/payload不一致等は人手HOLD。§7の同key並行/通常listenerと復旧並走の限界と全停止/HOLD方針もOwner承認済み（§8）。E08実証は未完、追加実装・実行なし
