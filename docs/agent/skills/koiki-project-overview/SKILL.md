@@ -5,6 +5,12 @@ description: Orient work in KOIKI-JavaWeb-FW by identifying the current phase, o
 
 # KOIKI Project Overview
 
+## 現行R4接続実証の条件付き限定開始（2026-10-16）
+
+[接続実証開始票§7](../../../development/phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md#7-owner承認記録と網羅性の扱い2026-10-16)で、未登録Reference Application接続1件＋test/fixture2件、7新規case・4直接回帰・root1回の条件付き限定開始をOwner承認。
+文書commitは別承認／Owner操作、その後の新branch・clean source固定とfresh preflight成立前に作成・検証しない。資源・新規60分・停止／cleanup・有限副作用は同票とAGENTSの現行追加判断へ追跡する。
+七ケースは網羅確定ではなく不足を都度提示し見直す。追加受付tableは保留し、実復旧・FAILED整合・正式入口・R4/DoD/Phase4全体へ拡張しない。以下のR2時点の案内は履歴として読む。
+
 ## 現行R2限定結果の受入（2026-10-13）
 
 [R2結果文書§5](../../../architecture/validation/phase4-s1-r2-selected-seven-case-results-and-acceptance-input-20261013.md#5-r2限定結果のowner受入承認2026-10-13)で、選択失敗分離・通常構成保護は`COMPLETE / OWNER ACCEPTED`。

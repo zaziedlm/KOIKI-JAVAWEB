@@ -1,5 +1,18 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行追加判断：S1 R4 consume→単発復旧の接続実証の条件付き限定開始（2026-10-16）
+
+Ownerは[接続実証開始票§7](docs/development/phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md#7-owner承認記録と網羅性の扱い2026-10-16)を承認した。
+承認文書commit（別承認／Owner操作）・新実装branchのclean source固定・fresh preflight成立後に限り、
+Reference-ownedの未登録Application接続1 fileとtest/fixture2 fileを作成し、新規7件・直接回帰4件・通常root1回を実行できる。
+新規60分（cleanup5分予約）、phase別資源・限定副作用・停止／cleanupは同票に従う。Ownerは今回所有の隔離DB／role・
+finite fixture・二要求thread、専用roleの有限Audit INSERT権限操作とcleanupを同票内で委任する。実行環境の権限付き承認を維持する。
+新規consumeの正常復帰後だけ既存recoverを一回呼び、既消費・結果不明・例外から自動再実行しない。復旧先はtest用代替を含む限定実証。
+追加受付tableは保留。新table／migration／依存・既存code、Bean／runner登録・正式認証入口・FAILED整合・実provider・歴史closeを変更しない。
+7件は網羅確定ではなく、不足は都度提示し追加／見直しを判断する。実行範囲・件数・path・予算を変える追加や再実行は自動で先行しない。
+結果受入・local成果commit・remote・R4／DoD／Phase4全体は別判断。副Agentは使用しない。
+以下のR2／R3未承認等は各時点の履歴とし、今回承認を別作業の開始や旧予算の再利用へ拡張しない。
+
 ## 現行追加判断：S1 R2限定結果のOwner受入（2026-10-13）
 
 R2の選択失敗分離・通常構成保護の限定結果は`COMPLETE / OWNER ACCEPTED`。

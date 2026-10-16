@@ -5,6 +5,12 @@ description: Plan, implement, and review KOIKI business-module changes by decidi
 
 # KOIKI Business Feature Work
 
+## 現行R4接続実証の条件付き限定開始（2026-10-16）
+
+[接続実証開始票§7](../../../development/phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md#7-owner承認記録と網羅性の扱い2026-10-16)をOwner承認済み。Reference `notification`の既存consumeと単発復旧を、transaction外の未登録Application処理で一回だけつなぐ限定実証とする。
+文書commit（別承認／Owner操作）・clean source・fresh preflight成立後にだけ新規3 file、7新規case・4直接回帰・root1回を作成／検証する。資源・時間・有限副作用・停止／cleanupは同票とAGENTSへ追跡する。
+七ケースは網羅確定ではなく不足を都度提示して見直す。新table/依存/既存code、Bean/runner登録、FAILED・実provider・正式入口・歴史closeは含めない。以下のR2時点の記述は履歴として読む。
+
 ## R2限定結果のOwner受入（2026-10-13）
 
 [R2結果文書§5](../../../architecture/validation/phase4-s1-r2-selected-seven-case-results-and-acceptance-input-20261013.md#5-r2限定結果のowner受入承認2026-10-13)により、選択失敗分離と通常構成保護は`COMPLETE / OWNER ACCEPTED`。
