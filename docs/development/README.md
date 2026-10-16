@@ -5,6 +5,7 @@
 
 ## 現在の入口
 
+- [S1 E08：同一論理通知の逐次再要求・既存保証の整理（2026-10-16）](phase4-s1-e08-sequential-replay-boundary-review-20261016.md): 方針・制限と運用提供方向をOwner承認（§6）。同keyの受理一意性とReference正常完了を区別し、別event/payload不一致等は人手HOLD。E08実証は未完、追加実装・実行なし
 - [S1 R4：受理済みFAILED一件の人手HOLD引継ぎ案（2026-10-16）](phase4-s1-r4-human-hold-handoff-guide-20261016.md): §1〜6はOwner確認済み・OPEN維持を了解。§7の既存記録点検の結論と運用上の不十分を含む制限はOwner承認済み（§8）。照合材料は再利用し、担当/禁止事項/証拠参照を既存運用記録へ補う。§9の未閉鎖permitの保証範囲と別publicationの人手関連付け方針・制限もOwner承認済み（§10）。実保管条件はOPEN、実装・運用操作は含まない
 - [S1 R4：consume→単発復旧の接続実証 限定開始票（2026-10-16）](phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md): 承認範囲内の作成・検証終了。[結果](../architecture/validation/phase4-s1-r4-consume-recovery-connection-20261016.md)は新規7件/直接回帰4件PASS、root305実行PASS＋99 skip。限定結果はOwner受入済み、追加実行・成果commitは別判断
 - [S1 R4：FAILED処置と復旧操作接続の目的・境界レビュー（2026-10-16）](phase4-s1-r4-failed-resolution-purpose-and-boundary-review-20261016.md): 現行入口。追加受付tableを保留し、一件の確認→許可→実行→結果確認を既存機構へ対応付ける。接続実証はPASS、正式入口・FAILED完遂等は残課題
