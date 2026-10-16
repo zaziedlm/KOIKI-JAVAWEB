@@ -33,7 +33,7 @@
 | ID / 優先 | 残タスク・現在の不足 | 次に作る判断材料／出口 | Ownership・着手条件 |
 | --- | --- | --- | --- |
 | S1-01 / 先行 | **B03a / E10aのFAILED処置**。provider受理後応答喪失でFAILED、Reference観測logなし。人手HOLDは成立、publication完了は未達 | 自動復旧Aの必要性を再評価し、人の照合から解決・再開／正式エスカレーションまでの選択肢、状態遷移・誤対象防止・受理証拠・完了条件を比較する。既存FAILの単純再実行や期待値の変更を解決としない | Referenceの復旧契約、Toolingの独立証拠、判断はOwner。[A/B比較§7](phase4-s1-r3b-failed-publication-limited-correction-owner-review-20261014.md#7-owner採用判断2026-10-14)でR4と再判断する方針 |
-| S1-02 / 先行 | **R4の操作主体・認可・Audit・permit接続**。基盤と単発復旧は存在するが、正式な復旧操作としての接続は未達 | 既存consume→recover一回→結果Auditの限定実証を先に行う。正式operator入口・委譲・close・本番運用は後続の不足として扱う | Reference所有。未登録Application1件＋test/fixture2件の限定開始は条件付き承認済み。文書固定/preflight待ち。新受付tableは保留 |
+| S1-02 / 先行 | **R4の操作主体・認可・Audit・permit接続**。基盤と単発復旧は存在するが、正式な復旧操作としての接続は未達 | 既存consume→recover一回→結果Auditの限定実証はOwner受入・`652e504`へ固定済み。正式operator入口・委譲・close・本番運用は引き続き不足として扱う | Reference所有。未登録Application1件＋test/fixture2件の限定結果のみ受入済み。正式入口の開始承認ではない。新受付tableは保留 |
 | S1-03 / 先行 | **証拠耐久保管と使用時保護**。B1/B2の限定凍結・初回issue/readを送信時までの保護へ延長したとは認定できない | B-C01〜10を現Reference publication/log/provider契約に再対応。証拠一意解決、信頼元・失効・保持・復元、外部保管とDBのcommit不明、lock中I/Oと使用中の制御喪失を設計する | Reference／Tooling境界をreview。`NotificationFoundationConfiguration`の既定ConsumptionProof/ClosureProofはemptyであり、肯定fallbackを加えない |
 | S1-04 / 先行 | **D11/D12と歴史対象・別publication**。現行closeの現在対象要求、別publication横断の論理通知抑止、照合後の変更窓が残る | 歴史対象閉鎖と配送成功を分け、対象削除／attempt変化・別publication・旧worker継続時の結果を表にする。保護できない条件のHOLD・担当・次確認を定める | [段階B契約§3〜4](phase4-s1-stage-b-operational-integration-contract-review-draft-20261008.md)。既存一意制約・短いTTL・lock保有だけで保証済みにしない |
 | S1-05 / 次 | **E08の重複・並行残枝**。Reference同論理通知の逐次再要求、stub同key並行要求、通常listenerと復旧processの並走は残存 | 3枝を分け、同key/payload/宛先、別通知の非抑止、受理数、競合位置と独立観測を定義。全停止型でlistener並走を対象外にするなら適用条件・残課題を明示して判断 | Reference／Tooling。D01のstub逐次契約とC04の別通知相関を代替証拠にしない。[R3-B§18・23](../architecture/validation/phase4-s1-r3b-source-preflight-and-blocking-review-20261014.md#18-17後の残ケースと判断境界2026-10-14) |
@@ -101,10 +101,11 @@
 | 接続実証の承認 | [開始票§7](phase4-s1-r4-consume-recovery-connection-limited-start-review-20261016.md#7-owner承認記録と網羅性の扱い2026-10-16)で**条件付き限定開始をOwner承認**。新規3 file・Q01〜Q07/直接回帰4件/root1回、新規60分（cleanup5分予約）。実DBのconsume/Auditとtest用復旧境界を使い、実配信・FAILED完遂とは分ける |
 | 網羅性 | 七ケースは初回の有限集合。Ownerは不足の可能性を認識し都度追加/見直しを想定。範囲・件数・path・予算を変える追加実行はその時点で判断する |
 | 限定実証の結果 | Owner文書commit`c749e44`から新branch `feature/phase4-s1-r4-consume-recovery-connection`を作成し、fresh preflight後に新規3 fileを作成。[結果](../architecture/validation/phase4-s1-r4-consume-recovery-connection-20261016.md)は新規7件/直接回帰4件PASS、root305実行PASS＋99 skip、cleanup成立 |
-| 次の作業 | 限定結果はOwner受入済み。次は成果差分点検。成果commit・remote・後続開始は別判断。実行済み開始票の予算は追加実行へ再利用しない |
+| FAILED対応の現行判断 | [R4レビュー§10](phase4-s1-r4-failed-resolution-purpose-and-boundary-review-20261016.md#10-aの設計候補留保人手hold維持のowner承認2026-10-16)で**Aは限定実証の設計候補に留め、現段階の正式運用判断は人の照合・担当付きHOLDを維持する方針をOwner承認**。運用配備済みの認定ではなく、FAILED完遂/E10a/DoD未達を維持 |
+| 次の作業 | 接続実証はOwner受入・`652e504`へ固定済み。今回の比較/設計・方針承認記録の差分を点検して区切る。Aの開始票作成・実装/検証を自動で進めず、再検討時は必要性と新しい限定範囲を別判断。成果commit・remoteは別判断 |
 
 AGENTSと両Skillの現行入口には接続実証の限定承認を反映済み。目的対応表などに残るR2時点の案内・古い引継ぎは、後続受入/現行開始票と区別して参照する。C01の詳細識別は[技術参照](phase4-s1-r4-c01-operation-binding-review-20261016.md)に留め、全項目の実装や追加受付機能を開始条件にしない。
 
-現在は承認範囲のcode/test作成・限定検証まで終了し、限定結果はOwner受入済み。新規3 fileと結果反映文書は未commitで、remote操作は未実施。結果受入対象は接続順/非再実行・通常構成保護のみで、正式認証入口・FAILED整合・歴史close・本番運用・R4/DoD/Phase4全体は残課題である。
+現在は承認範囲のcode/test作成・限定検証まで終了し、限定結果はOwner受入済み。新規3 fileと結果/受入反映文書はOwnerが`652e504`へcommit済みで、remote操作は未実施。結果受入対象は接続順/非再実行・通常構成保護のみで、正式認証入口・FAILED整合・歴史close・本番運用・R4/DoD/Phase4全体は残課題である。
 
 本書は残タスクの入口であり、完了率・残工数総額・網羅性を確定しない。古い概算には完了分が含まれるため残予算として転用せず、対象を選んだ後に再見積する。
