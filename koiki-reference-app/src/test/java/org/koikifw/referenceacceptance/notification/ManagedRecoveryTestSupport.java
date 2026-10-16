@@ -33,7 +33,8 @@ public final class ManagedRecoveryTestSupport {
                 + "\",\"permitTtl\":\"PT5M\",\"grants\":[" + grants + "]}";
     }
     public static Path file(Path directory, String json) throws Exception {
-        return Files.writeString(directory.resolve("assignment.json"), json, StandardCharsets.UTF_8);
+        // JUnit may inherit an 8.3 TEMP path on Windows; valid fixtures use the real path required by the loader.
+        return Files.writeString(directory.resolve("assignment.json"), json, StandardCharsets.UTF_8).toRealPath();
     }
     public static String hash(Path path) throws Exception {
         return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path)));
