@@ -42,7 +42,7 @@
 | S1-06 / 次 | **E11〜14の運用統制**。元listener生存、停止証拠不正／再起動、複数復旧者、lock喪失の各枝はR3の拒否例だけでは不足 | [全停止型の最小確認案](phase4-s1-full-stop-operational-boundary-review-20261016.md)で対象範囲・元実行終了・非並走維持・再確認/引継ぎの四点を整理し、方針・制限をOwner承認済み（同文書§6）。条件不明/変化時HOLD、通常再開は別判断。実platform・D12/fencing全体は残す | Reference／Tooling＋限定環境管理。実運用platform保証は別入力。稼働中型へ移るなら新しい保護モデルをreview |
 | S1-07 / 次 | **E15〜17の監視・運用**。FAILED件数／滞留起点、alert、認可再送、試行上限・timeout、Audit障害、代行・解除の統合証拠が不足 | 初回は[FAILED監視・引継ぎ案](phase4-s1-failed-monitoring-handoff-boundary-review-20261016.md)でFAILED件数・publication年齢・初回検知からの未解決時間を区別し、観測不能/担当未引受けの扱いを整理し、運用時適用の方針と制限をOwner承認済み（同文書§6）。追加§7でAudit失敗・上限・timeoutを既存接続/人手HOLDへ対応付け、方針・制限をOwner承認済み（同文書§8）。閾値/担当/sink、E15〜17の実動作は残す | Reference／Tooling、運用条件はOwner。timeoutを送信取消し・未受理確定と扱わない |
 | S1-08 / 後段設計を早期接続 | **R5保持・パージ / E18〜19**。publication・provider key・受理log・permit・操作証拠の寿命整合と単一実行パージが未達 | 初回は[保持/パージ境界案](phase4-s1-r5-retention-purge-boundary-review-20261016.md)で保護対象・COMPLETED削除候補の条件・記録間の寿命を整理し、方針・制限をOwner承認済み（同文書§6）。日数/権限/競合/復元はOPEN、実装/パージ実行なし。C3 Batchは別判断 | Reference／Tooling。保持値・削除権限・基盤・対象をreview。C3全体開始を自動前提にしない |
-| S1-09 / 後段設計を早期接続 | **R5追跡・観測回復 / E20〜21**。相関値の採取を、HTTP→非同期→別process復旧の全追跡・実trace・sink回復と同一視できない | event/publication/key/permit/attempt/process世代の対応と非露出・非漏えい、log/traceの証拠範囲を整理。観測不能時のHOLDから回復後の新証拠による解決までを定める | Reference／Tooling、D1同期との共通準備を一度だけ計上。実演計画の要求とDoD原文を分けて判定 |
+| S1-09 / 後段設計を早期接続 | **R5追跡・観測回復 / E20〜21**。相関値の採取を、HTTP→非同期→別process復旧の全追跡・実trace・sink回復と同一視できない | 初回は[追跡/観測回復案](phase4-s1-r5-correlation-observation-recovery-review-20261016.md)で既存IDの照合経路、HOLD hashの意味、MDCと実traceの区別、回復後の新証拠照合を整理し、運用設計反映を前提に方針・制限をOwner承認済み（同文書§6）。実trace/非漏えい/sink実証は残す | Reference／Tooling、D1同期との共通準備を一度だけ計上。実演計画の要求とDoD原文を分けて判定 |
 | S1-10 / 各段階出口 | **DoDと残リスクの統合判定**。R0〜R3の限定受入、枝ごとのPASS/FAIL/HOLDとDoDの成立範囲が多数の履歴文書に分散 | 下表をE01〜21・S-01〜11・現行method・source/artifact/証拠へ細分化し、不足枝・人の判断・実provider条件を集約。S1の出口候補をOwnerへ提示する | Framework側文書／Architecture判断。case一覧は網羅証明ではなく改訂可能。限定PASSの加算だけで全体PASSとしない |
 
 ### 3.1 S1対象DoDの現行判定材料
@@ -118,10 +118,10 @@
 | --- | --- | --- |
 | S1-07の残り：E16/E17 | 送信前/後のAudit失敗、試行上限、timeout、通知不達/担当不在を既存consume・結果Audit・HOLDへ対応付ける。既存PASSの範囲と未実証の統合運用を分ける | [監視/引継ぎ文書§7](phase4-s1-failed-monitoring-handoff-boundary-review-20261016.md#7-audit失敗試行上限timeoutの最小処置2026-10-16)に対応付けと結論を追記し、Owner承認済み（同文書§8）。実証未達は維持し、追加再送機構は作らない |
 | S1-08：R5保持/パージ | 未解決HOLD・未閉鎖permit・provider key/受理記録/publicationの保持関係と、何を削除対象にできないかを整理 | [保持/パージ境界案](phase4-s1-r5-retention-purge-boundary-review-20261016.md)で人手HOLD方針との対応と削除できない条件を整理し、Owner承認済み（同文書§6）。日数/削除権限/実装/パージ実行は別判断 |
-| S1-09：追跡/観測回復 | 既存ID・Audit・HOLD証拠で追える範囲と、sink/実trace・観測回復の不足を整理 | 部分材料あり。E20/E21・実sink実証は未完 |
+| S1-09：追跡/観測回復 | 既存ID・Audit・HOLD証拠で追える範囲と、sink/実trace・観測回復の不足を整理 | [追跡/観測回復案](phase4-s1-r5-correlation-observation-recovery-review-20261016.md)の方針・制限を運用設計へ反映する前提でOwner承認済み（同文書§6）。E20/E21・実sink実証は未完 |
 | S1-10：DoD統合判定 | 限定結果、承認済み運用方針、未達/OPENをDoDへ一度集約し、S1出口に必要な判断を明示 | §3.1は入口。全case→method/epochとの統合と正式判定は残る |
 
-一つずつ進める場合、まずS1-07のE16/E17の残りを既存機構へ対応付け、その後R5保持/パージ、追跡、DoD統合を選ぶ案とする。これは着手順の提案であり、次タスクの確定・実装/検証開始承認ではない。残タスク再整理後、Owner指示により最初のS1-07残りの文書整理へ進み、結論と制限はOwner承認済みで`0294ee7`へ固定済み。Owner指示によりR5保持/パージの初回文書整理へ進み、結論と制限はOwner承認済みで、現在は文書差分点検・成果固定待ち。追跡/DoD統合は未着手。
+一つずつ進める場合、まずS1-07のE16/E17の残りを既存機構へ対応付け、その後R5保持/パージ、追跡、DoD統合を選ぶ案とする。これは着手順の提案であり、次タスクの確定・実装/検証開始承認ではない。残タスク再整理後、Owner指示により最初のS1-07残りの文書整理へ進み、結論と制限はOwner承認済みで`0294ee7`へ固定済み。Owner指示によりR5保持/パージの初回文書整理へ進み、結論と制限はOwner承認済みで、`505b947`へ固定済み。Owner指示により追跡/観測回復の初回整理へ進み、結論と制限は運用設計反映を前提にOwner承認済みで、現在は文書差分点検・成果固定待ち。DoD統合は未着手。
 
 ### 7.2 運用/実案件入力を待つもの
 
