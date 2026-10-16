@@ -1,6 +1,6 @@
 # S1 R4：受理済みFAILED一件の人手HOLD引継ぎ案（2026-10-16）
 
-状態：**§1〜6はOWNER確認済み。既存記録点検§7の結論・制限はOWNER APPROVED（§8）**。方針の根拠は[R4レビュー§10](phase4-s1-r4-failed-resolution-purpose-and-boundary-review-20261016.md#10-aの設計候補留保人手hold維持のowner承認2026-10-16)。Aは設計候補に留め、人の照合・担当付きHOLDを維持する。これは新たな復旧操作の許可や、運用配備済みの認定ではない。
+状態：**§1〜6はOWNER確認済み。既存記録点検§7とclose/別publication整理§9の結論・制限はOWNER APPROVED（§8・§10）**。方針の根拠は[R4レビュー§10](phase4-s1-r4-failed-resolution-purpose-and-boundary-review-20261016.md#10-aの設計候補留保人手hold維持のowner承認2026-10-16)。Aは設計候補に留め、人の照合・担当付きHOLDを維持する。これは新たな復旧操作の許可や、運用配備済みの認定ではない。
 
 ## 1. 対象と出口
 
@@ -98,3 +98,42 @@ Ownerは§7を確認し、運用上の不十分さも了解したうえで承認
 照合材料の種類は既存記録を利用し、対象/観測時点/証拠参照・未完了/再投入禁止・担当/次確認を既存運用記録へ補う方針とする。今回、新table・新Audit・新保存基盤は追加しない。
 
 実際の保管先・参照権限・保持・引継ぎ確認等はOPENを維持する。この承認を運用上の必要十分性の成立、運用配備・引継ぎ実施、FAILED解決、S1-03全体/DoD完了、Aの開始と扱わない。具体的な不足が判明した場合に限り、その影響と必要範囲を示して再検討する。成果commit・remote・追加実装/検証・実運用操作は本承認に含めない。
+
+## 9. 未閉鎖permitの保証範囲と、別publicationの扱い（2026-10-16）
+
+状態：**S1-04の初回整理の結論・制限はOWNER APPROVED（§10）**。既存記録点検と承認はOwnerが`dbbe399`へcommitし、clean sourceを確認してから本整理へ進んだ。今回もcode・既存契約を読取確認した文書であり、close契約の変更や追加実証は行わない。
+
+### 9.1 既存機構が止めるもの
+
+[V4の部分unique index](../../koiki-reference-app/src/main/resources/db/migration/kkref-notification/V4__create_notification_recovery_records.sql)は、`closed_at IS NULL`の`(environment_id, publication_id)`を一意にする。消費済み・有効期限切れになっても、この条件から外れない。同じ環境・publicationに未閉鎖permitがある限り、通常の追加発行は制約で拒否される。
+
+[現行close](../../koiki-reference-app/src/main/java/org/koikifw/reference/notification/application/RecoveryPermitService.java)は現在のCLOSE権限/scope、現在target一致、closure proofと保存済みtargetの全項目一致を要求する。attempt変更や対象削除後の歴史targetを閉じる仕組みではない。closeはpublication更新や通知送信を行わず、配送成功や次送信の許可を意味しない。
+
+根拠となる[既存D11 test](../../koiki-reference-app/src/test/java/org/koikifw/reference/notification/OperationalRecoveryEvidenceDbTest.java)には、重複発行拒否、attempt変更/対象不存在時のclose拒否、期限経過後の未閉鎖維持とindex定義の確認がある。今回はsourceを読んだもので再実行結果ではない。別publication横断の実運用抑止を同testのPASSから推定しない。
+
+### 9.2 最小ケースでの扱い案
+
+| 観測したこと | 現行機構の境界 | 人が引き継ぐこと |
+| --- | --- | --- |
+| 同じ環境・publicationに未閉鎖permitがあり、消費済み/期限切れになった | 通常の新permit発行は一意制約で拒否。期限切れは枠解放ではない | 未解決なら保持し、新operation/close/削除で再試行の入口を空けない。消費記録と結果未確認を分けて記録 |
+| 同じpublicationのattempt等が変化、または対象が見つからない | 現在target一致を満たせず歴史closeは拒否される。対象消失を解決とは判定しない | 発行時targetと現在の観測/不存在・観測日時を既存記録へ併記し、未閉鎖のまま照合担当へ。比較条件を緩めない |
+| 別publicationが同じ論理通知に見える | 既存一意制約では新publicationのpermit発行を横断抑止しない。event ID一致/不一致だけでは同一論理通知を断定できない | 既存通知keyと業務上の通知識別、payload/宛先・受理証拠を権限のある担当が照合する。同じ又は対応不明なら既存の一件記録へ関連IDを追記し、追加送信/復旧操作を保留。新台帳は作らない |
+| 元processの生存/再起動、照合後の条件変更、停止不明が判明した | permitの未閉鎖・lock・TTLだけでは通常listenerや旧workerを止めない。D12の照合後の窓も未解決 | 停止状態を保証済みとせず、処置をHOLDして運用責任者へ引き継ぐ。本手順からprocess停止や設定変更を自動実行しない |
+
+別publicationについての人手保留は、既存インシデント記録を介した手続上の抑止に留まる。通常listener・別入口・管理者操作を技術的に遮断する機構を実装したわけではなく、同一論理通知の横断的な二重送信防止は未達とする。providerのidempotency保持条件が未確定の状態で、keyが同じなら安全と判断しない。
+
+### 9.3 今回の結論と残課題（§10でOwner承認）
+
+**現在の人手HOLD対象は、未閉鎖permitがあればそのまま保持する。歴史closeを新設せず、別publicationの関連付けも既存運用記録で行う。** permitがないHOLDには、抑止用permitを新たに発行する仕組みを足さない。closeやpermitの有無を運用記録上の調査終了と同じ状態として扱わない。
+
+未閉鎖記録の蓄積、保持/パージ、実際の運用記録への到達性はOPEN。記録の整理や容量確保を理由にclose/削除を許可しない一方、全記録を永久保存する実装を採用したとも扱わない。歴史対象の閉鎖が実際に必要になった時に、閉鎖の意味・責任・証拠・次発行への影響を限定して再検討する。
+
+本案でS1-04のD11/D12全体、別publication横断の技術的抑止、停止維持/fencing、E08の残枝を解決済みとはしない。既存の比較条件・index・Audit/消費記録を維持し、新table・schema・close API・追加テストは作らない。
+
+## 10. 未閉鎖permit・別publicationの扱いのOwner承認（2026-10-16）
+
+Ownerは§9を確認し、承認した。これを**S1-04初回整理の結論と制限のOWNER APPROVED**として記録する。
+
+未解決のpermitは存在する場合に未閉鎖のまま保持し、歴史closeは新設しない。別publicationが同じ論理通知に見える場合は既存運用記録で関連付け、人の照合とHOLDを維持する。permitのないHOLDに抑止用permitを新設しない。
+
+同一環境・publicationの一意制約を、別publication横断や通常listenerの技術的な送信抑止へ拡張して解釈しない。D11/D12全体、停止維持/fencing、E08の残枝、保持/パージと実運用体制のOPENは維持する。実装・追加検証・実運用操作・成果commit・remoteの開始承認は含まない。
