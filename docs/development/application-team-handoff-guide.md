@@ -1,5 +1,7 @@
 # KOIKI-JavaWeb-FW アプリ開発チーム向け引継ぎガイド v0.1
 
+2026-10-19追加：[KOIKI-JavaWeb 提供機能・適用条件・選択ガイド](framework-capabilities-and-selection-guide.md)で、現checkpointにおける機能・限定成果・構成選択と責任分担を確認できます。同ガイドの本文全体・名称とチェックポイント方式はOwner承認済みです。次のタグ名は`checkpoint-v0.1.5`（未作成）とし、Mavenは`0.1.0-SNAPSHOT`を維持します。タグ対象・提供artifact・配布条件の確定は別途行います。本書の既存受入履歴は保持し、非同期Referenceの後続限定成果・未達は同ガイドとリンク先の現品質記録を参照してください。
+
 ## 1. 本書の目的、対象読者、現在の位置付け
 
 本書は、KOIKI-JavaWeb-FWのPhase履歴を知らない業務アプリ開発者が、現在受け取れるものと受け取れないものを理解し、

@@ -5,6 +5,7 @@
 
 ## 現在の入口
 
+- [KOIKI-JavaWeb 提供機能・適用条件・選択ガイド](framework-capabilities-and-selection-guide.md): 本文全体・名称とチェックポイント方式をOwner承認済み（2026-10-19）。次のタグ名は`checkpoint-v0.1.5`（未作成）。Mavenは`0.1.0-SNAPSHOT`を維持。案件非依存の機能、検証範囲、構成別サジェスト、責任分担、機能拡充の判断原則を整理。タグ対象・提供artifact・配布条件は別途確定する
 - [main統合とP4-B1以降のテーマ一覧](phase4-continuation-task-inventory-20261016.md#9-main統合後に進めるテーマ一覧2026-10-17): 今回の文書までcommit→PR/CI→main merge→確認/tagを先に行い、その後P4-B1へ移る。機能テーマ12区分と採用支援5区分を一覧化。B1以降の実施順は未確定、入力待ち・保留を区別
 - [直近13コミットの経緯とP4-B1への接続](phase4-continuation-task-inventory-20261016.md#83-直近コミットからp4-b1へ至る経緯2026-10-17確認): 接続実装の固定、人手補完の境界整理、今回の区切りをcommit参照付きで整理。過去の承認・検証結果を保持し、当初計画のSession SPA＋MVCへ移行する理由を明記
 - [Phase4残タスク棚卸し§8：非同期系の区切りと他タスクへの移行](phase4-continuation-task-inventory-20261016.md#8-非同期系の区切りと当初phase4残タスクへの移行2026-10-17): Owner指示により非同期系は現在の実装・限定結果で区切り、復旧は人手照合・HOLDを優先。以下の非同期提供準備・追加GET設計は継続必須としない。次は当初計画P4-B1の最小範囲・既存との差分確認
