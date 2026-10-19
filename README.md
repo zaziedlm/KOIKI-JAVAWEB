@@ -25,6 +25,11 @@ Security profileの詳細は[Phase 2 Developer Journey](docs/development/phase2-
 MVC／React／Next.js／外部IdPの構成判断は
 [UI / Authentication Profile Selection Guide](docs/development/frontend-authentication-profile-guide.md)を参照してください。
 
+**新規ガイド追加（2026-10-19）：**
+[KOIKI-JavaWeb 提供機能・適用条件・選択ガイド](docs/development/framework-capabilities-and-selection-guide.md)を追加しました。
+提供機能、検証済みの範囲・制約、構成別の選択肢、Framework提供側と開発チームの責任分担、
+機能拡充の判断原則をまとめています。利用する機能や構成を検討する際に参照してください。
+
 ## 現在の状態
 
 - Phase 0 Architecture Baseline: COMPLETE / ACCEPTED
