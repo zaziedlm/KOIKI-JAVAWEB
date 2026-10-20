@@ -2,7 +2,7 @@
 
 作成日：2026-10-20
 
-状態：**I-01／B1-01の調査済み、B1-02〜03の具体仕様案を整理済み。R-00のtest1 file変更と直接回帰7件が完了／PASS**。R-01〜03・B1機能の実装／実演・DoD受入は未実施。§5〜6は実装に渡す設計上の選択であり、Owner受入・互換性実証を記録するものではない。
+状態：**I-01／B1-01の調査済み、B1-02〜03の具体仕様案を整理済み。R-00のtest1 file変更と直接回帰7件が完了／PASS**。R-01はAdvice修正と限定回帰を実施（§7.5）。R-02〜03・B1機能の実装／実演・DoD受入は未実施。§5〜6は実装に渡す設計上の選択であり、Owner受入・互換性実証を記録するものではない。
 
 Ownership：設計記録はFramework側。機能はReference `expense`／`identity`、Framework変更はR-01、検証harnessはToolingが所有する。
 
@@ -336,12 +336,12 @@ class名は実装対象の候補で、ファイル作成は未実施。DTOは§5
 
 ## 7. R-00〜03の変更対象・最小回帰案
 
-R-00は下記1 fileの変更・局所検証済み。R-01〜03は変更予定の所在と検証観点で、まだ実装していない。共有回帰は合流時にまとめ、通常rootを修正ごとに反復しない。
+R-00は下記1 fileの変更・局所検証済み。R-01は§7.5のAdvice修正・限定回帰を実施。R-02〜03は変更予定の所在と検証観点で、まだ実装していない。共有回帰は合流時にまとめ、通常rootを修正ごとに反復しない。
 
 | ID | 変更対象候補 | 最小の検証観点・既存回帰 |
 | --- | --- | --- |
 | R-00／F5：限定変更・検証完了 | `koiki-reference-app/src/test/java/org/koikifw/reference/ReferenceArchitectureTest.java`の両import | `DO_NOT_INCLUDE_TESTS`でproduction対象を明示。clean実行で既存2件＋規約負例5件PASS。両importのtest由来class0を確認。結果は§7.4 |
-| R-01／F1 | `koiki-starters/koiki-starter-api/src/main/java/org/koikifw/starter/api/internal/KoikiProblemDetailsExceptionHandler.java`。必要性を確認した場合だけReference局所再throw | `build-support/runtime-foundation-verification`の`ApiProblemDetailsTest`等＋Security filterを通す新規合成test候補。認証済み403・未認証401／login遷移・独自404・不測500。`ReferenceBusinessUrlSecurityTest`のMVC／HTMX拒否を保護 |
+| R-01／F1：限定変更・検証完了 | `koiki-starters/koiki-starter-api/src/main/java/org/koikifw/starter/api/internal/KoikiProblemDetailsExceptionHandler.java`。Reference局所再throwは維持 | `build-support/runtime-foundation-verification`の`ApiProblemDetailsTest`等＋Security filterを通す新規合成testを追加。認証済み403・未認証401／login遷移・独自404・不測500。`ReferenceBusinessUrlSecurityTest`のMVC／HTMX拒否を保護 |
 | R-02／F2 | `ReferenceSecurityConfiguration.java`のCookieSerializer Bean。Framework Session構成は生成順の照合対象 | Boot SessionAutoConfigurationを含め、Secure明示true／false、requestSecure両条件、SameSite上書き、logoutのname／path／消去をSet-Cookieで検証。`SessionJdbcAutoConfigurationContextTest`と実JARの起動・logoutでcustomizer生成を確認 |
 | R-03／F3 | `ExpenseApplicationService.java`の共有`executeMutation`。認可→versionの順序へ限定 | `ExpensePostgreSqlIntegrationTest`・`ExpenseApplicationServiceMethodSecurityTest`・`ExpenseAuditRollbackPostgreSqlIntegrationTest`、`ExpenseApiPostgreSqlIntegrationTest`。owner／approverのscope外・不存在・一致／不一致／負version、scope内競合を比較。拒否時に更新・成功Business Audit・eventなし |
 
@@ -421,6 +421,14 @@ source /workspace/cloud-setup/activate.sh
 
 R-00の限定結果を整理した次は、**R-01：汎用AdviceとSecurity／HTTP例外の境界是正**へ進む。対象はAPI Starterの`KoikiProblemDetailsExceptionHandler`と必要な合成test。認証済み403、未認証の経路別401／login遷移、独自404、不測500、既存MVC／HTMX応答を出口にする。R-02 Cookie、R-03認可順序はその次に問題単位で進め、三件とB1設計をB1-04で合流する。
 
+### 7.5 R-01の作業範囲と実行結果
+
+Ownerの「R-01へ進める」指示に基づき、`docs/phase4-review-integrated-plan-20261020`上でAPI StarterのAdvice1 fileと検証2 fileを変更した。**作業は同branch上で完結し、PR作成・pushは行わない。** commitも行っていない。
+
+汎用AdviceはSecurity例外（causeを含む）を再throwし、各Security filterの401／403／login遷移へ渡す。`@ResponseStatus`／`ResponseStatusException`は標準HTTP処理へ渡し、独自`ErrorResponse`のstatus・header・bodyを保持する。Security型は任意classpathとして解決し、API Starterへ依存を追加しない。予期せぬ例外の安全な500は維持する。Referenceの局所再throwは今回除去しない。
+
+[限定結果](../architecture/validation/phase4-r01-exception-boundary-results-20261020.md)へ変更前の失敗、修正後のSecurity合成・既存MVC／HTMX／API・Architecture回帰とSecurity依存なしのProblem Details結果を記録した。通常root全件・B1機能・全体DoDの受入へ拡張しない。次はR-02のCookie設定反映とlogout customizer生成順の確認。
+
 ## 8. 次の更新と合流点
 
 | 作業 | 今回の到達点 | 次の具体的な出口 |
@@ -429,9 +437,9 @@ R-00の限定結果を整理した次は、**R-01：汎用AdviceとSecurity／HT
 | B1-01 | path付き差分表と代表操作案を作成 | 代表操作の範囲を後続設計へ引継ぎ。未実装を実装済みにしない |
 | B1-02 | §5に標準spa()・Cookie属性・login／logout接続・失敗応答、10 DTO・数値表現・codeを具体化 | R-01／02／03の設計・結果と照合。未実装のfilter順序・Cookie生成・JSON受入を合成testへ渡す |
 | B1-03 | §6に依存version、Reference限定profile、Node起動・生成先・copy順、JAR配信・入力／asset hashを具体化 | 実装時にlockを生成し組合せbuildを確認。検証class案は§7.3。実行準備は未成立 |
-| R-00〜03 | R-00は既存test1 fileのproduction対象明示・clean回帰7件PASS。§7.4と結果記録へ反映済み | 次はR-01の例外境界。R-02／03・B1実装は未着手 |
+| R-00〜03 | R-00はproduction対象明示・clean回帰7件PASS。R-01はAdvice修正・限定回帰完了（§7.5） | 次はR-02のCookie／logout構成。R-02／03・B1実装は未着手 |
 | B1-04 | 未実施 | B1-02〜03の仕様とR-00〜03の結果を合流し、対象path・test集合・概算・資源／時間／停止／cleanupを本書で確定 |
 
-次の実装単位は**R-01：汎用AdviceとSecurity／HTTP例外の境界是正**。R-00は§7.4の限定変更・検証を完了した。続けてR-02／03を問題単位で進め、B1-04で設計と合流する。F6／F7／H1、非同期CI、S1全体の未達はB1調査・設計の停止条件にしない。
+次の実装単位は**R-02：Cookie設定反映とlogout customizer生成順の確認・是正**。R-00／01は§7.4〜5の限定変更・検証を完了した。R-02／03を問題単位で進め、B1-04で設計と合流する。F6／F7／H1、非同期CI、S1全体の未達はB1調査・設計の停止条件にしない。
 
-本書§5〜6のB1機能仕様はまだ実装・機能実演していない。Cloud点検とR-00の限定変更・7件回帰のみ実施済み。DoD 4-8／4-9は未達のまま維持する。
+本書§5〜6のB1機能仕様はまだ実装・機能実演していない。Cloud点検とR-00／01の限定変更・回帰を実施済み。DoD 4-8／4-9は未達のまま維持する。
