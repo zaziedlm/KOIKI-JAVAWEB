@@ -20,6 +20,8 @@
 
 **2026-10-21追記：** 同branchでR-02のCookie設定反映・logout構成確認と限定回帰を実施し、[結果](../architecture/validation/phase4-r02-cookie-logout-results-20261021.md)へ記録した。実JARのCookie属性・logout削除・旧Cookie拒否・DB Session消去を確認。次はR-03の認可順序で、B1機能・全体DoDは未受入。今回commit・push・PR作成は未実施。
 
+**2026-10-21 R-03追記：** 同branchで対象認可をversion照合より先にする是正と限定回帰を実施し、[結果](../architecture/validation/phase4-r03-authorization-order-results-20261021.md)へ記録。scope外／不存在の秘匿と認可済み競合、拒否時の副作用なしを確認した。次はB1-04の設計・是正結果の合流点検。今回commit・push・PR作成は未実施。B1機能・DoD全体は未受入。
+
 ## 1. 継続作業の基点
 
 - 初回棚卸しbranch：`docs/phase4-continuation-task-inventory-20261016`。

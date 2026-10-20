@@ -65,7 +65,7 @@ R-01〜03の間に技術的な直列依存はない。上図は一人の作業�
 | R-00／限定変更・検証完了 | F5／Reference test | `ReferenceArchitectureTest`1 fileの両importへ`DO_NOT_INCLUDE_TESTS`を追加。fixture配置・Rulesは維持 | clean compile＋既存2件／規約負例5件PASS。両importともtest由来0。[限定結果](../architecture/validation/phase4-r00-production-import-results-20261020.md)にsource／XMLを対応付け | I-01成立。過去の15違反を現在の失敗とせず、検査責務を明示 |
 | R-01／限定変更・検証完了 | F1／Framework API Starter | 汎用AdviceとSecurity・HTTP例外の責任を整理し、標準処理へ伝播する修正と合成testを作る。Reference局所再throwの必要性も照合 | 認証済み拒否403、未認証の経路別応答、独自404、予期せぬ500、MVC／HTMX／APIの応答が意図どおり。回避策除去は検証成立時だけ | I-01、比較するarchitecture検証はR-00後 |
 | R-02／限定変更・検証完了 | F2／Reference identity構成 | 独自CookieSerializerをBoot管理へ戻すか設定反映するかを選び、logout customizerとの生成順も確認・修正 | 明示Secure／SameSiteがSet-Cookieへ反映。HTTPS判定の有無とlogout削除Cookieのname／pathを確認。property値の確認だけで閉じない | I-01、B1-02のCookie／logout要求と照合 |
-| R-03／計画 | F3／Reference expense | owner／approver scopeの確認をversion照合より前にする。対象外の情報を例外差から漏らさず、既存競合処理を維持 | scope外の一致／不一致／負versionと不存在が秘匿契約どおり。scope内競合は409相当。拒否時の更新・Audit・eventなしを確認 | I-01、B1-01の対象操作と照合 |
+| R-03／限定変更・検証完了 | F3／Reference expense | owner／approver scopeの確認をversion照合より前にする。対象外の情報を例外差から漏らさず、既存競合処理を維持 | scope外の一致／不一致／負versionと不存在が秘匿契約どおり。scope内競合は409相当。拒否時の更新・Audit・eventなしを確認 | I-01、B1-01の対象操作と照合 |
 
 修正ごとの証拠は既存 `docs/architecture/validation/` の記録方式を使う。内部修正と公開property／API変更を混ぜず、変更が後者へ広がる場合に、その差分の契約reviewを行う。単に同じStarterだからという理由でF1とF4の採否を一括化しない。
 
@@ -206,6 +206,8 @@ P4-A1／A2・D1非同期とS1-01〜10は、[棚卸し§6〜8](phase4-continuatio
 **R-01実施結果：** Ownerの着手指示に基づきAPI Starterの汎用Adviceを修正し、Security／HTTP例外の標準処理と安全な500を両立した。[限定結果](../architecture/validation/phase4-r01-exception-boundary-results-20261020.md)に合成testと直接回帰を記録。Security依存・POMを追加せず、Reference局所再throwは維持。次はR-02のCookie／logout構成。作業branchは`docs/phase4-review-integrated-plan-20261020`を継続し、PR作成・pushは行わない。commitも未実施。B1実装・全体受入は未実施。
 
 **2026-10-21 R-02実施結果：** Referenceの独自CookieSerializerへBootのCookie設定を反映し、既存Beanを維持したままlogout構成の成立を確認。Frameworkの生成順・POMは無変更。合成test、既存直接回帰、HTTP設定を訂正した実JAR Critical JourneyでCookie発行・logout削除・旧Cookie拒否を確認した。[限定結果](../architecture/validation/phase4-r02-cookie-logout-results-20261021.md)へ記録。次はR-03の認可順序。今回commit・push・PR作成は行っていない。
+
+**2026-10-21 R-03実施結果：** 共有mutationで対象認可をversion照合より先に移し、scope外と不存在の秘匿を是正。認可済みの競合・HTTP負versionの400・既存settle権限を維持した。Application・実DB・HTTPの拒否と副作用、既存直接回帰を[限定結果](../architecture/validation/phase4-r03-authorization-order-results-20261021.md)へ記録。次はB1-04で設計とR-00〜03結果を照合。今回commit・push・PR作成、通常root全件・B1機能受入は未実施。
 
 本書のWBS・順序・依存の詳細はこの計画案として提示する。Owner合意済みなのは§1の進め方と計画化の指示であり、各実装・実行・受入の完了を新たに記録したものではない。
 

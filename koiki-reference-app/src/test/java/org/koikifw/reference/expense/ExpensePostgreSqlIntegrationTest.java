@@ -15,6 +15,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.koikifw.identity.AuthenticationSource;
 import org.koikifw.identity.FrameworkPrincipal;
 import org.koikifw.identity.FrameworkUserId;
@@ -26,6 +28,7 @@ import org.koikifw.reference.expense.application.ExpenseOperationException;
 import org.koikifw.reference.expense.application.ExpenseReadService;
 import org.koikifw.reference.expense.application.query.ExpenseSelectionOption;
 import org.koikifw.reference.expense.domain.model.ExpenseRequest;
+import org.koikifw.reference.expense.domain.event.ExpenseApprovedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
@@ -35,12 +38,15 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 
 @SpringBootTest(properties = {
     "koiki.identity.local-authentication.enabled=false",
     "spring.session.jdbc.initialize-schema=never"
 })
 @Import(ReferencePostgreSqlTestConfiguration.class)
+@RecordApplicationEvents
 class ExpensePostgreSqlIntegrationTest {
 
     private static final UUID APPLICANT_ID = UUID.fromString(
@@ -68,6 +74,9 @@ class ExpensePostgreSqlIntegrationTest {
 
     @Autowired
     private ExpenseReadService reads;
+
+    @Autowired
+    private ApplicationEvents events;
 
     @BeforeEach
     void prepareMasterData() {
@@ -238,6 +247,57 @@ class ExpensePostgreSqlIntegrationTest {
 
         assertState(requestId, "SUBMITTED", version + 1, 1);
         assertThat(countExpenseAuditEvents()).isEqualTo(1);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"false,0", "false,1", "false,-1", "true,0", "true,1", "true,-1"})
+    void hidesOutOfScopeAndMissingTargetsRegardlessOfVersion(boolean approval, int variant) {
+        UUID requestId = createDraft(100);
+        if (approval) {
+            expenses.submit(requestId, currentVersion(requestId));
+        }
+        long version = currentVersion(requestId);
+        long expectedVersion = variant < 0 ? -1 : version + variant;
+        long auditCount = countExpenseAuditEvents();
+        authenticate(OUTSIDER_ID, approval ? "EXPENSE:APPROVE" : "EXPENSE:APPLY");
+
+        assertMutationFailure(approval, requestId, expectedVersion, ExpenseFailure.NOT_FOUND);
+        assertMutationFailure(approval, UUID.randomUUID(), expectedVersion, ExpenseFailure.NOT_FOUND);
+
+        assertState(requestId, approval ? "SUBMITTED" : "DRAFT", version, 1);
+        assertThat(countExpenseAuditEvents()).isEqualTo(auditCount);
+        assertThat(events.stream(ExpenseApprovedEvent.class).count()).isZero();
+    }
+
+    @ParameterizedTest
+    @CsvSource({"false,1", "false,-1", "true,1", "true,-1"})
+    void preservesAuthorizedVersionFailuresWithoutSideEffects(boolean approval, int variant) {
+        UUID requestId = createDraft(100);
+        if (approval) {
+            expenses.submit(requestId, currentVersion(requestId));
+            authenticate(APPROVER_ID, "EXPENSE:APPROVE");
+        }
+        long version = currentVersion(requestId);
+        long auditCount = countExpenseAuditEvents();
+        long expectedVersion = variant < 0 ? -1 : version + variant;
+        assertMutationFailure(approval, requestId, expectedVersion,
+                variant < 0 ? ExpenseFailure.INVALID_INPUT : ExpenseFailure.CONCURRENT_MODIFICATION);
+
+        assertState(requestId, approval ? "SUBMITTED" : "DRAFT", version, 1);
+        assertThat(countExpenseAuditEvents()).isEqualTo(auditCount);
+        assertThat(events.stream(ExpenseApprovedEvent.class).count()).isZero();
+    }
+
+    private void assertMutationFailure(boolean approval, UUID id, long version, ExpenseFailure failure) {
+        assertThatThrownBy(() -> {
+            if (approval) {
+                expenses.approve(id, version);
+            } else {
+                expenses.submit(id, version);
+            }
+        }).isInstanceOf(ExpenseOperationException.class)
+                .extracting(exception -> ((ExpenseOperationException) exception).failure())
+                .isEqualTo(failure);
     }
 
     @Test

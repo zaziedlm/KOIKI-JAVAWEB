@@ -2,7 +2,7 @@
 
 作成日：2026-10-20
 
-状態：**I-01／B1-01の調査済み、B1-02〜03の具体仕様案を整理済み。R-00のtest1 file変更と直接回帰7件が完了／PASS**。R-01はAdvice修正と限定回帰を実施（§7.5）。R-02はCookie設定反映と限定回帰を実施（§7.6）。R-03・B1機能の実装／実演・DoD受入は未実施。§5〜6は実装に渡す設計上の選択であり、Owner受入・互換性実証を記録するものではない。
+状態：**I-01／B1-01の調査済み、B1-02〜03の具体仕様案を整理済み。R-00のtest1 file変更と直接回帰7件が完了／PASS**。R-01はAdvice修正と限定回帰を実施（§7.5）。R-02はCookie設定反映と限定回帰を実施（§7.6）。R-03は認可先行への是正と限定回帰を実施（§7.7）。B1機能の実装／実演・DoD受入は未実施。§5〜6は実装に渡す設計上の選択であり、Owner受入・互換性実証を記録するものではない。
 
 Ownership：設計記録はFramework側。機能はReference `expense`／`identity`、Framework変更はR-01、検証harnessはToolingが所有する。
 
@@ -338,14 +338,14 @@ class名は実装対象の候補で、ファイル作成は未実施。DTOは§5
 
 ## 7. R-00〜03の変更対象・最小回帰案
 
-R-00は下記1 fileの変更・局所検証済み。R-01は§7.5のAdvice修正・限定回帰を実施。R-02は§7.6のCookie設定反映・限定回帰を実施。R-03は変更予定の所在と検証観点で、まだ実装していない。共有回帰は合流時にまとめ、通常rootを修正ごとに反復しない。
+R-00は下記1 fileの変更・局所検証済み。R-01は§7.5のAdvice修正・限定回帰を実施。R-02は§7.6のCookie設定反映・限定回帰を実施。R-03は§7.7の認可順序是正・限定回帰を実施。共有回帰は合流時にまとめ、通常rootを修正ごとに反復しない。
 
 | ID | 変更対象候補 | 最小の検証観点・既存回帰 |
 | --- | --- | --- |
 | R-00／F5：限定変更・検証完了 | `koiki-reference-app/src/test/java/org/koikifw/reference/ReferenceArchitectureTest.java`の両import | `DO_NOT_INCLUDE_TESTS`でproduction対象を明示。clean実行で既存2件＋規約負例5件PASS。両importのtest由来class0を確認。結果は§7.4 |
 | R-01／F1：限定変更・検証完了 | `koiki-starters/koiki-starter-api/src/main/java/org/koikifw/starter/api/internal/KoikiProblemDetailsExceptionHandler.java`。Reference局所再throwは維持 | `build-support/runtime-foundation-verification`の`ApiProblemDetailsTest`等＋Security filterを通す新規合成testを追加。認証済み403・未認証401／login遷移・独自404・不測500。`ReferenceBusinessUrlSecurityTest`のMVC／HTMX拒否を保護 |
 | R-02／F2：限定変更・検証完了 | `ReferenceSecurityConfiguration.java`のCookieSerializerへServerPropertiesを反映。合成test追加、Critical JourneyのHTTP設定・logout検証を更新。Framework Session構成は無変更 | Boot SessionAutoConfigurationを含め、Secure明示true／false、requestSecure両条件、SameSite上書き、logoutのname／path／消去をSet-Cookieで検証。`SessionJdbcAutoConfigurationContextTest`と実JARの起動・logoutでcustomizer生成を確認 |
-| R-03／F3 | `ExpenseApplicationService.java`の共有`executeMutation`。認可→versionの順序へ限定 | `ExpensePostgreSqlIntegrationTest`・`ExpenseApplicationServiceMethodSecurityTest`・`ExpenseAuditRollbackPostgreSqlIntegrationTest`、`ExpenseApiPostgreSqlIntegrationTest`。owner／approverのscope外・不存在・一致／不一致／負version、scope内競合を比較。拒否時に更新・成功Business Audit・eventなし |
+| R-03／F3：限定変更・検証完了 | `ExpenseApplicationService.java`の共有`executeMutation`で、対象認可をversion照合より先へ移動。mutation以降は維持 | `ExpensePostgreSqlIntegrationTest`・`ExpenseApplicationServiceMethodSecurityTest`・`ExpenseAuditRollbackPostgreSqlIntegrationTest`、`ExpenseApiPostgreSqlIntegrationTest`。owner／approverのscope外・不存在・一致／不一致／負version、scope内競合を比較。拒否時に更新・成功Business Audit・eventなし |
 
 R-03の負versionはApplication直接呼出とHTTP DTO検証を区別する。HTTP側の`@PositiveOrZero`で先に400になることを、対象の存在漏えいと混同しない。R-03は共有mutationを変えるため、SPAに出さないapprove／reject／returnForRework／beginReedit／settleの直接影響も確認する。同期veto・event内容・非同期送信の仕様は変更しない。
 
@@ -441,6 +441,16 @@ Critical JourneyはHTTP fixtureのSecure=falseを明示し、実Chromiumのlogin
 
 [限定結果](../architecture/validation/phase4-r02-cookie-logout-results-20261021.md)へsource・artifact・選択test・途中経過を記録した。通常root全件・B1機能・DoD全体の受入へ拡張しない。今回のcommit・push・PR作成は行っていない。次はR-03の認可とversion照合順序の是正。
 
+### 7.7 R-03の作業範囲と実行結果（2026-10-21）
+
+Ownerの着手指示に基づき、同じ作業branchで`executeMutation`の対象認可とversion照合の2行を入れ替えた。処理は対象取得→owner／承認部門scope認可→version照合→mutation→flush→成功Business Audit→eventとなる。対象外・不存在は指定versionによらずNOT_FOUNDに揃え、認可済み対象の競合は従来どおりCONCURRENT_MODIFICATIONとする。
+
+新規`ExpenseMutationAuthorizationOrderTest`でeditDraft／submit／beginReedit／approve／reject／returnForReworkの6操作を比較し、一致・不一致・負versionと不存在、mutation・flush・Audit・eventなしを確認した。実DBではmethod securityを通すowner／approver拒否・認可済みのversion拒否、状態／version・Audit・承認eventの不変性を追加検証。HTTPは他人の申請と不存在の正versionを404へ揃え、負versionは既存DTO検証の400を維持した。
+
+既存の成功ライフサイクル・JPA楽観ロック・Audit失敗rollback・権限不足・API応答・event契約・Architectureも直接回帰へ含めた。settleに新たなowner／部門scope制約は設けず、既存のEXPENSE:SETTLE契約を維持する。Framework・POM・migration・DTO制約・同期veto・event payload・非同期送信は変更していない。
+
+[限定結果](../architecture/validation/phase4-r03-authorization-order-results-20261021.md)へ変更前の再現・source・最終XML・資源とcleanupを記録した。今回commit・push・PR作成は行っていない。次はB1-04で設計とR-00〜03結果を照合し、実装対象・検証集合・概算・資源／時間を確定する。通常root全件・B1機能・DoD全体は未受入。
+
 ## 8. 次の更新と合流点
 
 | 作業 | 今回の到達点 | 次の具体的な出口 |
@@ -449,9 +459,9 @@ Critical JourneyはHTTP fixtureのSecure=falseを明示し、実Chromiumのlogin
 | B1-01 | path付き差分表と代表操作案を作成 | 代表操作の範囲を後続設計へ引継ぎ。未実装を実装済みにしない |
 | B1-02 | §5に標準spa()・Cookie属性・login／logout接続・失敗応答、10 DTO・数値表現・codeを具体化 | R-01／02／03の設計・結果と照合。未実装のfilter順序・Cookie生成・JSON受入を合成testへ渡す |
 | B1-03 | §6に依存version、Reference限定profile、Node起動・生成先・copy順、JAR配信・入力／asset hashを具体化 | 実装時にlockを生成し組合せbuildを確認。検証class案は§7.3。実行準備は未成立 |
-| R-00〜03 | R-00はproduction対象明示・clean回帰7件PASS。R-01は例外境界、R-02はCookie／logoutの限定変更・回帰完了（§7.5〜6） | 次はR-03の認可順序。R-03・B1実装は未着手 |
+| R-00〜03 | R-00はproduction対象明示、R-01は例外境界、R-02はCookie／logout、R-03は認可順序の限定変更・回帰完了（§7.4〜7） | 次はB1-04の合流点検。B1機能実装は未着手 |
 | B1-04 | 未実施 | B1-02〜03の仕様とR-00〜03の結果を合流し、対象path・test集合・概算・資源／時間／停止／cleanupを本書で確定 |
 
-次の実装単位は**R-03：認可をversion照合より先に行う是正**。R-00〜02は§7.4〜6の限定変更・検証を完了した。R-03の結果を加え、B1-04で設計と合流する。F6／F7／H1、非同期CI、S1全体の未達はB1調査・設計の停止条件にしない。
+次の作業は**B1-04：B1設計とR-00〜03結果の合流点検**。R-00〜03は§7.4〜7の限定変更・検証を完了した。設計との整合、残る実装対象・検証集合・概算・資源／時間を本書で確定する。F6／F7／H1、非同期CI、S1全体の未達はB1調査・設計の停止条件にしない。
 
-本書§5〜6のB1機能仕様はまだ実装・機能実演していない。Cloud点検とR-00〜02の限定変更・回帰を実施済み。DoD 4-8／4-9は未達のまま維持する。
+本書§5〜6のB1機能仕様はまだ実装・機能実演していない。Cloud点検とR-00〜03の限定変更・回帰を実施済み。DoD 4-8／4-9は未達のまま維持する。

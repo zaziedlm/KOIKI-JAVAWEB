@@ -250,8 +250,8 @@ public class ExpenseApplicationService {
         execute(() -> {
             ExpenseRequest request = requests.findById(requireId(expenseRequestId))
                     .orElseThrow(() -> failure(ExpenseFailure.NOT_FOUND));
-            requireVersion(request.version(), expectedVersion);
             authorization.accept(request);
+            requireVersion(request.version(), expectedVersion);
             mutation.accept(request);
             requests.flush();
             if (auditAction != null) {

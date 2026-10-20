@@ -16,6 +16,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.koikifw.reference.ReferencePostgreSqlTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -240,6 +242,27 @@ class ExpenseApiPostgreSqlIntegrationTest {
                 .query(Long.class)
                 .single())
                 .isEqualTo(1);
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {1, 2, -1})
+    void keepsOutOfScopeAndMissingHttpResponsesConsistent(long version) throws Exception {
+        UUID requestId = createDraft();
+        for (UUID target : List.of(requestId, id(98))) {
+            mvc.perform(post("/api/v1/expense-requests/{id}/submit", target)
+                            .header(AUTHORIZATION, "Bearer outsider-token")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"expectedVersion\":" + version + "}"))
+                    .andExpect(status().is(version < 0 ? 400 : 404))
+                    .andExpect(jsonPath("$.code").value(version < 0
+                            ? "KOIKI-VALIDATION-001" : "KOIKI-REF-EXPENSE-003"))
+                    .andExpect(jsonPath("$.detail").value(version < 0
+                            ? "Request validation failed." : "Expense request was not found."));
+        }
+        assertThat(jdbc.sql("select status || ':' || version from kkref_expense_request where expense_request_id = :id")
+                .param("id", requestId).query(String.class).single()).isEqualTo("DRAFT:1");
+        assertThat(jdbc.sql("select count(*) from koiki_audit_event where event_type = 'EXPENSE_WORKFLOW'")
+                .query(Long.class).single()).isZero();
     }
 
     @Test
