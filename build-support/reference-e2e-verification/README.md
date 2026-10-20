@@ -5,9 +5,10 @@ P3-C2の非配布Toolingである。Root Reactorには含めず、同じpackage�
 
 1. Bearer APIで経費申請を作成・参照・提出する。
 2. Session認証した実Chromiumでmaster HTMX検索と同申請の承認を行う。
-3. Bearer APIで承認済み状態を再取得する。
-4. DB state / version / line total、Business / Security Audit、sanitized process logを突合する。
-5. browser、issuer、application process、PostgreSQL container、port、temp logをcleanupする。
+3. browserでSession Cookie属性を確認し、CSRF付きlogout・Cookie削除・旧Cookieの拒否を検証する。
+4. Bearer APIで承認済み状態を再取得する。
+5. DB state / version / line total、Business / Security Audit、logout後のprincipal Session消去、sanitized process logを突合する。
+6. browser、issuer、application process、PostgreSQL container、port、temp logをcleanupする。
 
 ## Boundary
 
@@ -41,6 +42,8 @@ java -cp $playwrightClasspath com.microsoft.playwright.CLI install chromium
 .\mvnw.cmd -pl koiki-reference-app -am -DskipTests clean package
 .\mvnw.cmd -f .\build-support\reference-e2e-verification\pom.xml test
 ```
+
+HTTP loopbackで起動する子Referenceには`SERVER_SERVLET_SESSION_COOKIE_SECURE=false`を明示する。公開HTTPS向けの既定Secure=trueは変更しない。
 
 Docker EngineとPlaywright Chromiumが必要である。testはdynamic portだけを使用し、成功・失敗のどちらでも
 外部processと一時データをcleanupする。秘密値をcommand line、test reportまたはEvidenceへ出力しない。

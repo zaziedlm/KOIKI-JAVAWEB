@@ -10,6 +10,9 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.Response;
+import com.microsoft.playwright.options.FormData;
+import com.microsoft.playwright.options.RequestOptions;
+import com.microsoft.playwright.options.SameSiteAttribute;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.crypto.RSASSASigner;
@@ -238,11 +241,15 @@ class PackagedReferenceCriticalJourneyTest {
             page.locator("button[type='submit']").click();
             assertEquals(baseUrl + "/", page.url());
 
-            String sessionId = context.cookies().stream()
+            var sessionCookie = context.cookies().stream()
                     .filter(cookie -> "SESSION".equals(cookie.name))
-                    .map(cookie -> cookie.value)
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("Session cookie was not issued"));
+            String sessionId = sessionCookie.value;
+            assertTrue(sessionCookie.httpOnly, "Session cookie must remain HttpOnly");
+            assertFalse(sessionCookie.secure, "Loopback HTTP fixture requires Secure=false");
+            assertEquals(SameSiteAttribute.LAX, sessionCookie.sameSite);
+            assertEquals("/", sessionCookie.path);
 
             page.navigate(baseUrl + "/master/departments");
             Response search = page.waitForResponse(
@@ -271,6 +278,27 @@ class PackagedReferenceCriticalJourneyTest {
             assertEquals(302, approved.status());
             page.waitForURL(baseUrl + "/expenses/approvals");
             assertTrue(page.locator("main").textContent().contains("経費申請を承認しました"));
+
+            String csrfToken = page.locator("meta[name='_csrf']").getAttribute("content");
+            var logout = context.request().post(baseUrl + "/logout", RequestOptions.create()
+                    .setForm(FormData.create().set("_csrf", csrfToken)).setMaxRedirects(0));
+            try {
+                assertEquals(302, logout.status());
+                String deleted = logout.headers().getOrDefault("set-cookie", "");
+                assertTrue(deleted.startsWith("SESSION="), "Logout must delete the Session cookie");
+                assertTrue(deleted.contains("Path=/"), "Logout cookie path differs");
+                assertTrue(deleted.contains("Max-Age=0"), "Logout cookie must expire immediately");
+                assertTrue(deleted.contains("HttpOnly"), "Logout cookie must remain HttpOnly");
+                assertTrue(deleted.contains("SameSite=Lax"), "Logout cookie SameSite differs");
+                assertFalse(deleted.contains("; Secure"), "Loopback logout cookie must use Secure=false");
+            } finally {
+                logout.dispose();
+            }
+            assertTrue(context.cookies().stream().noneMatch(cookie -> "SESSION".equals(cookie.name)),
+                    "Session cookie remained after logout");
+            context.addCookies(List.of(sessionCookie));
+            page.navigate(baseUrl + "/expenses/approvals");
+            assertTrue(page.url().startsWith(baseUrl + "/login"), "Old session cookie remained authenticated");
             return sessionId;
         }
     }
@@ -294,6 +322,7 @@ class PackagedReferenceCriticalJourneyTest {
         environment.put("SPRING_DATASOURCE_USERNAME", postgres.getUsername());
         environment.put("SPRING_DATASOURCE_PASSWORD", postgres.getPassword());
         environment.put("SPRING_SESSION_JDBC_INITIALIZE_SCHEMA", "never");
+        environment.put("SERVER_SERVLET_SESSION_COOKIE_SECURE", "false");
         environment.put("KOIKI_IDENTITY_LOCAL_AUTHENTICATION_ENABLED", "true");
         environment.put("KOIKI_REFERENCE_SOURCE_HMAC_KEY_ID", "p3-c2-e2e-source");
         environment.put("KOIKI_REFERENCE_SOURCE_HMAC_KEY", sourceHmacKey);
@@ -503,7 +532,7 @@ class PackagedReferenceCriticalJourneyTest {
                     where principal_name = '%s'
                     """.formatted(APPROVER_ID))) {
                 assertTrue(rows.next());
-                assertEquals(1L, rows.getLong(1));
+                assertEquals(0L, rows.getLong(1), "Logged-out principal session remained in the database");
             }
         }
     }

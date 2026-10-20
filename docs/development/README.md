@@ -7,11 +7,12 @@
 
 現作業branchは`docs/phase4-review-integrated-plan-20261020`。Owner指示により同branch上で完結し、PR作成・pushは行わない。以下の過去の統合手順は今回の作業指示ではない。
 
-- [R-01 Security／HTTP例外境界の結果（2026-10-20）](../architecture/validation/phase4-r01-exception-boundary-results-20261020.md): API Starterの汎用Advice修正と限定回帰。Security依存追加なし、既存局所再throwを維持。次はR-02のCookie／logout構成
+- [R-02 Cookie設定・logoutの結果（2026-10-21）](../architecture/validation/phase4-r02-cookie-logout-results-20261021.md): ReferenceのCookie設定反映、Boot／logout合成test、実JARのlogin／logout・旧Cookie拒否・DB Session消去を確認。Framework構成・依存versionは無変更。次はR-03の認可順序
+- [R-01 Security／HTTP例外境界の結果（2026-10-20）](../architecture/validation/phase4-r01-exception-boundary-results-20261020.md): API Starterの汎用Advice修正と限定回帰。Security依存追加なし、既存局所再throwを維持。後続R-02の結果は上記を参照
 
 - [R-00 production限定import結果（2026-10-20）](../architecture/validation/phase4-r00-production-import-results-20261020.md): 既存test1 fileの両importでtest出力を除外。clean compile＋既存Architecture2件／規約負例5件PASS、両importともtest class0。R-01の結果は上記を参照
 - [R-00 Codex Cloud実行環境の再点検（2026-10-20）](../architecture/validation/phase4-r00-cloud-environment-preflight-20261020.md): 保存済みactivationでJDK／cache／Docker／Chromiumを確認。ソース無変更のoffline clean test-compileと規約負例5件＋Reference Architecture2件PASS。fresh importは双方違反0、test混入65 classは検査責務の整理へ残す。全test再実行ではない
-- [P4-B1 Session SPA＋MVCの設計記録（2026-10-20）](phase4-b1-session-spa-mvc-design-20261020.md): I-01／B1-01の調査、CSRF／logout／10 DTO／frontend buildの具体仕様案。§7.4〜5にR-00／01の限定変更・回帰を反映。次はR-02のCookie／logout構成。B1機能実装は未着手
+- [P4-B1 Session SPA＋MVCの設計記録（2026-10-20）](phase4-b1-session-spa-mvc-design-20261020.md): I-01／B1-01の調査、CSRF／logout／10 DTO／frontend buildの具体仕様案。§7.4〜6にR-00〜02の限定変更・回帰を反映。次はR-03の認可順序。B1機能実装は未着手
 - [Phase4継続と設計実装レビュー対応の統合作業計画（2026-10-20）](phase4-review-integrated-task-plan-20261020.md): Owner合意の進め方に基づく作業分解案。P4-B1の調査・設計とF1／F2／F3／F5の基盤是正を接続し、残るPhase4・採用支援を含め依存・出口・入力待ちを整理。I-01／B1-01の着手結果と次作業はB1設計記録へ接続。実装開始・受入は別に扱う
 
 - [KOIKI-JavaWeb 提供機能・適用条件・選択ガイド](framework-capabilities-and-selection-guide.md): 本文全体・名称とチェックポイント方式をOwner承認済み（2026-10-19）。次のタグ名は`checkpoint-v0.1.5`（未作成）。Mavenは`0.1.0-SNAPSHOT`を維持。案件非依存の機能、検証範囲、構成別サジェスト、責任分担、機能拡充の判断原則を整理。タグ対象・提供artifact・配布条件は別途確定する

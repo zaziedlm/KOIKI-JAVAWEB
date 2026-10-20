@@ -18,6 +18,8 @@
 
 続いてR-01のAdvice修正・限定回帰を実施し、[例外境界の結果](../architecture/validation/phase4-r01-exception-boundary-results-20261020.md)へ記録した。次はR-02のCookie／logout構成。現在の作業branchは`docs/phase4-review-integrated-plan-20261020`。Owner指示に従い同branch上で完結し、PR作成・pushは行わない。commitは未実施。以下の旧branch・統合手順は各時点の履歴として扱う。
 
+**2026-10-21追記：** 同branchでR-02のCookie設定反映・logout構成確認と限定回帰を実施し、[結果](../architecture/validation/phase4-r02-cookie-logout-results-20261021.md)へ記録した。実JARのCookie属性・logout削除・旧Cookie拒否・DB Session消去を確認。次はR-03の認可順序で、B1機能・全体DoDは未受入。今回commit・push・PR作成は未実施。
+
 ## 1. 継続作業の基点
 
 - 初回棚卸しbranch：`docs/phase4-continuation-task-inventory-20261016`。

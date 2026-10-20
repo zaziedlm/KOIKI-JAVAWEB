@@ -2,7 +2,7 @@
 
 作成日：2026-10-20
 
-状態：**I-01／B1-01の調査済み、B1-02〜03の具体仕様案を整理済み。R-00のtest1 file変更と直接回帰7件が完了／PASS**。R-01はAdvice修正と限定回帰を実施（§7.5）。R-02〜03・B1機能の実装／実演・DoD受入は未実施。§5〜6は実装に渡す設計上の選択であり、Owner受入・互換性実証を記録するものではない。
+状態：**I-01／B1-01の調査済み、B1-02〜03の具体仕様案を整理済み。R-00のtest1 file変更と直接回帰7件が完了／PASS**。R-01はAdvice修正と限定回帰を実施（§7.5）。R-02はCookie設定反映と限定回帰を実施（§7.6）。R-03・B1機能の実装／実演・DoD受入は未実施。§5〜6は実装に渡す設計上の選択であり、Owner受入・互換性実証を記録するものではない。
 
 Ownership：設計記録はFramework側。機能はReference `expense`／`identity`、Framework変更はR-01、検証harnessはToolingが所有する。
 
@@ -150,9 +150,9 @@ Spring Security `7.1.1`の標準`CsrfConfigurer.spa()`を使う。これはCooki
 | Secure／SameSite | 既存`server.servlet.session.cookie.*`設定をR-02で実Cookieへ反映 | `setCookieCustomizer`で同じsecure／same-site設定値を反映。既定true／Lax。CSRF用にSessionのHttpOnly・nameをコピーしない |
 | 寿命 | Spring Sessionの既存期限・失効に従う | browser session Cookie（Max-Age指定なし）。削除は空値＋Max-Age 0 |
 
-R-02はReferenceの独自CookieSerializer Beanを残してBoot `ServerProperties`のCookie属性を反映する案を基準にする。既存logout customizerが必要とするBeanの存在を維持するためである。Framework Session構成の生成順を合成testで確認し、Boot管理へ戻す選択との比較を閉じる。今回その修正はしていない。
+R-02でReferenceの独自CookieSerializer Beanを維持し、Boot `ServerProperties`のCookie属性を反映した。Boot管理へ戻す案ではBeanの登録・条件評価をBoot側へ移す変更も必要になるため、今回は既存logout customizerが参照するReference Beanを維持する最小修正を採用した。BootのSession構成を含む合成testと実JAR起動でlogout Beanの成立を確認し、Frameworkの生成順は変更していない。結果は§7.6。
 
-HTTPのloopback fixtureでは`server.servlet.session.cookie.secure=false`を明示し、公開HTTPS用の既定は変えない。既存Critical JourneyのHTTP子process起動に同上書きがないため、R-02で必要なfixture訂正を直接回帰へ含める。requestSecure=false／secure明示trueでもSecureが付くことはSet-Cookieを別に検査する。context-path変更・Cookie Domain共有はこのB1構成に加えない。
+HTTPのloopback fixtureでは`server.servlet.session.cookie.secure=false`を明示し、公開HTTPS用の既定は変えない。R-02で既存Critical JourneyのHTTP子processへ同上書きを追加した。requestSecure=false／secure明示trueでもSecureが付くことは合成testのSet-Cookieで確認済み。context-path変更・Cookie Domain共有はこのB1構成に加えない。
 
 #### tokenの取得・送信・更新
 
@@ -338,13 +338,13 @@ class名は実装対象の候補で、ファイル作成は未実施。DTOは§5
 
 ## 7. R-00〜03の変更対象・最小回帰案
 
-R-00は下記1 fileの変更・局所検証済み。R-01は§7.5のAdvice修正・限定回帰を実施。R-02〜03は変更予定の所在と検証観点で、まだ実装していない。共有回帰は合流時にまとめ、通常rootを修正ごとに反復しない。
+R-00は下記1 fileの変更・局所検証済み。R-01は§7.5のAdvice修正・限定回帰を実施。R-02は§7.6のCookie設定反映・限定回帰を実施。R-03は変更予定の所在と検証観点で、まだ実装していない。共有回帰は合流時にまとめ、通常rootを修正ごとに反復しない。
 
 | ID | 変更対象候補 | 最小の検証観点・既存回帰 |
 | --- | --- | --- |
 | R-00／F5：限定変更・検証完了 | `koiki-reference-app/src/test/java/org/koikifw/reference/ReferenceArchitectureTest.java`の両import | `DO_NOT_INCLUDE_TESTS`でproduction対象を明示。clean実行で既存2件＋規約負例5件PASS。両importのtest由来class0を確認。結果は§7.4 |
 | R-01／F1：限定変更・検証完了 | `koiki-starters/koiki-starter-api/src/main/java/org/koikifw/starter/api/internal/KoikiProblemDetailsExceptionHandler.java`。Reference局所再throwは維持 | `build-support/runtime-foundation-verification`の`ApiProblemDetailsTest`等＋Security filterを通す新規合成testを追加。認証済み403・未認証401／login遷移・独自404・不測500。`ReferenceBusinessUrlSecurityTest`のMVC／HTMX拒否を保護 |
-| R-02／F2 | `ReferenceSecurityConfiguration.java`のCookieSerializer Bean。Framework Session構成は生成順の照合対象 | Boot SessionAutoConfigurationを含め、Secure明示true／false、requestSecure両条件、SameSite上書き、logoutのname／path／消去をSet-Cookieで検証。`SessionJdbcAutoConfigurationContextTest`と実JARの起動・logoutでcustomizer生成を確認 |
+| R-02／F2：限定変更・検証完了 | `ReferenceSecurityConfiguration.java`のCookieSerializerへServerPropertiesを反映。合成test追加、Critical JourneyのHTTP設定・logout検証を更新。Framework Session構成は無変更 | Boot SessionAutoConfigurationを含め、Secure明示true／false、requestSecure両条件、SameSite上書き、logoutのname／path／消去をSet-Cookieで検証。`SessionJdbcAutoConfigurationContextTest`と実JARの起動・logoutでcustomizer生成を確認 |
 | R-03／F3 | `ExpenseApplicationService.java`の共有`executeMutation`。認可→versionの順序へ限定 | `ExpensePostgreSqlIntegrationTest`・`ExpenseApplicationServiceMethodSecurityTest`・`ExpenseAuditRollbackPostgreSqlIntegrationTest`、`ExpenseApiPostgreSqlIntegrationTest`。owner／approverのscope外・不存在・一致／不一致／負version、scope内競合を比較。拒否時に更新・成功Business Audit・eventなし |
 
 R-03の負versionはApplication直接呼出とHTTP DTO検証を区別する。HTTP側の`@PositiveOrZero`で先に400になることを、対象の存在漏えいと混同しない。R-03は共有mutationを変えるため、SPAに出さないapprove／reject／returnForRework／beginReedit／settleの直接影響も確認する。同期veto・event内容・非同期送信の仕様は変更しない。
@@ -431,6 +431,16 @@ Ownerの「R-01へ進める」指示に基づき、`docs/phase4-review-integrate
 
 [限定結果](../architecture/validation/phase4-r01-exception-boundary-results-20261020.md)へ変更前の失敗、修正後のSecurity合成・既存MVC／HTMX／API・Architecture回帰とSecurity依存なしのProblem Details結果を記録した。通常root全件・B1機能・全体DoDの受入へ拡張しない。次はR-02のCookie設定反映とlogout customizer生成順の確認。
 
+### 7.6 R-02の作業範囲と実行結果（2026-10-21）
+
+Ownerの着手指示に基づき、同じ作業branchでReferenceのCookieSerializerを修正し、BootのCookie設定を発行・削除に共通で反映した。既定のSecure=true・HttpOnly=true・SameSite=Laxは維持する。POM・依存version・Framework Session構成・既存Security matcherは変更していない。
+
+追加した`ReferenceSessionCookieConfigurationTest`は、Boot Session／JDBC構成とFramework logoutを組み合わせて、Secureの明示true／false×requestSecure両条件、既定属性、SameSite上書き／省略、Cookie名・Path・寿命の反映、logout削除を実ヘッダーで確認する。customizerとhandlerが成立することもassertした。mock repositoryによる構成testと、実DB・実JARの検証を区別する。
+
+Critical JourneyはHTTP fixtureのSecure=falseを明示し、実Chromiumのlogin Cookie属性、CSRF付きlogoutのSet-Cookie、browser側削除、旧Cookieでの再アクセス拒否、DB上のprincipal Session消去を追加した。Bearer／MVCの既存業務操作・Audit照合・sanitized log・cleanupも維持する。
+
+[限定結果](../architecture/validation/phase4-r02-cookie-logout-results-20261021.md)へsource・artifact・選択test・途中経過を記録した。通常root全件・B1機能・DoD全体の受入へ拡張しない。今回のcommit・push・PR作成は行っていない。次はR-03の認可とversion照合順序の是正。
+
 ## 8. 次の更新と合流点
 
 | 作業 | 今回の到達点 | 次の具体的な出口 |
@@ -439,9 +449,9 @@ Ownerの「R-01へ進める」指示に基づき、`docs/phase4-review-integrate
 | B1-01 | path付き差分表と代表操作案を作成 | 代表操作の範囲を後続設計へ引継ぎ。未実装を実装済みにしない |
 | B1-02 | §5に標準spa()・Cookie属性・login／logout接続・失敗応答、10 DTO・数値表現・codeを具体化 | R-01／02／03の設計・結果と照合。未実装のfilter順序・Cookie生成・JSON受入を合成testへ渡す |
 | B1-03 | §6に依存version、Reference限定profile、Node起動・生成先・copy順、JAR配信・入力／asset hashを具体化 | 実装時にlockを生成し組合せbuildを確認。検証class案は§7.3。実行準備は未成立 |
-| R-00〜03 | R-00はproduction対象明示・clean回帰7件PASS。R-01はAdvice修正・限定回帰完了（§7.5） | 次はR-02のCookie／logout構成。R-02／03・B1実装は未着手 |
+| R-00〜03 | R-00はproduction対象明示・clean回帰7件PASS。R-01は例外境界、R-02はCookie／logoutの限定変更・回帰完了（§7.5〜6） | 次はR-03の認可順序。R-03・B1実装は未着手 |
 | B1-04 | 未実施 | B1-02〜03の仕様とR-00〜03の結果を合流し、対象path・test集合・概算・資源／時間／停止／cleanupを本書で確定 |
 
-次の実装単位は**R-02：Cookie設定反映とlogout customizer生成順の確認・是正**。R-00／01は§7.4〜5の限定変更・検証を完了した。R-02／03を問題単位で進め、B1-04で設計と合流する。F6／F7／H1、非同期CI、S1全体の未達はB1調査・設計の停止条件にしない。
+次の実装単位は**R-03：認可をversion照合より先に行う是正**。R-00〜02は§7.4〜6の限定変更・検証を完了した。R-03の結果を加え、B1-04で設計と合流する。F6／F7／H1、非同期CI、S1全体の未達はB1調査・設計の停止条件にしない。
 
-本書§5〜6のB1機能仕様はまだ実装・機能実演していない。Cloud点検とR-00／01の限定変更・回帰を実施済み。DoD 4-8／4-9は未達のまま維持する。
+本書§5〜6のB1機能仕様はまだ実装・機能実演していない。Cloud点検とR-00〜02の限定変更・回帰を実施済み。DoD 4-8／4-9は未達のまま維持する。
