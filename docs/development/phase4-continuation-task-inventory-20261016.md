@@ -14,6 +14,8 @@
 
 次の作業範囲はB1設計記録§7.4へ具体化した。R-00の既存test1 fileでproduction対象を明示し、直接回帰7件を確認する案。その限定結果を整理してR-01の例外境界へ進む。今回の範囲整理ではcode変更・検証の再実行を行っていない。
 
+その後、OwnerのR-00着手指示に基づきtest1 fileを変更し、[production限定importの結果](../architecture/validation/phase4-r00-production-import-results-20261020.md)でclean compile・既存7件PASS、両importのtest由来0を確認した。R-00の限定変更・検証は完了。次はR-01の例外境界であり、B1機能・全体DoDの受入は未実施のまま維持する。
+
 ## 1. 継続作業の基点
 
 - 初回棚卸しbranch：`docs/phase4-continuation-task-inventory-20261016`。

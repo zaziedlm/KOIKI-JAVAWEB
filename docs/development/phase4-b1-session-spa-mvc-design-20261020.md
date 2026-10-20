@@ -2,7 +2,7 @@
 
 作成日：2026-10-20
 
-状態：**I-01／B1-01の調査済み、B1-02〜03の具体仕様案を整理済み。R-00のtest1 file変更案と直接回帰7件の範囲を整理済み**。R-00〜03・B1機能の実装／実演・DoD受入は未実施。§5〜6は実装に渡す設計上の選択であり、Owner受入・互換性実証を記録するものではない。
+状態：**I-01／B1-01の調査済み、B1-02〜03の具体仕様案を整理済み。R-00のtest1 file変更と直接回帰7件が完了／PASS**。R-01〜03・B1機能の実装／実演・DoD受入は未実施。§5〜6は実装に渡す設計上の選択であり、Owner受入・互換性実証を記録するものではない。
 
 Ownership：設計記録はFramework側。機能はReference `expense`／`identity`、Framework変更はR-01、検証harnessはToolingが所有する。
 
@@ -45,7 +45,7 @@ Ownership：設計記録はFramework側。機能はReference `expense`／`identi
 | Maven cache | `/workspace/.cache/maven/repository`を使用。保存settings／toolchainsが有効。cache BOMはsourceとbyte一致 | 今回のcompile・規約回帰7件は新規取得なしのofflineで成立。別Toolingは選択範囲で照合 |
 | 出力・過去証拠 | 保存された2026-10-03のroot170件・E2E1件PASSを確認。今回はfresh outputで規約負例5件＋Reference Architecture2件PASS | 過去結果と現sourceの選択結果を分ける。clean test-compileで旧Reference JARは消去済み。実JAR検証前には新packageが必要 |
 
-保存構成のactivateはshell内の既存ツール・proxy・cacheを有効化する操作であり、platformの環境設定を変更していない。環境点検時はソース・依存の変更、再install、root全件／実DB／E2Eの再実行なし。R-00の変更予定と直接回帰の範囲は§7.4に整理した。
+保存構成のactivateはshell内の既存ツール・proxy・cacheを有効化する操作であり、platformの環境設定を変更していない。環境点検時はソース・依存の変更、再install、root全件／実DB／E2Eの再実行なし。その後のR-00のtest変更・限定結果は§7.4に記録した。
 
 ### 2.3 検証入口と通常／専用の区別
 
@@ -336,18 +336,18 @@ class名は実装対象の候補で、ファイル作成は未実施。DTOは§5
 
 ## 7. R-00〜03の変更対象・最小回帰案
 
-R-00〜03は変更予定の所在と検証観点で、まだ実装していない。共有回帰は合流時にまとめ、通常rootを修正ごとに反復しない。
+R-00は下記1 fileの変更・局所検証済み。R-01〜03は変更予定の所在と検証観点で、まだ実装していない。共有回帰は合流時にまとめ、通常rootを修正ごとに反復しない。
 
 | ID | 変更対象候補 | 最小の検証観点・既存回帰 |
 | --- | --- | --- |
-| R-00／F5 | `koiki-reference-app/src/test/java/org/koikifw/reference/ReferenceArchitectureTest.java`の両import | `DO_NOT_INCLUDE_TESTS`でproduction対象を明示する案。変更後のclean compile・既存2件＋規約負例5件、両importのtest由来class0を確認する。範囲は§7.4 |
+| R-00／F5：限定変更・検証完了 | `koiki-reference-app/src/test/java/org/koikifw/reference/ReferenceArchitectureTest.java`の両import | `DO_NOT_INCLUDE_TESTS`でproduction対象を明示。clean実行で既存2件＋規約負例5件PASS。両importのtest由来class0を確認。結果は§7.4 |
 | R-01／F1 | `koiki-starters/koiki-starter-api/src/main/java/org/koikifw/starter/api/internal/KoikiProblemDetailsExceptionHandler.java`。必要性を確認した場合だけReference局所再throw | `build-support/runtime-foundation-verification`の`ApiProblemDetailsTest`等＋Security filterを通す新規合成test候補。認証済み403・未認証401／login遷移・独自404・不測500。`ReferenceBusinessUrlSecurityTest`のMVC／HTMX拒否を保護 |
 | R-02／F2 | `ReferenceSecurityConfiguration.java`のCookieSerializer Bean。Framework Session構成は生成順の照合対象 | Boot SessionAutoConfigurationを含め、Secure明示true／false、requestSecure両条件、SameSite上書き、logoutのname／path／消去をSet-Cookieで検証。`SessionJdbcAutoConfigurationContextTest`と実JARの起動・logoutでcustomizer生成を確認 |
 | R-03／F3 | `ExpenseApplicationService.java`の共有`executeMutation`。認可→versionの順序へ限定 | `ExpensePostgreSqlIntegrationTest`・`ExpenseApplicationServiceMethodSecurityTest`・`ExpenseAuditRollbackPostgreSqlIntegrationTest`、`ExpenseApiPostgreSqlIntegrationTest`。owner／approverのscope外・不存在・一致／不一致／負version、scope内競合を比較。拒否時に更新・成功Business Audit・eventなし |
 
 R-03の負versionはApplication直接呼出とHTTP DTO検証を区別する。HTTP側の`@PositiveOrZero`で先に400になることを、対象の存在漏えいと混同しない。R-03は共有mutationを変えるため、SPAに出さないapprove／reject／returnForRework／beginReedit／settleの直接影響も確認する。同期veto・event内容・非同期送信の仕様は変更しない。
 
-**R-00の変更前baseline：** [Cloud点検記録§4](../architecture/validation/phase4-r00-cloud-environment-preflight-20261020.md)ではimport指定を変えずにReference Architecture2件・規約負例5件がPASS。fresh importは243 classes中test65、production限定178、business違反は双方0だった。過去の15違反を現在の失敗と扱わず、検査責務の明示として§7.4の変更を予定する。
+**R-00の変更前baseline：** [Cloud点検記録§4](../architecture/validation/phase4-r00-cloud-environment-preflight-20261020.md)ではimport指定を変えずにReference Architecture2件・規約負例5件がPASS。fresh importは243 classes中test65、production限定178、business違反は双方0だった。過去の15違反を現在の失敗と扱わず、検査責務の明示として§7.4の変更を実施した。
 
 ### 7.1 B1実装時の検証表案
 
@@ -395,11 +395,11 @@ buildの負例は、使い捨てworkspaceまたは検査用一時directory内で
 
 R-00〜03の局所検証後に、通常root1回、B1 profileのReference reactor1回、新旧browser journeyの選択集合へ進む案とする。今回のCloud点検は既存compile・規約7件と環境smokeに限定し、このB1機能集合は未実行。B1-04で必要な資源／時間とfrontend準備を具体化する。
 
-### 7.4 R-00の作業範囲と実行案
+### 7.4 R-00の作業範囲と実行結果
 
-**Referenceのproduction architecture検査からtest出力を明示的に除外する1 fileの変更を予定する。** 変更前も7件はPASSしており、失敗を直す作業ではない。mainとtestを同じpackage名でimportすると、fixture追加や古いtest出力によってproduction検査の対象が変わるため、検査対象をsource setで定める。
+**Ownerの着手指示に基づき、Referenceのproduction architecture検査からtest出力を明示的に除外する1 fileの変更を実施済み。** 変更前も7件はPASSしており、失敗を直す作業ではない。mainとtestを同じpackage名でimportすると、fixture追加や古いtest出力によってproduction検査の対象が変わるため、検査対象をsource setで定めた。
 
-| 項目 | 予定する範囲 |
+| 項目 | 今回実施した範囲 |
 | --- | --- |
 | 対象file | `koiki-reference-app/src/test/java/org/koikifw/reference/ReferenceArchitectureTest.java`だけ |
 | 変更 | 既存2メソッドそれぞれの`ClassFileImporter`へ`withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)`を追加し、必要なimportを1件追加 |
@@ -410,14 +410,16 @@ R-00〜03の局所検証後に、通常root1回、B1 profileのReference reactor
 | countの扱い | production178 classesは変更前の観測値。恒久的な固定件数のassertionを追加せず、今回の対象と除外結果を証拠に記録 |
 | 検証の範囲 | 下記の局所集合を1回。Docker／DB／browserは使用しない。通常root全件は基盤是正の合流時にまとめる |
 
-実行command案は次のとおり。環境を再構築せず保存済みactivationとcacheを使い、同じ一回のclean testでcompileと7件を確認する。
+実行commandは次のとおり。環境を再構築せず保存済みactivationとcacheを使い、同じ一回のclean testでcompileと7件を確認した。
 
 ```bash
 source /workspace/cloud-setup/activate.sh
 ./mvnw --batch-mode --no-transfer-progress -o -pl koiki-reference-app -am -Dtest=RequiredNegativeArchitectureRulesTest,ReferenceArchitectureTest -Dsurefire.failIfNoSpecifiedTests=false clean test
 ```
 
-R-00の限定変更・検証を終えた後は、**R-01：汎用AdviceとSecurity／HTTP例外の境界是正**へ進む。対象はAPI Starterの`KoikiProblemDetailsExceptionHandler`と必要な合成test。認証済み403、未認証の経路別401／login遷移、独自404、不測500、既存MVC／HTMX応答を出口にする。R-02 Cookie、R-03認可順序はその次に問題単位で進め、三件とB1設計をB1-04で合流する。
+**[限定結果](../architecture/validation/phase4-r00-production-import-results-20261020.md)：13 projects SUCCESS、clean compile＋7件PASS、failure／error／skip 0。** 業務規約は178 classes、Identity境界は218 classesで、ともにtest-classes由来0を確認した。選択2 classの新XMLとsource patch／hashを保存し、実行対象が空でないことを照合した。class件数の固定assertionや新規testは追加していない。commit・remote操作は行っていない。
+
+R-00の限定結果を整理した次は、**R-01：汎用AdviceとSecurity／HTTP例外の境界是正**へ進む。対象はAPI Starterの`KoikiProblemDetailsExceptionHandler`と必要な合成test。認証済み403、未認証の経路別401／login遷移、独自404、不測500、既存MVC／HTMX応答を出口にする。R-02 Cookie、R-03認可順序はその次に問題単位で進め、三件とB1設計をB1-04で合流する。
 
 ## 8. 次の更新と合流点
 
@@ -427,9 +429,9 @@ R-00の限定変更・検証を終えた後は、**R-01：汎用AdviceとSecurit
 | B1-01 | path付き差分表と代表操作案を作成 | 代表操作の範囲を後続設計へ引継ぎ。未実装を実装済みにしない |
 | B1-02 | §5に標準spa()・Cookie属性・login／logout接続・失敗応答、10 DTO・数値表現・codeを具体化 | R-01／02／03の設計・結果と照合。未実装のfilter順序・Cookie生成・JSON受入を合成testへ渡す |
 | B1-03 | §6に依存version、Reference限定profile、Node起動・生成先・copy順、JAR配信・入力／asset hashを具体化 | 実装時にlockを生成し組合せbuildを確認。検証class案は§7.3。実行準備は未成立 |
-| R-00〜03 | §7.4にR-00の変更案と直接回帰7件の範囲を整理 | 次はR-00のproduction検査対象の明示。R-00〜03・B1実装は未着手 |
+| R-00〜03 | R-00は既存test1 fileのproduction対象明示・clean回帰7件PASS。§7.4と結果記録へ反映済み | 次はR-01の例外境界。R-02／03・B1実装は未着手 |
 | B1-04 | 未実施 | B1-02〜03の仕様とR-00〜03の結果を合流し、対象path・test集合・概算・資源／時間／停止／cleanupを本書で確定 |
 
-次の実装単位は**R-00：Architecture testの検査対象をproductionへ明示する変更**。範囲は§7.4に整理した。続けてR-01〜03を問題単位で進め、B1-04で設計と合流する。F6／F7／H1、非同期CI、S1全体の未達はB1調査・設計の停止条件にしない。
+次の実装単位は**R-01：汎用AdviceとSecurity／HTTP例外の境界是正**。R-00は§7.4の限定変更・検証を完了した。続けてR-02／03を問題単位で進め、B1-04で設計と合流する。F6／F7／H1、非同期CI、S1全体の未達はB1調査・設計の停止条件にしない。
 
-本書§5〜6のB1機能仕様はまだ実装・機能実演していない。Cloud点検のソース無変更のcompile・規約7件のみ実施済み。DoD 4-8／4-9は未達のまま維持する。
+本書§5〜6のB1機能仕様はまだ実装・機能実演していない。Cloud点検とR-00の限定変更・7件回帰のみ実施済み。DoD 4-8／4-9は未達のまま維持する。

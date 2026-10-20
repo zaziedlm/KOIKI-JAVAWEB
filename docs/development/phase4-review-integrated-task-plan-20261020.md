@@ -62,7 +62,7 @@ R-01〜03の間に技術的な直列依存はない。上図は一人の作業�
 | ID／状態 | 元項目・主担当Ownership | 作業と対象 | 成果・完了条件 | 依存 |
 | --- | --- | --- | --- | --- |
 | I-01／調査・設計対象 | 共通／Tooling | 作業branch・source、未commit文書、利用するartifactとtest入口を確認。通常／専用asyncの区別、変更対象と直接回帰を一覧化する | 作業source、対象path、実行予定集合、資源・時間・cleanup条件が追える。過去PASSを現sourceの結果にしない | 本計画 |
-| R-00／計画 | F5／Reference test | `ReferenceArchitectureTest`のimport範囲をclean test-compileで確認。productionとtest fixtureを分離し、必要なら配置不一致を最小整理 | production architectureがtest混入で失敗しない。既存のproduction負例検出を維持。使用sourceと実行／skipを記録 | I-01。既存compiled classの15違反を現HEADの確定件数にしない |
+| R-00／限定変更・検証完了 | F5／Reference test | `ReferenceArchitectureTest`1 fileの両importへ`DO_NOT_INCLUDE_TESTS`を追加。fixture配置・Rulesは維持 | clean compile＋既存2件／規約負例5件PASS。両importともtest由来0。[限定結果](../architecture/validation/phase4-r00-production-import-results-20261020.md)にsource／XMLを対応付け | I-01成立。過去の15違反を現在の失敗とせず、検査責務を明示 |
 | R-01／計画 | F1／Framework API Starter | 汎用AdviceとSecurity・HTTP例外の責任を整理し、標準処理へ伝播する修正と合成testを作る。Reference局所再throwの必要性も照合 | 認証済み拒否403、未認証の経路別応答、独自404、予期せぬ500、MVC／HTMX／APIの応答が意図どおり。回避策除去は検証成立時だけ | I-01、比較するarchitecture検証はR-00後 |
 | R-02／計画 | F2／Reference identity構成 | 独自CookieSerializerをBoot管理へ戻すか設定反映するかを選び、logout customizerとの生成順も確認・修正 | 明示Secure／SameSiteがSet-Cookieへ反映。HTTPS判定の有無とlogout削除Cookieのname／pathを確認。property値の確認だけで閉じない | I-01、B1-02のCookie／logout要求と照合 |
 | R-03／計画 | F3／Reference expense | owner／approver scopeの確認をversion照合より前にする。対象外の情報を例外差から漏らさず、既存競合処理を維持 | scope外の一致／不一致／負versionと不存在が秘匿契約どおり。scope内競合は409相当。拒否時の更新・Audit・eventなしを確認 | I-01、B1-01の対象操作と照合 |
@@ -199,7 +199,9 @@ P4-A1／A2・D1非同期とS1-01〜10は、[棚卸し§6〜8](phase4-continuatio
 
 **同日のCloud点検結果：** [環境点検記録](../architecture/validation/phase4-r00-cloud-environment-preflight-20261020.md)で保存済み構成を有効化し、ソース無変更のoffline clean test-compile・規約負例5件／Reference Architecture2件PASSを確認した。fresh importの違反はtest込み／production限定とも0。前回の環境不足記述を訂正し、R-00の検証実行準備は成立。次はproduction検査対象の明示とfixtureの役割を結果から整理する。過去の15違反を現在の失敗と扱わず、是正実装・全test受入は未実施のまま維持する。
 
-**着手時の範囲整理：** [B1設計記録§7.4](phase4-b1-session-spa-mvc-design-20261020.md#74-r-00の作業範囲と実行案)で、R-00は既存`ReferenceArchitectureTest`1 fileの両importへproduction対象指定を追加する案に絞った。直接回帰は既存2件＋規約負例5件の7件。fixture移動・Rules緩和・production変更・root全件反復は含めない。この段階ではcode変更・検証の再実行を行っていない。
+**着手時の範囲整理：** [B1設計記録§7.4](phase4-b1-session-spa-mvc-design-20261020.md#74-r-00の作業範囲と実行結果)で、R-00は既存`ReferenceArchitectureTest`1 fileの両importへproduction対象指定を追加する案に絞った。直接回帰は既存2件＋規約負例5件の7件。fixture移動・Rules緩和・production変更・root全件反復は含めない。この範囲整理の後、下記のOwner着手指示に基づく限定変更を実施した。
+
+**R-00実施結果：** Ownerの着手指示後にtest1 fileだけを変更し、[限定結果](../architecture/validation/phase4-r00-production-import-results-20261020.md)のclean実行で13 projects SUCCESS・7件PASS。業務178／Identity境界218 classes、test由来は双方0を確認した。次はR-01の例外境界。R-01以降・B1実装・通常root全件・全体受入へ結果を拡張しない。
 
 本書のWBS・順序・依存の詳細はこの計画案として提示する。Owner合意済みなのは§1の進め方と計画化の指示であり、各実装・実行・受入の完了を新たに記録したものではない。
 
