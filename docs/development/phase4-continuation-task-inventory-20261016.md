@@ -10,6 +10,10 @@
 
 **2026-10-20追記：** Ownerは、P4-B1の調査・設計を進めつつ、直接影響するレビュー指摘だけを実装・受入より先に解決する方針に合意した。[レビュー対応との統合作業計画](phase4-review-integrated-task-plan-20261020.md)で、B1の調査・設計とF1／F2／F3／F5の基盤是正、他package・採用支援への割当を作業単位に整理した。直近は同計画I-01／B1-01。詳細WBSは計画案であり、レビュー全件・S1全体の解消をB1開始条件にしない。
 
+同日のI-01／B1-01調査結果とB1-02〜03の具体仕様案は[B1設計記録](phase4-b1-session-spa-mvc-design-20261020.md)へ集約した。後続の[Cloud環境点検](../architecture/validation/phase4-r00-cloud-environment-preflight-20261020.md)で保存済み構成を有効化し、ソース無変更のclean test-compile・規約7件PASS、fresh import違反0を確認。R-00の実行準備は成立し、次はproduction検査対象とfixtureの役割を整理する。是正実装・B1機能実演・DoD受入は未実施。
+
+次の作業範囲はB1設計記録§7.4へ具体化した。R-00の既存test1 fileでproduction対象を明示し、直接回帰7件を確認する案。その限定結果を整理してR-01の例外境界へ進む。今回の範囲整理ではcode変更・検証の再実行を行っていない。
+
 ## 1. 継続作業の基点
 
 - 初回棚卸しbranch：`docs/phase4-continuation-task-inventory-20261016`。

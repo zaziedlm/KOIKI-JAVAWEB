@@ -195,6 +195,12 @@ P4-A1／A2・D1非同期とS1-01〜10は、[棚卸し§6〜8](phase4-continuatio
 
 **次はI-01とB1-01を行い、既存コード／testのpath付き差分表と代表操作案を作る。** 続けてB1-02のroute／CSRF／error表と、R-00〜03の変更対象・最小回帰を具体化する。成果は一つのB1設計記録へまとめ、内容の重複する開始票を連続して増やさない。
 
+**2026-10-20着手・具体化記録：** [B1設計記録](phase4-b1-session-spa-mvc-design-20261020.md)へ、I-01のsource・環境・検証入口、B1-01の差分表・代表操作、R-00〜03の対象・最小回帰をまとめた。継続してB1-02の標準spa()・Cookie属性・login／logout接続と失敗応答・10 DTO、B1-03の依存version・Reference限定build profile・生成／copy順・JAR検査と追加検証を具体化した。次はR-00のclean compile・直接回帰の実行準備。実行環境preflight・基盤是正・B1実装・動的検証は未実施。本節冒頭は着手時の順序として保持し、以後も同じ設計記録を更新する。
+
+**同日のCloud点検結果：** [環境点検記録](../architecture/validation/phase4-r00-cloud-environment-preflight-20261020.md)で保存済み構成を有効化し、ソース無変更のoffline clean test-compile・規約負例5件／Reference Architecture2件PASSを確認した。fresh importの違反はtest込み／production限定とも0。前回の環境不足記述を訂正し、R-00の検証実行準備は成立。次はproduction検査対象の明示とfixtureの役割を結果から整理する。過去の15違反を現在の失敗と扱わず、是正実装・全test受入は未実施のまま維持する。
+
+**着手時の範囲整理：** [B1設計記録§7.4](phase4-b1-session-spa-mvc-design-20261020.md#74-r-00の作業範囲と実行案)で、R-00は既存`ReferenceArchitectureTest`1 fileの両importへproduction対象指定を追加する案に絞った。直接回帰は既存2件＋規約負例5件の7件。fixture移動・Rules緩和・production変更・root全件反復は含めない。この段階ではcode変更・検証の再実行を行っていない。
+
 本書のWBS・順序・依存の詳細はこの計画案として提示する。Owner合意済みなのは§1の進め方と計画化の指示であり、各実装・実行・受入の完了を新たに記録したものではない。
 
 ## 付記 再開前の気づきメモ
