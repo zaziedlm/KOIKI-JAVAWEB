@@ -113,8 +113,8 @@ expenseは既存Tier 2を維持する。Controllerは入力／DTO変換／応答
 | --- | --- | --- |
 | 既存`/api/**` | 現行Bearer chain、`HIGHEST_PRECEDENCE`、有効化property維持、stateless | 現行のCSRF無効を維持。Cookie単独401、Bearer権限不足403。Bearer無効時はfallback deny |
 | 新`/spa-api/**` | Referenceの新chain、order -10。`SessionCreationPolicy.NEVER`で既存Sessionを読取り、request cache無効、form／Basic／Bearer認証入口なし | Cookie方式CSRFを有効。GETの未認証はJSON 401、権限不足403。Bearer単独は認証に使わない |
-| 新`GET /spa`、`/spa/`、`/spa/index.html` | 既存browser chainへ明示追加、Session認証後にshellを配信 | 未認証は既存`/login`へ。SPA APIの401をlogin HTMLへ変換しない |
-| 新`/spa/assets/**` | 非機密build assetだけをbrowser chainでpermitする案 | 業務値やtokenを埋め込まない。`/spa/**`全体をpermitする設定にはしない |
+| 新`/spa`、`/spa/**` | 既存browser chainのsecurity matcherへ追加。下記assetsを除いてauthenticated | 未認証GETは既存`/login`へ。認証後、shellは定義済み経路だけで配信し、未知pathはMVCの404へ渡す。SPA APIの401をlogin HTMLへ変換しない |
+| 新`/spa/assets/**` | 同じbrowser chain内で、上記authenticated指定より先にpermitAllを指定 | 非機密build assetだけを配信し、存在しないassetは404。業務値やtokenを埋め込まない |
 | 既存MVC／HTMX／`/login`／`/logout` | 現行browser chain、order 0 | HttpSession側のCSRF、hidden field／HTMX headerを維持。form login、既存HTML拒否／遷移を保護 |
 | その他 | FrameworkのLOWEST_PRECEDENCE fallback | 現行denyAllを維持。未定義の新APIもControllerへ到達・更新しない |
 
@@ -122,7 +122,7 @@ expenseは既存Tier 2を維持する。Controllerは入力／DTO変換／応答
 
 ### 5.2 JSON操作のpath案
 
-`GET /spa-api/csrf`はauthenticated、expenseの定義済み操作はURL側とUse Case側の双方で`EXPENSE:APPLY`を要求する。prefix内のその他のrequestはauthenticatedとしてmapping不成立404へ渡し、prefix外は既存fallback denyを維持する。logoutは§5.4のfilter処理で完結する。
+`GET /spa-api/csrf`はauthenticated、expenseの定義済み操作はURL側とUse Case側の双方で`EXPENSE:APPLY`を要求する。prefix内のその他のrequestはauthenticatedとしてmapping不成立404へ渡す。prefix外は§5.1の経路ごとのchainへ渡し、いずれにも該当しない経路は既存fallback denyを維持する。logoutは§5.4のfilter処理で完結する。
 
 | method／path候補 | 内容 | 応答案 |
 | --- | --- | --- |
@@ -297,7 +297,9 @@ Node scriptからnpmを呼ぶ際、Linuxはshellなしで固定引数を渡す�
 
 `ReferenceSpaWebConfiguration`は同梱indexの存在を`@ConditionalOnResource`で確認してから、GET `/spa`・`/spa/`を`/spa/index.html`へforwardする。homeは同じresource存在をmodelへ渡してSPAリンクを出す。profile未指定のclean通常JARではshell mappingとリンクを出さない。API source／Security chainのcompileをMaven profileで分岐させず、通常testからも境界を検査できるようにする。
 
-browser chainで`/spa`・`/spa/`・`/spa/index.html`をauthenticated、`/spa/assets/**`だけpermitする。indexはno-store、hash付きassetは非機密のbuild成果物として扱う。`/spa/unknown`や`/spa-api/v2/**`をshellへforwardせず、認証後404にする。初回はroot contextの配置だけを対象とする。
+browser chainのsecurity matcherは`/spa`と`/spa/**`を対象に含める。認可は`/spa/assets/**`のpermitAllを先に指定し、それ以外の`/spa`・`/spa/**`はauthenticatedとする。indexはno-store、hash付きassetは非機密のbuild成果物として扱う。indexへのforwardはGET `/spa`・`/spa/`だけに限定する。
+
+GET `/spa/unknown`は未認証ならlogin遷移、認証済みならMVCのmapping・resource不成立による404とする。存在しない`/spa/assets/**`は認証の有無によらず404とする。`/spa-api/v2/**`は専用Session API chainで未認証GETをJSON 401、認証済みGETを404とし、shellへforwardしない。初回はroot contextの配置だけを対象とする。
 
 Reactはhashから一覧・新規・詳細を選択し、API URLは`/spa-api/...`に固定する。browserの戻る／進むとshell再読込は新しいGETで状態を照合し、POSTを再現しない。JSでSession Cookieを読む処理、OAuth token保管、Service Worker、永続client cacheを追加しない。
 
@@ -353,7 +355,7 @@ R-03の負versionはApplication直接呼出とHTTP DTO検証を区別する。HT
 
 | 集合 | 主な観測 | 入口候補 |
 | --- | --- | --- |
-| B1-T1 route／認証 | MVC login遷移、Session API JSON拒否、Bearer Cookie-only拒否、Session API Bearer-only拒否、両credential時のSession主体、未定義path拒否 | 新規Reference Security合成test＋既存API／MVC URL test |
+| B1-T1 route／認証 | MVC／SPA shellの未認証GETはlogin遷移。GET `/spa/unknown`は未認証login遷移／認証済み404、存在しないassetは認証有無によらず404。Session API未定義pathのGETはJSON 401／認証済み404としlogin遷移・shell配信をしない。Bearer Cookie-only拒否、Session API Bearer-only拒否、両credential時のSession主体、fallback deny維持 | 新規Reference Security合成test＋既存API／MVC URL test |
 | B1-T2 CSRF | Cookie＋header成功、header欠落・不一致・Cookie欠落拒否、login／logout前後のtoken更新、MVC hidden／HTMX既存動作 | 新規filter合成test＋実browser。security testの`csrf()`だけで代替しない |
 | B1-T3 DTO／error | 400／404／409／422／503／500、scope外の応答同一性、数値往復、不要なemail・内部例外の非露出 | 新規Session Controller test、R-01／03の結果と照合 |
 | B1-T4 DB／Audit | SPA create→read→submit→MVC read、MVC create→SPA read、別user拒否・古いversion拒否時に副作用なし | 新規Session API PostgreSQL test、既存read model／API DB test |
