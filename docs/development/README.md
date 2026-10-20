@@ -5,6 +5,8 @@
 
 ## 現在の入口
 
+- [Phase4継続と設計実装レビュー対応の統合作業計画（2026-10-20）](phase4-review-integrated-task-plan-20261020.md): Owner合意の進め方に基づく作業分解案。P4-B1の調査・設計とF1／F2／F3／F5の基盤是正を接続し、残るPhase4・採用支援を含め依存・出口・入力待ちを整理。次はI-01／B1-01、実装開始・受入は別に扱う
+
 - [KOIKI-JavaWeb 提供機能・適用条件・選択ガイド](framework-capabilities-and-selection-guide.md): 本文全体・名称とチェックポイント方式をOwner承認済み（2026-10-19）。次のタグ名は`checkpoint-v0.1.5`（未作成）。Mavenは`0.1.0-SNAPSHOT`を維持。案件非依存の機能、検証範囲、構成別サジェスト、責任分担、機能拡充の判断原則を整理。タグ対象・提供artifact・配布条件は別途確定する
 - [main統合とP4-B1以降のテーマ一覧](phase4-continuation-task-inventory-20261016.md#9-main統合後に進めるテーマ一覧2026-10-17): 今回の文書までcommit→PR/CI→main merge→確認/tagを先に行い、その後P4-B1へ移る。機能テーマ12区分と採用支援5区分を一覧化。B1以降の実施順は未確定、入力待ち・保留を区別
 - [直近13コミットの経緯とP4-B1への接続](phase4-continuation-task-inventory-20261016.md#83-直近コミットからp4-b1へ至る経緯2026-10-17確認): 接続実装の固定、人手補完の境界整理、今回の区切りをcommit参照付きで整理。過去の承認・検証結果を保持し、当初計画のSession SPA＋MVCへ移行する理由を明記
