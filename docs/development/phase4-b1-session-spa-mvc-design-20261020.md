@@ -2,11 +2,11 @@
 
 作成日：2026-10-20
 
-状態：**B1-04〜06の設計・backend・frontend／build・配信入口と局所検証を実施済み（§9〜11）**。R-00〜03は限定結果を保持する。B1-05は149件、B1-06はJava／UI／build負例の65件PASS。通常／同梱JARのclean packageと内容検査を確認。通常root全件・同梱JARの実DB／browser統合実演・DoD受入はB1-07〜08に残る。
+状態：**B1-07のCloud実装・統合検証完了（§12）**。最終通常root／同梱構成は各422件実行PASS＋99 skip、同じ同梱JARで新旧browser journey計2件PASS。実演で判明したMVC日付表示・明細保存を局所訂正した。ローカルPCの手動確認とB1-08のDoD 4-8／4-9 Owner受入は未実施。R-00〜03・B1-05〜06の結果は各時点の履歴として保持する。
 
 Ownership：設計記録はFramework側。機能はReference `expense`／`identity`、Framework変更はR-01、検証harnessはToolingが所有する。
 
-2026-10-21のB1-04合流点検は§9、その後のOwner開始指示に基づくB1-05結果は§10。B1-06の実装・局所結果は§11。次はB1-07。frontendの固定lockと取得・build条件は確認済みで、通常root全体の資源・統合browser集合の具体化は§9.4から引き継ぐ。
+2026-10-21のB1-04合流点検は§9、その後のOwner開始指示に基づくB1-05結果は§10。B1-06の実装・局所結果は§11。B1-07の資源具体化・途中停止／是正・最終結果は§12。次はローカル手動確認の実施判断とB1-08の受入整理。
 
 ## 1. 目的と今回の到達点
 
@@ -16,7 +16,7 @@ Ownership：設計記録はFramework側。機能はReference `expense`／`identi
 
 根拠は[Grand Design §13.5〜13.6・§27.8](../architecture/grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md)、[見直し草案R4の承認](KOIKI-JavaWeb-FW_Phase4実施計画_見直し草案_v0.1.md)、[他package分解§2.1](phase4-other-packages-breakdown-draft-20261005.md)、[レビューF1〜F5](../architecture/validation/main-framework-design-implementation-review-20261020.md)。2026-09-26のSession SPAでDoDを維持する判断は引き継ぐ。
 
-| DoD | 今回設計する成立条件 | 現在の不足 |
+| DoD | 成立条件 | 設計開始時の不足（現在の結果は§12） |
 | --- | --- | --- |
 | 4-8：SPAからCookie Session認証でAPIを利用し、CSRF double-submitが機能する | login後の参照・更新、CSRF Cookieとheaderの照合、欠落／不正拒否、失効・logout後の拒否をpackage済みReferenceで観測 | Session API、SPA、Cookie方式のCSRF接続とbrowser実演がない |
 | 4-9：同一アプリ内でThymeleafとSPAが併存し、CSRF設定を経路ごとに分離する | MVC hidden field／HTMX headerを維持し、SPA側だけCookie方式を使用。同じ申請のDB・Audit結果を照合 | 現行はMVCとBearer RESTの併存。これだけではSession SPAのDoDを満たさない |
@@ -309,7 +309,7 @@ Reactはhashから一覧・新規・詳細を選択し、API URLは`/spa-api/...
 
 ### 6.4 実装後に使用するcommand案
 
-B1-06でprofileは実装済み。以下はB1-07の合流回帰の予定手順であり、全件verifyと新旧実JAR journeyはまだ実行していない。B1-06のclean package・局所結果は§11へ区別して記録する。
+B1-06でprofileを実装し、B1-07で以下の順序の合流回帰と新旧実JAR journeyを実施した。具体的な資源引数・是正後の再検証・最終結果は§12と結果文書へ追跡する。B1-06のclean package・局所結果は§11へ区別して記録する。
 
 ```bash
 # 通常構成：Nodeを要求しない合流回帰
@@ -370,7 +370,7 @@ R-03の負versionはApplication直接呼出とHTTP DTO検証を区別する。HT
 
 実行command候補は、局所のReference testが `./mvnw -pl koiki-reference-app -am -Dtest=<選択class> -Dsurefire.failIfNoSpecifiedTests=false test`、Framework局所が対象Tooling POMへの `-f ... -Dtest=<選択class> test`、合流時がrootの `./mvnw clean verify` である。DB testのclean compile・依存準備・test選択を先に整え、空の選択をPASSとせず新XMLで実行classを照合する。
 
-browser回帰は§6.4のprofileでpackageした同じB1 JARを対象とし、同節の新旧2 class選択を使う。集合の間に通常JARへ再packageしない。追加classの所在・役割は§7.3、正確なmethod集合・件数は実装差分確定後に記録する。通常rootとB1 profileのReference集合は別のXML・artifact epochで記録する。上記は実行済みcommandでも、現環境で動作確認済み手順でもない。
+browser回帰は§6.4のprofileでpackageした同じB1 JARを対象とし、同節の新旧2 class選択を使う。集合の間に通常JARへ再packageしない。追加classの所在・役割は§7.3、正確なmethod集合・件数は実装差分確定後に記録する。通常rootとB1 profileのReference集合は別のXML・artifact epochで記録する。上記は設計時の候補であり、実行済みcommandと現在の結果は§12へ区別して記録する。
 
 | 項目 | 現在の到達点 | 実装／実行へ渡す案 |
 | --- | --- | --- |
@@ -469,7 +469,7 @@ Ownerの着手指示に基づき、同じ作業branchで`executeMutation`の対�
 | B1-04 | §9に合流点検・実装対象・検証割当て・概算・実行条件を整理済み | B1-05へ渡す。method数・通常root全体資源など実装時確定事項は§9.4に保持し、未確定のまま該当実行を開始しない |
 | B1-05 | §10のReference backendを実装し、局所149件PASS。commit・remote操作なし | B1-06のUI／同梱へ渡す。backend局所PASSを実browser・DoD成立へ拡張しない |
 
-次の作業は**B1-07：通常／同梱構成の合流回帰と実JARのbrowser統合実演**。B1-04は§9、B1-05は§10、B1-06は§11。B1-07→08の順に進める。F6／F7／H1、非同期CI、S1全体の未達はB1の一律の停止条件にしない。
+次の作業は**ローカル手動確認の実施判断とB1-08の受入整理**。B1-04は§9、B1-05は§10、B1-06は§11、B1-07のCloud結果は§12。F6／F7／H1、非同期CI、S1全体の未達はB1の一律の停止条件にしない。
 
 本書§5〜6のbackendは§10、frontend・build・配信入口は§11の範囲を実装済み。実JAR＋DBのbrowser統合実演はB1-07で確認する。Cloud点検とR-00〜03の限定変更・回帰は保持する。DoD 4-8／4-9は未達のまま維持する。
 
@@ -539,7 +539,7 @@ Windowsでは当該Ownerセッションの点検で、R-01後20件、R-02後clea
 | 停止／cleanup | 秘密・token露出、既存回帰、artifact不一致、資源／時間超過、権限不足、cleanup不成立では停止。権限要求は実行環境の承認手順へ従う。DB／role／PID／port／一時fileをrunに紐付け、他runを操作しない。終了直後に残存する場合は最大30秒の読取確認で状態を確定し、残存したまま後続へ進まない |
 | 記録 | source SHA＋patch・file hash、環境、command、XML件数／hash、通常／B1 profile、JAR・lock・asset hash、DB／Audit／sanitized log、cleanupを保持。clean前に保存し、異なるepochの結果を付け替えない |
 
-**実装・実行時に具体化するOPEN：** (1) §7.3の5新規classを実装する際のmethod名・parameterized invocation数、(2) 通常root／B1 profileの既存test contextを含むJVM・DB・接続総量と制限の供給方法、(3) 実行環境でのfrontend取得・lockとbrowserの利用可否。新規・局所DBの制限を通常root全件へ一律適用して既存test条件を変えてはならない。該当集合の実行前に本節へ実数・commandを追記する。これらを完了済みと偽って先行せず、一方で既存環境の全再構築や旧R-00〜03全再実行を新しい前提にしない。
+**B1-04時点のOPEN（B1-07の実数・供給方法・実行結果は§12で具体化済み）：** (1) §7.3の5新規classを実装する際のmethod名・parameterized invocation数、(2) 通常root／B1 profileの既存test contextを含むJVM・DB・接続総量と制限の供給方法、(3) 実行環境でのfrontend取得・lockとbrowserの利用可否。新規・局所DBの制限を通常root全件へ一律適用して既存test条件を変えてはならない。該当集合の実行前に本節へ実数・commandを追記する。これらを完了済みと偽って先行せず、一方で既存環境の全再構築や旧R-00〜03全再実行を新しい前提にしない。
 
 B1-04時点の指示は設計との整合と実装計画の整理までとした。その後のOwnerによるB1-05開始指示と結果は§10へ記録した。必要な判断は既存計画に沿ってこの記録へ追記し、同内容の開始票や新しい包括Gateを増設しない。
 
@@ -571,3 +571,57 @@ UIは一覧／paging、1明細のdraft作成、詳細／submit、既存MVCへの
 [限定結果](../architecture/validation/phase4-b1-06-frontend-build-results-20261021.md)は新規配信2＋UI fixture5＋build負例6＋既存直接回帰52の計65件PASS。通常／専用profileを各clean package（skipTests）し、通常JARの非同梱、専用JARのindex／asset／静的配信外build記録、入力15 fileとasset hash一致を確認した。UI fixtureは実Chromiumとloopbackの代替APIを使い、実JAR＋実DBの接続成立を代替しない。
 
 B1-07では通常root全件・B1 profileの全件verify、新規`PackagedReferenceSessionSpaJourneyTest`の実装と既存Critical Journeyを同じB1 JARで直列実行する。通常rootの全contextに対する資源制限、browser集合・時間・停止／cleanupを実行前に具体化する。今回の局所結果をDoD受入へ拡張しない。
+
+
+## 12. B1-07：合流回帰・実JAR browser実演（2026-10-21）
+
+OwnerのB1-07開始指示に基づき、branch `docs/phase4-review-integrated-plan-20261020`、B1-06成果commit `2b0ed5b`・clean treeを入力とする。Cloudはmemory上限8 GiB／CPU2、JDK21.0.12.1、Node24.19.0／npm11.9.0、保存済みChromium／PostgreSQL17 imageを使用する。remote・commit・PR操作は含めない。
+
+### 12.1 実行前の資源・順序
+
+- 通常root／B1 profile：Maven heap768 MiB、compiler fork1（既存設定）、test fork1／heap768 MiB／reuseForks=false、JUnit並列無効、reactor並列なし。通常DB専用selector `koiki.reference.normal-root.db-limits.enabled=true`でDB1 GiB／CPU1／max_connections16。既存pool既定最大10を変更せず、DB接続14以内をsampleする。専用verification／B2 flagは与えず、専用testの通常skipを維持する。DB同時1、class切替でRyuk最大2を見込む。JVMはMaven＋compilerまたはtestの最大3（compilerとtestの並列実行なし）。資源sampleと各集合後の残存確認を保存する。
+- browser：Maven／test／application各heap768 MiB、DB1 GiB／CPU1／max_connections16、application pool4／idle1、管理接続を含め8以内。Chromium1 context・issuer1・application子JVM1。新旧classは別Maven invocationで直列、各終了後最大30秒のcleanup確認を行う。
+- 合流build＋browserの実行時間60分、cleanup10分を予約。通常root1回→XML・通常JAR退避→B1 profile Reference reactor1回→XML・同梱JAR退避→同梱JAR hashを固定し新旧browser各1回。失敗は原因と影響集合を整理し、全体を自動反復しない。
+- Root外Toolingに新規 `PackagedReferenceSessionSpaJourneyTest` を実装する。同梱JARのSHA-256・profile・frontend全入力／lock／asset hashを起動前に照合し、既存Critical Journeyも同じ照合を明示選択時だけ追加する。製品側の故障注入入口は追加しない。
+- ローカルPCでの実ブラウザー手動確認はCloud自動実演と別に手順・確認表を用意する。push／他端末pullは必要時にOwnerと実施順を合わせ、未実施をPASSとしない。B1-08のDoD受入は別判断。
+
+build共通引数：`-o -B -ntp -DargLine=-Xmx768m -DforkCount=1 -DreuseForks=false -Djunit.jupiter.execution.parallel.enabled=false -Dkoiki.reference.normal-root.db-limits.enabled=true`。通常rootは`clean verify`、同梱は`-pl koiki-reference-app -am -Pb1-session-spa clean verify`。各実行の時刻・command・sample・XMLを `/workspace/cloud-setup/logs/phase4-b1-07-20261021/` へ保存する。件数とbrowser method集合は作成・実行結果に追記する。
+
+
+### 12.2 作成するbrowser集合
+
+新規`crossesSessionSpaMvcBoundariesAndDiscardsExpiredViews` 1 method／1 invocation。artifact照合→匿名401／shell認証→実login／Cookie属性→SPAの大整数文字列での作成・text escape→詳細reload→CSRF欠落／誤値／MVC用token拒否・DTO400・業務422→MVC参照／別tab編集→SPA409と最新再取得→明示submit・連打1 POST→MVC／DB／Audit突合→戻る／進む・未知経路→実GET応答をbrowser側で保留してlogout／遅延応答除外→Cookie削除／旧Session拒否→別利用者scope拒否→DB expiryによる401／表示破棄→権限の異なる利用者で再login→未保存入力の履歴復元抑止→logout・log照合・cleanupを一本で確認する。内部checkpointはtest件数へ加算しない。DB fixture準備・expiry更新とbrowserの応答保留はTooling内だけに置く。
+
+既存Critical Journey `crossesBearerAndSessionBoundariesAndReconcilesExternalEvidence` は1 invocation。Bearer作成／提出→MVC承認／HTMX検索→logout→Bearer再参照とDB／Audit／logを保持。B1明示選択時の起動前artifact照合と、既存helperのpackage内再利用だけを変更する。新規SPA classは明示selectorなしではskipする。
+
+通常root初回は2026-10-21 09:45〜09:52 UTC、6分41秒でSUCCESS。fresh XMLは518件（419実行・99 skip）、failure／error0。通常JAR SHA-256 `7e5488e26cf89b95e88437b1bd20b948d85843d6dde2f9e78d6b91c4c5d14114`、SPA／build記録なし。XML・JARを`normal/`へ退避し、DB／Ryuk0を確認後に同梱profileへ進んだ。Root外Toolingのcompile準備だけを通常rootと並行した区間があり、その区間はMaven2＋compilerまたはtestの最大4 JVM、DBは通常rootの1だけ。cgroup memoryとDocker／接続sampleを保存した。
+
+
+### 12.3 実演で判明したMVC日付形式の局所是正
+
+初回新規journeyはstorage全体が空というfixtureの過剰な前提で停止した。実JAR内HTMX2.0.10は起動時に`sessionStorage`へ`htmx-current-path-for-history`を保存する。SPAがstorageを増やさず、業務データ／Cookieを保存しないことを検査する条件へ訂正した。
+
+次の実演でMVC編集後のredirect待機が停止。入力validityを追加観測したところ、`usageDate`の`type=date`でvalueMissing=trueだった。Reference FormのLocalDate表示がlocale依存になり、HTML dateのISO値にならないため、空欄になって更新を送信できない。B1のSPA→MVC編集→SPA409照合に直接影響するため、`ExpenseDraftForm.usageDate`へSpring標準`@DateTimeFormat(iso=ISO.DATE)`を指定する最小訂正と、`ReferenceBusinessUrlSecurityTest`のen-US／ja-JP表示・POST binding回帰2 invocationを対象に追加する。
+
+製品sourceが変わるため、初回の通常／同梱build成功は修正前の結果として保持する。追加テストで修正前再現→Form局所訂正後、通常rootと同梱profileを各1回だけ再検証し、新しい同梱JARへhashを固定して新旧journeyを実行する。これは判明した不具合に対する最終source確認であり、無変更のroot反復ではない。合流実行は初回開始09:45 UTCからの60分内、cleanup10分を別予約する条件を維持する。Framework／業務層／Security／migration／依存／frontendは変更しない。
+
+
+MVC日付の修正前focused回帰はen-US／ja-JPの2件ともFAILを再現した。ISO値を出力・bindする要件の確認後にannotationを追加し、表示とPOSTの両方向を同じ2 invocationで検査する。新規browserのMVC編集は利用日をtest側で埋め直さず、初期表示値がそのまま有効であることを要求する。手動確認では、tab再表示の最新GETで競合が解消済みになる正常経路と、別windowを同時表示して409を起こす経路を分ける。
+
+
+### 12.4 MVC既存明細の保存是正と最終sourceの再検証
+
+日付訂正後の新規journeyでMVC編集POSTが409になった。`ExpensePostgreSqlIntegrationTest.editsExistingLineWithoutChangingItsIdentityAndAdvancesVersion` 1件を追加し、HTTPを外した実DB操作でも同じ明細IDを使うeditが`CONFLICT`になることを再現した。aggregateが既存IDの新しい明細instanceへ内容を置き換え、そのままflushする経路が原因である。`editDraft`の編集後に既存Repositoryの`save(request)`を通してから外側のflushへ進める最小訂正を行った。明細ID／件数・更新値・version+1・Audit追加なしの局所回帰はPASS。Domain model／Repository契約／認可・version照合の順序は変更しない。
+
+製品変更はFormの日付指定とApplicationの編集時saveだけ。日付のみ訂正した通常／同梱構成421実行＋99 skipの成功は別epochで保持し、両訂正を含む最終sourceで通常root／同梱profileを各1回再確認する。既存回帰の不足が実演で判明した追加是正に伴い、合流build＋browserの見積りを開始09:45 UTCから**75分**へ更新し、cleanup10分の別予約とDB／JVM／接続・並列条件は維持する。旧S1予算の流用や無変更でのroot反復ではない。最終browserはこの最終同梱JARに固定し、日付のみのJARと結果を混ぜない。
+
+
+### 12.5 最終結果とローカル手動確認への引継ぎ
+
+[検証記録](../architecture/validation/phase4-b1-07-integrated-browser-results-20261021.md)に各artifact epoch、失敗再現・局所訂正、最終source7 file・command・XML・hash・資源・cleanupを記録した。両訂正を含む最終通常root／B1 profileは**各422件実行PASS＋99 skip**。Contract4＋Rules107＋Reference311で、skipをPASSへ数えない。MVC日付2 invocationと明細保存1件を既存classへ追加した。新旧実JAR browserは**各1件、計2件PASS／skip0**。内部checkpointや修正前の実行を重複計上しない。
+
+最終同梱JAR SHA-256は`32e1c955c8458f052266c9ee0a0da59cdfa9e2d595e84dc0a46d26f8bf34e963`。新旧とも同じJAR・profile・frontend15入力／lock・3 assetを照合し、間で再packageせず終了後もhash不変。MVC編集→SPA409→最新取得／明示submit、実Cookie／CSRF、scope秘匿404・権限不足403、logout／旧Session拒否・遅延GET、JDBC失効→401、再login・history入力破棄、DB／Audit／検査済みlogを突合した。fixtureのstorage前提・scope応答・expiry更新の訂正も履歴に残した。
+
+観測ではDB同時1／Ryuk最大2、memory最大2743 MiB、DB client最大13／最終browser最大4。Docker残存0、所有application8 PID停止と新旧test内のport／temp log／browser cleanupを確認した。Cloud実Chromiumのdesktop／mobile画面を目視したが、人の実操作やWindows buildは未実施。
+
+[ローカルPC確認計画](phase4-b1-07-local-browser-check-plan-20261021.md)へ、成果固定・push後の同branch pull、Node／npm・同梱build、既存使い捨てdemo fixture、手動操作と記録／cleanupをまとめた。実施時期はOwnerと合わせる。B1-08のDoD受入・次package選定は未実施。今回の成果commit・push・PR作成は行っていない。

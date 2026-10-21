@@ -138,6 +138,8 @@ public class ExpenseApplicationService {
                             domainLines,
                             businessDate(),
                             clock.instant());
+                    // Reconcile replacement lines through the repository before flushing.
+                    requests.save(request);
                 },
                 null,
                 actor);

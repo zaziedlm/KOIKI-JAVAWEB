@@ -28,6 +28,9 @@
 
 **2026-10-21 B1-06追記：** B1-05のCloud再検証文書のみを`00ce98a`へcommit後、同branchで最小React UI・build／同梱・配信入口を実装し、[局所65件とJAR検査](../architecture/validation/phase4-b1-06-frontend-build-results-20261021.md)を確認。次はB1-07の全件回帰・実JAR／DB／browser統合実演。B1-06成果のcommit・push・PR、DoD受入は未実施。
 
+**2026-10-21 B1-07追記：** B1-06成果`2b0ed5b`を入力に、[Cloud統合結果](../architecture/validation/phase4-b1-07-integrated-browser-results-20261021.md)として最終通常／同梱構成各422実行PASS＋99 skip、同一JARの新旧browser2件PASSを確認。MVC日付・明細保存を局所是正した。手動確認は[PC側計画](phase4-b1-07-local-browser-check-plan-20261021.md)へ分離し未実施、次は実施判断とB1-08のOwner受入整理。今回のcommit・remote操作なし。
+
+
 ## 1. 継続作業の基点
 
 - 初回棚卸しbranch：`docs/phase4-continuation-task-inventory-20261016`。

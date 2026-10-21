@@ -129,6 +129,26 @@ class ExpensePostgreSqlIntegrationTest {
     }
 
     @Test
+    void editsExistingLineWithoutChangingItsIdentityAndAdvancesVersion() {
+        UUID requestId = createDraft(100);
+        long version = currentVersion(requestId);
+        UUID lineId = jdbc.sql("select expense_line_id from kkref_expense_line where expense_request_id=:id")
+                .param("id", requestId).query(UUID.class).single();
+        expenses.editDraft(requestId, version, 200, List.of(new ExpenseLineInput(
+                lineId, CATEGORY_ID, LocalDate.of(2026, 9, 12), "Updated train", "Updated meeting", 200)));
+        assertState(requestId, "DRAFT", version + 1, 1);
+        assertThat(jdbc.sql("select claimed_amount from kkref_expense_request where expense_request_id=:id")
+                .param("id", requestId).query(Long.class).single()).isEqualTo(200L);
+        assertThat(jdbc.sql("select expense_line_id from kkref_expense_line where expense_request_id=:id")
+                .param("id", requestId).query(UUID.class).single()).isEqualTo(lineId);
+        assertThat(jdbc.sql("select amount from kkref_expense_line where expense_line_id=:id")
+                .param("id", lineId).query(Long.class).single()).isEqualTo(200L);
+        assertThat(jdbc.sql("select description from kkref_expense_line where expense_line_id=:id")
+                .param("id", lineId).query(String.class).single()).isEqualTo("Updated train");
+        assertThat(countExpenseAuditEvents()).isZero();
+    }
+
+    @Test
     void persistsAcceptedLifecycleWithSharedJpaModelAndOptimisticVersion() {
         UUID requestId = createDraft(100);
         long version = currentVersion(requestId);

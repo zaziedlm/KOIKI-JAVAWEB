@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.koikifw.reference.expense.application.ExpenseLineInput;
 import org.koikifw.reference.expense.application.query.ExpenseRequestDetail;
 import org.koikifw.reference.expense.application.query.ExpenseRequestLineView;
@@ -18,7 +19,7 @@ record ExpenseDraftForm(
         @Nullable @Positive Long claimedAmount,
         @Nullable @Pattern(regexp = ExpenseDraftForm.UUID_PATTERN) String expenseLineId,
         @Nullable @NotBlank @Pattern(regexp = ExpenseDraftForm.UUID_PATTERN) String expenseCategoryId,
-        @Nullable @PastOrPresent LocalDate usageDate,
+        @Nullable @PastOrPresent @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate usageDate,
         @Nullable @NotBlank @Size(max = 200) String description,
         @Nullable @NotBlank @Size(max = 500) String purpose,
         @Nullable @Positive Long lineAmount,

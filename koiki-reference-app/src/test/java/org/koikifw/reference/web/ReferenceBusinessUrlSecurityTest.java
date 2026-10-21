@@ -22,6 +22,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.koikifw.reference.HomeController;
 import org.koikifw.reference.expense.adapter.inbound.web.ExpenseWebController;
 import org.koikifw.reference.expense.adapter.inbound.web.ExpenseWebExceptionHandler;
@@ -442,6 +444,40 @@ class ReferenceBusinessUrlSecurityTest {
                 .andExpect(content().string(containsString("TRAVEL 旅費交通費")))
                 .andExpect(content().string(containsString("name=\"_csrf\"")))
                 .andExpect(content().string(containsString("提出")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"en-US", "ja-JP"})
+    void rendersAndBindsIsoExpenseEditDateRegardlessOfLocale(String languageTag) throws Exception {
+        UUID requestId = UUID.randomUUID();
+        UUID departmentId = UUID.randomUUID();
+        UUID categoryId = UUID.randomUUID();
+        UUID lineId = UUID.randomUUID();
+        LocalDate date = LocalDate.of(2026, 9, 12);
+        var detail = new ExpenseRequestDetail(requestId, UUID.randomUUID(), "applicant@example.test",
+                departmentId, "SALES", "Sales", 1000L, "DRAFT", null, 1L,
+                Instant.parse("2026-09-12T00:00:00Z"), List.of(new ExpenseRequestLineView(
+                        lineId, categoryId, "TRAVEL", "Travel", date, "Visit", "Meeting", 1000L)));
+        when(expenseReads.findOwnRequest(requestId)).thenReturn(java.util.Optional.of(detail));
+        when(expenseReads.findAvailableDepartments()).thenReturn(List.of(
+                new ExpenseSelectionOption(departmentId, "SALES", "Sales")));
+        when(expenseReads.findAvailableExpenseCategories()).thenReturn(List.of(
+                new ExpenseSelectionOption(categoryId, "TRAVEL", "Travel")));
+        var locale = java.util.Locale.forLanguageTag(languageTag);
+        mockMvc.perform(get("/expenses/{id}/edit", requestId).locale(locale).with(user("applicant")))
+                .andExpect(status().isOk())
+                .andExpect(result -> org.junit.jupiter.api.Assertions.assertTrue(
+                        result.getResponse().getContentAsString().contains("value=\"2026-09-12\""),
+                        "HTML date input must use an ISO date regardless of locale"));
+        mockMvc.perform(post("/expenses/{id}/edit", requestId).locale(locale)
+                        .with(user("applicant")).with(csrf())
+                        .param("departmentId", departmentId.toString()).param("claimedAmount", "1000")
+                        .param("expenseLineId", lineId.toString()).param("expenseCategoryId", categoryId.toString())
+                        .param("usageDate", date.toString()).param("description", "Visit")
+                        .param("purpose", "Updated meeting").param("lineAmount", "1000").param("expectedVersion", "1"))
+                .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/expenses/" + requestId));
+        verify(expenseCommands).editDraft(eq(requestId), eq(1L), eq(1000L),
+                org.mockito.ArgumentMatchers.argThat(lines -> lines.size() == 1 && date.equals(lines.getFirst().usageDate())));
     }
 
     @Test

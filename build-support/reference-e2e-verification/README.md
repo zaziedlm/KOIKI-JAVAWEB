@@ -16,7 +16,7 @@ P3-C2の非配布Toolingである。Root Reactorには含めず、同じpackage�
 - fixture userは使い捨てDB内だけに作成し、password、RSA key、Bearer token、Cookieおよびsource HMAC keyは
   各runのmemory内だけで生成する。
 - Framework / Reference production source、migration、Root Reactor、`koiki-testing`またはProject Templateへ含めない。
-- P3-B3 / B4とP3-C1のfocused negative matrixを複製せず、1本のhappy pathだけを検証する。
+- 既存`PackagedReferenceCriticalJourneyTest`はP3-B3 / B4とP3-C1のfocused negative matrixを複製せず、1本のhappy pathを検証する。B1追加集合は末尾を参照する。
 - 本commandはlocal / CI共通entrypointである。main rulesetでは`Phase 3 Critical Journey E2E`として8件目の
   required checkに登録済みだが、Toolingの非配布境界とRoot Reactor外の位置づけは変わらない。
 
@@ -65,3 +65,30 @@ Referenceの既存25 classは1 classずつ呼び出し、上記に加えて`-Dte
 run別に秘密を除いたXML／log・source hash・資源・cleanup結果を保存する。開始時memory8 GiB／disk10 GiB、DB同時1、既存25 class＋E2Eは合計60分、raw合計1 GiB、同原因・条件のrerun最大1回を維持する。上限／残存／失敗時は後続を止め、証拠を保持する。別runのcontainer／processは停止しない。
 
 承認・class集合・停止条件の正本は[初回実行資料](../../docs/development/phase4-s1-reference-foundation-execution-review-20261006.md)、結果は[2026-10-07 Evidence](../../docs/architecture/validation/phase4-s1-reference-foundation-20261007.md)を参照する。通常local／CI command、production設定／Framework／POMは変更しない。
+
+## B1-07 Session SPA packaged journey
+
+`PackagedReferenceSessionSpaJourneyTest`は実Session／CSRFとSPA／MVCの統合実演である。
+通常のTooling実行ではskipし、同梱profileをbuildした後にだけ明示選択する。
+B1-06の`ReferenceSpaFrontendTest`（代替APIによる5件）とは別の検証である。
+
+```powershell
+.\mvnw.cmd -pl koiki-reference-app -am -Pb1-session-spa clean verify
+$b1Jar = '.\koiki-reference-app\target\koiki-reference-app-0.1.0-SNAPSHOT.jar'
+$b1Hash = (Get-FileHash $b1Jar -Algorithm SHA256).Hash.ToLowerInvariant()
+# 新旧journeyはそれぞれ実行し、DB／子process終了確認後に次へ進む。
+.\mvnw.cmd -f build-support/reference-e2e-verification/pom.xml `
+  -Dtest=PackagedReferenceSessionSpaJourneyTest `
+  -Dkoiki.reference.spa.packaged-journey.enabled=true `
+  "-Dkoiki.reference.spa.jar.sha256=$b1Hash" `
+  -Dkoiki.reference.verification.resource-limits.enabled=true `
+  -DargLine=-Xmx768m -DforkCount=1 -DreuseForks=false `
+  -Djunit.jupiter.execution.parallel.enabled=false test
+# 同じ引数の-DtestだけをPackagedReferenceCriticalJourneyTestへ変えて実行する。
+```
+
+実行中のMavenもheap768 MiBとする。上記のB1専用flagがある場合は既存Critical Journeyにも
+起動前のJAR／profile／入力・lock／asset hash照合が加わる。間で再packageしない。
+各classは1 JUnit testとして集計し、内部checkpointを別testとして加算しない。
+`target/b1-session-spa/`に秘密を含まないartifact照合・checkpoint・cleanupと画面を保存する。
+Windowsでのbuild・人による手動確認は[ローカル確認計画](../../docs/development/phase4-b1-07-local-browser-check-plan-20261021.md)へ分ける。

@@ -79,7 +79,7 @@ R-01〜03の間に技術的な直列依存はない。上図は一人の作業�
 | B1-04／合流点検・実装計画整理済み | Framework計画・Owner判断 | B1設計記録§9にR-00〜03との整合、Reference／Tooling対象、局所／合流検証、概算・実行条件を整理 | 次はB1-05の開始判断。test method数・通常root全体資源・frontend取得条件は実装／実行前に具体化。機能作成・実行・受入は今回未実施 | B1-01〜03、R-00〜03。F6／F7／H1／S1完遂は前提外 |
 | B1-05／実装・局所検証完了 | Reference backend | Session API、Security／CSRF・login／両logout、専用10 DTO／mapper／業務Adviceを実装。既存Use Case・Framework契約を再利用 | 新規72＋既存77＝149件PASS。次はB1-06。実browser・DoD・Owner受入は未実施 | B1-04とOwnerの未commit保持での実装開始指示。B1設計記録§10 |
 | B1-06／実装・局所検証完了 | Reference frontend | 選定した最小SPAを実装し、login後の参照・更新、失効／拒否／競合の表示をつなぐ | package済みReference上で代表操作が実行でき、MVCで同じ業務結果を確認できる | B1-05。画面構成の設計はB1-03で先行 |
-| B1-07／計画 | Tooling、Reference受入 | 実browser、API、DB、Business Audit、logで統合実演。通常構成と既存経路を保護し、資源をcleanup | 下記DoD表のEvidence、直接回帰、選定した通常検証、cleanupがそろう。未達は結果として明示 | B1-05〜06。実行集合・上限はB1-04で確定 |
+| B1-07／Cloud検証完了 | Tooling、Reference受入 | 実browser、API、DB、Business Audit、logで統合実演。通常構成と既存経路を保護し、資源をcleanup | 下記DoD表のEvidence、直接回帰、選定した通常検証、cleanupがそろう。未達は結果として明示 | B1-05〜06。実行集合・上限はB1-04で確定 |
 | B1-08／計画 | Framework計画・Owner受入 | DoD 4-8／4-9の成立範囲、残課題、利用方法を記録し、後続packageを選ぶ | 個別の受入記録、Journeyへの利用条件、次packageと必要入力。Phase4全体完了とは分ける | B1-07 |
 
 ### 3.3 B1受入へ結ぶ検証
@@ -232,3 +232,6 @@ P4-A1／A2・D1非同期とS1-01〜10は、[棚卸し§6〜8](phase4-continuatio
 
 - **ReviewProbeは不具合再現の記録**：問題挙動を期待値にしているため修正後に失敗し得る。既存Surefire XML・compiled classに依存し、clean checkout単独で動く恒常的な回帰testではない。
 - **現行入口と履歴の区別**：README等には過去のmain統合・tag手順や当初の順序も残る。再開入口は本書I-01／B1-01とし、古い「次の作業」をそのまま繰り返さない。
+
+
+**2026-10-21 B1-07結果：** B1-06を`2b0ed5b`へ固定後、同branchで合流検証を実施。[最終結果](../architecture/validation/phase4-b1-07-integrated-browser-results-20261021.md)は通常root／同梱構成各422実行PASS＋99 skip、同じ最終同梱JARの新旧browser計2件PASS。実演で判明したMVC日付初期値と同一明細IDの保存を最小訂正し、locale2件・実DB1件を追加。途中停止／訂正前artifactを保持し、資源・cleanupを確認した。ローカル手動確認は[計画](phase4-b1-07-local-browser-check-plan-20261021.md)へ分離し未実施。次は手動確認の実施判断とB1-08のDoD受入整理。今回commit・push・PR作成は行っていない。

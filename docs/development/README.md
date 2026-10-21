@@ -7,6 +7,7 @@
 
 現作業branchは`docs/phase4-review-integrated-plan-20261020`。Owner指示により同branch上で完結し、PR作成・pushは行わない。以下の過去の統合手順は今回の作業指示ではない。
 
+- [B1-07 合流回帰・実JAR browser統合結果（2026-10-21）](../architecture/validation/phase4-b1-07-integrated-browser-results-20261021.md): Cloudで最終通常／同梱構成各422実行PASS＋99 skip、同じJARの新旧browser計2件PASS。MVC日付・明細保存を是正。[ローカルPC手動確認計画](phase4-b1-07-local-browser-check-plan-20261021.md)は未実施。DoD受入はB1-08
 - [B1-06 frontend・build・配信入口の結果（2026-10-21）](../architecture/validation/phase4-b1-06-frontend-build-results-20261021.md): 固定lock・React UI・専用profile・通常build保護を実装。局所65件と通常／同梱JAR内容・hashを確認。次はB1-07の実JAR統合検証
 - [B1-05 Reference Session API backendの実装・局所結果（2026-10-21）](../architecture/validation/phase4-b1-05-session-api-backend-results-20261021.md): Session API・専用DTO・認証／CSRF・login／logout接続、新規72＋既存77＝149件PASS。Framework・業務層・依存は無変更。次はB1-06のUI・同梱・配信入口。DoD受入は未実施
 
@@ -16,7 +17,7 @@
 
 - [R-00 production限定import結果（2026-10-20）](../architecture/validation/phase4-r00-production-import-results-20261020.md): 既存test1 fileの両importでtest出力を除外。clean compile＋既存Architecture2件／規約負例5件PASS、両importともtest class0。R-01の結果は上記を参照
 - [R-00 Codex Cloud実行環境の再点検（2026-10-20）](../architecture/validation/phase4-r00-cloud-environment-preflight-20261020.md): 保存済みactivationでJDK／cache／Docker／Chromiumを確認。ソース無変更のoffline clean test-compileと規約負例5件＋Reference Architecture2件PASS。fresh importは双方違反0、test混入65 classは検査責務の整理へ残す。全test再実行ではない
-- [P4-B1 Session SPA＋MVCの設計記録（2026-10-20）](phase4-b1-session-spa-mvc-design-20261020.md): §7.4〜7にR-00〜03、§9にB1-04合流点検、§10にB1-05実装・局所149件の結果を整理。§11にB1-06実装・局所65件とJAR検査を追記。次はB1-07の全件回帰・実JAR統合実演
+- [P4-B1 Session SPA＋MVCの設計記録（2026-10-20）](phase4-b1-session-spa-mvc-design-20261020.md): §7.4〜7にR-00〜03、§9にB1-04合流点検、§10にB1-05実装・局所149件の結果を整理。§11にB1-06、§12にB1-07の全件回帰・実JAR統合実演と是正を記録。次は手動確認の実施判断とB1-08
 - [Phase4継続と設計実装レビュー対応の統合作業計画（2026-10-20）](phase4-review-integrated-task-plan-20261020.md): Owner合意の進め方に基づく作業分解案。P4-B1の調査・設計とF1／F2／F3／F5の基盤是正を接続し、残るPhase4・採用支援を含め依存・出口・入力待ちを整理。I-01／B1-01の着手結果と次作業はB1設計記録へ接続。実装開始・受入は別に扱う
 
 - [KOIKI-JavaWeb 提供機能・適用条件・選択ガイド](framework-capabilities-and-selection-guide.md): 本文全体・名称とチェックポイント方式をOwner承認済み（2026-10-19）。次のタグ名は`checkpoint-v0.1.5`（未作成）。Mavenは`0.1.0-SNAPSHOT`を維持。案件非依存の機能、検証範囲、構成別サジェスト、責任分担、機能拡充の判断原則を整理。タグ対象・提供artifact・配布条件は別途確定する
