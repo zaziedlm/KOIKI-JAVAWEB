@@ -1,0 +1,11 @@
+import { fileURLToPath } from 'node:url';
+import { resolve, dirname } from 'node:path';
+import { rmSync } from 'node:fs';
+import { checkToolchain, npm, verifyRecord } from './build-lib.mjs';
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+checkToolchain(root);
+const out = resolve(root, '../target/b1-frontend');
+rmSync(out, { recursive: true, force: true });
+npm(root, ['ci', '--no-audit', '--no-fund']);
+npm(root, ['run', 'build']);
+verifyRecord(root, out, resolve(root, '../target/koiki-reference-spa-build.json'));

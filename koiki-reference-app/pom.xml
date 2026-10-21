@@ -90,6 +90,62 @@
 
   <profiles>
     <profile>
+      <id>b1-session-spa</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.6.3</version>
+            <executions>
+              <execution>
+                <id>build-reference-spa</id>
+                <phase>generate-resources</phase>
+                <goals><goal>exec</goal></goals>
+                <configuration>
+                  <executable>node</executable>
+                  <arguments><argument>${project.basedir}/frontend/scripts/package.mjs</argument></arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+              <execution>
+                <id>copy-reference-spa</id>
+                <phase>process-resources</phase>
+                <goals><goal>copy-resources</goal></goals>
+                <configuration>
+                  <outputDirectory>${project.build.outputDirectory}/META-INF/resources/spa</outputDirectory>
+                  <resources><resource>
+                    <directory>${project.build.directory}/b1-frontend</directory>
+                    <includes><include>index.html</include><include>assets/**</include></includes>
+                    <filtering>false</filtering>
+                  </resource></resources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy-reference-spa-build-record</id>
+                <phase>process-resources</phase>
+                <goals><goal>copy-resources</goal></goals>
+                <configuration>
+                  <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+                  <resources><resource>
+                    <directory>${project.build.directory}</directory>
+                    <includes><include>koiki-reference-spa-build.json</include></includes>
+                    <filtering>false</filtering>
+                  </resource></resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>s1-reference-async</id>
       <dependencies>
         <dependency>

@@ -2,11 +2,11 @@
 
 作成日：2026-10-20
 
-状態：**B1-04合流点検とB1-05 Reference backendの実装・局所検証を実施済み（§9〜10）**。R-00〜03は§7.4〜7の限定結果を保持する。B1-05は新規72＋既存77＝149件PASS。frontend・同梱build・実browser・DoD受入は未実施。§5〜6のうちbackendは§10の範囲を実装し、UI／package仕様は後続への入力として保持する。
+状態：**B1-04〜06の設計・backend・frontend／build・配信入口と局所検証を実施済み（§9〜11）**。R-00〜03は限定結果を保持する。B1-05は149件、B1-06はJava／UI／build負例の65件PASS。通常／同梱JARのclean packageと内容検査を確認。通常root全件・同梱JARの実DB／browser統合実演・DoD受入はB1-07〜08に残る。
 
 Ownership：設計記録はFramework側。機能はReference `expense`／`identity`、Framework変更はR-01、検証harnessはToolingが所有する。
 
-2026-10-21のB1-04合流点検は§9、その後のOwner開始指示に基づくB1-05結果は§10。次の実装単位はB1-06。backend test数は確定し、B1-06／07のtest詳細・通常root全体資源・frontend取得条件は§9.4のOPENとして引き継ぐ。
+2026-10-21のB1-04合流点検は§9、その後のOwner開始指示に基づくB1-05結果は§10。B1-06の実装・局所結果は§11。次はB1-07。frontendの固定lockと取得・build条件は確認済みで、通常root全体の資源・統合browser集合の具体化は§9.4から引き継ぐ。
 
 ## 1. 目的と今回の到達点
 
@@ -309,7 +309,7 @@ Reactはhashから一覧・新規・詳細を選択し、API URLは`/spa-api/...
 
 ### 6.4 実装後に使用するcommand案
 
-以下はまだ存在しないprofile／testを含む**実装後の予定手順**であり、今回実行したものではない。
+B1-06でprofileは実装済み。以下はB1-07の合流回帰の予定手順であり、全件verifyと新旧実JAR journeyはまだ実行していない。B1-06のclean package・局所結果は§11へ区別して記録する。
 
 ```bash
 # 通常構成：Nodeを要求しない合流回帰
@@ -469,9 +469,9 @@ Ownerの着手指示に基づき、同じ作業branchで`executeMutation`の対�
 | B1-04 | §9に合流点検・実装対象・検証割当て・概算・実行条件を整理済み | B1-05へ渡す。method数・通常root全体資源など実装時確定事項は§9.4に保持し、未確定のまま該当実行を開始しない |
 | B1-05 | §10のReference backendを実装し、局所149件PASS。commit・remote操作なし | B1-06のUI／同梱へ渡す。backend局所PASSを実browser・DoD成立へ拡張しない |
 
-次の実装単位は**B1-06：最小React UI・Reference限定build／同梱・配信入口**。B1-04の合流点検は§9、B1-05の実装・局所結果は§10。B1-06→07→08の順に進める。F6／F7／H1、非同期CI、S1全体の未達はB1の一律の停止条件にしない。
+次の作業は**B1-07：通常／同梱構成の合流回帰と実JARのbrowser統合実演**。B1-04は§9、B1-05は§10、B1-06は§11。B1-07→08の順に進める。F6／F7／H1、非同期CI、S1全体の未達はB1の一律の停止条件にしない。
 
-本書§5〜6のbackendは§10の範囲を実装済みで、frontend・同梱・実browserの機能実演は未実施。Cloud点検とR-00〜03の限定変更・回帰は保持する。DoD 4-8／4-9は未達のまま維持する。
+本書§5〜6のbackendは§10、frontend・build・配信入口は§11の範囲を実装済み。実JAR＋DBのbrowser統合実演はB1-07で確認する。Cloud点検とR-00〜03の限定変更・回帰は保持する。DoD 4-8／4-9は未達のまま維持する。
 
 ## 9. B1-04：設計と基盤是正結果の合流点検（2026-10-21）
 
@@ -556,3 +556,18 @@ Ownerは、B1-04文書4件を未commitで保持したままB1-05へ進むこと�
 [実装・検証記録](../architecture/validation/phase4-b1-05-session-api-backend-results-20261021.md)にsource識別・各class・途中失敗・訂正・資源・cleanupを整理した。新規認証22＋DTO40＋実DB10＝72件、既存77件の**計149件PASS、failure／error／skip 0**。同じmain sourceに対する局所結果であり、通常root全件・実JAR・browser・DoD全体の受入ではない。SameSiteはServlet Cookie属性で確認し、live Set-CookieとbrowserはB1-07で照合する。
 
 test method／invocation数のOPENはB1-05分を解消した。B1-06／07の詳細と通常root全体資源・frontend取得条件は、該当作成／実行前に具体化する。次はB1-06。今回commit・push・PR作成は行っていない。
+
+
+## 11. B1-06：frontend・build・配信入口（2026-10-21）
+
+OwnerはB1-05 Cloud再検証の文書1 fileだけをcommitし、B1-06へ進むよう指示した。`00ce98a`へ文書だけを固定後、同じ`docs/phase4-review-integrated-plan-20261020`上で実装した。B1-06成果のcommit・push・PR作成は行っていない。
+
+`frontend/`へ固定versionのReact／TypeScript・Vite、npm lockfileVersion3、型検査・asset／入力hash検査を作成。Node24.19.0／npm11.9.0と§6.1の依存を実在・engine／peer条件から再確認した。Referenceの専用`b1-session-spa` profileでnpm ci→型検査→bundle→検査→resource copy→repackageを実行する。通常profileはNode禁止条件でもpackageでき、SPAを含まない。
+
+UIは一覧／paging、1明細のdraft作成、詳細／submit、既存MVCへのリンクとlogout。金額・version・件数は文字列を維持し、金額表示にBigIntを使用する。401・logout・ページ離脱で保持値を破棄し、GETをabort・世代番号で照合する。POST二重受付を抑止し、409は最新詳細を取得して人の再操作へ渡す。通信断・500／503では結果不明として入力を破棄し、自動再送しない。400／422は入力を保持し、validation項目を表示する。
+
+`ReferenceSpaWebConfiguration`は同梱indexがある場合だけGET `/spa`・`/spa/`をforwardし、indexにno-storeを付ける。Homeは同じresource存在でlinkを表示。未知pathや不足assetをshellへforwardしない。B1-05のSecurity matcher・CSRF・Application Use Caseは変更していない。
+
+[限定結果](../architecture/validation/phase4-b1-06-frontend-build-results-20261021.md)は新規配信2＋UI fixture5＋build負例6＋既存直接回帰52の計65件PASS。通常／専用profileを各clean package（skipTests）し、通常JARの非同梱、専用JARのindex／asset／静的配信外build記録、入力15 fileとasset hash一致を確認した。UI fixtureは実Chromiumとloopbackの代替APIを使い、実JAR＋実DBの接続成立を代替しない。
+
+B1-07では通常root全件・B1 profileの全件verify、新規`PackagedReferenceSessionSpaJourneyTest`の実装と既存Critical Journeyを同じB1 JARで直列実行する。通常rootの全contextに対する資源制限、browser集合・時間・停止／cleanupを実行前に具体化する。今回の局所結果をDoD受入へ拡張しない。

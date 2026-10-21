@@ -26,6 +26,8 @@
 
 **2026-10-21 B1-05追記：** Ownerの開始指示後、未commitのB1-04文書を保持してReference backendを実装し、[局所149件](../architecture/validation/phase4-b1-05-session-api-backend-results-20261021.md)を確認した。次はB1-06のUI・同梱build・配信入口。今回commit・remoteなし。通常root・実JAR・browser・DoD受入は未実施。
 
+**2026-10-21 B1-06追記：** B1-05のCloud再検証文書のみを`00ce98a`へcommit後、同branchで最小React UI・build／同梱・配信入口を実装し、[局所65件とJAR検査](../architecture/validation/phase4-b1-06-frontend-build-results-20261021.md)を確認。次はB1-07の全件回帰・実JAR／DB／browser統合実演。B1-06成果のcommit・push・PR、DoD受入は未実施。
+
 ## 1. 継続作業の基点
 
 - 初回棚卸しbranch：`docs/phase4-continuation-task-inventory-20261016`。
