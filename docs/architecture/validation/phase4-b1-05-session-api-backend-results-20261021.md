@@ -72,3 +72,17 @@ Reference reactorの入口は次のとおり。`failIfNoSpecifiedTests=false`は
 今回packageしておらず、clean testにより旧target JARは削除済み。R-02のCloud JARや過去browser PASSをB1-05のartifact証拠へ流用しない。新規login testはtest UserDetailsService、DB testの認証はtest所有の永続Sessionであり、実IdPや実browser loginの再実証ではない。
 
 次は**B1-06：最小React UI・Reference限定build／同梱・SPA入口とhome link**。B1-07で通常root→B1 profile build→同じJARの新旧browser journeyを行い、B1-08でDoDの成立範囲とOwner受入を整理する。B1-05だけでSession SPA全体・DoD・Phase4全体を完了にしない。
+
+## 5. Codex Cloudでの再検証（2026-10-21）
+
+Ownerの指示で同branchを`--ff-only`でpullし、B1-05成果commit `89a534534dee94b26cdfad66ee10330b21c039a8`をこの環境で再検証した。開始時working treeはclean。Windowsの未追跡証拠を流用せず、新しいlog・XMLを生成した。
+
+保存済みactivationのJDK `21.0.12.1`・Wrapper Maven `3.9.16`、Docker `28.4.0`・保存済みPostgreSQL17 imageを使用。全実行offline、新規取得・環境再構築なし。§3と同じDBなし10 classをLinuxの`./mvnw`で`clean test`し、13 projects SUCCESS・128件PASS。171 main sourceとtestを既存Error Prone／NullAway設定でcompileした。
+
+続いて§2と同じDB3 classを1 classずつ直列実行し、新規Session API10件・既存Bearer API6件・read model5件がPASS。§2の資源引数、Maven／test JVM768 MiB、DB同時1・memory1 GiB／CPU1／max_connections16・pool4／idle1を適用し、実効値をfixtureのassert・logで照合した。各class後に最大30秒の読取確認を挟み、稼働containerなしを確認して次へ進んだ。Mockito attach・Docker／loopbackに必要な権限付き実行を使用した。
+
+最終XMLは§2と同じ**13 class／149 tests、新規72＋既存77、failure／error／skip 0**。class名・件数・生成時刻を照合し、古いXMLや再実行を重複加算していない。検証終了時点でtracked 1,293 fileのSHA-256が実行前と一致し、working treeもcleanだった。終了後に文書の本節だけを追記した。production／test／POM等は変更していない。
+
+Cloud内証拠：`/workspace/cloud-setup/logs/phase4-b1-05-cloud-revalidation-20261021/`。`source-before.json`にHEADと全tracked file hash、`clean-non-db.log`とDB各classのlog、`reports/`に最終13 XML、`selected-test-results.json`に件数・XML hash・source不変の照合を保存した。
+
+通常root全件・package・実browserは今回も未実施。clean testで旧JARは消去されており、B1同梱JARやlive Set-Cookieの検証を成立済みとはしない。B1-06／07／08とOwner受入の境界は§4のまま維持する。今回commit・push・PR作成は行っていない。
