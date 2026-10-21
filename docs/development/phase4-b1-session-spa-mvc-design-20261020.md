@@ -2,9 +2,11 @@
 
 作成日：2026-10-20
 
-状態：**I-01／B1-01の調査済み、B1-02〜03の具体仕様案を整理済み。R-00のtest1 file変更と直接回帰7件が完了／PASS**。R-01はAdvice修正と限定回帰を実施（§7.5）。R-02はCookie設定反映と限定回帰を実施（§7.6）。R-03は認可先行への是正と限定回帰を実施（§7.7）。B1機能の実装／実演・DoD受入は未実施。§5〜6は実装に渡す設計上の選択であり、Owner受入・互換性実証を記録するものではない。
+状態：**B1-04合流点検とB1-05 Reference backendの実装・局所検証を実施済み（§9〜10）**。R-00〜03は§7.4〜7の限定結果を保持する。B1-05は新規72＋既存77＝149件PASS。frontend・同梱build・実browser・DoD受入は未実施。§5〜6のうちbackendは§10の範囲を実装し、UI／package仕様は後続への入力として保持する。
 
 Ownership：設計記録はFramework側。機能はReference `expense`／`identity`、Framework変更はR-01、検証harnessはToolingが所有する。
+
+2026-10-21のB1-04合流点検は§9、その後のOwner開始指示に基づくB1-05結果は§10。次の実装単位はB1-06。backend test数は確定し、B1-06／07のtest詳細・通常root全体資源・frontend取得条件は§9.4のOPENとして引き継ぐ。
 
 ## 1. 目的と今回の到達点
 
@@ -46,6 +48,8 @@ Ownership：設計記録はFramework側。機能はReference `expense`／`identi
 | 出力・過去証拠 | 保存された2026-10-03のroot170件・E2E1件PASSを確認。今回はfresh outputで規約負例5件＋Reference Architecture2件PASS | 過去結果と現sourceの選択結果を分ける。clean test-compileで旧Reference JARは消去済み。実JAR検証前には新packageが必要 |
 
 保存構成のactivateはshell内の既存ツール・proxy・cacheを有効化する操作であり、platformの環境設定を変更していない。環境点検時はソース・依存の変更、再install、root全件／実DB／E2Eの再実行なし。その後のR-00のtest変更・限定結果は§7.4に記録した。
+
+**B1-04での更新（2026-10-21）：** 上表はR-00点検時のsnapshotである。その後、CloudではR-02で実DB・実JAR・実ChromiumのCritical Journeyまで成立し、R-03では変更sourceの実DB・HTTP選択回帰まで成立した。R-02のJARはR-03適用済みartifactではない。Windowsでの別途点検も含む対応は§9.1にまとめる。frontend install・lock生成・B1同梱buildは引き続き未実施。
 
 ### 2.3 検証入口と通常／専用の区別
 
@@ -334,7 +338,7 @@ Reactはhashから一覧・新規・詳細を選択し、API URLは`/spa-api/...
 | `koiki-reference-app/src/test/java/org/koikifw/reference/`配下 | 新規Session chain／Controller／DB test。packageと配置を一致させ、通常testとTooling fixtureを区別 |
 | `build-support/reference-e2e-verification/src/test/java/org/koikifw/buildsupport/referencee2e/` | 新規B1 browser journey。Tooling所有。既存Critical Journeyは直接回帰として維持 |
 
-class名は実装対象の候補で、ファイル作成は未実施。DTOは§5.5の10型、profile／pluginは§6.1〜2を設計選択とする。実際の差分数・残作業概算と実行予算は、基盤是正の結果を入力してB1-04で更新する。
+上表のうちB1-05のSession認証／CSRF／業務APIと対応testは§10の範囲を作成済み。SPA配信入口・home link・frontend／profile／plugin・browser journeyは未作成。DTOは§5.5の10型を実装し、profile／pluginは§6.1〜2を後続への設計選択とする。差分と検証数は§10、概算・実行条件は§9.4を参照する。
 
 ## 7. R-00〜03の変更対象・最小回帰案
 
@@ -370,9 +374,9 @@ browser回帰は§6.4のprofileでpackageした同じB1 JARを対象とし、同
 
 | 項目 | 現在の到達点 | 実装／実行へ渡す案 |
 | --- | --- | --- |
-| 実行資源 | 後続点検でclean compile・規約7件・Chromium smoke・networkなしcontainerのversion表示まで実行。DB・applicationは未起動 | B1機能実演はphaseを直列化し、DB同時1・application子process1・browser1を基準候補にする。数値予算は別に具体化 |
-| 取得・準備 | 保存済み構成・cacheだけで局所検証成立。installなし | frontend lockは実装時に作成。Docker実行時は環境のproxy／CA手順を適用 |
-| 証拠 | fresh XML・log・source無変更のhash照合をCloud点検記録へ保存 | source SHA＋未commit差分、JAR hash・profile、lock hash、command、実行／skip、DB／Audit／sanitized logをrun単位で対応付ける |
+| 実行資源 | Cloud R-02で実DB・実JAR・browser、R-03で実DB回帰まで実行済み。WindowsでもR-03の47件を確認。各環境・sourceを§9.1で区別 | 新規DB／browser集合の資源案は§9.4。通常rootの全体資源は既存test構成を含め実行前に確定 |
+| 取得・準備 | R-01／02で現sourceの内部artifactをlocal install。R-02では宣言済みOAuth2 test依存のcache不足を補充した。常に取得不要という意味ではない | frontend lockは実装時に作成。内部artifactと外部取得を区別し、proxy／CA・checksum検証を維持 |
+| 証拠 | R-00〜03のCloud記録とWindowsの選択結果をsource・環境別に保持 | source SHA＋未commit差分、JAR hash・profile、lock hash、command、実行／skip、DB／Audit／sanitized logをrun単位で対応付ける |
 | 停止 | sandboxのDocker／browser拒否は同じ診断を権限付きで成功。製品修正なし | 機能実演での漏えい・回帰・上限超・artifact不一致・cleanup不成立では当該集合を止める。root自動反復をしない |
 | cleanup | 一時container・live子processは終了。終了済みbrowser zombie2件を点検記録へ明記 | 別runや親processを停止しない。次runでもowned resourceを区別して終了確認 |
 
@@ -381,6 +385,8 @@ I-01からR-00へ渡す局所検証の環境準備は成立した。B1新規実�
 ### 7.3 具体仕様に対応する追加検証
 
 新規classは次の5件を基準案とする。既存のR-00〜03／API／MVC回帰と役割を分け、同じ観点の巨大なcase一覧を別紙に増やさない。正確なtest method数は実装差分確定後に記録する。
+
+B1-05で下記の認証／CSRF・DTO／error・実DBの3 classを作成し、22／40／10件を確認した（§10）。残る配信構成testとbrowser journeyはB1-06／07で作成する。
 
 | 新規class・所在 | 観測する境界 |
 | --- | --- |
@@ -395,7 +401,7 @@ logoutのhandler例外注入はReference test内に閉じ、productionに失敗s
 
 buildの負例は、使い捨てworkspaceまたは検査用一時directory内でlock欠落／不一致・Node version不一致・型error・不足asset・古い入力hashを選択して失敗を確認する。通常JARにSPA assetが残らないことと、B1 JARにsource map・node_modules・frontend source・公開build記録が混入しないこともpackage境界で確認する。正式sourceのlockを書き換えて負例を残さない。
 
-R-00〜03の局所検証後に、通常root1回、B1 profileのReference reactor1回、新旧browser journeyの選択集合へ進む案とする。今回のCloud点検は既存compile・規約7件と環境smokeに限定し、このB1機能集合は未実行。B1-04で必要な資源／時間とfrontend準備を具体化する。
+R-00〜03の局所検証後に、通常root1回、B1 profileのReference reactor1回、新旧browser journeyの選択集合へ進む案とする。R-02／03の後続検証は§7.6〜7の範囲で成立したが、このB1機能集合は未実行。B1-04で整理した資源／時間とfrontend準備は§9を参照する。
 
 ### 7.4 R-00の作業範囲と実行結果
 
@@ -460,8 +466,93 @@ Ownerの着手指示に基づき、同じ作業branchで`executeMutation`の対�
 | B1-02 | §5に標準spa()・Cookie属性・login／logout接続・失敗応答、10 DTO・数値表現・codeを具体化 | R-01／02／03の設計・結果と照合。未実装のfilter順序・Cookie生成・JSON受入を合成testへ渡す |
 | B1-03 | §6に依存version、Reference限定profile、Node起動・生成先・copy順、JAR配信・入力／asset hashを具体化 | 実装時にlockを生成し組合せbuildを確認。検証class案は§7.3。実行準備は未成立 |
 | R-00〜03 | R-00はproduction対象明示、R-01は例外境界、R-02はCookie／logout、R-03は認可順序の限定変更・回帰完了（§7.4〜7） | 次はB1-04の合流点検。B1機能実装は未着手 |
-| B1-04 | 未実施 | B1-02〜03の仕様とR-00〜03の結果を合流し、対象path・test集合・概算・資源／時間／停止／cleanupを本書で確定 |
+| B1-04 | §9に合流点検・実装対象・検証割当て・概算・実行条件を整理済み | B1-05へ渡す。method数・通常root全体資源など実装時確定事項は§9.4に保持し、未確定のまま該当実行を開始しない |
+| B1-05 | §10のReference backendを実装し、局所149件PASS。commit・remote操作なし | B1-06のUI／同梱へ渡す。backend局所PASSを実browser・DoD成立へ拡張しない |
 
-次の作業は**B1-04：B1設計とR-00〜03結果の合流点検**。R-00〜03は§7.4〜7の限定変更・検証を完了した。設計との整合、残る実装対象・検証集合・概算・資源／時間を本書で確定する。F6／F7／H1、非同期CI、S1全体の未達はB1調査・設計の停止条件にしない。
+次の実装単位は**B1-06：最小React UI・Reference限定build／同梱・配信入口**。B1-04の合流点検は§9、B1-05の実装・局所結果は§10。B1-06→07→08の順に進める。F6／F7／H1、非同期CI、S1全体の未達はB1の一律の停止条件にしない。
 
-本書§5〜6のB1機能仕様はまだ実装・機能実演していない。Cloud点検とR-00〜03の限定変更・回帰を実施済み。DoD 4-8／4-9は未達のまま維持する。
+本書§5〜6のbackendは§10の範囲を実装済みで、frontend・同梱・実browserの機能実演は未実施。Cloud点検とR-00〜03の限定変更・回帰は保持する。DoD 4-8／4-9は未達のまま維持する。
+
+## 9. B1-04：設計と基盤是正結果の合流点検（2026-10-21）
+
+### 9.1 source・証拠の位置づけと整合判定
+
+Ownerの「B1-04の合流点検へ進める」指示に基づく文書作業。branchは`docs/phase4-review-integrated-plan-20261020`、開始HEADは`e9ff13a32219a2f66bbc7ac469840b160b319c65`、開始時working treeはclean。§5〜6、現行sourceと§7.4〜7の結果を照合した。今回の新規build・test・外部取得・Docker／browser起動はない。
+
+| 入力 | 確認済みの範囲 | B1へ接続する判断・未検証の接続 |
+| --- | --- | --- |
+| R-00 `40eefa4` | production限定import、Rules・負例の維持 | 新規mainは同じArchitecture検査へ入れる。新規testのpackageとpathを一致させ、負例をproductionへ置かない |
+| R-01 `1e0f149` | Security／HTTP例外の標準処理、安全な500、Security任意classpath | 新Session ControllerのAdviceはexpense業務例外に限定。認証／認可例外を汎用500に吸収しない。filter内のlogout失敗はMVC Adviceでは処理できず、§5.4の専用境界を実装する |
+| R-02 `e9e760b` | Boot設定を既存CookieSerializerへ反映、既存MVC logout、Cloud実JAR＋DB＋browser | Session CookieSerializerを共用する。SPA CSRF repository・login時削除・両logoutとの接続は新規。R-02だけでSPA logout成立とはしない |
+| R-03 `e9ff13a` | owner／承認部門scope認可→version、正常・拒否・rollback・HTTPの47件 | createDraft／submitをそのまま再利用し、Session APIへ独自の対象認可・transactionを複製しない。HTTP String versionの形式検査はApplication呼出前、業務認可はUse Case内 |
+| SPA経路訂正 `a4e839f` | 文書でmatcherと404の期待値を整合 | browser chainへ`/spa`・`/spa/**`を追加し、assetsのpermitAllを先に指定。未知GETは未認証login遷移／認証済み404。専用Session APIはJSON 401／404で分離 |
+
+上記と§5〜6の基本方針に矛盾はなく、今回追加のFramework修正は選定しない。既存Bearer DTO／MVC Formは再利用せず、Applicationのread／command契約だけを共有する。
+
+CloudのR-02限定57件とJAR hashは[R-02結果](../architecture/validation/phase4-r02-cookie-logout-results-20261021.md)、R-03の47件とsource hashは[R-03結果](../architecture/validation/phase4-r03-authorization-order-results-20261021.md)に従う。R-03ではJARを再生成していない。
+
+Windowsでは当該Ownerセッションの点検で、R-01後20件、R-02後clean選択51件、R-03後clean compile＋DB込み47件を別々に確認した。R-02のWindows点検は実JAR E2Eの再実行ではない。R-03の端末内集計は`target/r03-review-20261021/summary.json`、DB logは同directoryにあり、Gitで移送されない。これは今回再実行した結果ではなく、直前の点検結果の整理である。Windowsのclean test後にJARを再packageしていないため、次のbrowser実演には新しいB1同梱JARが必要。
+
+### 9.2 実装対象と再利用境界
+
+§5のroute／CSRF／DTO／error仕様と§6のbuild方式を実装入力にする。追加するのは次のReference／Tooling差分に限定する。
+
+| 単位 | 対象path・作業 | 再利用・出口 |
+| --- | --- | --- |
+| B1-05 Session認証境界 | `identity/configuration/ReferenceSessionApiSecurityConfiguration.java`、`ReferenceSessionLogoutBoundary.java`、`ReferenceSessionApiProblemWriter.java`を追加。既存`ReferenceSecurityConfiguration.java`へSPA matcher・login成功時／MVC logout時のCSRF Cookie削除を接続 | order -10、Session NEVER、Bearer入口なし、no-store、実Cookie＋header照合。既存CookieSerializer・Framework logout customizer・Identityを利用 |
+| B1-05 CSRF取得 | `identity/adapter/inbound/web/ReferenceSessionCsrfController.java`を追加 | 認証後204。tokenをJSONやlogに返さず、標準spa()によるmaterializeを確認 |
+| B1-05 業務API | `expense/adapter/inbound/sessionapi/`へController、§5.5の10 DTO、mapper、業務Advice、厳密String deserializer／validationを追加 | `ExpenseReadService.findOwnRequests`／`findOwnRequest`／`findAvailableDepartments`／`findAvailableExpenseCategories`、`ExpenseApplicationService.createDraft`／`submit`を利用。Application・Domain・Repositoryは変更不要 |
+| B1-06 配信入口 | `expense/configuration/ReferenceSpaWebConfiguration.java`追加、既存`HomeController.java`・`templates/home.html`更新 | resource存在時だけshellとlink。未知pathをindexへforwardしない。認証はidentity構成が担当 |
+| B1-06 UI／build | `koiki-reference-app/frontend/`の§6.2入力、Reference `pom.xml`の`b1-session-spa` profile、`.gitignore` | Reactの一覧／詳細／draft作成／submit。UIの送信中・結果不明・拒否・競合・失効表示、再表示時の再取得。同じJARにbundleする |
+| B1-05〜07 test／Tooling | §7.3の新規Reference test4 class＋Root外browser test1 class。既存Critical JourneyにB1 JARの選択・共用が必要なら最小変更 | package／class／pathを一致。既存fixture・resource上限を再利用し、production故障switchを追加しない |
+
+`identity/configuration`等の略記は`koiki-reference-app/src/main/java/org/koikifw/reference/`配下を表す。新規Reference testは対応する`src/test/java/`の同package、browser testは`build-support/reference-e2e-verification/src/test/java/org/koikifw/buildsupport/referencee2e/`に置く。
+
+新規Java runtime依存・migration・Framework Public API／property・Root Reactor・workflow変更は選定しない。npm依存とReference限定Maven pluginは§6.1の値を入力とし、導入時に存在・engine・peer・取得条件を再確認してlockを生成する。今回install済み・互換性実証済みにはしない。案件BFF・SSO・承認／会計／通知復旧のSPA化は追加しない。
+
+### 9.3 検証集合と合流順序
+
+| 実施段階 | 局所集合・観測 | 結果を広げない境界 |
+| --- | --- | --- |
+| B1-05 認証／CSRF | `ReferenceSessionApiSecurityTest`。Session／Bearer分離、双方credential、未認証GET 401・unsafeのCSRF先行403、権限拒否、実Cookie＋header成功と欠落／不一致、login更新、両logout、例外時503・local cleanup、二重filter登録なし | mock CSRF成功だけでCookie照合を代替しない。旧Cookie＋一致headerの任意再注入まで失効する保証は設けない |
+| B1-05 DTO／error | `SessionExpenseApiControllerTest`。§5.5の10 DTO・paging・数値境界・strict JSON、400／404／409／422／503／500・安全な本文・Location | 既存Bearer long契約やglobal ObjectMapperを変更しない |
+| B1-05 DB／Audit | `SessionExpenseApiPostgreSqlIntegrationTest`。SessionとMVC双方で同じ申請を参照しcreate／submitを突合。scope外／不存在・古いversion・無効master、更新・成功Audit・eventの非発生、永続Session失効 | 既存Applicationの正常／例外経路を利用。専用非同期profileは有効化しない |
+| B1-05 既存直接回帰 | `ReferenceBusinessUrlSecurityTest`、`ReferenceSessionCookieConfigurationTest`、`ApiExceptionBoundarySecurityTest`、`ExpenseApiControllerTest`、`ExpenseApiPostgreSqlIntegrationTest`、`ExpenseReadModelPostgreSqlIntegrationTest`、`ExpenseMutationAuthorizationOrderTest`、`ExpenseApplicationServiceMethodSecurityTest`、`ReferenceArchitectureTest`、`RequiredNegativeArchitectureRulesTest` | 通常rootに含まれる集合を合流時に確認しただけなら、局所PASSとして二重計上しない。Application差分が不要な限りR-03全47件の反復を着手条件にしない |
+| B1-06 配信／build | `ReferenceSpaWebConfigurationTest`。index有無・link・認証・asset・未知GET・no-store。§7.3の使い捨て入力によるbuild負例、型検査、通常JAR非同梱・B1 JAR内容検査 | 新規testは通常rootでnpm成果物を要求しない。Nodeはbuild時だけ使用 |
+| B1-07 合流 | §6.4の順に、通常root `clean verify`→B1 profileのReference reactor `clean verify`→同じ同梱JARで新旧browser journey | 各buildのXML・hashを退避してから次のcleanへ進む。通常rootのPASSとB1 profileのPASSを区別 |
+| B1-07 browser | 新規`PackagedReferenceSessionSpaJourneyTest`＋既存`PackagedReferenceCriticalJourneyTest`。実Cookie／CSRF、失効・logout・再login、MVC相互参照、再読込・戻る・表示破棄、DB／Audit／logとcleanup | JARのsource・profile・frontend入力／lock／asset hashを両testの起動前に照合。途中で再packageしない |
+
+局所DB集合は1 classずつ直列実行し、終了／cleanup確認後に次へ進む。通常root／B1 profileで含まれる既存回帰を確認する際は、新XMLのclassと実行／skipを照合する。Root外Toolingが内部artifactを必要とする場合だけ現sourceからlocal installしてhashを記録し、固定済みB1 JARを上書きしない。
+
+### 9.4 概算・実行条件・残る具体化
+
+概算はbackend 4〜7時間、frontend／build 3〜5時間、統合検証・記録2〜4時間、受入整理1〜2時間の**計10〜18時間**を初期見積りとする。実施日・納期の約束や、今回許可された連続実行時間ではない。B1-05終了時に実差分・残作業から更新する。
+
+| 項目 | B1へ渡す条件 |
+| --- | --- |
+| source／環境 | 実装開始時のbranch・HEAD・差分と実行環境を記録。Cloudは保存activationを確認、Windowsは既存JDK21・Wrapper・Dockerの実値を確認。別端末のcache／image／browser／raw記録を存在すると推定しない |
+| 外部取得 | npm lock生成と初回npm ci、未cacheのplugin／宣言済み依存を対象別に識別する。proxy／CA／checksumを維持し、取得不能時にversionを無断で変更しない。Node／npm・依存lock・取得物を実行前記録へ残す |
+| 新規・局所DB | DB同時1、PostgreSQL17・memory1 GiB／CPU1／max_connections16、pool最大4／idle1、test JVM768 MiB、Maven768 MiB、fork1・並列無効。既存fixtureの実効値assertを使用する |
+| browser | application子JVM1・768 MiB／pool4・idle1、PostgreSQL1（上記制限）、Chromium1 context、issuer1、dynamic loopback port。新旧journeyは直列で各所有資源を終了。制限付き既存fixtureを新規journeyへ接続し、実効値を保存 |
+| 検証時間案 | 局所集合60分、合流build＋browser60分、cleanup10分を別に予約する。失敗や上限到達時は当該集合を止め、原因・必要な訂正・残予算を整理する。自動root反復や旧S1予算の再利用はしない |
+| 回数 | 通常root・B1 profile各1回、新旧browser各1回を初回合流の集合とする。修正が必要な場合は影響する局所集合を選定し、合流全体を無条件に繰り返さない |
+| 停止／cleanup | 秘密・token露出、既存回帰、artifact不一致、資源／時間超過、権限不足、cleanup不成立では停止。権限要求は実行環境の承認手順へ従う。DB／role／PID／port／一時fileをrunに紐付け、他runを操作しない。終了直後に残存する場合は最大30秒の読取確認で状態を確定し、残存したまま後続へ進まない |
+| 記録 | source SHA＋patch・file hash、環境、command、XML件数／hash、通常／B1 profile、JAR・lock・asset hash、DB／Audit／sanitized log、cleanupを保持。clean前に保存し、異なるepochの結果を付け替えない |
+
+**実装・実行時に具体化するOPEN：** (1) §7.3の5新規classを実装する際のmethod名・parameterized invocation数、(2) 通常root／B1 profileの既存test contextを含むJVM・DB・接続総量と制限の供給方法、(3) 実行環境でのfrontend取得・lockとbrowserの利用可否。新規・局所DBの制限を通常root全件へ一律適用して既存test条件を変えてはならない。該当集合の実行前に本節へ実数・commandを追記する。これらを完了済みと偽って先行せず、一方で既存環境の全再構築や旧R-00〜03全再実行を新しい前提にしない。
+
+B1-04時点の指示は設計との整合と実装計画の整理までとした。その後のOwnerによるB1-05開始指示と結果は§10へ記録した。必要な判断は既存計画に沿ってこの記録へ追記し、同内容の開始票や新しい包括Gateを増設しない。
+
+### 9.5 B1-08へ渡す受入条件
+
+DoD 4-8は同梱SPAのCookie Session認証・CSRF double-submit・失効／logout後の拒否を、DoD 4-9は同一JARのMVC／SPA併存・経路別CSRFと既存Bearer保護を実演して評価する。Evidenceと未達・利用条件を整理した後にOwnerが受入を判断する。局所PASSやB1-07の終了だけで受入済みとしない。B1完了後のpackage順は未確定で、B1-08で入力・必要性・検証可能性から次の一つを選ぶ。S1全体の未達・Customer BFF・MyBatis採用判断は別の状態として保持する。
+
+## 10. B1-05：Reference backendの実装・局所結果（2026-10-21）
+
+Ownerは、B1-04文書4件を未commitで保持したままB1-05へ進むことを確認し、「B1-05の実装へ進めましょう」と指示した。基点HEADは`e9ff13a`、branchは変更せず、文書commit・clean sourceの再固定を追加条件にしなかった。
+
+§9.2のbackendをReference main新規21＋既存1 file、新規test3 fileとして作成した。標準spa()、Session API chain、CSRF取得、両logout・loginとの接続、専用10 DTO・mapper・業務Adviceを実装。既存Application／Domain／Repository・Framework・POM／依存・migration・workflowは変更していない。SPA matcher・assets認可は接続したが、shell・UI・home link・同梱profileはB1-06に残る。
+
+[実装・検証記録](../architecture/validation/phase4-b1-05-session-api-backend-results-20261021.md)にsource識別・各class・途中失敗・訂正・資源・cleanupを整理した。新規認証22＋DTO40＋実DB10＝72件、既存77件の**計149件PASS、failure／error／skip 0**。同じmain sourceに対する局所結果であり、通常root全件・実JAR・browser・DoD全体の受入ではない。SameSiteはServlet Cookie属性で確認し、live Set-CookieとbrowserはB1-07で照合する。
+
+test method／invocation数のOPENはB1-05分を解消した。B1-06／07の詳細と通常root全体資源・frontend取得条件は、該当作成／実行前に具体化する。次はB1-06。今回commit・push・PR作成は行っていない。

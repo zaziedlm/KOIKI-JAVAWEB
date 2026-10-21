@@ -76,8 +76,8 @@ R-01〜03の間に技術的な直列依存はない。上図は一人の作業�
 | B1-01／調査・設計対象 | Reference | DoD 4-8／4-9に既存MVC、Bearer REST、Session、CSRF、expense Use Case・DTO・testを対応付ける。参照＋更新の代表操作を選ぶ | 「存在するもの／再利用／変更／不足」の差分表。SPA対象操作と対象外を確定。Customer BFFを代替としない | I-01。R-00〜03の完了不要 |
 | B1-02／調査・設計対象 | Reference、Framework Security契約review | Session SPA APIとMVCと既存Bearerのmatcher・order・認証応答・CSRF取得／送信／更新・logout・Cookie・権限／scopeを設計。F1〜F4を対応付ける | route別のSecurity／CSRF／error表。API versionはF4の既存回避策継続を基準案とし、変更が必要な場合だけ根拠を示す。default deny維持 | B1-01。R-01〜03の設計へ入力 |
 | B1-03／調査・設計対象 | Reference frontend、Tooling検証 | 最小Reactの画面、Session APIとの接続、同一originでのbuild／配置、依存・lockfile・package方法、実browserとDB／Audit照合を具体化 | 画面・操作一覧、build／配布構成、依存差分、検証表、概算と実行条件。frontendの詳細方式は既存資材を調べて決める | B1-01〜02。基盤修正の完了不要 |
-| B1-04／計画 | Framework計画・Owner判断 | B1-01〜03とR-00〜03の結果を合流し、最小の実装差分・必要な契約変更・検証範囲を確定 | 実装対象、完了条件、必要入力・環境、資源／時間／停止・cleanup、適用する開始判断が一つの設計記録から追える | B1-01〜03、R-00〜03。F6／F7／H1／S1完遂は前提外 |
-| B1-05／計画 | Reference backend | 選定したSession API、Security／CSRF接続、API DTO／errorを実装。同じApplication Use Caseを利用し、MVC FormとDTOを共有しない | API成功・認証／権限／CSRF／scope／競合の拒否test、既存BearerとMVCの直接回帰が成立 | B1-04と当該実装開始条件 |
+| B1-04／合流点検・実装計画整理済み | Framework計画・Owner判断 | B1設計記録§9にR-00〜03との整合、Reference／Tooling対象、局所／合流検証、概算・実行条件を整理 | 次はB1-05の開始判断。test method数・通常root全体資源・frontend取得条件は実装／実行前に具体化。機能作成・実行・受入は今回未実施 | B1-01〜03、R-00〜03。F6／F7／H1／S1完遂は前提外 |
+| B1-05／実装・局所検証完了 | Reference backend | Session API、Security／CSRF・login／両logout、専用10 DTO／mapper／業務Adviceを実装。既存Use Case・Framework契約を再利用 | 新規72＋既存77＝149件PASS。次はB1-06。実browser・DoD・Owner受入は未実施 | B1-04とOwnerの未commit保持での実装開始指示。B1設計記録§10 |
 | B1-06／計画 | Reference frontend | 選定した最小SPAを実装し、login後の参照・更新、失効／拒否／競合の表示をつなぐ | package済みReference上で代表操作が実行でき、MVCで同じ業務結果を確認できる | B1-05。画面構成の設計はB1-03で先行 |
 | B1-07／計画 | Tooling、Reference受入 | 実browser、API、DB、Business Audit、logで統合実演。通常構成と既存経路を保護し、資源をcleanup | 下記DoD表のEvidence、直接回帰、選定した通常検証、cleanupがそろう。未達は結果として明示 | B1-05〜06。実行集合・上限はB1-04で確定 |
 | B1-08／計画 | Framework計画・Owner受入 | DoD 4-8／4-9の成立範囲、残課題、利用方法を記録し、後続packageを選ぶ | 個別の受入記録、Journeyへの利用条件、次packageと必要入力。Phase4全体完了とは分ける | B1-07 |
@@ -210,6 +210,10 @@ P4-A1／A2・D1非同期とS1-01〜10は、[棚卸し§6〜8](phase4-continuatio
 **2026-10-21 R-03実施結果：** 共有mutationで対象認可をversion照合より先に移し、scope外と不存在の秘匿を是正。認可済みの競合・HTTP負versionの400・既存settle権限を維持した。Application・実DB・HTTPの拒否と副作用、既存直接回帰を[限定結果](../architecture/validation/phase4-r03-authorization-order-results-20261021.md)へ記録。次はB1-04で設計とR-00〜03結果を照合。今回commit・push・PR作成、通常root全件・B1機能受入は未実施。
 
 本書のWBS・順序・依存の詳細はこの計画案として提示する。Owner合意済みなのは§1の進め方と計画化の指示であり、各実装・実行・受入の完了を新たに記録したものではない。
+
+**2026-10-21 B1-04合流点検：** Ownerの指示に基づき、[B1設計記録§9](phase4-b1-session-spa-mvc-design-20261020.md#9-b1-04設計と基盤是正結果の合流点検2026-10-21)へ実装対象・Use Case再利用・検証割当て・概算・実行条件を整理した。R-02既存logoutと新規SPA接続、Cloud／Windows・source／artifactの証拠を区別する。次はB1-05の開始判断であり、今回の文書更新で機能作成・検証実行・受入は行っていない。実装／実行前に具体化するOPENは同§9.4へ集約する。
+
+**2026-10-21 B1-05実施結果：** Ownerの開始指示に基づきB1-04文書差分を保持してReference backendを実装し、[局所149件の結果](../architecture/validation/phase4-b1-05-session-api-backend-results-20261021.md)を記録した。Framework／業務層／依存・migrationは無変更、commit・remoteなし。次はB1-06のUI・同梱build・配信入口。通常root・同梱JAR・browser・DoD受入は後段へ残す。
 
 ## 付記 再開前の気づきメモ
 
