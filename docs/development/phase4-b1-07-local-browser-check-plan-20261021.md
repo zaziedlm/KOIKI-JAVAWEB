@@ -1,6 +1,6 @@
 # B1-07：ローカルPCでの実ブラウザー手動確認計画
 
-状態：**自宅PCの選定手動確認・cleanup完了／B1-08 Owner受入待ち**。[2026-10-22のローカル実測・B1-08入力](../architecture/validation/phase4-b1-08-local-acceptance-input-20261022.md)へ追跡する。認証中の一覧／詳細間の戻る・進む単独操作は未確認として保持する。Cloudの自動Chromium検証と区別する。
+状態：**自宅PCの選定ブラウザ検証結果はCOMPLETE / OWNER ACCEPTED（2026-10-22）、cleanup完了**。[承認記録§5](../architecture/validation/phase4-b1-08-local-acceptance-input-20261022.md#5-選定ブラウザ検証結果のowner受入2026-10-22)へ追跡する。DoD全体受入・B1-08全体完了・後続package選定は別判断。認証中の一覧／詳細間の戻る・進む単独操作は未確認として保持する。Cloudの自動Chromium検証と区別する。
 作業branchは`docs/phase4-review-integrated-plan-20261020`、PRを作らない。Cloud成果のcommit／pushとPC側pullは必要時にOwner指示に基づいて行い、現在の作業指示でpush済みとはしない。
 
 ## 1. 引継ぎ・build

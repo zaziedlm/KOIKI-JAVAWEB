@@ -1,6 +1,6 @@
 # B1-08：ローカル確認・Owner受入への入力（2026-10-22）
 
-状態：**自宅PCの選定手動確認・cleanup完了／Owner受入と後続package選定は判断待ち。** Cloud自動検証と自宅PCの手動結果を入力に、§4へDoDの受入案・残課題を整理した。認証中の一覧／詳細間の戻る・進むは単独未確認として保持する。
+状態：**自宅PCの選定ブラウザ検証結果はCOMPLETE / OWNER ACCEPTED（§5、2026-10-22）。** cleanupも完了。DoD4-8／4-9全体の受入・後続package選定は未判断。Cloud自動検証と自宅PCの手動結果を入力に、§4へDoDの受入案・残課題を整理した。認証中の一覧／詳細間の戻る・進むは単独未確認として保持する。
 
 Owner指示に基づき、検証済みCodex Cloud環境での開発・自動検証と、自宅PC／会社PCでの手動確認を分ける。今回のPCはOwner申告により自宅PC。会社PCでの確認結果は未取得。別PCでの成功を今回のPCの結果として扱わない。
 
@@ -50,7 +50,8 @@ raw・補助script・PIDは`target/b1-local-check-20261022/`。`package.log`が�
 | 再login後の保存済み申請参照・未保存入力非復元 | PASS（Owner申告） |
 | Cookie属性／CSRF header（値は非記録） | PASS（Owner申告）。SESSIONはHttpOnly・SameSite=Lax・Path=/、XSRF-TOKENはHttpOnlyなし。SPA新規下書き保存POSTのRequest HeadersにX-XSRF-TOKENがあることを確認。値は受領・保存していない |
 | 所有アプリ・専用DB停止とport解放 | PASS。2026-10-22 13:14:35 JST最終確認。所有PID・JAR pathとcontainer IDを照合して停止、seed対話windowも終了。専用container自動削除、18080／55432の待受なし。既存DB2件は維持 |
-| DoD4-8／4-9、B1-08 Owner受入 | 未判断 |
+| B1-08内の選定ブラウザ検証結果のOwner受入 | COMPLETE / OWNER ACCEPTED（2026-10-22、§5）。自宅PCの今回結果に限定 |
+| DoD4-8／4-9全体の受入・B1-08全体完了 | 未判断。ブラウザ結果の受入と後続package選定を区別 |
 | 後続package選定 | §4.3のC2-01調査案を提示。Owner未選定、着手なし |
 
 手動操作の結果・browser version・再現手順をOwnerから得て反映する。未実施の確認をPASSにせず、B1-08・Phase4全体の完了に読み替えない。
@@ -94,4 +95,19 @@ cleanupは通常sandboxのCIM読取拒否後、実行環境承認を得て所有
 
 [統合計画§5.2](../../development/phase4-review-integrated-task-plan-20261020.md#52-各テーマの作業単位と着手条件)のP4-C2から、**C2-01：代表外部操作と失敗契約の調査・設計**を次候補として提案する。実案件／IdP／platform入力待ちのテーマより先に、Reference／Toolingで対象操作・副作用・timeout／retry上限・受理不明時の扱いを整理できるため。対象操作は未選定であり、実provider・通信やlibrary追加・実装は含めず、調査結果から別途範囲を具体化する。S1の再開を前提にしない。
 
-Ownerには、(1)上記Evidenceと残課題を明示したB1の限定受入、(2)後続候補としてC2-01調査を選ぶか、を判断いただく。承認記録・commit・remoteは未実施。
+本節の提案時点では、(1)上記Evidenceと残課題を明示したB1の限定受入、(2)後続候補としてC2-01調査を選ぶか、の判断を依頼した。結果文書はその後`a3fb393`へcommit／pushされた。後続のブラウザ検証結果に対するOwner承認は§5を現行記録とし、成果のpushを受入承認に読み替えない。
+
+## 5. 選定ブラウザ検証結果のOwner受入（2026-10-22）
+
+Ownerは本チャットで「まず、ブラウザ検証の結果を承認しますので、記録を更新してください」と明示した。これをB1-08の判断記録へ反映し、**今回の自宅PCにおける選定ブラウザ検証結果をCOMPLETE / OWNER ACCEPTED**とする。
+
+| 判断項目 | 承認内容 |
+| --- | --- |
+| 対象source／artifact | 結果固定commit `a3fb393`に記載した実測。実行sourceは`bb479138ee845194d9dcc12b4471ffac99fcdf26`、Windows同梱JAR SHA-256は`284548e66ee7b93008b2aab6eef66c59761dc9332efbe207829461b178506df3` |
+| 環境 | 自宅PC／Windows 11／Chrome155.0.8059.85（64ビット）。更新中表示の扱いは§2のまま |
+| 受入結果 | §3のOwner報告済みブラウザ操作。login・SPA作成／提出・MVC参照／編集／SPA反映、競合案内／最新取得／明示再提出、直接URL／reload／未知path404、狭幅／Tab操作、未保存入力破棄、logout／別tab／再login、Cookie属性・CSRFヘッダー存在確認 |
+| cleanup | §3の完了記録を引継ぎ条件として保持。追加の再実行は行っていない |
+| 残課題 | §4.2を保持。会社PC・更新後Chrome・認証中の一覧／詳細間の戻る／進む単独操作・新Cloudのbrowser journeyは未確認／未実行のまま |
+| 別判断 | DoD4-8／4-9全体の受入、B1-08全体完了、C2-01を含む後続package選定／開始、Phase4全体、正式受渡し・releaseは今回のブラウザ結果承認から自動確定しない |
+
+この更新は承認の文書反映だけであり、コード変更・検証再実行・commit・push・PR操作は含めない。Cloudでは本節の受入済み結果と、§4の未判断事項を分けて再開する。

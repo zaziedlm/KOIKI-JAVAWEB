@@ -2,11 +2,11 @@
 
 作成日：2026-10-20
 
-状態：**B1-07のCloud統合検証と自宅PCの選定手動確認・cleanup完了／B1-08 Owner受入待ち**。[2026-10-22受入入力](../architecture/validation/phase4-b1-08-local-acceptance-input-20261022.md)へ追跡する。2026-10-21 Cloudは通常root／同梱各422実行PASS＋99 skip・同じJARで新旧browser計2件PASS。新Cloud再検証は各422実行PASS＋99 skip・artifact照合PASSだがbrowserは配信元HTTP403で未実行。自宅PCの結果と各artifactを区別し、DoD4-8／4-9の受入は未判断。R-00〜03・B1-05〜06の履歴を保持する。
+状態：**B1-07のCloud統合検証済み、自宅PCの選定ブラウザ検証結果はCOMPLETE / OWNER ACCEPTED（2026-10-22）、cleanup完了**。[承認記録§5](../architecture/validation/phase4-b1-08-local-acceptance-input-20261022.md#5-選定ブラウザ検証結果のowner受入2026-10-22)へ追跡する。2026-10-21 Cloudは通常root／同梱各422実行PASS＋99 skip・同じJARで新旧browser計2件PASS。新Cloud再検証は各422実行PASS＋99 skip・artifact照合PASSだがbrowserは配信元HTTP403で未実行。自宅PCの結果と各artifactを区別し、DoD4-8／4-9全体受入・B1-08全体完了・後続package選定は未判断。R-00〜03・B1-05〜06の履歴を保持する。
 
 Ownership：設計記録はFramework側。機能はReference `expense`／`identity`、Framework変更はR-01、検証harnessはToolingが所有する。
 
-2026-10-21のB1-04合流点検は§9、B1-05は§10、B1-06は§11、B1-07 Cloud結果は§12。2026-10-22の自宅PC結果・cleanup・残課題と受入案は上記受入入力へ整理した。次はB1-08 Owner受入と後続package選定。
+2026-10-21のB1-04合流点検は§9、B1-05は§10、B1-06は§11、B1-07 Cloud結果は§12。2026-10-22の自宅PC結果・cleanup・残課題と受入案は上記文書へ整理し、§5にブラウザ検証結果のOwner受入を記録した。次は残るDoD受入判断と後続package選定。
 
 ## 1. 目的と今回の到達点
 

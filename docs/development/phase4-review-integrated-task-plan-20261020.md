@@ -80,7 +80,7 @@ R-01〜03の間に技術的な直列依存はない。上図は一人の作業�
 | B1-05／実装・局所検証完了 | Reference backend | Session API、Security／CSRF・login／両logout、専用10 DTO／mapper／業務Adviceを実装。既存Use Case・Framework契約を再利用 | 新規72＋既存77＝149件PASS。次はB1-06。実browser・DoD・Owner受入は未実施 | B1-04とOwnerの未commit保持での実装開始指示。B1設計記録§10 |
 | B1-06／実装・局所検証完了 | Reference frontend | 選定した最小SPAを実装し、login後の参照・更新、失効／拒否／競合の表示をつなぐ | package済みReference上で代表操作が実行でき、MVCで同じ業務結果を確認できる | B1-05。画面構成の設計はB1-03で先行 |
 | B1-07／Cloud検証完了 | Tooling、Reference受入 | 実browser、API、DB、Business Audit、logで統合実演。通常構成と既存経路を保護し、資源をcleanup | 下記DoD表のEvidence、直接回帰、選定した通常検証、cleanupがそろう。未達は結果として明示 | B1-05〜06。実行集合・上限はB1-04で確定 |
-| B1-08／受入入力整理済み・Owner判断待ち | Framework計画・Owner受入 | DoD 4-8／4-9の成立範囲、残課題、利用方法を記録し、後続packageを選ぶ | [2026-10-22入力](../architecture/validation/phase4-b1-08-local-acceptance-input-20261022.md)：自宅PCの選定手動確認・cleanup済み。DoD受入と次packageは未承認。Phase4全体完了とは分ける | B1-07 |
+| B1-08／選定ブラウザ結果Owner受入済み・残判断あり | Framework計画・Owner受入 | DoD 4-8／4-9の成立範囲、残課題、利用方法を記録し、後続packageを選ぶ | [2026-10-22承認§5](../architecture/validation/phase4-b1-08-local-acceptance-input-20261022.md#5-選定ブラウザ検証結果のowner受入2026-10-22)：自宅PCブラウザ結果はCOMPLETE / OWNER ACCEPTED、cleanup済み。DoD全体受入・B1-08全体完了・次package選定は未判断。Phase4全体完了とは分ける | B1-07 |
 
 ### 3.3 B1受入へ結ぶ検証
 
