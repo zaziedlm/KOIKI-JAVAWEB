@@ -22,7 +22,9 @@ public final class KoikiApiDefaultsEnvironmentPostProcessor implements Environme
             Map.entry("spring.mvc.apiversion.supported", "1"),
             Map.entry("koiki.api.resilience.retry.max-retries", 2),
             Map.entry("koiki.api.resilience.retry.delay", "10ms"),
-            Map.entry("koiki.api.resilience.retry.timeout", "1s"));
+            Map.entry("koiki.api.resilience.retry.timeout", "1s"),
+            Map.entry("koiki.api.http.connect-timeout", "200ms"),
+            Map.entry("koiki.api.http.read-timeout", "300ms"));
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {

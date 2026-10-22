@@ -59,6 +59,7 @@ public class ReferenceSessionApiSecurityConfiguration {
         http.requestCache(cache -> cache.disable());
         http.csrf(csrf -> csrf.spa().csrfTokenRepository(referenceSpaCsrfTokenRepository));
         http.authorizeHttpRequests(requests -> requests
+                .requestMatchers("/spa-api/v1/external-checks/**").hasAuthority("EXTERNALCHECK:USE")
                 .requestMatchers("/spa-api/v1/expense-options", "/spa-api/v1/expense-requests",
                         "/spa-api/v1/expense-requests/**").hasAuthority("EXPENSE:APPLY")
                 .anyRequest().authenticated());
