@@ -2,11 +2,11 @@
 
 作成日：2026-10-20
 
-状態：**B1-07のCloud実装・統合検証完了（§12）**。最終通常root／同梱構成は各422件実行PASS＋99 skip、同じ同梱JARで新旧browser journey計2件PASS。実演で判明したMVC日付表示・明細保存を局所訂正した。ローカルPCの手動確認とB1-08のDoD 4-8／4-9 Owner受入は未実施。R-00〜03・B1-05〜06の結果は各時点の履歴として保持する。
+状態：**B1-07のCloud統合検証と自宅PCの選定手動確認・cleanup完了／B1-08 Owner受入待ち**。[2026-10-22受入入力](../architecture/validation/phase4-b1-08-local-acceptance-input-20261022.md)へ追跡する。2026-10-21 Cloudは通常root／同梱各422実行PASS＋99 skip・同じJARで新旧browser計2件PASS。新Cloud再検証は各422実行PASS＋99 skip・artifact照合PASSだがbrowserは配信元HTTP403で未実行。自宅PCの結果と各artifactを区別し、DoD4-8／4-9の受入は未判断。R-00〜03・B1-05〜06の履歴を保持する。
 
 Ownership：設計記録はFramework側。機能はReference `expense`／`identity`、Framework変更はR-01、検証harnessはToolingが所有する。
 
-2026-10-21のB1-04合流点検は§9、その後のOwner開始指示に基づくB1-05結果は§10。B1-06の実装・局所結果は§11。B1-07の資源具体化・途中停止／是正・最終結果は§12。次はローカル手動確認の実施判断とB1-08の受入整理。
+2026-10-21のB1-04合流点検は§9、B1-05は§10、B1-06は§11、B1-07 Cloud結果は§12。2026-10-22の自宅PC結果・cleanup・残課題と受入案は上記受入入力へ整理した。次はB1-08 Owner受入と後続package選定。
 
 ## 1. 目的と今回の到達点
 
