@@ -2,11 +2,36 @@
 
 状態：**継続branchの承認・成果固定を反映した残タスク再整理 / OWNER REVIEW INPUT**。現行方針と次の対象は§8、成果と残課題は§6〜7、詳細は§3〜5。実装開始、追加検証、既存DoDの達成認定を行う文書ではない。
 
+**2026-10-23の現行入口：** [統合作業計画§9：Owner承認済み見直し推進計画](phase4-review-integrated-task-plan-20261020.md#9-初期標準確立に向けた見直し推進計画owner-approved2026-10-23)。複数案件への採用を見据え、初期標準一覧・配布方針の整理を開始し、D2→D1同期→S1／B1／C2の保証範囲・DoD判定→E1→D3→要件具体化に応じた残タスク、の順を採用した。旧C3先行案は差替え済み。成果と残課題は同計画§8に保持する。本書の「次はB1」等は履歴。現在はB1実装・選定検証／ブラウザ結果受入、C2 A限定結果のOwner受入（成果`87728b7`、受入記録`05911cc`）まで進んでいる。B1／C2のDoD全体受入・認定は別に残し、初期標準提供とPhase4全体完了を区別する。直近は初期標準一覧とD2-01の具体化。以後は統合計画を更新し、本書の履歴を毎回再実行しない。
+
 ## 0. 現行の進め方（Owner補足反映、2026-10-17）
 
 非同期系は現時点の実装・限定検証と運用方針で今回の作業を区切る。復旧の難しい部分は人による照合・担当付きHOLDで補完し、当初計画のP4-B1：Session SPA＋MVC Referenceへ移行する。追加GET・復旧機構・提供資料の整備を移行条件にしない。
 
 限定受入済みの成果、DoD未達、運用上のOPENを保持する。具体的な不足が判明した場合に必要範囲だけ再開を判断する。詳細は§8。
+
+**2026-10-20追記：** Ownerは、P4-B1の調査・設計を進めつつ、直接影響するレビュー指摘だけを実装・受入より先に解決する方針に合意した。[レビュー対応との統合作業計画](phase4-review-integrated-task-plan-20261020.md)で、B1の調査・設計とF1／F2／F3／F5の基盤是正、他package・採用支援への割当を作業単位に整理した。直近は同計画I-01／B1-01。詳細WBSは計画案であり、レビュー全件・S1全体の解消をB1開始条件にしない。
+
+同日のI-01／B1-01調査結果とB1-02〜03の具体仕様案は[B1設計記録](phase4-b1-session-spa-mvc-design-20261020.md)へ集約した。後続の[Cloud環境点検](../architecture/validation/phase4-r00-cloud-environment-preflight-20261020.md)で保存済み構成を有効化し、ソース無変更のclean test-compile・規約7件PASS、fresh import違反0を確認。R-00の実行準備は成立し、次はproduction検査対象とfixtureの役割を整理する。是正実装・B1機能実演・DoD受入は未実施。
+
+次の作業範囲はB1設計記録§7.4へ具体化した。R-00の既存test1 fileでproduction対象を明示し、直接回帰7件を確認する案。その限定結果を整理してR-01の例外境界へ進む。今回の範囲整理ではcode変更・検証の再実行を行っていない。
+
+その後、OwnerのR-00着手指示に基づきtest1 fileを変更し、[production限定importの結果](../architecture/validation/phase4-r00-production-import-results-20261020.md)でclean compile・既存7件PASS、両importのtest由来0を確認した。R-00の限定変更・検証は完了。次はR-01の例外境界であり、B1機能・全体DoDの受入は未実施のまま維持する。
+
+続いてR-01のAdvice修正・限定回帰を実施し、[例外境界の結果](../architecture/validation/phase4-r01-exception-boundary-results-20261020.md)へ記録した。次はR-02のCookie／logout構成。現在の作業branchは`docs/phase4-review-integrated-plan-20261020`。Owner指示に従い同branch上で完結し、PR作成・pushは行わない。commitは未実施。以下の旧branch・統合手順は各時点の履歴として扱う。
+
+**2026-10-21追記：** 同branchでR-02のCookie設定反映・logout構成確認と限定回帰を実施し、[結果](../architecture/validation/phase4-r02-cookie-logout-results-20261021.md)へ記録した。実JARのCookie属性・logout削除・旧Cookie拒否・DB Session消去を確認。次はR-03の認可順序で、B1機能・全体DoDは未受入。今回commit・push・PR作成は未実施。
+
+**2026-10-21 R-03追記：** 同branchで対象認可をversion照合より先にする是正と限定回帰を実施し、[結果](../architecture/validation/phase4-r03-authorization-order-results-20261021.md)へ記録。scope外／不存在の秘匿と認可済み競合、拒否時の副作用なしを確認した。次はB1-04の設計・是正結果の合流点検。今回commit・push・PR作成は未実施。B1機能・DoD全体は未受入。
+
+**2026-10-21 B1-04追記：** [B1設計記録§9](phase4-b1-session-spa-mvc-design-20261020.md#9-b1-04設計と基盤是正結果の合流点検2026-10-21)へ、R-00〜03との合流点検・実装対象・検証割当て・概算・実行条件を整理した。次はB1-05の開始判断。新規test件数・通常root全体資源・frontend取得条件の具体化を残す。今回の文書作業でB1機能実装・検証実行・受入は行っていない。
+
+**2026-10-21 B1-05追記：** Ownerの開始指示後、未commitのB1-04文書を保持してReference backendを実装し、[局所149件](../architecture/validation/phase4-b1-05-session-api-backend-results-20261021.md)を確認した。次はB1-06のUI・同梱build・配信入口。今回commit・remoteなし。通常root・実JAR・browser・DoD受入は未実施。
+
+**2026-10-21 B1-06追記：** B1-05のCloud再検証文書のみを`00ce98a`へcommit後、同branchで最小React UI・build／同梱・配信入口を実装し、[局所65件とJAR検査](../architecture/validation/phase4-b1-06-frontend-build-results-20261021.md)を確認。次はB1-07の全件回帰・実JAR／DB／browser統合実演。B1-06成果のcommit・push・PR、DoD受入は未実施。
+
+**2026-10-21 B1-07追記：** B1-06成果`2b0ed5b`を入力に、[Cloud統合結果](../architecture/validation/phase4-b1-07-integrated-browser-results-20261021.md)として最終通常／同梱構成各422実行PASS＋99 skip、同一JARの新旧browser2件PASSを確認。MVC日付・明細保存を局所是正した。手動確認は[PC側計画](phase4-b1-07-local-browser-check-plan-20261021.md)へ分離し未実施、次は実施判断とB1-08のOwner受入整理。今回のcommit・remote操作なし。
+
 
 ## 1. 継続作業の基点
 

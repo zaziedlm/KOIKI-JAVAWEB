@@ -1,6 +1,18 @@
 {
   "properties": [
     {
+      "name": "koiki.api.http.connect-timeout",
+      "type": "java.time.Duration",
+      "defaultValue": "200ms",
+      "description": "Low-precedence connection timeout for HTTP clients explicitly adopting KOIKI HTTP defaults. Does not customize arbitrary clients."
+    },
+    {
+      "name": "koiki.api.http.read-timeout",
+      "type": "java.time.Duration",
+      "defaultValue": "300ms",
+      "description": "Low-precedence read timeout for HTTP clients explicitly adopting KOIKI HTTP defaults. Does not customize arbitrary clients."
+    },
+    {
       "name": "koiki.api.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": true,

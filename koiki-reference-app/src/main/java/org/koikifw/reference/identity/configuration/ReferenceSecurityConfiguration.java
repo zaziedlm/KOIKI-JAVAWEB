@@ -4,14 +4,21 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 import java.nio.charset.StandardCharsets;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 import org.springframework.session.web.http.CookieSerializer;
@@ -19,6 +26,8 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 
 /** Assembles the Reference browser security boundary. */
 @Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(ServerProperties.class)
+@Import(ReferenceSessionApiSecurityConfiguration.class)
 public class ReferenceSecurityConfiguration {
 
     @Bean
@@ -27,21 +36,34 @@ public class ReferenceSecurityConfiguration {
     }
 
     @Bean
-    CookieSerializer referenceCookieSerializer() {
-        return new DefaultCookieSerializer();
+    CookieSerializer referenceCookieSerializer(ServerProperties serverProperties) {
+        var cookie = serverProperties.getServlet().getSession().getCookie();
+        var serializer = new DefaultCookieSerializer();
+        var mapper = PropertyMapper.get();
+        mapper.from(cookie::getName).to(serializer::setCookieName);
+        mapper.from(cookie::getDomain).to(serializer::setDomainName);
+        mapper.from(cookie::getPath).to(serializer::setCookiePath);
+        mapper.from(cookie::getHttpOnly).to(serializer::setUseHttpOnlyCookie);
+        mapper.from(cookie::getSecure).to(serializer::setUseSecureCookie);
+        mapper.from(cookie::getMaxAge).asInt(java.time.Duration::getSeconds).to(serializer::setCookieMaxAge);
+        mapper.from(cookie::getSameSite).to(sameSite -> serializer.setSameSite(sameSite.attributeValue()));
+        mapper.from(cookie::getPartitioned).to(serializer::setPartitioned);
+        return serializer;
     }
 
     @Bean
     @Order(0)
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     SecurityFilterChain referenceIdentitySecurityFilterChain(
-            HttpSecurity http, Customizer<HttpSecurity> koikiSessionLogoutCustomizer)
+            HttpSecurity http, Customizer<HttpSecurity> koikiSessionLogoutCustomizer,
+            CookieCsrfTokenRepository referenceSpaCsrfTokenRepository,
+            CookieSerializer referenceCookieSerializer, ReferenceSessionApiProblemWriter problems)
             throws Exception {
         http.securityMatcher(
                 "/login", "/logout", "/", "/identity/**", "/master/**", "/expenses/**",
-                "/koiki-web/**", "/webjars/**");
+                "/koiki-web/**", "/webjars/**", "/spa", "/spa/**");
         http.authorizeHttpRequests(requests -> requests
-                .requestMatchers("/login", "/koiki-web/**", "/webjars/**")
+                .requestMatchers("/login", "/koiki-web/**", "/webjars/**", "/spa/assets/**")
                 .permitAll()
                 .requestMatchers("/identity/**")
                 .hasAuthority("IDENTITY:ADMIN")
@@ -51,7 +73,12 @@ public class ReferenceSecurityConfiguration {
                 .authenticated()
                 .anyRequest()
                 .authenticated());
-        http.formLogin(form -> form.defaultSuccessUrl("/", true));
+        var success = new SimpleUrlAuthenticationSuccessHandler("/");
+        success.setAlwaysUseDefaultTargetUrl(true);
+        http.formLogin(form -> form.successHandler((request, response, authentication) -> {
+            referenceSpaCsrfTokenRepository.saveToken(null, request, response);
+            success.onAuthenticationSuccess(request, response, authentication);
+        }));
         http.csrf(withDefaults());
         http.headers(withDefaults());
         RequestHeaderRequestMatcher htmxRequest =
@@ -66,6 +93,10 @@ public class ReferenceSecurityConfiguration {
                                     + "data-koiki-focus>この操作は許可されていません。</section>");
                 }, htmxRequest));
         koikiSessionLogoutCustomizer.customize(http);
+        http.logout(logout -> logout.addLogoutHandler((request, response, authentication) ->
+                referenceSpaCsrfTokenRepository.saveToken(null, request, response)));
+        http.addFilterBefore(new ReferenceSessionLogoutBoundary("/logout", referenceSpaCsrfTokenRepository,
+                referenceCookieSerializer, problems), LogoutFilter.class);
         return http.build();
     }
 }

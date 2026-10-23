@@ -32,3 +32,6 @@ walking-skeleton/.work/
 
 # Generated Feature Template verification modules
 build-support/feature-templates/verification/generated/
+
+# Reference frontend dependencies (build output stays under target/)
+koiki-reference-app/frontend/node_modules/

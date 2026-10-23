@@ -5,4 +5,5 @@
 <main><h1>KOIKI Reference Application</h1>
   <p>付与されたPermissionに対応する業務画面を利用してください。</p>
   <p class="muted">権限のない画面への直接アクセスはサーバー側で拒否されます。</p>
+  <p th:if="${spaAvailable}"><a th:href="@{/spa/}">Session SPAで経費申請を開く</a></p>
 </main></body></html>

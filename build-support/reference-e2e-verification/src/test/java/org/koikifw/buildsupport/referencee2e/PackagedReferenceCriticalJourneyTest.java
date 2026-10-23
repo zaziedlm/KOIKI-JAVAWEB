@@ -10,6 +10,9 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.Response;
+import com.microsoft.playwright.options.FormData;
+import com.microsoft.playwright.options.RequestOptions;
+import com.microsoft.playwright.options.SameSiteAttribute;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.crypto.RSASSASigner;
@@ -78,6 +81,9 @@ class PackagedReferenceCriticalJourneyTest {
                 "koiki-reference-app/target/koiki-reference-app-0.1.0-SNAPSHOT.jar");
         assertTrue(Files.isRegularFile(jar), "Package the Reference JAR before this verification");
 
+        if (Boolean.getBoolean("koiki.reference.spa.packaged-journey.enabled")) {
+            SessionSpaArtifact.verify(repository, jar);
+        }
         KeyPair keyPair = rsaKeyPair();
         String loginPassword = randomSecret("A9!");
         String sourceHmacKey = randomBase64(32);
@@ -238,11 +244,15 @@ class PackagedReferenceCriticalJourneyTest {
             page.locator("button[type='submit']").click();
             assertEquals(baseUrl + "/", page.url());
 
-            String sessionId = context.cookies().stream()
+            var sessionCookie = context.cookies().stream()
                     .filter(cookie -> "SESSION".equals(cookie.name))
-                    .map(cookie -> cookie.value)
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("Session cookie was not issued"));
+            String sessionId = sessionCookie.value;
+            assertTrue(sessionCookie.httpOnly, "Session cookie must remain HttpOnly");
+            assertFalse(sessionCookie.secure, "Loopback HTTP fixture requires Secure=false");
+            assertEquals(SameSiteAttribute.LAX, sessionCookie.sameSite);
+            assertEquals("/", sessionCookie.path);
 
             page.navigate(baseUrl + "/master/departments");
             Response search = page.waitForResponse(
@@ -271,11 +281,32 @@ class PackagedReferenceCriticalJourneyTest {
             assertEquals(302, approved.status());
             page.waitForURL(baseUrl + "/expenses/approvals");
             assertTrue(page.locator("main").textContent().contains("経費申請を承認しました"));
+
+            String csrfToken = page.locator("meta[name='_csrf']").getAttribute("content");
+            var logout = context.request().post(baseUrl + "/logout", RequestOptions.create()
+                    .setForm(FormData.create().set("_csrf", csrfToken)).setMaxRedirects(0));
+            try {
+                assertEquals(302, logout.status());
+                String deleted = logout.headers().getOrDefault("set-cookie", "");
+                assertTrue(deleted.startsWith("SESSION="), "Logout must delete the Session cookie");
+                assertTrue(deleted.contains("Path=/"), "Logout cookie path differs");
+                assertTrue(deleted.contains("Max-Age=0"), "Logout cookie must expire immediately");
+                assertTrue(deleted.contains("HttpOnly"), "Logout cookie must remain HttpOnly");
+                assertTrue(deleted.contains("SameSite=Lax"), "Logout cookie SameSite differs");
+                assertFalse(deleted.contains("; Secure"), "Loopback logout cookie must use Secure=false");
+            } finally {
+                logout.dispose();
+            }
+            assertTrue(context.cookies().stream().noneMatch(cookie -> "SESSION".equals(cookie.name)),
+                    "Session cookie remained after logout");
+            context.addCookies(List.of(sessionCookie));
+            page.navigate(baseUrl + "/expenses/approvals");
+            assertTrue(page.url().startsWith(baseUrl + "/login"), "Old session cookie remained authenticated");
             return sessionId;
         }
     }
 
-    private static Process startReferenceJar(
+    static Process startReferenceJar(
             Path jar,
             Path log,
             PostgreSQLContainer postgres,
@@ -294,6 +325,7 @@ class PackagedReferenceCriticalJourneyTest {
         environment.put("SPRING_DATASOURCE_USERNAME", postgres.getUsername());
         environment.put("SPRING_DATASOURCE_PASSWORD", postgres.getPassword());
         environment.put("SPRING_SESSION_JDBC_INITIALIZE_SCHEMA", "never");
+        environment.put("SERVER_SERVLET_SESSION_COOKIE_SECURE", "false");
         environment.put("KOIKI_IDENTITY_LOCAL_AUTHENTICATION_ENABLED", "true");
         environment.put("KOIKI_REFERENCE_SOURCE_HMAC_KEY_ID", "p3-c2-e2e-source");
         environment.put("KOIKI_REFERENCE_SOURCE_HMAC_KEY", sourceHmacKey);
@@ -309,7 +341,7 @@ class PackagedReferenceCriticalJourneyTest {
         return builder.start();
     }
 
-    private static boolean resourceLimitsEnabled() {
+    static boolean resourceLimitsEnabled() {
         String value = System.getProperty("koiki.reference.verification.resource-limits.enabled", "false");
         if (!value.equals("true") && !value.equals("false")) {
             throw new IllegalArgumentException("Invalid verification resource-limits property");
@@ -317,7 +349,7 @@ class PackagedReferenceCriticalJourneyTest {
         return value.equals("true");
     }
 
-    private static void waitUntilReady(Process process, String baseUrl) throws Exception {
+    static void waitUntilReady(Process process, String baseUrl) throws Exception {
         HttpClient client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofMillis(500))
                 .build();
@@ -353,7 +385,7 @@ class PackagedReferenceCriticalJourneyTest {
         throw new AssertionError("Reference JAR was not ready within 30 seconds");
     }
 
-    private static void seed(PostgreSQLContainer postgres, String loginPassword)
+    static void seed(PostgreSQLContainer postgres, String loginPassword)
             throws Exception {
         try (var connection = DriverManager.getConnection(
                         postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
@@ -503,12 +535,12 @@ class PackagedReferenceCriticalJourneyTest {
                     where principal_name = '%s'
                     """.formatted(APPROVER_ID))) {
                 assertTrue(rows.next());
-                assertEquals(1L, rows.getLong(1));
+                assertEquals(0L, rows.getLong(1), "Logged-out principal session remained in the database");
             }
         }
     }
 
-    private static void assertSanitizedLog(
+    static void assertSanitizedLog(
             String log,
             String token,
             String password,
@@ -565,7 +597,7 @@ class PackagedReferenceCriticalJourneyTest {
         }
     }
 
-    private static void stop(Process process) throws Exception {
+    static void stop(Process process) throws Exception {
         if (process == null || !process.isAlive()) {
             return;
         }
@@ -577,13 +609,13 @@ class PackagedReferenceCriticalJourneyTest {
         }
     }
 
-    private static int availablePort() throws IOException {
+    static int availablePort() throws IOException {
         try (ServerSocket socket = new ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {
             return socket.getLocalPort();
         }
     }
 
-    private static void assertPortAvailable(int port) throws IOException {
+    static void assertPortAvailable(int port) throws IOException {
         assertTrue(port > 0, "Dynamic port was not allocated");
         try (ServerSocket ignored = new ServerSocket(
                 port, 1, InetAddress.getLoopbackAddress())) {
@@ -591,7 +623,7 @@ class PackagedReferenceCriticalJourneyTest {
         }
     }
 
-    private static KeyPair rsaKeyPair() {
+    static KeyPair rsaKeyPair() {
         try {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
             generator.initialize(2048);
@@ -601,11 +633,11 @@ class PackagedReferenceCriticalJourneyTest {
         }
     }
 
-    private static String randomSecret(String prefix) {
+    static String randomSecret(String prefix) {
         return prefix + Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes(24));
     }
 
-    private static String randomBase64(int size) {
+    static String randomBase64(int size) {
         return Base64.getEncoder().encodeToString(randomBytes(size));
     }
 
@@ -615,11 +647,11 @@ class PackagedReferenceCriticalJourneyTest {
         return bytes;
     }
 
-    private static UUID id(long suffix) {
+    static UUID id(long suffix) {
         return new UUID(0x3800000000004000L, 0x8000000000000000L | suffix);
     }
 
-    private static final class IssuerFixture implements AutoCloseable {
+    static final class IssuerFixture implements AutoCloseable {
 
         private final HttpServer server;
         private final String issuer;

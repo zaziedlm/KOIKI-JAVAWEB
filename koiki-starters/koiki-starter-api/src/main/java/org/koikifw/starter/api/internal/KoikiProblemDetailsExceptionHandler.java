@@ -9,6 +9,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,14 +17,18 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.util.ClassUtils;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.method.ParameterValidationResult;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import tools.jackson.core.JacksonException;
 
@@ -39,6 +44,10 @@ final class KoikiProblemDetailsExceptionHandler extends ResponseEntityExceptionH
     static final String JSON_PROCESSING_CODE = "KOIKI-JSON-002";
     static final String INTERNAL_CODE = "KOIKI-INTERNAL-001";
     private static final URI ABOUT_BLANK = URI.create("about:blank");
+    private static final @Nullable Class<?> ACCESS_DENIED_EXCEPTION = optionalExceptionType(
+            "org.springframework.security.access.AccessDeniedException");
+    private static final @Nullable Class<?> AUTHENTICATION_EXCEPTION = optionalExceptionType(
+            "org.springframework.security.core.AuthenticationException");
 
     @Override
     protected @Nullable ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -90,7 +99,18 @@ final class KoikiProblemDetailsExceptionHandler extends ResponseEntityExceptionH
     }
 
     @ExceptionHandler(Exception.class)
-    ResponseEntity<Object> handleUnexpectedException(Exception exception, WebRequest request) {
+    @Nullable ResponseEntity<Object> handleUnexpectedException(Exception exception, WebRequest request) throws Exception {
+        // Security filters and ResponseStatusExceptionResolver own these failures,
+        // including their wrapped forms. The API starter does not require Security.
+        if (requiresStandardHandling(exception)) {
+            throw exception;
+        }
+        if (exception instanceof ErrorResponse errorResponse) {
+            return handleExceptionInternal(
+                    exception,
+                    errorResponse.updateAndGetBody(getMessageSource(), LocaleContextHolder.getLocale()),
+                    errorResponse.getHeaders(), errorResponse.getStatusCode(), request);
+        }
         logger.error("Unexpected request processing failure", exception);
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.");
@@ -176,5 +196,27 @@ final class KoikiProblemDetailsExceptionHandler extends ResponseEntityExceptionH
     private static boolean hasCode(ProblemDetail problem) {
         Map<String, Object> properties = problem.getProperties();
         return properties != null && properties.containsKey(CODE_PROPERTY);
+    }
+
+    private static boolean requiresStandardHandling(Throwable exception) {
+        Throwable current = exception;
+        while (current != null) {
+            if ((ACCESS_DENIED_EXCEPTION != null && ACCESS_DENIED_EXCEPTION.isInstance(current))
+                    || (AUTHENTICATION_EXCEPTION != null && AUTHENTICATION_EXCEPTION.isInstance(current))
+                    || current instanceof ResponseStatusException
+                    || AnnotatedElementUtils.findMergedAnnotation(current.getClass(), ResponseStatus.class) != null) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+
+    private static @Nullable Class<?> optionalExceptionType(String className) {
+        try {
+            return ClassUtils.forName(className, KoikiProblemDetailsExceptionHandler.class.getClassLoader());
+        } catch (ClassNotFoundException | LinkageError unavailable) {
+            return null;
+        }
     }
 }

@@ -1,0 +1,11 @@
+{
+  "name": "koiki-reference-session-spa",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "24.19.0", "npm": "11.9.0" },
+  "packageManager": "npm@11.9.0",
+  "scripts": { "build": "tsc --noEmit && vite build && node scripts/verify-build.mjs" },
+  "dependencies": { "react": "19.3.1", "react-dom": "19.3.1" },
+  "devDependencies": { "@types/react": "19.3.0", "@types/react-dom": "19.3.0", "typescript": "7.0.2", "vite": "8.3.4" }
+}

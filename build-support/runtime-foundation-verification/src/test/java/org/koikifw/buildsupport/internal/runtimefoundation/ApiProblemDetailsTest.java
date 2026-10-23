@@ -2,9 +2,11 @@ package org.koikifw.buildsupport.internal.runtimefoundation;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,23 +14,31 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.ClassUtils;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.server.ResponseStatusException;
 import tools.jackson.databind.json.JsonMapper;
 
 @SpringBootTest(classes = ApiProblemDetailsTest.TestApplication.class)
@@ -108,6 +118,35 @@ class ApiProblemDetailsTest {
                 .andExpect(jsonPath("$.detail").value("The fixture request conflicts with current state."));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"/missing", "/wrapped-missing"})
+    void preservesAnnotatedHttpStatusWithoutSecurity(String path) throws Exception {
+        assertFalse(ClassUtils.isPresent(
+                "org.springframework.security.core.AuthenticationException", getClass().getClassLoader()));
+        mockMvc.perform(get("/api/1/problem-fixture" + path))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(not(containsString("fixture-private-detail"))));
+    }
+
+    @Test
+    void preservesCustomErrorResponseStatusHeadersAndBody() throws Exception {
+        mockMvc.perform(get("/api/1/problem-fixture/throttled"))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string(HttpHeaders.RETRY_AFTER, "9"))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.status").value(429))
+                .andExpect(jsonPath("$.code").value("KOIKI-HTTP-429"))
+                .andExpect(jsonPath("$.detail").value("Application capacity is exhausted."))
+                .andExpect(content().string(not(containsString("fixture-private-detail"))));
+    }
+
+    @Test
+    void preservesWrappedResponseStatusException() throws Exception {
+        mockMvc.perform(get("/api/1/problem-fixture/wrapped-status"))
+                .andExpect(status().isGone())
+                .andExpect(content().string(not(containsString("fixture-private-detail"))));
+    }
+
     record FixtureRequest(@NotBlank String label) {
     }
 
@@ -141,6 +180,60 @@ class ApiProblemDetailsTest {
                     HttpStatus.CONFLICT, "The fixture request conflicts with current state.");
             problem.setProperty("code", "FIXTURE-CONFLICT-001");
             throw new ErrorResponseException(HttpStatus.CONFLICT, problem, null);
+        }
+
+        @GetMapping(path = "/missing", version = "1")
+        void missing() {
+            throw new MissingException();
+        }
+
+        @GetMapping(path = "/wrapped-missing", version = "1")
+        void wrappedMissing() {
+            throw new IllegalStateException("fixture-private-detail", new MissingException());
+        }
+
+        @GetMapping(path = "/throttled", version = "1")
+        void throttled() {
+            throw new CapacityException();
+        }
+
+        @GetMapping(path = "/wrapped-status", version = "1")
+        void wrappedStatus() {
+            throw new IllegalStateException("fixture-private-detail",
+                    new ResponseStatusException(HttpStatus.GONE, "The resource is no longer available."));
+        }
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    static class MissingException extends RuntimeException {
+        MissingException() {
+            super("fixture-private-detail");
+        }
+    }
+
+    static class CapacityException extends RuntimeException implements ErrorResponse {
+        private final ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.TOO_MANY_REQUESTS, "Application capacity is exhausted.");
+
+        CapacityException() {
+            super("fixture-private-detail");
+        }
+
+        @Override
+        public HttpStatusCode getStatusCode() {
+            return HttpStatus.TOO_MANY_REQUESTS;
+        }
+
+        @Override
+        public HttpHeaders getHeaders() {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(HttpHeaders.RETRY_AFTER, "9");
+            return headers;
+        }
+
+        @Override
+        public ProblemDetail getBody() {
+            return problem;
         }
     }
 
