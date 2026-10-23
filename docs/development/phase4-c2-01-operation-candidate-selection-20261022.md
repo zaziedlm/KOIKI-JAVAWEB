@@ -1,6 +1,6 @@
 # C2-01：代表外部操作の候補比較と調査・設計範囲（2026-10-22）
 
-状態：**Aの実装・限定検証終了、新規29 PASS／1 SKIP・結果受入待ち（§10）。** 開始承認は§9、具体設計はAだけへ改訂した§7。Bは§8に従い条件付き後続、§6のA＋最小B案は比較履歴。§1〜7の「未実行」等は調査・設計時点の記録として保持し、現行結果は§10と結果文書を入口にする。接続timeout未実証、通常rootの最終clean失敗と集約だけの再開を区別する。結果受入・commit・remoteは別判断。
+状態：**Aの限定検証結果はCOMPLETE / OWNER ACCEPTED（2026-10-23、§11）。新規29 PASS／1 SKIP。** 開始承認は§9、具体設計はAだけへ改訂した§7。Bは§8に従い条件付き後続、§6のA＋最小B案は比較履歴。§1〜10の「未実行」「結果受入待ち」等は各時点の履歴として保持し、現行結果・受入は§10〜11と結果文書を入口にする。接続timeout未実証、通常rootの最終clean失敗と集約だけの再開を区別し、DoD4-7全体は未認定。commit・remoteは別判断。
 
 確認source：`docs/phase4-review-integrated-plan-20261020`／`6fdc2a8`、開始時clean。ツールから確認できるcheckoutはWindowsの`C:/Users/kataoka/Desktop/KOIKI-JAVA/KOIKI-JAVAWEB`。本調査をCloud上の動的検証結果として記録しない。Gitの追跡refに対して1 commit先行しているが、今回remote更新はしていない。
 
@@ -318,3 +318,9 @@ B、既存S1、実provider・新依存・新migration・新UI・CI、commit／pu
 - 通常rootは全test449 PASS／100 SKIP、15 module SUCCESS。最後の集約cleanだけが実行中logのfile lockで失敗した。証拠保全後、集約moduleだけを再開してSUCCESS。単一root commandのBUILD SUCCESSとは記録しない。全testは反復していない。
 - 固定JAR SHA-256は`a6bbf763e5b00a31d86290396ebd27b05a5d10fcce3035d246d5b8985fb6b7dd`。SPA同梱や再packageなし。検証終了後の所有DB／stub／worker／子applicationはcleanup済み。
 - 次は選択結果の受入範囲と残判断の確認。B・S1・新UI・実provider・commit／remoteへ進めていない。
+
+## 11. Aの限定検証結果のOwner受入（2026-10-23）
+
+Ownerは本チャットでC2 Aの検証結果の受入を明示承認した。[結果文書§7](../architecture/validation/phase4-c2-a-implementation-results-20261022.md#7-aの限定検証結果に対するowner受入承認2026-10-23)を承認記録の正本とし、Aの限定検証結果は**COMPLETE / OWNER ACCEPTED**とする。
+
+新規29 PASS／H07接続timeout1 SKIP、通常root全test成功と集約のみ再開成功の区別、Cloudでの静的照合の限界と設定overrideの未検証範囲を保持する。ローカルPC手動確認は今回の受入の追加必須条件にせず、実施済みとも扱わない。DoD4-7全体・C2全体・Phase4全体の達成は認定せず、Bは§8の条件付き後続を維持する。追加追試・B／S1開始・commit／remoteは本受入から自動実行しない。

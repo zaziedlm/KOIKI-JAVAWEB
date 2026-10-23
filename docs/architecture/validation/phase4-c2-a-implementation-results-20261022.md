@@ -1,6 +1,6 @@
 # P4-C2 A：外部照会の実装・限定検証結果（2026-10-22）
 
-状態：**Aの実装・限定検証を終了。新規30候補は29 PASS／1 SKIP（接続timeout未実証）。Owner結果受入・DoD 4-7全体の成立判断は未実施。** Bは条件付き後続を維持する。
+状態：**Aの限定検証結果はCOMPLETE / OWNER ACCEPTED（2026-10-23、§7）。** 新規30候補は29 PASS／1 SKIP（接続timeout未実証）。DoD 4-7全体の成立判断は未実施。Bは条件付き後続を維持する。以下の結果受入待ち等は各確認時点の履歴として保持する。
 
 開始根拠：[C2-01 §9のOwner承認](../../development/phase4-c2-01-operation-candidate-selection-20261022.md#9-aの実装検証に対するowner承認2026-10-22)。Aだけの実装・有限検証を承認したもので、結果受入やcommit／remoteを兼ねない。
 
@@ -113,3 +113,35 @@ JVMは各heap768MiB、局所最大2／package最大3の直列構成。新規DB�
 2. Aの選択結果のOwner受入、DoD 4-7の評価範囲、単一root command SUCCESSを要するかは本結果を入力に判断する。通常rootの全test成功と集約再開成功を、単一clean verify成功へ読み替えない。
 3. BのUNKNOWN／副作用あり操作・receipt・Intent／結果Audit・再送・実providerは未実装／未実証。運用機能確定またはバリエーションの必要性発生時に別設計する。A受入の前提へ戻さない。
 4. commit／push／PR、S1再開、Phase4全体の完了は今回行っていない。
+
+## 6. Cloudでの結果確認（2026-10-23）
+
+`docs/phase4-review-integrated-plan-20261020`、成果commit `87728b7`、未commit変更なしの状態から確認した。§1〜5の「未commit」「remote操作なし」は2026-10-22の検証・記録時点の履歴であり、現在のGit状態を示さない。
+
+今回の確認は、開始承認・A先行設計と、commitされたproduction code・test・結果記録の静的照合。Windows端末内のraw log／XML／固定JARはGit管理外で、このCloud checkoutからは直接確認できない。以下のPASS件数は既存結果記録の引用であり、Cloudでの再実行結果ではない。Maven／Docker／HTTP検証は再実行していない。
+
+| 確認対象 | コード・testとの対応と判断 |
+| --- | --- |
+| 対象と所有 | Referenceの参照専用A、独立externalcheck package、Session GETのみ。Framework差分はHTTP既定値2項目とmetadata。新依存・migration・B用POSTは追加されておらず、A先行の範囲と整合する |
+| retry | `RetryingRateLookup`の別Bean／class-level `@Retryable`は503変換例外だけを対象とする。H02／H06で3試行、400／404／429・不正body・timeoutで再試行しないassertionがあり、結果記録と対応する |
+| 同時実行・回復 | Applicationの`@ConcurrencyLimit(limit=2, policy=REJECT)`とH12の第3要求503・provider到達2件・解放後成功が対応する。同時実行制限の証拠であり、単位時間当たりの要求数制限や複数instanceの保証ではない |
+| HTTP期限 | connect／readの設定経路を確認。H08／H09は既定read300ms、H10はread100msを実HTTPで測る構造。H07は常時assumption不成立でSKIPし、接続timeoutの未実証を明示している |
+| transaction・認可 | Applicationの既存transaction拒否・method認可、Session URL認可を確認。I02は外部到達前拒否、I03は遅延HTTP中のpool active=0と独立SELECT、Session4件は401／403／許可／失効時の到達有無に対応する |
+| 通常構成・固定JAR | Tooling2件は同じ指定hashのJARで有効／無効を実演する構造。無効caseはflagを明示falseにしており、未設定時のpackage実演とは区別する。未設定時の無効化はproductionの`@ConditionalOnProperty(havingValue="true")`から静的に確認した |
+| 件数・build | Reference27 PASS＋H07 SKIP、Tooling2 PASSの計29 PASS／1 SKIPは候補30件と整合する。通常root449 PASS／100 SKIPと、集約clean失敗後の集約のみ再開SUCCESSは別結果として保持する |
+
+設定検証の範囲にも留意する。`ExternalCheckContractTest`はread override、connect既定値、connectの不正Durationと不正URIを確認する構造だが、設計§7.3のconnect100ms override・retry最大追加1回overrideの動作caseは今回のtestに含まれない。retry設定の上限検査はproductionに存在するものの、その起動拒否の独立testもない。これらを検証済みの枝へ含めない。
+
+**確認結論：** 上記の静的照合では、Aの選択結果を限定成果として受入判断へ提示することを妨げる明白な設計・結果記録との不整合は確認しなかった。ただしraw Evidenceの独立照合・Cloud再検証を完了したという意味ではない。推奨する受入範囲は、既存記録に基づくAの選択29件と通常構成保護に限定し、H07未実証・設定overrideの検証範囲・rootの分割結果を残すものとする。
+
+Owner結果受入は未実施のまま維持する。DoD4-7全体の達成、C2全体完了、B開始、追加追試は今回の確認から自動決定しない。Bは引き続き運用機能確定またはバリエーションの必要性発生時の条件付き後続とし、A受入の前提へ戻さない。
+
+## 7. Aの限定検証結果に対するOwner受入承認（2026-10-23）
+
+Ownerは本チャットで「了解です、ローカルPC 手動確認の有用は理解しまして、ここではC2 Aの検証結果の受け入れ承認いたします」と明示した。§1〜5の実装・限定検証結果と§6の確認・留意事項を入力とし、**C2 Aの限定検証結果をCOMPLETE / OWNER ACCEPTED**とする。
+
+- 受入対象はReferenceの参照専用Aについて記録された新規29 PASS／1 SKIP、既存直接回帰89＋Framework6 PASS、同一固定JARでの有効／無効実演、通常構成保護とcleanup。通常root全test449 PASS／100 SKIPと集約clean失敗・集約だけの再開SUCCESSを区別した結果として受け入れる。単一root commandのBUILD SUCCESSへ読み替えない。
+- H07接続timeoutの実効期限、§6のconnect／retry override等の未検証範囲、未設定時のpackage実演と明示false実演の区別を保持する。Windows端末内raw EvidenceのCloud独立照合やCloud動的再検証を実施したという意味ではない。
+- ローカルPCブラウザでの手動確認は有用性を了解した上で、今回の受入の追加必須条件にしない。手動確認を実施済みとは記録しない。
+- DoD 4-7全体・C2全体・Phase4全体の達成を認定するものではない。Bは運用機能確定またはバリエーションの必要性発生時の条件付き後続とし、Aの受入や次packageへの移行条件にしない。
+- 本承認は結果受入であり、追加追試・B／S1開始・commit／push／PRの開始承認を兼ねない。今回の記録反映では動的検証を再実行していない。
