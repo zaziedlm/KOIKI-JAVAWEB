@@ -1,8 +1,12 @@
-# Phase4 継続と設計実装レビュー対応の統合作業計画
+# Phase4 初期標準確立・複数案件採用に向けた統合作業計画
 
 作成日：2026-10-20  
 Ownership：Framework側の計画文書。実装の所有者は各タスクに記載する。  
-状態：**進め方はOwner合意済み／作業分解は計画案**。本書作成は実装開始・検証実行・DoD受入を兼ねない。
+最終見直し：2026-10-23
+
+状態：**§9の優先順・補足方針はOWNER APPROVED（2026-10-23）**。既存の成果・限定受入を保持し、初期標準の確立を軸に推進する。各タスクの具体差分・検証条件・実施結果は段階ごとに更新する。
+
+**現行の推進計画・再開入口：§9。成果・残課題の棚卸し：§8。** 初期標準一覧・配布方針の整理を開始し、D2→D1同期→S1／B1／C2の保証範囲・DoD判定→E1→D3→要件具体化に応じた残タスクの順に進める。C2 Aの受入記録は`05911cc`へcommit済み。§2・§7.3のB1着手順と§8.3のC3先行案は履歴とし、繰り返さない。
 
 ## 1. 合意した進め方と計画の位置
 
@@ -61,7 +65,7 @@ R-01〜03の間に技術的な直列依存はない。上図は一人の作業�
 
 | ID／状態 | 元項目・主担当Ownership | 作業と対象 | 成果・完了条件 | 依存 |
 | --- | --- | --- | --- | --- |
-| I-01／調査・設計対象 | 共通／Tooling | 作業branch・source、未commit文書、利用するartifactとtest入口を確認。通常／専用asyncの区別、変更対象と直接回帰を一覧化する | 作業source、対象path、実行予定集合、資源・時間・cleanup条件が追える。過去PASSを現sourceの結果にしない | 本計画 |
+| I-01／B1着手時の確認済み・再開時に差分確認 | 共通／Tooling | 作業branch・source、未commit文書、利用するartifactとtest入口を確認。通常／専用asyncの区別、変更対象と直接回帰を一覧化する | 作業source、対象path、実行予定集合、資源・時間・cleanup条件が追える。過去PASSを現sourceの結果にしない。次packageでは必要な差分だけ確認する | 本計画、現行sourceは§8.1 |
 | R-00／限定変更・検証完了 | F5／Reference test | `ReferenceArchitectureTest`1 fileの両importへ`DO_NOT_INCLUDE_TESTS`を追加。fixture配置・Rulesは維持 | clean compile＋既存2件／規約負例5件PASS。両importともtest由来0。[限定結果](../architecture/validation/phase4-r00-production-import-results-20261020.md)にsource／XMLを対応付け | I-01成立。過去の15違反を現在の失敗とせず、検査責務を明示 |
 | R-01／限定変更・検証完了 | F1／Framework API Starter | 汎用AdviceとSecurity・HTTP例外の責任を整理し、標準処理へ伝播する修正と合成testを作る。Reference局所再throwの必要性も照合 | 認証済み拒否403、未認証の経路別応答、独自404、予期せぬ500、MVC／HTMX／APIの応答が意図どおり。回避策除去は検証成立時だけ | I-01、比較するarchitecture検証はR-00後 |
 | R-02／限定変更・検証完了 | F2／Reference identity構成 | 独自CookieSerializerをBoot管理へ戻すか設定反映するかを選び、logout customizerとの生成順も確認・修正 | 明示Secure／SameSiteがSet-Cookieへ反映。HTTPS判定の有無とlogout削除Cookieのname／pathを確認。property値の確認だけで閉じない | I-01、B1-02のCookie／logout要求と照合 |
@@ -73,9 +77,9 @@ R-01〜03の間に技術的な直列依存はない。上図は一人の作業�
 
 | ID／状態 | 主担当Ownership | 作業と対象 | 成果・完了条件 | 依存 |
 | --- | --- | --- | --- | --- |
-| B1-01／調査・設計対象 | Reference | DoD 4-8／4-9に既存MVC、Bearer REST、Session、CSRF、expense Use Case・DTO・testを対応付ける。参照＋更新の代表操作を選ぶ | 「存在するもの／再利用／変更／不足」の差分表。SPA対象操作と対象外を確定。Customer BFFを代替としない | I-01。R-00〜03の完了不要 |
-| B1-02／調査・設計対象 | Reference、Framework Security契約review | Session SPA APIとMVCと既存Bearerのmatcher・order・認証応答・CSRF取得／送信／更新・logout・Cookie・権限／scopeを設計。F1〜F4を対応付ける | route別のSecurity／CSRF／error表。API versionはF4の既存回避策継続を基準案とし、変更が必要な場合だけ根拠を示す。default deny維持 | B1-01。R-01〜03の設計へ入力 |
-| B1-03／調査・設計対象 | Reference frontend、Tooling検証 | 最小Reactの画面、Session APIとの接続、同一originでのbuild／配置、依存・lockfile・package方法、実browserとDB／Audit照合を具体化 | 画面・操作一覧、build／配布構成、依存差分、検証表、概算と実行条件。frontendの詳細方式は既存資材を調べて決める | B1-01〜02。基盤修正の完了不要 |
+| B1-01／設計反映済み | Reference | DoD 4-8／4-9に既存MVC、Bearer REST、Session、CSRF、expense Use Case・DTO・testを対応付ける。参照＋更新の代表操作を選ぶ | B1設計記録の差分表・選定操作をB1-05〜07へ反映済み。Customer BFFとは別対象 | I-01。R-00〜03の完了不要 |
+| B1-02／設計反映済み | Reference、Framework Security契約review | Session SPA APIとMVCと既存Bearerのmatcher・order・認証応答・CSRF取得／送信／更新・logout・Cookie・権限／scopeを設計。F1〜F4を対応付ける | route別のSecurity／CSRF／error表をB1-05〜07へ反映。F4はReferenceの経路設定で扱い、Framework既定変更を完了条件にしない | B1-01。R-01〜03の設計へ入力 |
+| B1-03／設計反映済み | Reference frontend、Tooling検証 | 最小Reactの画面、Session APIとの接続、同一originでのbuild／配置、依存・lockfile・package方法、実browserとDB／Audit照合を具体化 | 選定UI・固定依存／lock・同梱profile・検証構成をB1-06〜07へ反映済み | B1-01〜02。基盤修正の完了不要 |
 | B1-04／合流点検・実装計画整理済み | Framework計画・Owner判断 | B1設計記録§9にR-00〜03との整合、Reference／Tooling対象、局所／合流検証、概算・実行条件を整理 | 次はB1-05の開始判断。test method数・通常root全体資源・frontend取得条件は実装／実行前に具体化。機能作成・実行・受入は今回未実施 | B1-01〜03、R-00〜03。F6／F7／H1／S1完遂は前提外 |
 | B1-05／実装・局所検証完了 | Reference backend | Session API、Security／CSRF・login／両logout、専用10 DTO／mapper／業務Adviceを実装。既存Use Case・Framework契約を再利用 | 新規72＋既存77＝149件PASS。次はB1-06。実browser・DoD・Owner受入は未実施 | B1-04とOwnerの未commit保持での実装開始指示。B1設計記録§10 |
 | B1-06／実装・局所検証完了 | Reference frontend | 選定した最小SPAを実装し、login後の参照・更新、失効／拒否／競合の表示をつなぐ | package済みReference上で代表操作が実行でき、MVCで同じ業務結果を確認できる | B1-05。画面構成の設計はB1-03で先行 |
@@ -129,30 +133,32 @@ R-05／06はレビューと採用支援の共通作業として一度だけ計�
 | P4-E1 正式受渡し・release | §5.2、E1-01〜03 | 対象確定→配布・診断手順→受入 |
 | P4-OPT 条件付き拡張 | §5.2、OPT-01〜02 | 明示要求→採否・対象判断。採用後の実装分解は未実施 |
 
-全テーマについて、作業段階・Ownership・必要入力・出口・関連レビューを整理している。一方、個々の作業をそのまま実行できる詳細計画までは確定していない。特にB1以外は、対象ファイル、具体的な実装仕様、検証ケース・コマンド、工数・実施時期、テーマ間の実施順が未確定である。B1も対象ファイル・仕様・検証・工数などを調査・設計で具体化する部分が残る。
+全テーマについて、作業段階・Ownership・必要入力・出口・関連レビューを整理している。一方、全テーマをそのまま実行できる詳細計画がそろった状態ではない。B1とC2 Aは個別設計・実装・選定検証まで進んだが、他の後続packageは対象ファイル、具体仕様、検証集合・command、工数・実施時期が未確定。現在の状態と次候補は§8を参照する。
 
-現在の計画は、**全テーマを収録した作業台帳と、直近B1・レビュー是正の詳細分解**である。Phase4全体を同じ粒度で実行計画化し終えた状態ではなく、次に選ぶテーマから詳細化する。上表は§3・§5.2の索引であり、別タスクとして二重計上しない。
+現在の計画は、**全テーマを収録した作業台帳と、B1・レビュー是正・C2 Aの個別成果への導線**である。Phase4全体を同じ粒度で実行計画化し終えた状態ではなく、次に選ぶテーマから詳細化する。上表は§3・§5.2の索引であり、別タスクとして二重計上しない。
 
 ### 5.2 各テーマの作業単位と着手条件
 
-以下は棚卸し§4／§9の全テーマを具体作業へ接続したもの。**B1後の実施順は未確定**で、B1-08で必要性・入力・検証可能性から次の一つを選ぶ。各行の01→02→03は同一テーマ内の順序であり、テーマ間の直列順序ではない。
+以下は棚卸し§4／§9の全テーマを具体作業へ接続したもの。各行の01→02→03は同一テーマ内の順序であり、表順はテーマ間の実施順ではない。**現在の優先順と各行の着手時期は、後続のOwner承認を反映した§9に従う。**
 
 | 元package／状態 | 作業単位 | 主担当Ownership・必要入力 | 完了条件／レビューとの接続 |
 | --- | --- | --- | --- |
-| P4-B1／直近 | B1-01〜08 | §3参照 | DoD 4-8／4-9。F1〜F5を対応付け済み |
+| P4-B1／実装・選定検証済み、DoD全体受入は未判断 | B1-01〜08 | §3・§8参照。選定ブラウザ結果はOwner受入済み | DoD 4-8／4-9の全体受入・B1-08全体の状態を判断する残作業。F1〜F5を対応付け済み |
 | P4-C2／A限定結果COMPLETE / OWNER ACCEPTED（2026-10-23） | C2-01 A照会契約と開始承認→02 Port／Adapter・限定retry・timeout・枠2→03 同一JARの有効／無効実演・限定結果受入まで実施。Bは運用機能確定・バリエーションの必要性発生時に別判断 | Reference／Tooling。[設計・結果・受入§9〜11](phase4-c2-01-operation-candidate-selection-20261022.md#11-aの限定検証結果のowner受入2026-10-23)、[受入承認正本§7](../architecture/validation/phase4-c2-a-implementation-results-20261022.md#7-aの限定検証結果に対するowner受入承認2026-10-23)。新規29 PASS／接続timeout1 SKIP、直接回帰89＋Framework6 PASS。成果commitは87728b7 | DoD4-7全体・C2全体は未認定。通常root全test449 PASS／100 SKIP、最後の集約clean失敗と集約だけの再開SUCCESSを区別。設定override等の検証限界を保持。ローカルPC手動確認は受入の追加必須条件にしない。BのUNKNOWN・Auditは未実装／未実証で後続へ残し、A受入・次package移行の条件にしない。追加追試・S1再開・commit／remoteの開始承認を兼ねない |
-| P4-C3／後続候補 | C3-01 別Batch RepositoryのHEAD・互換性とjob選定→02 non-Web起動・永続metadata・単一実行→03 二重起動・停止後restart／rerun・Audit実演 | Reference／Tooling、Batchは別所有。job・運用主体・DB入力 | DoD 4-10。R-06はDB構成が該当する場合に接続。S1パージ完了と切り離す |
-| P4-C4／後続候補 | C4-01 代表操作・保存／DB確定境界→02 Port／Adapterと受付／公開→03 重複・path・権限・容量・途中停止・cleanup | Reference／Tooling。storage／format入力。C3連携は必要時だけ | local fileとObject Storageの実証範囲を区別。共有harnessは一度だけ計上 |
-| P4-D1同期／後続候補 | D1S-01 同期trace／log／metricとsink契約→02 tracer／exporter接続→03 相関・context非漏えい・sink障害実演 | Framework／Tooling。sink・保持・運用入力 | 同期OpenTelemetry成果物のEvidence。S1非同期のDoD 4-12を閉じない |
-| P4-D2／後続候補 | D2-01 Java21 build／25 opt-inと比較条件→02 同じ操作の有効／無効・context／pool比較→03 CI系統と利用ガイド | Framework／Tooling。runner・負荷・時間・workflow判断 | DoD 4-11は実CI結果で判定。既定無効維持、local比較だけで完了にしない |
-| P4-D3／後続候補＋platform入力待ち | D3-01 固定JAR／image・起動契約→02 local containerのhealth／診断／停止再起動→03 実ECS差分と実演 | Reference／Tooling＋platform。secret・network・費用・権限 | local／ECS別Evidence。F2の実Cookie条件とR-06のmigration構成を該当時に照合 |
+| P4-C3／要件具体化待ち（§9.6） | C3-01 別Batch RepositoryのHEAD・互換性とjob選定→02 non-Web起動・永続metadata・単一実行→03 二重起動・停止後restart／rerun・Audit実演 | Reference／Tooling、Batchは別所有。job・運用主体・DB入力 | DoD 4-10。R-06はDB構成が該当する場合に接続。S1パージ完了と切り離す |
+| P4-C4／要件具体化待ち（§9.6） | C4-01 代表操作・保存／DB確定境界→02 Port／Adapterと受付／公開→03 重複・path・権限・容量・途中停止・cleanup | Reference／Tooling。storage／format入力。C3連携は必要時だけ | local fileとObject Storageの実証範囲を区別。共有harnessは一度だけ計上 |
+| P4-D1同期／優先第2段階（§9） | D1S-01 同期trace／log／metricとsink契約→02 tracer／exporter接続→03 相関・context非漏えい・sink障害実演 | Framework／Tooling。sink・保持・運用入力 | 同期OpenTelemetry成果物のEvidence。S1非同期のDoD 4-12を閉じない |
+| P4-D2／次の具体化対象・優先第1段階（§9） | D2-01 Java21 build／25 opt-inと比較条件→02 同じ操作の有効／無効・context／pool比較→03 CI系統と利用ガイド | Framework／Tooling。runner・負荷・時間・workflow判断 | DoD 4-11は実CI結果で判定。既定無効維持、local比較だけで完了にしない |
+| P4-D3／優先第5段階・実ECS入力待ち（§9） | D3-01 固定JAR／image・起動契約→02 local containerのhealth／診断／停止再起動→03 実ECS差分と実演 | Reference／Tooling＋platform。secret・network・費用・権限 | local／ECS別Evidence。F2の実Cookie条件とR-06のmigration構成を該当時に照合 |
 | P4-C0／C1／保留維持 | C0-01 adoption trigger確認→02 分離モデル・規約／依存review→C1-01 accounting実装→02 競合・rollback・共通error実演 | Architecture／Framework規約、Reference。MyBatis採用入力 | DoD 4-6。C0前はRule8拒否維持。元計画のA1連携依存と独立検証可能部分を開始時に区別し、S1全体を自動再開しない |
 | P4-B2／入力待ち | B2-01 Customer API／BFF／認証選択取得→02 gap審査→03 Customer結合Evidenceの受入 | Customer主導、Framework契約review。案件／IdP／環境入力 | B1の代替DoDにしない。F1／F4〜F7のうち採用構成に関係する項目を照合 |
 | P4-04／P4-EDGE／入力待ち | EDGE-01 認証終端と到達credential確認→02 SAML／broker／OIDC等の採否→03 必要Adapterと実環境検証 | Customer／platform＋Architecture | SAMLの当初成果物としての採否を明記。ALB採用だけでAdapter追加を決めない |
-| P4-E1／入力待ち | E1-01 対象artifact／version／checksum／support→02 配布・受取・診断手順→03 独立Consumerと実チーム受入 | Framework release＋platform＋Customer | 内部snapshot／checkpointと正式受渡しを分離。R-05／06を採用構成に照合。Phase5全体へ広げない |
+| P4-E1／方式整理先行・優先第4段階（§9） | E1-01 対象artifact／version／checksum／support→02 配布・受取・診断手順→03 独立Consumerと実チーム受入 | Framework release＋platform＋Customer | 内部snapshot／checkpointと正式受渡しを分離。R-05／06を採用構成に照合。Phase5全体へ広げない |
 | P4-OPT／保留維持 | OPT-01 Authorization Server／Oracleの明示要求→02 採否・対象・実環境・費用の個別判断 | Architecture＋Customer／platform | 必須DoD外。未採用を完了へ置き換えない |
 
 ### 5.3 非同期系の残課題
+
+現行の評価時期は§9の第3段階に従い、追加機能を抑制して保証範囲・残アクションを整理する。以下の再開条件は追加実装・動的検証の扱いとして維持する。
 
 P4-A1／A2・D1非同期とS1-01〜10は、[棚卸し§6〜8](phase4-continuation-task-inventory-20261016.md)の限定受入・人手HOLD・未達を保持する。次の三つを区別して管理する。
 
@@ -168,9 +174,9 @@ P4-A1／A2・D1非同期とS1-01〜10は、[棚卸し§6〜8](phase4-continuatio
 | --- | --- | --- | --- |
 | AD-01／実チーム入力待ち | 01 worksheetと構成確認→02 build/run/operation/diagnosis Evidence照合→03 findingと受入判断 | Customer実行結果。Framework準備と実チーム受入を分ける | R-05／06、B2、E1。共通Consumer検証を重複計上しない |
 | AD-02／実チーム入力待ち | 01 Linux／WSL試行結果取得→02 失敗条件の再現と環境ガイド更新 | チーム環境の非機密Evidence。Windows PASSを代替にしない | B1 frontendの環境要件はB1-03で確認し、AD-02全体の完了は待たない |
-| AD-03／方式採用待ち | 01 開発専用Maven stage方式判断→02 IDE／CLI切替・更新・診断Tooling→03 試用 | 既存比較案を入力に恒常方式を選択 | I-01で必要な局所artifact準備と恒常方式を分ける |
+| AD-03／E1先行整理へ接続・方式判断待ち | 01 開発専用Maven stage方式判断→02 IDE／CLI切替・更新・診断Tooling→03 試用 | 既存比較案を入力に恒常方式を選択 | I-01で必要な局所artifact準備と恒常方式を分ける |
 | AD-04／保留維持 | 01 Customer POM検討時期と共有結果確認→02 再開判断成立時だけ誤選択検証・例外運用を具体化 | Owner了解済み検証保留の解除判断 | F6／F7があることだけで再開しない |
-| AD-05／恒常方式判断待ち | 01 用途別artifact一覧・不足診断→02 採用範囲の準備／offline確認→03 更新・復旧手順 | 選択Toolingの限定LOCAL PASSを入力に必要分を判断 | I-01の不足が生じた対象だけ対応。全Tooling準備をB1前提にしない |
+| AD-05／E1先行整理へ接続・恒常方式判断待ち | 01 用途別artifact一覧・不足診断→02 採用範囲の準備／offline確認→03 更新・復旧手順 | 選択Toolingの限定LOCAL PASSを入力に必要分を判断 | I-01の不足が生じた対象だけ対応。全Tooling準備をB1前提にしない |
 
 ## 7. 作業の管理と次の着手点
 
@@ -193,7 +199,7 @@ P4-A1／A2・D1非同期とS1-01〜10は、[棚卸し§6〜8](phase4-continuatio
 
 ### 7.3 次の具体作業
 
-**次はI-01とB1-01を行い、既存コード／testのpath付き差分表と代表操作案を作る。** 続けてB1-02のroute／CSRF／error表と、R-00〜03の変更対象・最小回帰を具体化する。成果は一つのB1設計記録へまとめ、内容の重複する開始票を連続して増やさない。
+**着手当時の順序（履歴）：** I-01とB1-01で既存コード／testのpath付き差分表と代表操作案を作り、B1-02のroute／CSRF／error表とR-00〜03の変更対象・最小回帰を具体化した。成果はB1設計記録へ集約済み。現在の次候補・残判断は§8を参照し、この初期調査を再度開始しない。
 
 **2026-10-20着手・具体化記録：** [B1設計記録](phase4-b1-session-spa-mvc-design-20261020.md)へ、I-01のsource・環境・検証入口、B1-01の差分表・代表操作、R-00〜03の対象・最小回帰をまとめた。継続してB1-02の標準spa()・Cookie属性・login／logout接続と失敗応答・10 DTO、B1-03の依存version・Reference限定build profile・生成／copy順・JAR検査と追加検証を具体化した。次はR-00のclean compile・直接回帰の実行準備。実行環境preflight・基盤是正・B1実装・動的検証は未実施。本節冒頭は着手時の順序として保持し、以後も同じ設計記録を更新する。
 
@@ -231,7 +237,165 @@ P4-A1／A2・D1非同期とS1-01〜10は、[棚卸し§6〜8](phase4-continuatio
 引継ぎでは次の二点に留意する。
 
 - **ReviewProbeは不具合再現の記録**：問題挙動を期待値にしているため修正後に失敗し得る。既存Surefire XML・compiled classに依存し、clean checkout単独で動く恒常的な回帰testではない。
-- **現行入口と履歴の区別**：README等には過去のmain統合・tag手順や当初の順序も残る。再開入口は本書I-01／B1-01とし、古い「次の作業」をそのまま繰り返さない。
+- **現行入口と履歴の区別**：README等には過去のmain統合・tag手順や当初の順序も残る。再開入口は本書§9、棚卸しは§8とし、古い「次の作業」をそのまま繰り返さない。
 
 
 **2026-10-21 B1-07結果：** B1-06を`2b0ed5b`へ固定後、同branchで合流検証を実施。[最終結果](../architecture/validation/phase4-b1-07-integrated-browser-results-20261021.md)は通常root／同梱構成各422実行PASS＋99 skip、同じ最終同梱JARの新旧browser計2件PASS。実演で判明したMVC日付初期値と同一明細IDの保存を最小訂正し、locale2件・実DB1件を追加。途中停止／訂正前artifactを保持し、資源・cleanupを確認した。ローカル手動確認は[計画](phase4-b1-07-local-browser-check-plan-20261021.md)へ分離し未実施。次は手動確認の実施判断とB1-08のDoD受入整理。今回commit・push・PR作成は行っていない。
+
+## 8. C2 A受入後の棚卸しと次候補（2026-10-23）
+
+Ownerの「次タスク、さらにそれ以降のタスクの棚卸し」「ズレをなくす」との指示に基づく更新。既存IDを維持し、新しい機能・全体Gateを増設しない。本節の成果・不足入力を保持し、§8.3の当初候補順は後続の§9の承認済み順序へ差し替える。
+
+### 8.1 sourceと今回訂正したずれ
+
+- 作業branch：`docs/phase4-review-integrated-plan-20261020`、HEAD `05911cc`。今回の棚卸し開始時clean、ローカルの追跡refより1 commit先行。remoteの最新状態・CI・PRは今回確認していない。
+- 実装成果`87728b7`、結果確認・Owner受入記録`05911cc`。C2 Aは[結果文書§7](../architecture/validation/phase4-c2-a-implementation-results-20261022.md#7-aの限定検証結果に対するowner受入承認2026-10-23)の限定範囲でCOMPLETE / OWNER ACCEPTED。
+- B1-01〜03を「調査・設計対象」のままにしていた表示と、§7.3・引継ぎの古い再開入口を訂正した。B1-04〜07等の各時点の「次は」「未実施」は当時の記録として読む。今回、新たなOwner受入や動的検証を行ったものではない。
+- B1-08の「後続package未選定」は[2026-10-22のブラウザ結果受入時点](../architecture/validation/phase4-b1-08-local-acceptance-input-20261022.md#5-選定ブラウザ検証結果のowner受入2026-10-22)の履歴。C2はその後に個別開始・結果受入済み。一方、DoD4-8／4-9全体受入・B1-08全体完了の明示記録は依然未確認であり、C2着手をその承認の代用にしない。
+- 2026-10-05の他package分解の概算・順序は比較履歴。実施済みB1／C2 Aの残工数として再計上せず、今後の総額・予算承認にも流用しない。
+
+### 8.2 固定済み成果と残る判断
+
+| 既存ID | 確認できる現在地 | 残る行為・扱い |
+| --- | --- | --- |
+| R-00〜03／F5・F1〜3 | 限定修正・検証は実施済み。§3と各結果記録を参照 | 同じ修正を再開しない。新たな差分に直接影響がある時だけ必要回帰を選ぶ |
+| B1-01〜07・R-04／F4 | 設計・実装・選定自動検証、Session／MVC経路設定まで実施済み | 2026-10-21のbrowser成功、22日のCloud再検証とWindows実測は別source／artifact／環境として保持 |
+| B1-08 | 自宅PCの選定ブラウザ結果はOwner受入済み | 既存§4.1のEvidence表を入力にDoD4-8／4-9全体の受入範囲・B1-08全体状態を判断する。会社PC・戻る／進む単独確認・新Cloud browser未実行等を明示し、全件再検証を自動追加しない。他package調査を止める新しい前提にはしない |
+| C2-01〜03のA | 新規29 PASS／1 SKIP、選定回帰・通常構成保護・cleanupの限定結果をOwner受入済み | H07接続timeout、connect／retry override等の検証限界、root分割結果を保持。必要性が具体化した時に対象を限定して追試を判断。C2／DoD4-7全体は未認定 |
+| C2のB | 運用機能確定／バリエーション必要性発生時の条件付き後続 | UNKNOWN・副作用あり操作・Intent／結果Audit等は未実装／未実証。A受入や次package移行の前提に戻さない |
+
+### 8.3 棚卸し時の候補順（比較履歴・§9へ差替え済み）
+
+**以下は複数案件採用の優先方針が示される前の比較案で、現行の着手順ではない。** C3先行案を比較履歴として保持する。各packageの作業分解・不足入力は再利用するが、C3は§9の要件具体化待ちへ移した。B1-08の残判断とR-09の導線整理も§9へ接続する。
+
+| 候補順／既存ID | 次に行う具体作業 | 出口・後続の実装／検証 | 現在の不足・切替条件 |
+| --- | --- | --- | --- |
+| 1：C3-01 non-Web Batch | `koiki-batch-fw`の現在のbranch／HEAD／AGENTS、Java／Boot／Batch・座標／配布状態、永続JobRepository・排他／再実行・Auditの既存保証を確認。代表jobを1つ選び、metadataと業務結果の所有・DB構成を定める | C3-02の最小接続・non-Web起動案と、C3-03の二重起動／停止後restart・rerun／Audit検証を、差分・ケース・資源／cleanupまで具体化。必要ならR-06を接続 | 連携先は[既存決定記録§6](phase4-s1-completion-direction-decision-20261002.md#6-batch-framework点検材料と採用判断の境界)の[zaziedlm/koiki-batch-fw](https://github.com/zaziedlm/koiki-batch-fw)。このworkspaceにcloneはなく、現在の接続可否・branch／HEADは未確認。旧`c999298`を現状としない。基盤側改修が必要なら別所有の作業として切り出す |
+| 2：C4-01 File／Object Storage | 代表file操作・format／storage範囲、受取完了・重複・保存／公開／DB確定境界を選定。C3との共有が必要か判断 | C4-02 Port／Adapterと受付・公開→C4-03 path／権限／容量／途中停止／cleanup。共有harnessは一度だけ計上 | C3全体完了は必須依存ではない。local fileと実Object Storageを区別し、bucket・権限等の不足は該当段階の入力待ちにする |
+| 3：D1S-01 同期観測 | 同期HTTPのtrace／log／metric、tracer／exporter／sink、非露出・保持条件を選ぶ | D1S-02接続→03相関・context非漏えい・sink障害の実演。S1と共有できる準備だけ一度計上 | sink・運用入力待ちの部分を分離。S1非同期のDoD4-12をこれで閉じない |
+| 4：D2-01 Virtual Threads | Java21 build／25 opt-in、同じ操作・artifactの比較条件、context／pool／負荷、CI候補を具体化 | D2-02有効／無効比較→03 CI系統・利用条件。実CI未実施をlocal結果からPASSにしない | runner・実行枠・workflow判断が不足。既定無効を維持 |
+| 5：D3-01 Container | 固定JAR／base image・起動／health／secret／migration／終了の契約を選ぶ | D3-02 local起動・診断・停止再起動→03実ECSの差分・実演 | localとECSは別段階。ECSはaccount／権限／network／費用／cleanup入力待ち。image配布・deployを自動開始しない |
+
+当時の比較案は技術上の直列依存を示すものではなかった。現在は§9の順序を採用し、C3のsource取得を直近の前提にしない。各packageの正確な残工数・実施日は未確定で、具体差分と検証集合から見積もる。
+
+### 8.4 入力待ち・条件付き後続と横断課題
+
+| 既存ID | 維持する状態・再開条件 | どこへ接続するか |
+| --- | --- | --- |
+| C0／C1：MyBatis・accounting | adoption trigger待ち。Rule8拒否・DEFERREDを維持 | 採用時に分離モデル・規約／依存review→実装・競合／rollback。S1を自動再開しない |
+| B2：Customer REST／BFF | 案件API・IdP・認証profile・frontend・実環境Evidence待ち | Customer主導でgap審査と結合Evidence。B1の代替達成にしない |
+| P4-04／EDGE | 認証終端・credential・SAML／broker／OIDC／ALB等の採否入力待ち | 必要なAdapterだけ個別設計。SAMLの当初成果物としての扱いを最終判定に残す |
+| E1：正式受渡し | §9により配布方針・初期標準の整理を先行し、第4段階で初期提供版を固定。実チーム受入等の不足入力を管理 | R-05／06・AD-01を採用構成へ接続。内部snapshot・checkpoint、初期提供版、Phase5の正式supportを区別 |
+| OPT：Authorization Server／Oracle | 明示要求・採用判断待ち。必須DoD外 | 採用時に対象・実環境・費用を具体化 |
+| S1-T1〜3：非同期残課題 | 限定受入・人手HOLD・運用OPENを維持。§9の第3段階で既存成果の保証範囲・DoDを評価。追加機能・動的再実行は不足と必要性に応じて対象を限定 | DoD4-1〜4-5／4-12の成立・未達を対応付け、アクションを後続化。他packageの都度再開しない |
+| R-05／F6：Entity scan | 新規Consumer／E1等で構成を選ぶ時に最小Consumer実証と導入契約判断 | AD-01／E1に一度だけ計上 |
+| R-06／F7：Flyway接続・schema | C3／D3／Customerで採用DB構成が該当する時に検証 | 同一DataSource／schema・migration専用接続・strategy置換を区別。全構成対応を先行要求しない |
+| R-07／H1：master並行更新 | 対象業務操作の変更・保証要求が具体化した時 | 必要な有限再現と保証範囲。未実証懸念を確定不具合として閉じない |
+| R-08：非同期回帰／CI | expense／event／notificationへの直接影響、またはCI運用要求がある時 | 必要回帰のみ選定。恒常CI追加は別判断 |
+| R-09：開発者向け導線 | R-00〜03・B1・C2 Aで確定した利用条件／制約のガイド反映状況を点検する文書作業が残る | 既存Journey／guideから正本へリンクし、同じ説明を新文書へ複製しない。R-05／06の未確定契約を先に正式化しない |
+| R-10：変更種別の整理 | 各タスクの内部修正・公開契約・実環境／remoteの区別を継続 | 独立した機能実装・包括Gateとして二重計上しない |
+| AD-01／02 | 実チームの受入Evidence、Linux／WSL試行結果待ち | B2／E1／R-05〜06。CloudでのLinux実行成功を実チーム受入の代用にしない |
+| AD-03／05 | Maven stage恒常方式、用途別artifact準備・更新／復旧方式の判断待ち | 選定タスクで実際に不足する準備だけ対応。全Tooling整備を先行条件にしない |
+| AD-04 | Customer依存宣言の検証保留を維持 | Customer POM検討・再開判断の時だけ具体化 |
+
+### 8.5 以後の台帳更新と完了判定
+
+日々の確認では本節のsource・状態・新しい差分だけを更新し、初期設計や全件調査を毎回やり直さない。タスクごとに「選定／具体化→実装→検証→受入→成果固定」のどこまで成立したかと、次の一手・不足入力を残す。限定受入、機能package全体、DoD全体、remote統合の状態は混同しない。
+
+現行の次の一手・優先順・Owner判断は§9を更新する。本節は成果・不足入力の台帳として維持する。
+
+Phase4全体の最終判定には、DoD4-1〜4-12と番号なし成果物（File／Object Storage、同期OpenTelemetry、Container／ECS、SAML等）の成立・未達・採否／延期判断、実チーム受入とrelease判断を対応付ける。本棚卸しで保留項目を不要・完了に変更していない。今回の変更は計画文書のみで、追加test・Batch取得・production変更・commit／pushは行っていない。
+
+## 9. 初期標準確立に向けた見直し推進計画（OWNER APPROVED／2026-10-23）
+
+### 9.1 背景・承認と目的
+
+Ownerから、1件の実案件への適用が計画・進行中で、他案件にも採用見込みがあり、案件ごとのFramework要求差を踏まえて初期標準機能群を早期に明示・確立する必要があるとの状況共有を受けた。これを優先順の見直し根拠とする。未取得の案件要件や実環境の成立は推定しない。
+
+Ownerは提示順の点検後、「提示案を維持し補う形の案を採用承認いたします。これを、見直したタスク推進計画文書にまとめていってください」と明示した。承認対象は本節の優先順と補足方針。§8.3のC3先行案に代えて採用し、既存のpackage／WBS IDへ接続する。
+
+目的は、案件横断で参照できる提供物・適用条件・保証範囲・更新方法を定め、各案件が同一のFramework基準から必要機能を選べる状態にすること。追加の案件要望は、既存機能の利用、案件所有の拡張、共通契約の不足、Framework不具合候補に分けて判断する。一案件の要求をそのまま標準へ取り込まず、[既存の提供機能ガイド§5](framework-capabilities-and-selection-guide.md#5-フィードバックと機能拡充の判断原則)と上位設計のFramework昇格条件を用いる。
+
+### 9.2 承認済みの順序と成果の出口
+
+```text
+初期標準一覧・配布方針の整理を開始（E1-01／R-09／AD-03・05へ接続）
+  → 1. D2 Virtual Threads：実行基盤・Java対応・有効化条件
+  → 2. D1同期観測：運用診断につながるtrace／log／metric
+  → 3. S1残課題＋B1・C2：保証範囲・DoD判定と後続アクション
+  → 4. E1：初期提供版・参照取り込み／更新方法の固定
+  → 5. D3：frontend配置を含むcontainer／ECSの段階実証
+             → 結果・修正をE1の提供版／適用条件へ反映
+  → 6. 要件具体化・必要性に応じた残タスク
+```
+
+| 段階／既存ID | 優先理由・実施内容 | 出口・次へ渡すもの |
+| --- | --- | --- |
+| 先行整理：E1-01／R-09／AD-03・05 | 初期標準機能の一覧と配布方針をD2着手時から整理。既存成果・条件付き機能・Reference・対象外を区別し、案件が採用断面を識別できるようにする | §9.3の一覧初版、提供物・版識別・取得方法の論点。ここで全項目を最終確定させる新しいGateは設けず、D2以降の判断を同じ一覧へ反映 |
+| 1：D2-01〜03 | Java実行基盤として優先判断。Java target／build JDK／runtimeとVT opt-inを区別し、既定無効を維持。比較条件→有効／無効の同じ操作・artifact比較→実CIと利用条件を具体化 | 対応構成・有効化条件・制限・検証根拠。高速化や全案件での有効化を完了条件にしない。D2内で必要な応答時間／thread／pool／context観測を用意し、D1全体完了は待たない |
+| 2：D1S-01〜03 | 運用実務に必要な同期trace／log／metricの観測契約→tracer／exporter接続→正常・拒否・遅延・失敗・context非漏えい・収集先障害を実演 | 要求から原因へ辿れるEvidenceと診断手順。sampling・非露出・cardinality・資源上限・保持／アクセス責任を明示。S1と共有する観測準備は一度だけ計上し、非同期DoD4-12を自動充足しない |
+| 3：S1-T1〜3／B1-08／C2-03 | 非同期を主軸に既存成果と未達を照合。B1・C2も含め、既存Evidenceで保証範囲・DoDの成立／未達・適用条件を評価。追加機能を抑制 | 「保証できること／できないこと／利用条件／残アクション」を記録。必要な追試・限定訂正、利用制限、後続化を区別。限定結果に理由を付けるだけで未達をPASSにせず、§9.5へ残す |
+| 4：E1-01〜03＋R-05／06・R-09・AD | Framework JAR群・Parent／BOMの固定と管理、案件の参照取り込み・更新を確立。採用構成の最小外部Consumer、取得・build・起動・診断と受領側Evidenceを照合 | artifact／version／checksum／source対応、配布先、導入・更新・既知制約の案内を備えた初期提供版。Phase5のv1.0／support条件・全体完了とは分ける。D3後の変更を受ける版管理を用意 |
+| 5：D3-01〜03 | Framework外で所有するfrontend moduleも配置境界に含め、Java backend containerの構成・build／run／health／診断／停止を検証。localと実ECSを段階分離 | frontend／backendの取得・build・配置と認証境界、固定JAR／image、起動・障害・cleanup Evidence。実ECSの不足入力を明示し、E1の版・対応表・導入手順へ結果を反映 |
+| 6：C3／C4・B2・C0／C1・P4-04／EDGE | §9.6の需要・要件具体化に応じて着手 | 初期標準へ無条件に追加せず、要件・所有・差分・検証・保守範囲を具体化したものから選定 |
+
+この順序はOwner＋Codexで順次推進する優先順であり、技術的に全前段を完了しなければ後段の文書整理もできないという意味ではない。E1の方式整理は先行し、D2・D1・保証範囲判断を受けて第4段階で提供版を固定する。入力待ち等で順序の見直しが必要なら、その理由・影響・代替作業を本節へ記録する。
+
+### 9.3 初期標準機能群の明示方法
+
+新しい機能一覧を別文書へ複製せず、[提供機能・適用条件・選択ガイド](framework-capabilities-and-selection-guide.md)と[引継ぎガイド](application-team-handoff-guide.md)を既存の提供入口として更新する。初期標準の一覧は[ガイド§0〜1の整理初版](framework-capabilities-and-selection-guide.md#0-初期標準一覧の読み方と確定までの判断)へ具体化した。D2以降の判断で更新し、現時点ですべての機能を提供可と認定したものではない。
+
+| 区分 | 一覧へ記載すること |
+| --- | --- |
+| 初期標準として提供 | 対象artifact・公開API／property・対応構成・検証根拠・利用方法 |
+| 条件付きで提供 | opt-in条件・既定値・制約・案件側責任・適用できる構成 |
+| Referenceで限定実証済み | 実証操作・source／artifact・環境と限界。Framework JARの汎用保証とは区別 |
+| 今回の標準対象外 | 対象外／保留理由、必要入力、再開条件。未提供を不要・完了へ変えない |
+
+各項目に現時点の提供判断状態と根拠を付ける。B1のSPAやC2の模擬外部照会などのReference-owned codeを、Framework JARへ自動昇格させない。採用案件ごとの要望には、利用基準版・期待する契約・差分・必要時期を対応付け、共通基準と案件固有拡張の境界を保つ。
+
+### 9.4 個別の依存・不整合とE1へ集約する横断課題
+
+| 対象 | 対応方針・判断する時期 |
+| --- | --- |
+| D2のJava／VT条件 | [グランドデザイン§21.5](../architecture/grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md#215-ci-テストマトリクス)はJava21でVT有効のCI、[§23.3](../architecture/grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md#233-virtual-threads)は有効化条件Java25以上を記載。D2-01で試験対象と案内対象の関係を決め、必要な正本訂正を具体化する。今回Java baselineや正本文言を変更したものではない |
+| D1とD2／S1の観測共有 | D2の比較に必要な最小観測はD2で確保。D1でtrace／exporter／sinkと運用診断を確立し、S1の評価で共有する準備だけ再利用。同期の成功を非同期配送・復旧・相関の成功へ転用しない |
+| R-05／F6：Customer Entity scan | E1の採用構成確認へ優先的に接続。Frameworkと別packageの最小Customer Entity／Repositoryが共存することを実証し、修正または明示登録の導入契約を定める。Referenceの成功だけで導入保証としない |
+| R-06／F7：Flyway | E1で初期標準が対応するDataSource／schema／migration接続を絞って明示・検証。全Flyway構成への対応を先行要求しない。D3等が別構成を採用するなら差分として確認 |
+| R-09・AD-01〜05 | 現在の提供機能・導入手順・既知制約の導線を更新。Maven stage等の日常開発方式と提供版の取得方式を整理し、独立Consumerおよび受領側の取得／build／起動／診断を照合する。AD-04の検証保留は維持し、恒常方式や新しい機械検査を黙って追加しない |
+| 配布物・版管理 | JARだけでなくParent／BOM／Starter／Libraryの提供単位・組合せ、固定version、repository、checksumとsource、更新・互換性・migration・既知制約の通知を定める。同じ可変SNAPSHOT座標だけで複数案件の採用断面を識別しない。版番号・配布方式は今回未確定 |
+| E1とPhase5 | [Baseline対応表](../architecture/KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md)は正式release version／support条件をPhase5で確定する記載を含む。E1で初期提供版とPhase5 Production Baseline／v1.0の対象・約束を区別し、必要な正本整合を行う。初期提供版の固定をPhase4全体・Phase5完了や本番適用承認へ読み替えない |
+| frontendとD3／B2 | D3-01までに、静的assetのJava JAR同梱か別container／BFFか、origin・認証終端・Cookie／CSRF・proxy経路の最小条件を選ぶ。B2全体を先行完了させる必要はないが、未選定の配置を検証済みにしない。frontendの実装・業務責務は案件側に保つ |
+| E1へのD3結果反映 | D3の構成・修正をE1の対応表・導入手順・版管理へ戻す。公開契約・JARが変わるなら必要な互換検証と新しい版の判断を行い、既に固定したartifactを同じ版で上書きしない |
+
+### 9.5 限定結果・DoD判定と後続アクション
+
+第3段階ではS1の既存DoD対応・運用OPENと、B1-08／C2の既存Evidenceを入力に判定表を作る。各項目には、要求／保証できること／保証できないこと／適用条件／Evidence／判断状態／残アクションと担当／再開条件を記録する。既存IDを使用し、同じ課題を複数packageへ二重計上しない。
+
+追加機能は抑制する。未達への対応は、(a)既存証拠で成立範囲を確定、(b)必要性が明確な有限追試・最小訂正、(c)利用制限または標準対象外、(d)後続課題化、から選ぶ。未達を理由の記述だけで達成扱いせず、DoD変更・採否・延期は明示したOwner判断として残す。C2 Bは必要性発生時の条件付き後続を維持する。
+
+S1の人手照合・担当付きHOLDは、担当・照合資料・停止／再開判断を説明できる適用条件として扱う。運用入力がない部分を運用成立と記録せず、無条件に本番利用できる保証へ広げない。今回の優先順承認は既存成果の評価を進める根拠であり、過去の実行予算・runnerを再利用するものではない。
+
+### 9.6 残タスクの条件とPhase4全体の扱い
+
+| 残タスク | Ownerの優先判断・現在の扱い | 着手時に具体化するもの |
+| --- | --- | --- |
+| C3 non-Web Batch／C4 File・Object Storage | Webサイクル外の処理として必要可能性は高いが、要件具体化時に着手 | job／file操作・運用主体・永続metadata・単一実行・保存／DB確定境界。旧C3先行案やS1の都合で自動開始しない |
+| B2 Customer REST／BFF | 必要可能性は高く、案件要件がより具体化した時期に着手 | API・認証方式・BFF責務・実IdP／環境・結合Evidence。D3の最小配置判断とは範囲を分ける |
+| C0／C1 MyBatis・accounting／P4-04 SAML・EDGE | Ownerの現時点評価では必要可能性は低い。必要時に着手できる判断材料を維持 | 既存拡張点・不足入力・採否／再開条件の整理まで。将来用code・dependency・schemaは先行追加しない。MyBatisのadoption trigger・Rule8拒否等の既存条件を維持 |
+| OPT Authorization Server／Oracle | 必須DoD外、明示要求と採用判断待ち | 既存の対象・環境・費用条件を維持 |
+| その他R-07／08等 | §8.4の直接影響・利用要求・CI運用要求が具体化した時に必要範囲を判断 | 全体棚卸しのたびに未実証懸念・非同期回帰全件を再開しない |
+
+これらは引き続きPhase4台帳で追跡する。初期標準の提供開始とPhase4全体完了は別の判定であり、当初DoD4-1〜4-12と番号なし成果物の未達・採否／延期を消さない。必要可能性が低いことを、SAML等の当初成果物の廃止承認と解釈しない。
+
+### 9.7 直近の着手点・更新方法
+
+**初期標準一覧の整理初版は作成済み（2026-10-23）。** 提供機能ガイド§0〜1へ基本候補・条件付き候補・Reference限定成果・対象外と根拠／残判断を整理。Root／各module POMの静的照合で、Root ReactorとReferenceを除く提供候補14座標＝12 JAR＋2 POMを確認した。B1／C2の進捗・Observabilityの現機能を更新し、引継ぎガイドの同じ古い案内も訂正した。artifact生成・取得・checksum照合・配布や動的検証を行った結果ではない。
+
+E1の配布論点は同ガイド§0.2〜0.3に接続済みで、固定version・repository・更新方式・受領側Evidence等は未確定。次は一覧初版を踏まえ、**D2-01のJava／VT対応方針・比較対象・最小検証案を具体化する**。現時点でD2の実装・性能比較・CI実行結果はない。詳細設計で対象path・公開契約差分・検証集合／資源・時間・停止／cleanupと見積を定め、各段階の必要な判断と実績を記録する。
+
+**一覧初版の方向性承認（2026-10-23）：** Ownerは提供機能ガイドの初期標準一覧を確認し「方向性を承認します」と明示した。整理方向性の承認として記録し、E1の最終提供判断とは区別する。同時に提示されたbranch文書共有とmainへのPR統合の選択は比較・相談中であり、今回の記録からcommit／push／PR／mergeを実行済み・承認済みと扱わない。
+
+**後続判断：main統合を優先（2026-10-23）。** Ownerは「main向けPRを作成し、マージに進むのであれば、これを優先作業するので、main マージ済み時点で、文書共有で良いと思います」と指示した。上記の比較・相談を区切り、現在の成果をcommit／pushし、main向けPRの差分レビュー・必要CI確認を経てmergeへ進む。文書の共有入口はmain統合後に提示する。PRは文書だけでなくR-00〜03・B1・C2 Aの実装／test／結果を含むことを明記し、未達を全体達成へ読み替えない。正式release・artifact publish・tag作成・案件チームへの送信は含めない。実際のPR・merge・CI結果は実施後に識別可能な形で残す。
+
+本承認は計画の採用・文書化に対するもの。今回の反映ではproduction／POM／CI／version／配布先を変更せず、追加検証・publish／deploy・commit／push／PRを行っていない。以後は本節を現行入口として状態・判断・次の一手を差分更新し、履歴の「次の作業」を繰り返さない。

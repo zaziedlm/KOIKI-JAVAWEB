@@ -2,18 +2,22 @@
 
 作成日：2026-10-19。対象読者：KOIKI-JavaWebを利用する開発チームと、その構成・採用を判断する担当者。
 
+初期標準一覧の整理日：2026-10-23。現行入口は§0〜1。§0の区分と各行の状態を併せて読み、必要な機能だけを選択する。
+
 **状態：OWNER APPROVED（2026-10-19）。** Ownerはガイド全体の内容と「KOIKI-JavaWeb」の名称を承認した。その後、製品versionの改変を先送りし、開発向けsourceをGitタグで固定するチェックポイント方式への訂正を承認した。本文の承認は維持する。Python版の呼称「KOIKI-FW」と区別するため、本書ではJava版を「KOIKI-JavaWeb」と表記する。この承認は個別機能の新規採用、正式release、実チーム受入または本番利用の承認ではない。
+
+**2026-10-23追記の位置付け：初期標準一覧の整理初版・方向性OWNER APPROVED／最終提供判断は未実施。** [見直し推進計画§9](phase4-review-integrated-task-plan-20261020.md#9-初期標準確立に向けた見直し推進計画owner-approved2026-10-23)のOwner承認に基づき、既存実装・検証・受入と今後の判断対象を対応付けた。Ownerは本一覧を確認し「方向性を承認します」と明示した。これは一覧整理の方向性の承認であり、最終提供版・全機能の保証・本番利用の承認とは区別する。D2・D1・保証範囲判定・E1の結果を本書へ反映して確立する。
 
 本書は、特定案件に依存しないFramework機能と、その選択に必要な条件を説明する。KOIKI-JavaWeb提供側は、共通機能を独立した提供対象として扱い、公開契約・品質・互換性・利用方法の整備に集中する。案件の業務分析や方式決定を代行せず、開発チームへ選択肢と判断材料を提示する。特定案件の要求を、そのままFramework拡充の前提にしない。
 
 | 識別事項 | 今回の位置付け |
 | --- | --- |
-| 確認するsource断面 | `8762a71d67fabbd4ab89ccc1f981ae291c249cba` |
-| 既存checkpoint | `checkpoint/v0.1.0-phase4-s1-async-boundary-main-20261017` |
-| 文書整備branch | `docs/v0.1.5-development-baseline-handoff`（チェックポイント整理の作業branch） |
-| 本書の位置付け | 開発向けsource checkpointに対応する提供機能・適用条件・選択ガイド（Owner承認済み） |
-| 次のcheckpointタグ名 | `checkpoint-v0.1.5`。方針採用済み、タグは未作成。対象commitは成果固定時に確定する |
-| 現在のMaven version | `0.1.0-SNAPSHOT`を維持。今回のチェックポイント整理ではPOM・artifactのversionを変更しない |
+| 今回照合するsource断面 | `05911cc`（実装成果は`87728b7`、C2 A受入記録は`05911cc`）。計画文書の未commit差分を保持して一覧を整理。過去の各検証sourceは各Evidenceに帰属 |
+| 作業branch | `docs/phase4-review-integrated-plan-20261020` |
+| 10月19日の確認断面・branch（履歴） | `8762a71d67fabbd4ab89ccc1f981ae291c249cba`／`docs/v0.1.5-development-baseline-handoff` |
+| checkpoint方針（履歴） | 既存の`checkpoint/v0.1.0-phase4-s1-async-boundary-main-20261017`と、次の候補名`checkpoint-v0.1.5`。今回tag作成・remote最新状態の確認はしておらず、現在の提供版をこの候補名だけで確定しない |
+| 本書の位置付け | 過去承認済みの選択ガイドに、現断面の初期標準候補・限定成果・判断待ちを追記した一覧初版 |
+| 現在のMaven version | `org.koikifw`／`0.1.0-SNAPSHOT`を維持。今回POM・artifactのversion変更なし。初期提供版の固定version・取得先はE1で確定 |
 
 `v0.1.5`は0.1系で進んだ開発成果の区切りを示すタグ上の識別名であり、変更量・互換性・品質を数値だけで保証するものではない。当初の製品version改変案は、`v0.1.5`のチェックポイント方式へ訂正した。正式なversion管理・配布・更新方式は後続で整理する。
 
@@ -21,25 +25,65 @@
 
 機能の選択には本書を使い、実際の導入・開発には[引継ぎガイド](application-team-handoff-guide.md)、[開発環境構築手順](application-team-development-environment-guide.md)、[アプリケーション開発者ガイド](application-developer-guide.md)を使う。Public API・property・認証契約の詳細はリンク先の正本に従い、本書で新たな契約を定義しない。
 
+## 0. 初期標準一覧の読み方と確定までの判断
+
+### 0.1 提供区分
+
+| 区分／一覧の場所 | 現時点の意味 | 残る判断 |
+| --- | --- | --- |
+| 初期標準の基本候補／§1.1 | 既存Frameworkの公開契約と基盤機能。各行のEvidence・制約を踏まえて初期提供版へ含める候補 | E1で提供artifact・対応構成・版を最終固定。全Starterの一括必須化ではない |
+| 条件付き候補・判断待ち／§1.3 | 既存機能でも構成・有効化条件を要するもの、またはD2／D1等で成立範囲を確定するもの | 実装済みと未実装を行ごとに区別。未検証の候補を提供済みにしない |
+| Referenceで限定実証済み／§1.2・§2.2 | 利用例の選択経路・限定結果。汎用Framework機能や案件完成品とは別 | B1・C2・S1の保証範囲／DoD全体判断は推進計画の第3段階で整理 |
+| 今回の標準対象外／§2.3 | 現断面の完成済み標準に含めないもの | 後続課題・採用条件を保持。不要・廃止の認定ではない |
+
+ここで「基本候補」とすることは、既存の受入成果を未実装へ戻すことでも、現在の案件に対する提供・本番利用を承認することでもない。既存Evidenceを根拠に、複数案件へ同じ条件で案内する初期提供版の範囲を整理している。利用者は機能名だけでなく、適用条件と案件側責任を確認する。
+
+### 0.2 artifact候補と版の識別
+
+Root POMと各module POMを静的照合し、Referenceを除く提供候補は**14座標＝12 JAR＋2 POM**。Root Reactorを含めて数える既存の「15 projects／12 JAR」と矛盾しない。Root Reactor自体は案件向け利用座標に含めない。
+
+| 候補の種類 | artifactId（groupIdは全て`org.koikifw`） | packaging・用途 |
+| --- | --- | --- |
+| Build・依存管理 | `koiki-parent`、`koiki-dependencies-bom` | 2 POM。案件のbuild・依存基準 |
+| アーキテクチャ | `koiki-architecture-contract`、`koiki-archunit-rules` | 2 JAR。module宣言と、明示的に呼ぶtest用規約検査 |
+| Runtime Starter | `koiki-starter-api`、`koiki-starter-data`、`koiki-starter-data-jpa`、`koiki-starter-observability`、`koiki-starter-security`、`koiki-starter-audit`、`koiki-starter-identity`、`koiki-starter-session-jdbc`、`koiki-starter-web-mvc` | 9 JAR。必要なStarterだけ選択 |
+| test支援 | `koiki-testing` | 1 JAR。Tooling-owned、Customer-facingなtest用途。production runtimeではない |
+
+`koiki-reference-app`、Root Reactor、build-supportのConsumer／harness／seed、frontend sourceは正式Framework artifact候補に含めない。Referenceの同梱SPAもFramework JARではなくReference-ownedである。
+
+現座標は可変`0.1.0-SNAPSHOT`。E1で、固定version・配布repository・取得方法・全対象artifactのchecksumとsource対応・更新方法を確定する。今回JARを生成・取得・配布したものではなく、14座標の現物や同一build由来checksumを検証したという意味ではない。
+
+### 0.3 一覧確立までの残判断
+
+| 担当タスク | 今回の整理から次へ渡すもの・出口 |
+| --- | --- |
+| D2-01〜03 | Java21 target／build・Java21／25 runtimeと、VT既定無効・opt-in条件を区別。CIのJava21 VT記載とJava25有効化条件の整合、比較・実CIを根拠に適用条件を確定 |
+| D1S-01〜03 | 構造化log／requestId／healthの現基盤から、実trace／exporter／sink・運用診断をどこまで提供するか、依存・設定・sampling・資源・非露出・運用責任を確定 |
+| S1-T1〜3／B1-08／C2-03 | 既存限定結果から保証範囲・DoD成立／未達を整理。不足は有限追試・利用制限・対象外・後続化を区別。追加機能を抑制 |
+| E1＋R-05／06・R-09・AD | Customer Entity scan、対応するFlyway構成、独立Consumer／受領側の取得・build・起動・診断と、提供版・配布／更新方法を確定 |
+| D3 | frontend／backend配置、Java containerと実ECSの成立範囲を段階別に確認し、E1の提供版・対応表・案内へ反映 |
+
+今回の一覧整理は既存source・文書の静的照合であり、testや環境適合を再検証していない。正確な対応version・support状態は[Baseline対応表](../architecture/KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md)とE1の整合対象とし、現行のJava21 target／build・Boot4.1.1を変更しない。
+
 ## 1. 提供する機能と公開された利用方法
 
 ### 1.1 Framework機能
 
-以下は現断面に存在する機能の選択表である。全Starterの一括導入を勧めるものではなく、正式な配布対象・取得方法の確定は別途行う。
+以下は全て**初期標準の基本候補**。既存実装・公開契約と受入済み範囲を出発点に、E1で提供版への収録・適用条件を固定する。全Starterを一括導入する前提ではない。
 
-| 機能 | 主な成果物・利用入口 | 利用できること | 開発チームが所有すること |
+| 機能 | 主な成果物 | 既存機能・根拠 | 適用条件・案件側責任／残確認 |
 | --- | --- | --- | --- |
-| Build・依存基準 | `koiki-parent`、`koiki-dependencies-bom` | buildと依存versionの基準を揃える | Customer POM、必要依存の選択、CIへの接続 |
-| 構造・品質の検査 | `koiki-architecture-contract`、`koiki-archunit-rules`、Parentの品質設定 | module境界・Tier・依存方向等の検査、null安全性の検査に接続する | module宣言、検査対象・実行の維持、業務test |
-| REST API基盤 | `koiki-starter-api` | 公開契約に沿ってAPIの入口と共通処理を構成する | endpoint、DTO、Use Case、業務エラーの意味 |
-| 永続化 | `koiki-starter-data`、`koiki-starter-data-jpa` | DBアクセス・JPA・migrationの基盤を利用する | Entity、Repository、業務transaction、Customer migration |
-| 認証・認可の基盤 | `koiki-starter-security` | default deny、CSRF／Security Header、Session・OIDC Client・Bearer Resource Serverの既存契約を利用する | route、認証方式、IdP接続、Role／Permission、業務認可 |
-| Identity | `koiki-starter-identity` | 公開されたIdentity契約を利用する | 利用者のprovisioning、外部属性との対応、業務属性 |
-| Session保存 | `koiki-starter-session-jdbc` | Spring Session JDBCの既存契約を利用する | Sessionを所有する境界、環境設定、運用 |
-| Audit | `koiki-starter-audit` | Business／Security Auditの既存契約を利用する | 業務操作とactorの対応、必要な記録、保存・調査運用 |
-| 観測 | `koiki-starter-observability` | log・metric等の観測基盤を利用する | 実sink、監視閾値、alert、担当、障害診断の運用 |
-| サーバー側UI | `koiki-starter-web-mvc` | Thymeleaf HTML主軸のMVC、選択的HTMXの利用基盤 | 画面、Form、View DTO、UX |
-| test支援 | `koiki-testing` | 公開されたtest支援を利用する | 案件のtest戦略、fixture、成功・拒否・障害経路の検証 |
+| Build・依存基準 | `koiki-parent`、`koiki-dependencies-bom` | Java21 target／build、依存version・品質設定。[Baseline](../architecture/KOIKI-JavaWeb-FW_Baseline_Compatibility_v0.1.md) | Customer POM・必要依存・CIは案件所有。Java21／25の過去互換証拠とD2のVT判断は別。固定提供版・現断面の互換性確認はE1へ |
+| 構造・品質の検査 | `koiki-architecture-contract`、`koiki-archunit-rules`、Parent | module宣言・Tier・依存方向・internal参照・null安全性。[規約ガイド](architecture-rules-developer-guide.md)、[R0限定受入](../architecture/validation/phase4-s1-r0-rules-source-fixed-preflight-20261009.md) | architecture testからRule APIを明示実行。検査対象・module Level宣言・業務testは案件所有。Level2を静的に許容するAPIは配信・復旧のruntime保証ではない。MyBatis規約は対象外 |
+| REST API基盤 | `koiki-starter-api` | Servlet MVC／Validation／Jackson3、ProblemDetail、path API versioning、Spring標準Resilience有効化。[Starter説明](../../koiki-starters/koiki-starter-api/README.md)、[R-01](../architecture/validation/phase4-r01-exception-boundary-results-20261020.md) | endpoint・DTO・業務例外・認可は案件所有。API／MVC共存のversion設定、外部clientとResilienceの適用条件は§1.3 |
+| 永続化 | `koiki-starter-data`、`koiki-starter-data-jpa` | 同一DataSourceのFramework先行／Customer別履歴、JPA・OSIV既定無効。[CP4](../architecture/validation/phase1b-cp4-data-runtime.md)、[Data説明](../../koiki-starters/koiki-starter-data/README.md) | 検証DB baselineはPostgreSQL。業務Entity／Repository／transaction／migrationとdriverは案件所有。Customer Entity scanとFlyway採用構成はR-05／06でE1へ接続 |
+| 認証・認可の基盤 | `koiki-starter-security` | default deny、CSRF／Header、method security、OIDC Client／Bearer Resource Server依存と構成境界。[Security説明](../../koiki-starters/koiki-starter-security/README.md)、[Phase2受入](../architecture/validation/phase2-gate-c-c2-remote-evidence.md) | route／chain・認証方式・IdP・Role／Permission・業務認可は案件所有。実IdP・案件SSOの成立を意味しない |
+| Identity | `koiki-starter-identity` | 公開Identity契約、user／Role／Permission・external link、local認証・管理操作。[契約](../architecture/validation/phase2-p2-b2-contract-review.md)、[構成条件](../../koiki-starters/koiki-starter-identity/README.md) | local認証は明示opt-inとSOURCE保護条件が必要。管理BeanはAudit等の必須依存が揃う時だけ登録。provisioning UI・reset配送・業務属性は含めない |
+| Session保存 | `koiki-starter-session-jdbc` | JDBC保存・全Session失効・logout・期限切れcleanup。[契約](../architecture/validation/phase2-p2-b3-contract-review.md)、[構成境界](../../koiki-starters/koiki-starter-session-jdbc/README.md) | Session利用applicationだけ導入。Framework migration・固定table／cleanup条件を守る。独自CookieSerializerの設定反映は案件側で確認。[R-02](../architecture/validation/phase4-r02-cookie-logout-results-20261021.md)はReferenceの限定訂正 |
+| Audit | `koiki-starter-audit` | Business Auditは既存transaction内、Security Auditは独立transaction、DB rowが正本。[契約](../architecture/validation/phase2-p2-b1-contract-review.md) | actor／業務操作・記録内容・保持・調査は案件側。log／traceの代替ではなく、秘密・生email等を記録しない |
+| 観測の基礎 | `koiki-starter-observability` | 構造化log・検証済みrequestId・MDC復元、TaskDecorator・Actuator基本health。[CP5](../architecture/validation/phase1b-cp5-observability.md)、[Starter説明](../../koiki-starters/koiki-starter-observability/README.md) | 自動提供を実trace／exporter／cloud backendまで広げない。公開endpoint既定はhealthのみ。readiness依存・metric収集／sink・閾値・運用は案件側。拡充判断はD1へ |
+| サーバー側UI | `koiki-starter-web-mvc` | Thymeleaf／Validation依存、共通resource・選択的HTMXの基盤。[Starter説明](../../koiki-starters/koiki-starter-web-mvc/README.md)、[Phase3受入](../architecture/validation/phase3-gate-c-final-acceptance.md) | Security／Session・業務routeを自動構成しない。画面・Form・View DTO・theme・UXとHTMX操作は案件所有 |
+| test支援 | `koiki-testing` | Spring Boot Testcontainers／PostgreSQL Testcontainers依存を揃える。[成果物説明](../../koiki-testing/README.md) | test用途。規約検査は別artifact。案件test戦略・fixtureは案件所有。Reference seed・user・migration・browser harnessを配布しない |
 
 依存とSecurityの具体的な選択は[Phase 2 Developer Journey](phase2-developer-journey.md)、検査の導入と検出範囲は[Architecture Rules説明](architecture-rules-developer-guide.md)を参照する。BOMに管理versionがあることは、そのlibraryや構成の採用承認を意味しない。
 
@@ -53,8 +97,21 @@ Customerは別RepositoryでMaven成果物を利用する。FrameworkのRoot Reac
 | [Runtime Consumer](../../build-support/runtime-foundation-consumer/README.md) | Root外Consumerとnon-Web maintenance process等の検証例 | 完成済みbatch製品や案件向け運用基盤ではない |
 | [Security Consumer](../../build-support/security-foundation-consumer/README.md) | Security接続の検証例 | test user・key・route等を本番資材へ転用しない |
 | S1非同期Reference・限定Evidence | 正常非同期経路、失敗分離、選択復旧・consume接続の成立範囲 | 共通非同期サービスの正式配布や包括的な復旧保証ではない |
+| B1 Session SPA＋MVC Reference | 最小React・Session API・同一origin同梱、同じUse CaseのMVC／SPA接続。[設計](phase4-b1-session-spa-mvc-design-20261020.md)、[選定browser結果受入](../architecture/validation/phase4-b1-08-local-acceptance-input-20261022.md) | 実装・選定検証済み、自宅PCの選定browser結果はOwner受入済み。B1／DoD4-8・4-9全体受入は別。案件向けfrontend製品・汎用SPA Starterではない |
+| C2 A外部照会Reference | Session権限付き参照GET、loopback模擬provider、timeout・503限定retry・同時実行枠2。[限定結果受入](../architecture/validation/phase4-c2-a-implementation-results-20261022.md#7-aの限定検証結果に対するowner受入承認2026-10-23) | 新規29 PASS／1 SKIP。接続timeout等は未実証、root分割結果を保持。実provider・副作用ありB・汎用HTTP Adapterは未提供。C2／DoD4-7全体は未認定 |
 
 Reference、Consumer、Toolingは正式Framework artifactと区別して案内する。参照可能であることと、Customer向けの配布・support対象であることは別に表示する。
+
+### 1.3 条件付き候補・判断待ち
+
+| 機能・構成 | 実装／証拠の現在地 | 提供範囲を確定する条件・担当タスク |
+| --- | --- | --- |
+| APIとMVC／Session SPAの併存 | API versioningの既定設定が全経路へ及ぶ点をReference側設定で扱い、B1で選定経路を実証 | Customerは非version経路・matcher・CSRFを明示設計。B1限定結果を任意構成へ一般化しない。B1-08／R-04の保証範囲判断 |
+| 外部HTTPとResilience | API StarterのSpring標準Resilienceとretry既定値は既存。C2でconnect200ms／read300msの低優先度既定値とmetadataを追加。Reference clientが明示採用 | 任意client全体へtimeoutを自動適用しない。retry対象・層・上限・同時実行枠・外部副作用は案件設計。接続timeout未実証、overrideの限界はC2結果を保持し第3段階で評価 |
+| local認証／OIDC／Bearerの選択 | Security／Identity基盤と非配布fixtureの既存Evidenceあり | 実IdP・credential・claim／authority mapping・Session／Bearer経路分離は案件所有。方式選択は[認証構成ガイド](frontend-authentication-profile-guide.md)、実案件結合はB2等へ |
+| Virtual Threads | 初期標準としてのVT有効時対応は判断待ち。既定無効を維持し、通常Java runtime互換と別評価 | D2でJava／有効化条件・context／pool／負荷・CIを具体化。現時点で有効構成の提供保証を追加しない |
+| 同期OpenTelemetry・運用観測 | 現Starterは基礎log／相関／health。実trace／exporter／sinkの確立は後続 | D1で提供境界・依存／設定・診断と収集先障害を検証。sink運用とFramework責任を分離 |
+| 非同期利用・module Level2 | R0のmodule Level選択APIとReferenceの限定通知／復旧材料は存在。業務処理全体・運用保証は別 | [S1現品質](phase4-s1-dod-integrated-status-owner-review-20261016.md)の未達と人手HOLD条件を維持。第3段階で適用範囲と残アクションを判断。案件への一律導入はしない |
 
 ## 2. 検証済みの範囲・制約・未提供事項
 
@@ -81,14 +138,15 @@ Phase 1／2の基盤とPhase 3のReferenceは、それぞれの受入済み範�
 
 | 対象 | 現時点の扱い |
 | --- | --- |
-| Next.js／BFF・Reactのproduction Reference | 未提供。構成選択のガイドと、backendの既存契約を利用する |
+| Next.js／BFF、案件向け完成済みfrontend | 未提供。B1の最小Session SPA実装・限定実証は§1.2で別に案内し、未実装とは扱わない |
 | 汎用batch運用一式 | non-Webの既存材料と、単一実行・停止後再開等の後続課題を区別する |
-| 外部API耐障害性、File／Object Storage、Container／ECS等の後続機能 | 個別の実装・検証状況に従う。機能名が計画にあるだけで提供済みにしない |
+| 実provider用の外部API共通Adapter・副作用あり操作B | C2 Aの限定成果・HTTP既定値と区別。Bは運用機能確定／バリエーション必要性発生時に後続化 |
+| File／Object Storage、Container／ECS | 完成済み標準には含めない。C4は要件具体化時、D3は承認済み優先第5段階でlocal／実ECSを別に実証 |
 | 利用先のmanaged DB・cloud環境全体への適合保証 | 既存PostgreSQL検証とは別に環境適合を確認する。AWS／Aurora PostgreSQLもこの確認対象の一例であり、本書が指定する必須環境ではない |
 | MyBatis、Oracle、SAML等 | trigger・方式選択・個別判断の境界を維持する |
 | Project Template、正式Upgrade Guide、一般提供repository、support付きrelease | 現断面で確定済みの提供物とはしない |
 
-後続テーマの状態は[残タスク棚卸し](phase4-continuation-task-inventory-20261016.md)を参照する。本書は機能拡充の着手順や提供時期を約束しない。
+後続テーマの状態・着手順は[見直し推進計画§9](phase4-review-integrated-task-plan-20261020.md#9-初期標準確立に向けた見直し推進計画owner-approved2026-10-23)を参照する。本書から提供時期を約束しない。MyBatis・SAML／EDGEは現時点の必要性評価が低いが、当初成果物の廃止判断ではなく、必要入力・再開条件を保持する。
 
 ## 3. 構成別の利用候補とサジェスト
 
@@ -100,7 +158,7 @@ Phase 1／2の基盤とPhase 3のReferenceは、それぞれの受入済み範�
 | --- | --- | --- |
 | BFF＋KOIKI REST（Next.js／Node.js等） | API、Security、必要なData／JPA、Audit、Observability | BFFとAPI間のcredential、actor、認可、logout、障害時の責任を先に分ける。Bearer Resource Serverは接続候補として、採用する認証契約との適合を確認する |
 | KOIKI単体MVC | Web MVC、Security／Identity／Session、必要な永続化機能 | 既存Referenceを利用例として参照し、Customerの画面・権限を設計する |
-| Same-origin SPA＋Session API | API、Security／Session等 | CSRFとroute境界を確認する。Session SPA Referenceの後続実証を完了済みと扱わない |
+| Same-origin SPA＋Session API | API、Security／Session等とB1の最小React Reference | 選定実装・検証とbrowser結果受入は§1.2。CSRF・route・Cookie条件を案件構成へ照合し、B1／DoD全体受入とは区別する |
 | non-Web処理・batch | 既存non-Web Consumer、Data／JPA等 | 起動可能性と、業務jobの再実行・二重起動防止・途中再開を分けて確認する |
 | 外部システム連携 | API／Data等の既存基盤とCustomer-owned Adapter | 接続方式・整合性・失敗時の意味を案件側で判断する。公開契約の利用方法や不足の切分けはFramework側へ相談できる |
 | 非同期が必要になった場合 | S1 Referenceと限定Evidence | 通常処理との境界、失敗許容、照合・HOLDの条件を確認して採用範囲を判断する |
@@ -141,12 +199,12 @@ Phase 1／2の基盤とPhase 3のReferenceは、それぞれの受入済み範�
 
 | 当初の確認観点 | 今回の整理 | 次に確定する事項 |
 | --- | --- | --- |
-| 機能・提供範囲 | 案件非依存の機能・条件・責任を記載した本書全体をOwner承認済み | 文書としての確認は完了。実際の配布範囲は提供成果物の確定と対応付ける |
+| 機能・提供範囲 | 10月19日のガイドはOwner承認済み。10月23日の初期標準一覧は既存根拠を整理した初版 | 今回追記の最終提供判断は未実施。D2／D1／保証範囲判定を反映し、E1で実際の提供版・適用条件と対応付ける |
 | 提供成果物 | checkpoint方式を採用し、Maven versionは`0.1.0-SNAPSHOT`を維持 | 対象座標、配布先、取得方法、checkpointタグ・commit・artifact checksumの対応 |
 | 受け手の確認 | [実チーム受入worksheet](p4-ar6-actual-team-reception-worksheet.md)を既存入口として利用 | 受領側のbuild／run／代表経路・診断の実施結果。案件全業務の認定とは分ける |
 | 支援・更新 | 責任の区分を提示 | 問合せ・修正・更新の運用、担当、既知制約の通知方法 |
 
-本書の本文とチェックポイント方式は承認済みである。4観点すべての提供可判定、tag作成・配布完了は、この文書承認だけでは成立しない。Maven成果物のversion変更は先送りとし、未確定事項はOPENのまま担当と次の判断へつなぐ。
+10月19日の本文とチェックポイント方式は承認済みである。今回の一覧初版や、4観点すべての提供可判定、tag作成・配布完了は、その過去承認だけでは成立しない。Maven成果物のversionは今回変更せず、E1で初期提供版・管理方式を確定する。未確定事項はOPENのまま担当と次の判断へつなぐ。
 
 ## 5. フィードバックと機能拡充の判断原則
 

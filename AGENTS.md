@@ -1,5 +1,11 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：初期標準確立とmain統合（2026-10-23）
+
+現行の推進計画は[統合作業計画§9](docs/development/phase4-review-integrated-task-plan-20261020.md#9-初期標準確立に向けた見直し推進計画owner-approved2026-10-23)。複数案件採用を見据え、初期標準一覧の整理→D2→D1同期→S1／B1／C2の保証範囲・DoD判定→E1→D3→要件具体化に応じた残タスク、の順をOwner承認済み。
+B1の実装・選定検証とブラウザ結果受入、C2 Aの限定結果受入まで進んでいる。以下の「次はB1」等は履歴として読み、初期調査や非同期全件を自動再開しない。初期標準一覧は[提供機能ガイド§0〜1](docs/development/framework-capabilities-and-selection-guide.md#0-初期標準一覧の読み方と確定までの判断)に整理済みで、方向性はOwner承認済み。最終提供版・DoD全体・Phase4全体の認定は別に残る。
+Ownerは本branchのmain向けPR・mergeを優先し、文書共有はmain統合後とする方針を示した。今回の成果固定・push・PR作成、差分レビューと必要CI確認を経たmergeを進め、共有用入口をmainへそろえる。正式release／artifact publish・tag作成・案件チームへのメッセージ送信はこの作業に含めない。
+
 ## 現行判断：非同期系の作業を区切り、他のPhase4残タスクへ移行（2026-10-17）
 
 Owner指示により、非同期系は現時点の実装・限定検証と運用方針で今回の作業を区切る。復旧に苦慮する部分は人による照合・担当付きHOLDで補完する方針を優先し、追加の復旧機構・読取GET・提供手順の整備を他タスクへの移行条件にしない。

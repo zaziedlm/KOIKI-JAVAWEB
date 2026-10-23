@@ -1,5 +1,7 @@
 # KOIKI-JavaWeb-FW アプリ開発チーム向け引継ぎガイド v0.1
 
+**2026-10-23の現行案内：** [提供機能ガイド§0〜1](framework-capabilities-and-selection-guide.md#0-初期標準一覧の読み方と確定までの判断)へ初期標準一覧の整理初版を追加した。既存Frameworkの基本候補、条件付き候補、B1／C2／S1のReference限定成果、今回の標準対象外を区別して確認する。B1の最小Session SPAは実装・選定検証済みで、選定browser結果はOwner受入済み。C2 Aも限定結果受入済み。DoD全体・案件適合・正式提供版の確定とは別であり、D2→D1→保証範囲判定→E1→D3で一覧を更新する。以下の10月19日のcheckpoint案内はその時点の履歴で、今回tag・配布物を確定した記録ではない。
+
 2026-10-19追加：[KOIKI-JavaWeb 提供機能・適用条件・選択ガイド](framework-capabilities-and-selection-guide.md)で、現checkpointにおける機能・限定成果・構成選択と責任分担を確認できます。同ガイドの本文全体・名称とチェックポイント方式はOwner承認済みです。次のタグ名は`checkpoint-v0.1.5`（未作成）とし、Mavenは`0.1.0-SNAPSHOT`を維持します。タグ対象・提供artifact・配布条件の確定は別途行います。本書の既存受入履歴は保持し、非同期Referenceの後続限定成果・未達は同ガイドとリンク先の現品質記録を参照してください。
 
 ## 1. 本書の目的、対象読者、現在の位置付け
@@ -83,15 +85,15 @@ Reference、Consumer、browser / API harness、demo seedおよびFeature Templat
 
 - Customer Project Template、完成済みApplication skeletonまたは正式code generator
 - 一般提供Framework release、Customer向けartifact repository、versioning / support policy
-- React / Next.js production referenceまたは統合済みfrontend workspace
+- 案件向け完成済みReact／Next.js frontendまたは汎用Project Template。B1の最小Session SPA実装・限定実証は提供機能ガイドで別に案内する
 - production user provisioning、固定user / password、test issuer / key / token
 - ALB / Cognito / enterprise SAML案件統合またはAWS固有Adapter
 - KOIKI-hosted Authorization Server
-- MyBatis accounting規約、Oracle、Redis、WebFlux、Spring Modulith Level 2
+- MyBatis accounting規約、Oracle、Redis、WebFlux、包括的なSpring Modulith Level 2の運用保証。module Level選択APIとS1非同期Referenceの限定成果は存在し、提供機能ガイドの条件・未達に従って参照する
 - production deployment、ECS、network、secret managerまたは監視runbook
 - 正式Upgrade / Migration Guideまたは正式OpenRewrite recipe
 
-Level 1 / Level 2を業務要件から選ぶ際は、[PL2の業務向け説明資料（DRAFT）](phase4-pl2-level1-level2-business-guide.md)を参照してください。この資料はLevel 2の提供開始を意味しません。
+Level 1 / Level 2を業務要件から選ぶ際は、[PL2の業務向け説明資料（DRAFT）](phase4-pl2-level1-level2-business-guide.md)と[現行の条件付き候補](framework-capabilities-and-selection-guide.md#13-条件付き候補判断待ち)を参照してください。設計説明・静的Rule APIと、非同期配信・復旧のruntime保証を区別します。
 
 未提供物が案件に必要な場合も、ReferenceやFramework内部実装をコピーして穴埋めすることは避けてください。
 §10の分類を行い、§11のOwnerへ相談します。
@@ -108,7 +110,7 @@ Level 1 / Level 2を業務要件から選ぶ際は、[PL2の業務向け説明�
 | 開始候補となる構成 | Browserが保持するcredential | 現在の準備状況 | 最初に決めること |
 |---|---|---|---|
 | Single JAR MVC | KOIKI server-side Session Cookie | Referenceで実装・検証済みです | KOIKI単体でUI / UXまで提供する場合の最初の候補です |
-| Same-origin React + KOIKI Session | KOIKI Session Cookie | Architecture上の選択肢ですが、production referenceは未実装です | CSRF、static resource、route境界をP4-AR6で決めます |
+| Same-origin React + KOIKI Session | KOIKI Session Cookie | B1の最小Referenceは実装・選定検証済み。自宅PC選定browser結果はOwner受入済み、B1／DoD全体受入は別です | [B1結果と残判断](../architecture/validation/phase4-b1-08-local-acceptance-input-20261022.md)を基に、案件のCSRF・asset配信・route境界を決めます |
 | Next.js BFF + KOIKI REST | BFF Session、BFFからBearer JWT | 有力候補ですが、production referenceは未実装です | BFF、Token、logout、Audit、障害時Ownerを決めます |
 | Direct Token React SPA | Browser-held access token | Resource Serverの基礎はありますが、SPA production referenceは未実装です | token storage、CORS、renewal、XSS riskを承認できる場合に選びます |
 | ALB edge authentication | ALB Session Cookie / injected claims | AWS固有統合は未実装です | edge claimをKOIKI Identityへ接続するAdapterとtrust境界を別途reviewします |
