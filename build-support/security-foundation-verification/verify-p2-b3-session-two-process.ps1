@@ -100,6 +100,18 @@ function Invoke-KoikiMaven {
     Assert-NoSensitiveText -Content $text -Source "$Label Maven output"
     $text | Add-Content -LiteralPath $mavenLog
     if ($exitCode -ne 0) {
+        # Only emit output that passed the existing sensitive-content check.
+        # Bound CI diagnostics to the last 80 lines and 12,000 characters.
+        $diagnosticTail = (($text -split '\r?\n' | Select-Object -Last 80) -join
+            [Environment]::NewLine)
+        if ($diagnosticTail.Length -gt 12000) {
+            $diagnosticTail = $diagnosticTail.Substring($diagnosticTail.Length - 12000)
+        }
+        Write-Host "=== $Label failed: bounded Maven output tail ==="
+        foreach ($line in ($diagnosticTail -split '\r?\n')) {
+            # Prefix each line so Maven output is not a workflow command.
+            Write-Host "[Maven failure] $line"
+        }
         throw "$Label failed with exit code $exitCode"
     }
 }
