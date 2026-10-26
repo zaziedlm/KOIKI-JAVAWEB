@@ -59,7 +59,7 @@ jobs:
   phase3-critical-journey-e2e:
     name: Phase 3 Critical Journey E2E
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 35
     permissions:
       contents: read
 
@@ -83,8 +83,8 @@ jobs:
           ./mvnw --batch-mode --no-transfer-progress
           -f pom.xml -pl koiki-dependencies-bom -am -DskipTests install
 
-      - name: Install Playwright Chromium
-        timeout-minutes: 4
+      - name: Build Playwright classpath
+        timeout-minutes: 2
         shell: bash
         run: |
           ./mvnw --batch-mode --no-transfer-progress \
@@ -92,8 +92,20 @@ jobs:
             dependency:build-classpath \
             -Dmdep.includeScope=test \
             -Dmdep.outputFile=target/playwright-classpath.txt
+
+      - name: Install Chromium system dependencies
+        timeout-minutes: 8
+        shell: bash
+        run: |
           java -cp "$(cat build-support/reference-e2e-verification/target/playwright-classpath.txt)" \
-            com.microsoft.playwright.CLI install --with-deps chromium
+            com.microsoft.playwright.CLI install-deps chromium
+
+      - name: Install Playwright Chromium
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          java -cp "$(cat build-support/reference-e2e-verification/target/playwright-classpath.txt)" \
+            com.microsoft.playwright.CLI install chromium
 
       - name: Package Reference application
         timeout-minutes: 5
