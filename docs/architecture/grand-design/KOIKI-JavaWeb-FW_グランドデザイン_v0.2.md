@@ -2349,9 +2349,13 @@ Oracle Testcontainersは現行Phaseへ導入しない。optional `P4-ORACLE`が�
 |---|---|---|---|---|
 | **主系統** | PostgreSQL | 21 | 全 PR・全マージ | Phase 1a |
 | **互換系統1** | PostgreSQL | **25 ランタイム** | nightly、リリース前 | Phase 1a |
-| **互換系統2** | PostgreSQL | 21（**Virtual Threads 有効**） | nightly | Phase 4 |
+| **互換系統2** | PostgreSQL | **25 ランタイム（Virtual Threads 有効）** | PR・main push・手動実行 | Phase 4 |
 
 **互換系統1では再コンパイルを行わない。**主系統で生成した成果物を Java 25 ランタイムで実行する。これにより、実際の顧客環境（Java 21 でビルドされた KOIKI を Java 25 で動かす）と同じ条件を検証する。
+
+互換系統2もJava21 buildで生成した同一成果物を再コンパイルせず実行し、Java25のVT無効対照を同じ条件で確認する。
+Java21／VT無効を最低実行環境の対照とし、Java21でVTを有効にすることを案件向け採用条件にしない。
+具体的なCI構成・実行状態は[D2-03実装・CI判定記録](../../development/phase4-d2-03-ci-and-adoption-guide-20261026.md)へ記録し、workflow作成と実CI成功を区別する。
 
 **互換系統の失敗はリリースブロッカーとして扱う。**
 
@@ -2574,13 +2578,13 @@ JVM をコンテナで運用する際、既定値のままでは性能を発揮�
 
 #### 有効化時のチェックリスト
 
-1. **ランタイムが推奨実行環境（Java 25）以上であること**
-2. コンテキスト伝播が機能すること（Micrometer Context Propagation の `TaskDecorator`。§20.1）
+1. **ランタイムが推奨実行環境（Java 25）以上であり、採用版・依存構成の互換検証を行うこと**。Java25より後の版を既存結果から一括認定しない
+2. コンテキスト伝播が機能すること（Micrometer Context Propagation の `TaskDecorator`。§20.1）。同期request内と別executorへの伝播を分け、Beanの存在だけで全executorへの適用を認定しない
 3. **DB コネクションプールのサイジング見直し** — 仮想スレッドは無制限に増えるため、プールがボトルネックとなり待機が積み上がる
 4. **`@ConcurrencyLimit` による流量制限の設定** — 従来のスレッドプールが暗黙に果たしていた流量制限が失われるため
 5. native code、class initialization、JDBCドライバ等のブロッキングを含む依存ライブラリの棚卸しと負荷計測
 
-Phase 4 で検証し、Phase 5 で正式ガイドを提供する。CI にも有効時の検証系統を設ける（§21.5）。
+Phase 4 で検証し、Phase 5 で正式ガイドを提供する。開発段階の条件・検証限界は[VT適用ガイド](../../development/virtual-threads-adoption-guide.md)に記録する。CI にも有効時の検証系統を設ける（§21.5）。負荷生成側の同時要求上限を、本番の流量制限の成立へ転用しない。
 
 ### 23.4 Kubernetes-ready
 

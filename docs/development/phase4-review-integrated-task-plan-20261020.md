@@ -148,7 +148,7 @@ R-05／06はレビューと採用支援の共通作業として一度だけ計�
 | P4-C3／要件具体化待ち（§9.6） | C3-01 別Batch RepositoryのHEAD・互換性とjob選定→02 non-Web起動・永続metadata・単一実行→03 二重起動・停止後restart／rerun・Audit実演 | Reference／Tooling、Batchは別所有。job・運用主体・DB入力 | DoD 4-10。R-06はDB構成が該当する場合に接続。S1パージ完了と切り離す |
 | P4-C4／要件具体化待ち（§9.6） | C4-01 代表操作・保存／DB確定境界→02 Port／Adapterと受付／公開→03 重複・path・権限・容量・途中停止・cleanup | Reference／Tooling。storage／format入力。C3連携は必要時だけ | local fileとObject Storageの実証範囲を区別。共有harnessは一度だけ計上 |
 | P4-D1同期／優先第2段階（§9） | D1S-01 同期trace／log／metricとsink契約→02 tracer／exporter接続→03 相関・context非漏えい・sink障害実演 | Framework／Tooling。sink・保持・運用入力 | 同期OpenTelemetry成果物のEvidence。S1非同期のDoD 4-12を閉じない |
-| P4-D2／次の具体化対象・優先第1段階（§9） | D2-01 Java21 build／25 opt-inと比較条件→02 同じ操作の有効／無効・context／pool比較→03 CI系統と利用ガイド | Framework／Tooling。runner・負荷・時間・workflow判断 | DoD 4-11は実CI結果で判定。既定無効維持、local比較だけで完了にしない |
+| P4-D2／01具体化・02限定検証済み、結果Owner確認待ち（§9） | D2-01 Java21 build／25 opt-inと比較条件→02 同じReferenceの通常／観測3構成・43論理checkpoint成立→03 CI系統と利用ガイド | Framework／Tooling。[D2-02最終結果・制限](../architecture/validation/phase4-d2-02-java25-virtual-threads-results.md#10-最終の成立範囲計測結果)。次はrunner・時間・workflow判断 | DoD 4-11は実CI結果で判定。既定無効維持、早期拒否の相関・逼迫時403等を残し、local比較だけでD2全体を完了にしない |
 | P4-D3／優先第5段階・実ECS入力待ち（§9） | D3-01 固定JAR／image・起動契約→02 local containerのhealth／診断／停止再起動→03 実ECS差分と実演 | Reference／Tooling＋platform。secret・network・費用・権限 | local／ECS別Evidence。F2の実Cookie条件とR-06のmigration構成を該当時に照合 |
 | P4-C0／C1／保留維持 | C0-01 adoption trigger確認→02 分離モデル・規約／依存review→C1-01 accounting実装→02 競合・rollback・共通error実演 | Architecture／Framework規約、Reference。MyBatis採用入力 | DoD 4-6。C0前はRule8拒否維持。元計画のA1連携依存と独立検証可能部分を開始時に区別し、S1全体を自動再開しない |
 | P4-B2／入力待ち | B2-01 Customer API／BFF／認証選択取得→02 gap審査→03 Customer結合Evidenceの受入 | Customer主導、Framework契約review。案件／IdP／環境入力 | B1の代替DoDにしない。F1／F4〜F7のうち採用構成に関係する項目を照合 |
@@ -389,6 +389,18 @@ S1の人手照合・担当付きHOLDは、担当・照合資料・停止／再�
 これらは引き続きPhase4台帳で追跡する。初期標準の提供開始とPhase4全体完了は別の判定であり、当初DoD4-1〜4-12と番号なし成果物の未達・採否／延期を消さない。必要可能性が低いことを、SAML等の当初成果物の廃止承認と解釈しない。
 
 ### 9.7 直近の着手点・更新方法
+
+**D2-03の現在位置（2026-10-26）：** OwnerはD2-02結果を確認し「D2-03へ進めましょう」と指示した。Java21 build・同一JARのJava21無効／Java25無効／有効を扱う専用workflow、[適用ガイド](virtual-threads-adoption-guide.md)、グランドデザイン整合、source／artifact照合・集約・所有資源cleanupを実装した。CI専用経路のローカル一回は6 PASS／0 SKIP・43論理checkpoint成立、cleanup成立、9 guard test・workflow lint成功。[D2-03記録](phase4-d2-03-ci-and-adoption-guide-20261026.md)を参照。未commit差分での確認であり、実CI／DoD4-11・D2全体・正式提供は未判定。次は個別承認後のcommit／push・main向けdraft PRによる実CI。既存required checks8件・既定無効を維持する。以下は各時点の履歴。
+
+**D2-02限定検証の現在位置（2026-10-26）：** Ownerの§14に沿う見直し・推進指示を受け、通常Referenceと実Observability追加の観測構成を分離し、Toolingの相関識別・Hikari入力・pool失敗の経路別分類を訂正した。Java21無効／Java25無効／有効の通常・観測計6構成、43論理checkpointが成立。最終続行5 PASSと同条件のA-native既存成功1を対応付け、過去の失敗・診断は保持。通常root449 PASS／100 SKIPは再実行していない。[最終結果§9〜11](../architecture/validation/phase4-d2-02-java25-virtual-threads-results.md#9-構成訂正tooling診断の経緯)を限定結果のOwner確認入口とする。次はD2-03のCI・有効化ガイド・正本整合。既定無効、早期拒否の相関欠落・逼迫時403等の制限を残し、実CI／DoD4-11・D2全体・正式提供を完了にしない。commit／pushは未実施。以下は各時点の履歴。
+
+**D2-02追加一回後の現在位置（2026-10-26）：** Owner承認を受けた専用検証の追加一回は、A-nativeがlogin／create／read／submit204まで進み、Toolingの相関ヘッダー必須取得でERROR。後続5件はSKIP、43 checkpointは未成立、cleanup済み。通常ReferenceにはObservability Starterがないことを確認し、通常起動helperを訂正・compileのみ実施した。次は[D2計画§14](phase4-d2-01-java25-virtual-threads-plan-20261026.md#14-追加一回の結果を受けた構成訂正案2026-10-26)の、通常構成と実Observability追加の観測構成を分ける訂正案の具体化。runtime classpath追加・更なる実行は未実施。以下は各時点の履歴。
+
+**D2-02の現在位置（2026-10-26）：** Ownerの§8〜12確認・開始指示を受け、非配布Tooling 11 fileを作成。通常rootは449 PASS／100 SKIP・失敗／エラー0。初回専用検証はA-nativeのHMAC fixture設定不備で起動FAILし、後続5 invocationをSKIP、43 checkpointは未成立。所有資源cleanup済み。標準Base64へのTooling訂正・compileと同範囲の追加一回の再開案を[結果記録§5](../architecture/validation/phase4-d2-02-java25-virtual-threads-results.md#5-訂正差分と再開案)へまとめた。自動再実行・commit／pushは未実施。以下のREVIEW READY等は開始時の履歴。
+
+**D2-01開始（2026-10-26）：** Owner指示により、`main` / `1284ba08a9e0cb44c67487dc02148e378699ceb4`から`docs/d2-01-java25-vt-verification-plan-20261026`を作成した。目的はJava 25以降で案件がVTを本格利用する際の対応条件を確かめること。全案件への採用推奨や既定有効化を目的にしない。[D2-01対応方針・比較検証計画](phase4-d2-01-java25-virtual-threads-plan-20261026.md)へ静的調査・比較案・残判断を記録し、一次情報と既存harness・実行thread観測方法の照合から進める。Java 25より後の版は個別確認とし、D2の動的検証・CI成功は未成立。
+
+**D2-01検証範囲の具体化（2026-10-26）：** Ownerの継続指示に基づき、同計画§8〜12へ採用版Boot 4.1.1の一次情報・保存JAR構成、通常／外付け観測の起動方法、Java21無効／Java25無効／有効の3構成、43論理checkpoint／6 invocation、Tooling 11 file、直接回帰73件を含む通常root一回、資源・55分の実行枠とcleanupを具体化した。現状はREVIEW READY。通常起動と観測起動の証拠を分け、本番流量制御・全executor・将来Java版へ一般化しない。次はこの具体案を入力とするD2-02の作成・実行範囲判断。JDK25準備・Docker preflight・観測接続成立と実結果は未確認、正本／production／POM／CI変更・動的検証は未実施。
 
 **初期標準一覧の整理初版は作成済み（2026-10-23）。** 提供機能ガイド§0〜1へ基本候補・条件付き候補・Reference限定成果・対象外と根拠／残判断を整理。Root／各module POMの静的照合で、Root ReactorとReferenceを除く提供候補14座標＝12 JAR＋2 POMを確認した。B1／C2の進捗・Observabilityの現機能を更新し、引継ぎガイドの同じ古い案内も訂正した。artifact生成・取得・checksum照合・配布や動的検証を行った結果ではない。
 
