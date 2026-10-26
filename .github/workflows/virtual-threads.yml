@@ -1,0 +1,147 @@
+name: Virtual Threads Compatibility
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: virtual-threads-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  virtual-threads:
+    name: Virtual Threads Compatibility (Java 25)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      MAVEN_OPTS: -Xmx768m
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Set up Temurin 21
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Capture build home and evidence directory
+        shell: bash
+        run: |
+          echo "JAVA21_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
+          echo "VT_OUTPUT=$RUNNER_TEMP/koiki-vt-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"
+
+      - name: Set up Temurin 25
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Keep Maven and compilation on Java 21
+        shell: bash
+        run: |
+          echo "JAVA25_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
+          echo "JAVA_HOME=$JAVA21_HOME" >> "$GITHUB_ENV"
+          echo "$JAVA21_HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Verify identity and ownership negative guards
+        shell: bash
+        run: python3 -m unittest discover -s build-support/virtual-threads-verification -p test_verification.py -v
+
+      - name: Build and freeze the Java 21 artifacts
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          mkdir -p "$VT_OUTPUT"
+          ./mvnw -B -ntp -DskipTests clean package
+          ./mvnw -B -ntp -N -f koiki-dependencies-bom/pom.xml install
+          ./mvnw -B -ntp -N -f koiki-parent/pom.xml install
+          ./mvnw -B -ntp -f koiki-starters/koiki-starter-observability/pom.xml \
+            org.apache.maven.plugins:maven-install-plugin:3.1.4:install-file \
+            -Dfile="$GITHUB_WORKSPACE/koiki-starters/koiki-starter-observability/target/koiki-starter-observability-0.1.0-SNAPSHOT.jar" \
+            -DpomFile="$GITHUB_WORKSPACE/koiki-starters/koiki-starter-observability/pom.xml"
+          ./mvnw -B -ntp -f build-support/virtual-threads-verification/pom.xml -DskipTests package
+          ./mvnw -B -ntp -f build-support/virtual-threads-verification/harness/pom.xml \
+            -Pobservation-runtime org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath \
+            -DincludeScope=runtime -Dmdep.outputFile="$VT_OUTPUT/runtime-classpath.txt"
+          python3 build-support/virtual-threads-verification/verification.py prepare \
+            --repository "$GITHUB_WORKSPACE" --output "$VT_OUTPUT" \
+            --classpath "$VT_OUTPUT/runtime-classpath.txt" --maven-repository "$HOME/.m2/repository" \
+            --java21-home "$JAVA21_HOME" --expected-commit "$GITHUB_SHA"
+
+      - name: Verify the frozen source and JAR identity
+        shell: bash
+        run: >-
+          python3 build-support/virtual-threads-verification/verification.py verify
+          --manifest "$VT_OUTPUT/artifact-manifest.json" --expected-commit "$GITHUB_SHA"
+
+      - name: Run three runtime configurations without recompiling
+        timeout-minutes: 12
+        shell: bash
+        run: |
+          mkdir "$VT_OUTPUT/evidence"
+          timeout --signal=TERM --kill-after=40s 600s \
+            ./mvnw -B -ntp -f build-support/virtual-threads-verification/harness/pom.xml \
+            -DskipTests=false -Dtest=PackagedReferenceVirtualThreadsTest \
+            -Dkoiki.vt.start-at=A-native -Dkoiki.vt.pool-diagnostic.enabled=false \
+            -Dkoiki.vt.verification.enabled=true -Dkoiki.vt.expected-commit="$GITHUB_SHA" \
+            -Dkoiki.vt.manifest="$VT_OUTPUT/artifact-manifest.json" \
+            -Dkoiki.vt.evidence="$VT_OUTPUT/evidence" surefire:test
+
+      - name: Require all six invocations and 43 checkpoints
+        shell: bash
+        run: |
+          cp -R build-support/virtual-threads-verification/harness/target/surefire-reports "$VT_OUTPUT/reports"
+          python3 build-support/virtual-threads-verification/verification.py summarize \
+            --manifest "$VT_OUTPUT/artifact-manifest.json" --expected-commit "$GITHUB_SHA" \
+            --evidence "$VT_OUTPUT/evidence" --reports "$VT_OUTPUT/reports"
+
+      - name: Inspect and clean only owned resources
+        if: always() && env.VT_OUTPUT != ''
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          if [[ -d build-support/virtual-threads-verification/harness/target/surefire-reports ]]; then
+            mkdir -p "$VT_OUTPUT"
+            if [[ ! -d "$VT_OUTPUT/reports" ]]; then
+              cp -R build-support/virtual-threads-verification/harness/target/surefire-reports "$VT_OUTPUT/reports"
+            fi
+          fi
+          if [[ -f "$VT_OUTPUT/artifact-manifest.json" ]]; then
+            python3 build-support/virtual-threads-verification/verification.py cleanup \
+              --manifest "$VT_OUTPUT/artifact-manifest.json" --evidence "$VT_OUTPUT/evidence"
+          fi
+
+      - name: Upload immutable artifacts and bounded evidence
+        if: always() && env.VT_OUTPUT != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: koiki-vt-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: warn
+          path: |
+            ${{ env.VT_OUTPUT }}/artifacts/
+            ${{ env.VT_OUTPUT }}/artifact-manifest.json
+            ${{ env.VT_OUTPUT }}/runtime-classpath.txt
+            ${{ env.VT_OUTPUT }}/summary.json
+            ${{ env.VT_OUTPUT }}/resource-cleanup.json
+            ${{ env.VT_OUTPUT }}/reports/
+            ${{ env.VT_OUTPUT }}/evidence/**/checkpoints.txt
+            ${{ env.VT_OUTPUT }}/evidence/**/observations.tsv
+            ${{ env.VT_OUTPUT }}/evidence/**/cleanup.txt
+            ${{ env.VT_OUTPUT }}/evidence/**/ownership.txt
+            ${{ env.VT_OUTPUT }}/evidence/**/database-ownership.json
+            ${{ env.VT_OUTPUT }}/evidence/**/pool-*.txt
+            ${{ env.VT_OUTPUT }}/evidence/**/load-*.json
+            ${{ env.VT_OUTPUT }}/evidence/**/latency-*.ns
+            ${{ env.VT_OUTPUT }}/evidence/**/jfr-summary.txt
