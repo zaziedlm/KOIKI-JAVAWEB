@@ -10,9 +10,13 @@ KOIKIでは、CIとartifact公開を別の権限境界として扱います。
 - NullAwayのpositive、意図的違反のexpected failure、restoreを隔離fixtureから検証します。
 - `Phase 3 Critical Journey E2E` jobは、Root Reactor外の非配布`reference-e2e-verification`
   Toolingを実行します。Temurin 21とMaven cacheを使用し、Playwright 1.62.0のChromiumを
-  `--with-deps`で導入した後、`koiki-reference-app`をclean packageし、package済みJARに対して
+  classpath生成、`install-deps chromium`によるOS依存導入、`install chromium`による本体取得の
+  3 stepで導入した後、`koiki-reference-app`をclean packageし、package済みJARに対して
   Browser / Bearer API / PostgreSQL / Business Audit / Security Audit / sanitized logのcritical journeyを1回実行します。
-- Phase 3 E2E jobは`ubuntu-24.04`、job timeout 20分、`contents: read`だけで実行します。
+- Phase 3 E2E jobは`ubuntu-24.04`、job timeout 35分、`contents: read`だけで実行します。
+  step上限はBOM準備2分、classpath生成2分、OS依存導入8分、Chromium取得5分、Reference package5分、
+  E2E本体7分、最終cleanup2分です。合計31分に対し、job全体へ準備・終了処理の余裕4分を持たせます。
+  OS依存導入8分・Chromium取得5分はAPT取得遅延を受けた初回評価値で、実CIの成功実績による確定値ではありません。
   追加secret、PAT、Packages権限、environment、artifact uploadまたはbrowser binary cacheを使用しません。
 - test本体のcleanupとは独立した`if: always()`の最終stepで、専用runner上のTestcontainersラベル付き
   container、package済みReference JAR process、Playwright / Chromium processおよび
