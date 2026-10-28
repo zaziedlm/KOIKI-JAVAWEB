@@ -1,10 +1,11 @@
 # D2-03：VT実CI系統・適用ガイド・正本整合
 
-**状態：** 実装・ローカル確認済み。実CI／DoD4-11は未判定。
+**状態（2026-10-27）：** main統合・実CI成功を確認済み。DoD 4-11は技術的にPASS（§5〜6）。D2-03結果／DoD 4-11のOwner受入は未記録で、受入判断待ち。
 
 **開始指示（2026-10-26）：** OwnerはD2-02結果を確認し「D2-03へ進めましょう」と指示した。
 限定結果・制限を次工程の入力とする。D2全体・正式releaseの認定とは区別する。
 作業branchは`docs/d2-01-java25-vt-verification-plan-20261026`、基点は`1284ba08a9e0cb44c67487dc02148e378699ceb4`。
+文書追随branchは`docs/d2-vt-ci-results-and-dod-alignment-20261027`、基点はmainの`f3c79d8376d93d9f977ff2263c768b5ce32fc3ed`。§4はローカル検証時点の履歴、§5〜6を実CI・判定の現行入口とする。
 
 ## 1. 最終変更の範囲
 
@@ -14,7 +15,7 @@
 | VT Tooling | bundle生成・checksum／source検証・43項目集約・所有資源cleanupをPython標準libraryで再現可能にする。CIの現在commitを照合し、旧D2-02の固定commit依存をCIへ持ち込まない |
 | VT適用ガイド | Java21 build／Java25 opt-in、既定無効、Hikari入力、context／pool／受付制御・検証限界を整理 |
 | グランドデザイン§21.5／§23.3 | VT CIをJava25 runtimeへ統一。同一Java21成果物の利用、将来版の個別確認、executorごとのcontext確認を明確化 |
-| 統合計画・提供機能ガイド | D2-02のOwner確認とD2-03の実装／実CI待ちを反映 |
+| 統合計画・提供機能ガイド | D2-02のOwner確認とD2-03のmain実CI成功・DoD技術判定／Owner受入待ちを反映 |
 
 正式Framework／ReferenceのJava・公開API・依存・migration・既定設定は変更しない。
 Root Reactor／publish unitへToolingを追加しない。実CI成功前にDoD4-11をPASSへ更新しない。
@@ -31,7 +32,7 @@ Root Reactor／publish unitへToolingを追加しない。実CI成功前にDoD4-
 | 判定 | A21無効／B25無効／C25有効の通常・観測6 invocation／43 checkpoint。途中再開・診断・SKIPをCIの成功へ使わない |
 | 時間上限 | job25分、build10分、比較10分（step上限12分）、cleanup2分 |
 | 資源 | 最大Maven1＋harness1＋app1、各heap768 MiB。PG1／1 GiB・CPU1、Ryuk最大1、DB client8以内 |
-| 費用の扱い | Ubuntu runner一台分の実時間。PR・main更新・手動実行の回数と各jobの実行時間に応じる。実時間・課金planは未確認で、初回runの実績を記録する |
+| 費用の扱い | Ubuntu runner一台分の実時間。PR・main更新・手動実行の回数と各jobの実行時間に応じる。§5の対象jobは2分58秒。課金plan・実請求額は未確認 |
 | Artifact | commit／run attemptで識別、保持一日。固定JAR・manifest・集計／JUnit／観測／負荷／cleanup。生app log・生JFRはupload対象外 |
 | Required checks | 既存8件を維持。追加・ruleset変更は今回行わない。VT系統の失敗はD2受入・release判断で未解決とする |
 
@@ -81,25 +82,58 @@ actionlint1.7.7（公式release checksum照合済み）とYAML parseを通過。
 
 証拠は`/workspace/koiki-cloud/logs/d2-03-20261026/`へ保存する。実CI結果・clean commitの証拠とは区別する。
 
-## 5. 実CIへ進むための成果固定・公開
+## 5. main統合と実CIの確認記録（2026-10-27）
 
-現在はD2-01〜03の差分が未commit。ローカル確認済みの差分を承認後に固定し、対象branchへpushし、
-main向けdraft PRで新VT checkと既存required checksを実行する。実CIのrun URL、event commit、6 invocation／43項目、
-JDK patch版、artifact ID／digest、cleanup、job実時間・結論を本記録へ反映する。
+D2-01〜03の成果は`0af5d7711e33a60d244769ed3179b20d934f1d44`へ固定され、
+[PR #55](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/55)で2026-10-26 21:26:32 JSTにmainへ統合された（merge commit `831af4a7f98246baf8f37f4893ca70c924f5fa92`）。
+続く[PR #56](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/56)はChromium導入分割・E2E時間上限・Session fixtureの失敗診断を調整し、2026-10-27 00:58:09 JSTにmainへ統合された。
+今回の判定対象はそのmain commit `f3c79d8376d93d9f977ff2263c768b5ce32fc3ed`。ローカルmain・origin/main・GitHub mainの一致を読み取り確認した。
 
-`AGENTS.md` §「Phase3では…」項目16は「Ownerの個別承認なしにremote push / PR / merge、ruleset変更、workflow dispatchまたはsnapshot publishを行わない」と定める。
-今回のD2-03開始指示に基づく実装・ローカル確認を先に完了し、成果固定commit・push・draft PRを具体的な差分として確認する。
-merge・ruleset変更・release・publishはこの段階へ含めない。
+| 識別・結果 | main実CIの確認内容 |
+|---|---|
+| Workflow／event | `Virtual Threads Compatibility`／`push`（main）、run `40354524562`、attempt 1 |
+| Run／job | [実行結果・ログ](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40354524562)、[Virtual Threads Compatibility (Java 25)](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40354524562/job/121683269464)。いずれも`success` |
+| Source | `f3c79d8376d93d9f977ff2263c768b5ce32fc3ed`。固定source／JAR照合stepと集約時の再照合が成功 |
+| Runner／JDK | Ubuntu24.04、Temurin21.0.12+1でbuild／harness、child runtimeは21.0.12+1／25.0.4+1。§4のローカル25.0.5+8とは別の実績 |
+| 比較構成 | A：Java21 VT無効、B：Java25 VT無効、C：Java25 VT有効。それぞれ通常／観測の計6 invocation。同じ固定Java21成果物を使い、runtime側で再compileしない |
+| JUnit | `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0`、test elapsed 109.9秒 |
+| 集約 | `Six invocations and 43 checkpoints passed; immutable artifacts verified`。A-native 1／A-observed 12／B-native 1／B-observed 14／C-native 1／C-observed 14 |
+| 実効thread／context | 集約成功は観測構成のhandlerがA／Bではplatform、Cではvirtualであること、context復元、観測終端の成立を含む（`verification.py summarize`） |
+| Cleanup | `No remaining owned app or database resources; owned helper cleanup complete`。予期しないapp／DB残存0、所有helper cleanup成功 |
+| 時間 | job開始2026-10-27 00:58:14 JST、完了01:01:12 JST（2分58秒）。build step53秒、比較step1分52秒。上限25分以内。課金額は未確認 |
+| Artifact | [ID 12665626336](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40354524562/artifacts/12665626336)、`koiki-vt-f3c79d8376d93d9f977ff2263c768b5ce32fc3ed-1`、69,625,198 bytes |
+| Artifact digest | `sha256:726f2cdf8836e37412c01f359f0a8257a57637e66ee78bb076c38ab95f80987c`（uploadログ・GitHub APIのdigestが一致） |
+| Artifact期限 | GitHub API上の期限は2026-10-28 01:01:07 JST（保持一日）。長期保存用証拠ではない |
 
-## 6. DoD判定の記録欄
+今回はGitHub run／job・ログ・artifactメタデータを読み取り照合した。artifact ZIPのダウンロード・内容の再検証や動的検証の再実行は行っていない。
+6件・43項目・source／JAR同一性・cleanupの根拠は、上記ログと、それを成功条件とするmain上のworkflow／`verification.py`の照合である。
+
+同じmain commitの[通常CI run 40354524594](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40354524594)と
+[Java Runtime Compatibility run 40354524583](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40354524583)も`success`。
+同commitの[後続Java Runtime Compatibility run 40380144880](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40380144880)も`success`を確認した。
+PR #55直後のmain `831af4a`ではVT系統は成功したが、[通常CI run 40322562414](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40322562414)は`failure`だった。
+この履歴は保持し、後続`f3c79d8`の成功で過去結果を上書きしない。
+
+今回の文書追随依頼は結果の整理・技術判定を記録する指示として扱う。PR mergeをD2-03結果／DoDの明示的なOwner受入へ読み替えない。
+
+## 6. DoD 4-11の技術判定とOwner受入
+
+[グランドデザイン§27.8](../architecture/grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md)のDoD 4-11は「Virtual Threads を有効にした CI 検証系統が通る」。
+§21.5／§23.3のJava21 build・Java25 opt-in条件に従う専用CIが、§5の固定main commitでVT有効構成を含む6件／43項目を成功させた。
+したがって、**DoD 4-11の技術条件はPASS**と判定する。ローカル結果やproperty指定だけを根拠にした判定ではない。
 
 | 判定対象 | 状態 |
 |---|---|
 | D2-02限定結果・制限 | Owner確認済み、D2-03へ進行指示 |
-| D2-03 workflow／ガイド／正本 | 実装・ローカル6構成／43項目確認済み |
-| 新VT checkの実CI | 未実施、run URLなし |
-| DoD4-11 | OPEN／実CI結果待ち |
-| D2全体・案件の本格採用 | CI結果と明示した条件・制限を入力に判断。既定無効を維持 |
+| D2-03 workflow／ガイド／正本 | PR #55でmain統合済み。実CI結果を§5へ反映 |
+| 新VT checkの実CI | PASS／main `f3c79d8`、run `40354524562`、6件／43項目・cleanup成功 |
+| DoD 4-11の技術条件 | PASS／上記実CIを根拠に2026-10-27文書照合で判定 |
+| D2-03結果／DoD 4-11のOwner受入 | 未記録／OWNER ACCEPTANCE PENDING。今回の整理指示・過去のPR mergeと明示受入を区別 |
+| D2全体・案件の本格採用 | 全体完了のOwner判断は未記録。CI結果と明示した条件・制限を入力に判断。既定無効を維持 |
 | D1等の残課題 | 早期拒否／ERROR dispatch相関、逼迫時403、他executor等を継続追跡 |
+
+次はOwnerが§5の実CI結果・§6の技術判定と適用ガイド§3.1の制限を確認し、受入／差戻し・追加条件を明示する。
+受入が成立した場合は、その指示日・対象commit／run・範囲を本節へ追記する。現在の受入欄は空の承認を補わず、判断待ちとして残す。
+required checks追加・ruleset変更、全executor／非同期／Batch・将来Java版・本番SLOの保証、正式release／support付き配布、Phase4全体の認定へ拡張しない。
 
 利用条件は[VT適用ガイド](virtual-threads-adoption-guide.md)、実装・ローカルの根拠は[D2-02結果](../architecture/validation/phase4-d2-02-java25-virtual-threads-results.md)を参照する。
