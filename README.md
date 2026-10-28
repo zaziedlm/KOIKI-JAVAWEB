@@ -30,6 +30,10 @@ MVC／React／Next.js／外部IdPの構成判断は
 提供機能、検証済みの範囲・制約、構成別の選択肢、Framework提供側と開発チームの責任分担、
 機能拡充の判断原則をまとめています。利用する機能や構成を検討する際に参照してください。
 
+**Virtual Threads対応（2026-10-27）：** Java 21 buildを維持し、Java 25でVirtual Threadsを選択して有効化する同期Web経路を検証しました。
+mainの専用CIは通常／観測の計6構成・43項目で成功しています。既定は無効で、D2-03結果／DoD 4-11のOwner受入は判断待ちです。
+有効化条件・検証範囲と制限は[Virtual Threads適用ガイド](docs/development/virtual-threads-adoption-guide.md)を参照してください。
+
 ## 現在の状態
 
 - Phase 0 Architecture Baseline: COMPLETE / ACCEPTED

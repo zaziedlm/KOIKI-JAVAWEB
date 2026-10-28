@@ -1,12 +1,13 @@
 # Virtual Threadsの適用条件・有効化ガイド（開発版）
 
-**状態：** D2-02の限定結果を踏まえたD2-03の開発版。既定無効。正式release／support付き配布はE1／Phase5の判断に従う。
+**状態（2026-10-27）：** D2-03はmain統合・実CI成功を確認済み。DoD 4-11の技術条件はPASS、D2-03結果／DoDのOwner受入は判断待ち（[判定記録§6](phase4-d2-03-ci-and-adoption-guide-20261026.md#6-dod-4-11の技術判定とowner受入)）。開発版・既定無効を維持。正式release／support付き配布はE1／Phase5の判断に従う。
 
 ## 1. 確認した構成と採用の判断
 
 Java21 target／buildで生成したReference JARを、Java21・VT無効、Java25・VT無効、Java25・VT有効で比較した。
 [D2-02結果](../architecture/validation/phase4-d2-02-java25-virtual-threads-results.md#10-最終の成立範囲計測結果)は、
 Java25.0.5で選択した同期Web操作・Security／Audit／context・DB poolの成立を示す限定証拠である。
+main実CIではTemurin21.0.12+1／25.0.4+1を使用し、通常・観測の6構成／43項目が成功した。ローカルとCIのpatch版を区別する。
 VTを全案件で使うことや高速化を目的にせず、案件が必要なときに選択できる条件を示す。
 
 - 最低target／buildと最低runtimeのJava21は維持する。Java25で再compileする必要はない。
@@ -75,17 +76,19 @@ JFRのPinnedが0でも、その記録窓・閾値で未観測という意味で�
 
 ## 4. CIの位置付け
 
-追加する[Virtual Threads Compatibility workflow](../../.github/workflows/virtual-threads.yml)は、
+mainへ統合済みの[Virtual Threads Compatibility workflow](../../.github/workflows/virtual-threads.yml)は、
 Ubuntu24.04／Java21 build・harness／Java21・25 child runtime、通常・観測計6 invocation／43 checkpointを対象とする。
 同一のReference／observer JARをchecksumで固定し、runtime側で再compileしない。
 既存のJava21／25 CLI互換系統と既存required checksは維持する。
 
 PR・main push・手動起動を入口とし、job上限25分、比較10分、cleanup2分。
-一回のjobはUbuntu runner一台で、並列matrixは増やさない。ローカルの専用検証は約2分だが、
-依存取得・compile・runner差を含む実CI時間と費用は最初のrunで記録する。
+一回のjobはUbuntu runner一台で、並列matrixは増やさない。main実CIの対象jobは2分58秒（build53秒・比較1分52秒）。課金plan・実請求額は未確認。
 artifact保持は一日で、正式配布repository／長期保存の代わりにはしない。
 
-現時点ではworkflowの作成・ローカル経路確認段階。実CIのrun URL・commit・check結果を記録して初めてDoD4-11を判定する。
+main `f3c79d8376d93d9f977ff2263c768b5ce32fc3ed`の[実CI run 40354524562](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40354524562)は成功。
+6 PASS／0 FAIL／0 ERROR／0 SKIP・43項目・固定source／JAR照合・所有資源cleanupが成立し、DoD 4-11の技術条件を満たす。
+commit・JDK版・artifact識別・ログ根拠は[D2-03記録§5〜6](phase4-d2-03-ci-and-adoption-guide-20261026.md#5-main統合と実ciの確認記録2026-10-27)を参照する。
+D2-03結果／DoDのOwner受入は未記録で、D2全体完了・案件での本格採用は別判断。§3.1の検証限界を維持する。
 既存8 required checksへの追加・ruleset変更は今回行わない。新VT系統の失敗はD2受入・release判断で未解決として扱う。
 
 ## 5. 根拠と更新
