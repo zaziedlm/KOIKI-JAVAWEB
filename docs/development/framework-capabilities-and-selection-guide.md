@@ -53,6 +53,10 @@ Root POMと各module POMを静的照合し、Referenceを除く提供候補は**
 
 現座標は可変`0.1.0-SNAPSHOT`。E1で、固定version・配布repository・取得方法・全対象artifactのchecksumとsource対応・更新方法を確定する。今回JARを生成・取得・配布したものではなく、14座標の現物や同一build由来checksumを検証したという意味ではない。
 
+**E1方式比較（2026-10-30）：** [比較初版](phase4-e1-artifact-distribution-options-20261030.md)に提供単位・固定版・取得／更新と最小Consumerの確認案を整理。OwnerはFramework本体モジュール群を同一版のRelease assetで一式配布する方式を優先候補に選定。取得は`gh release download`でrelease tag・asset名を明示し、準備スクリプトで照合・Maven local repository登録を行う方針（未実装）。binaryはGit履歴へ格納せず、Gitは案内・manifest・checksumを管理。[E1§7.2](phase4-e1-artifact-distribution-options-20261030.md#72-第2項版命名初期提供範囲の判断案2026-10-30)は`0.1.0-preview.1`・本節の14座標を同一版で収録する整理方向をOwner了解。第3項の独立Consumer・R-05／06・PC／CI確認構成はE1§7.3、具体的な実装・検証計画は§7.4を参照。実際の配布repository・版番号・公開は未確定。現version・POM・workflowは変更していない。
+
+**E1ローカル実証（2026-10-30）：** [結果](../architecture/validation/phase4-e1-artifact-distribution-results-20261030.md)で候補14座標生成・登録と独立Consumerが限定技術成立。R-05はCustomer自身のEntityScanを明示、R-06はData Starter明示・同一DataSource／既定schema・分離historyで確認。実際のRelease asset取得・案件PC／CI受領と結果Owner受入は未完了。前段の未生成記述は一覧／比較作成時点の履歴。
+
 ### 0.3 一覧確立までの残判断
 
 | 担当タスク | 今回の整理から次へ渡すもの・出口 |

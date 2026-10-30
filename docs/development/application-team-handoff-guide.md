@@ -1,5 +1,9 @@
 # KOIKI-JavaWeb-FW アプリ開発チーム向け引継ぎガイド v0.1
 
+**2026-10-30 E1継続：** [VSCode引継ぎ](phase4-e1-vscode-handoff-20261030.md)を追加。CloudのRelease操作は対象外とし、作業branchをcommit／pushしてPCで継続する。
+
+**2026-10-30 E1ローカル結果：** [固定版asset・Maven登録・独立Consumerの結果](../architecture/validation/phase4-e1-artifact-distribution-results-20261030.md)へ候補生成と限定導入条件を記録。取得・登録手順の正本は[配布Tooling](../../build-support/framework-distribution/README.md)。現時点でremote公開・実download・案件PC／CI受領は未完了のため、公開済み導入版の案内とは区別する。R-05のCustomer EntityScan明示、R-06の同一DataSource／schema・Data Starter明示の条件を参照する。
+
 **2026-10-23の現行案内：** [提供機能ガイド§0〜1](framework-capabilities-and-selection-guide.md#0-初期標準一覧の読み方と確定までの判断)へ初期標準一覧の整理初版を追加した。既存Frameworkの基本候補、条件付き候補、B1／C2／S1のReference限定成果、今回の標準対象外を区別して確認する。B1の最小Session SPAは実装・選定検証済みで、選定browser結果はOwner受入済み。C2 Aも限定結果受入済み。DoD全体・案件適合・正式提供版の確定とは別であり、D2→D1→保証範囲判定→E1→D3で一覧を更新する。以下の10月19日のcheckpoint案内はその時点の履歴で、今回tag・配布物を確定した記録ではない。
 
 2026-10-19追加：[KOIKI-JavaWeb 提供機能・適用条件・選択ガイド](framework-capabilities-and-selection-guide.md)で、現checkpointにおける機能・限定成果・構成選択と責任分担を確認できます。同ガイドの本文全体・名称とチェックポイント方式はOwner承認済みです。次のタグ名は`checkpoint-v0.1.5`（未作成）とし、Mavenは`0.1.0-SNAPSHOT`を維持します。タグ対象・提供artifact・配布条件の確定は別途行います。本書の既存受入履歴は保持し、非同期Referenceの後続限定成果・未達は同ガイドとリンク先の現品質記録を参照してください。

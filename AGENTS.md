@@ -1,6 +1,28 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
-## 現行入口：S1／B1／C2の保証範囲・DoD整理（2026-10-30）
+## 現行入口：E1をVSCodeへ引継ぎ・成果commit／push（2026-10-30）
+
+OwnerはCloudのRelease作成／uploadを今後の実行対象から外し、一通り準備後、この作業branchをcommit／pushしてローカルVSCodeでpull・継続すると指示した。
+[VSCode引継ぎ](docs/development/phase4-e1-vscode-handoff-20261030.md)を現行入口とする。branchは`docs/phase4-s1-b1-c2-guarantee-review-20261030`、remoteは`zaziedlm/KOIKI-JAVAWEB`。
+今回のlocal commitと当該branchへのpushはこの指示に基づき実行する。pushは`zaziedlm` GitHub連携を使用。PR／main merge、tag／Release作成・asset upload・remote実downloadは今回含めない。
+検証済み候補ZIPはGitへ入れず、元source記録・原本Git bundle・remote保存対応とともに別packageで受け渡す。旧専用repo用handoffは使用しない。
+V01〜08の結果・既知制限、V09／10・結果Owner受入の未完了を維持。CloudのRelease権限／network制約を再調査せず、PC側で公開対象commitとsource対応を点検して継続する。
+以下は各時点の履歴で、未承認・未push・CloudからのRelease継続等の過去表示を現行判断へ流用しない。
+
+## 履歴入口：E1ローカル実装・限定検証（2026-10-30）
+
+Owner指示により`docs/phase4-s1-b1-c2-guarantee-review-20261030`を継続。保証範囲・DoD整理は`8fe8473`へlocal commit済み、remote未反映。
+[E1-01比較初版](docs/development/phase4-e1-artifact-distribution-options-20261030.md)で14座標（14 POM＋12 JAR）、固定版・manifest、取得／更新・独立ConsumerとR-05／06の確認条件を整理する。
+OwnerはFramework本体モジュール群のRelease asset一式配布を優先候補に選定。取得は`gh release download`でrelease tag・asset名を明示し、準備スクリプトで照合・Maven local repository登録を行う方針（未実装）。全モジュール同一versionで固め、binaryはGit履歴へ格納しない。Gitは案内・manifest・checksumを管理。公開先・取得権限は未確定。第2項の命名・範囲の説明をOwner了解、§7.2に正式版`1.0.0`との対応を補足。第3項は§7.3にKOIKI Parent・独立Consumer・PostgreSQL同一DataSource／schemaとPC／CI確認の構成案を整理。Ownerの第4項への進行指示を受け、§7.4へTooling・候補生成・登録・V01〜10の段階別計画を具体化。計画・開始時点の経緯として保持し、現在は以下の結果を優先する。
+Ownerは§7.4の具体計画・JAR生成からRelease asset取得までの流れを了解し、進行を指示した。V01〜08のローカルTooling・独立Consumerを実装し、[結果](docs/architecture/validation/phase4-e1-artifact-distribution-results-20261030.md)へ記録。候補14座標の既存test111 PASS、Consumer1 invocation／8 checkpoint PASS、通常root449実行PASS＋100 skip、cleanup・ZIP／source照合成功。登録系補助JSON比較の初回ERRORと局所訂正を保持。
+R-05はCustomer自身のEntityScan明示で成立、R-06はData Starter明示・同一DataSource／既定schemaの限定構成。Framework本体・作業checkout POM・Root CI変更なし。版変換は専用stagingのみ。
+Ownerは配布先を既存リモートへ見直すよう指示。`origin`とGitHub metadataを照合し、現行は`zaziedlm/KOIKI-JAVAWEB`（public、default main）を使用。Release assetもpublic。新規`KOIKI-JAVA-asset`は作成しない（E1§8.2）。
+全モジュール同一版のZIP・hash・Maven登録は維持し、取得先だけ既存repoへ変更。sourceの成果固定・remote反映・公開tag対象を先に点検する。Framework source branchのcommit／push／PRは今回未実施。
+旧private専用repo用handoff ZIPは使用しない。作業checkoutの旧publish scriptは停止処理へ変更。既存source repoのREADMEを配布専用READMEへ置換しない。
+`zaziedlm`連携の管理・書込権限は確認済みだが、現行connectorにRelease作成／binary uploadのtoolはなく、Cloud CLI APIもForbidden。remote登録・取得V09、案件受領V10と結果Owner受入は未完了。
+以下は各時点の履歴。S1の未達、D1結果受入未記録、個別DoDの最終受入待ちは維持する。
+
+## 履歴入口：S1／B1／C2の保証範囲・DoD整理（2026-10-30）
 
 Ownerの第3段階への進行指示により、main `fdfcfa5`（PR #58統合後）から`docs/phase4-s1-b1-c2-guarantee-review-20261030`を作成した。
 [判定初版](docs/development/phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md)は既存Evidence・受入・現行sourceの静的照合。B1のDoD4-8／4-9は選定Reference構成の技術成立・最終受入候補、C2 A限定受入とH07未実証、S1のDoD未達・人手HOLDを分けて記録する。

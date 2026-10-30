@@ -5,9 +5,15 @@
 
 ## 現在の入口
 
+- [E1：VSCodeへの引継ぎ](phase4-e1-vscode-handoff-20261030.md): Owner指示により本branchをcommit／pushし、PCで取得・継続する。CloudのRelease操作は対象外。検証済みZIPはGitと別に受渡し、source対応・公開対象commit確認後に既存repoのReleaseへ登録する。
+
+- [E1固定版asset・登録・独立Consumerの結果](../architecture/validation/phase4-e1-artifact-distribution-results-20261030.md): ローカルV01〜08が限定技術成立。候補生成111件PASS、Consumer1 invocation／8 checkpoint、通常root449実行PASS＋100 skip。R-05はCustomer EntityScan明示、R-06は同一DataSource／schema。Framework本体・POM・CI変更なし。配布先は既存`zaziedlm/KOIKI-JAVAWEB`（public）へ見直し。旧専用repo用handoffは使用しない。CloudのRelease操作機能／API経路の制約は残る。remote実取得・案件受領・結果Owner受入は未完了。
+
+- [E1-01：提供artifact・版識別・配布／更新方式の比較](phase4-e1-artifact-distribution-options-20261030.md): Ownerは全モジュール同一版のRelease asset一式配布を優先候補に選定。取得は`gh release download`でrelease tag・asset名を明示し、準備スクリプトで照合・Maven local repository登録を実装・ローカル検証済み。binaryはGit履歴へ格納せず、公開先は既存`zaziedlm/KOIKI-JAVAWEB`。実取得はPCで確認する。第2項の整理方向はOwner了解。第3項はKOIKI Parent・独立Consumer・PostgreSQL同一DataSource／schemaの構成案（§7.3）から、第4項のTooling・候補生成・段階別検証計画（§7.4）へ具体化。14 POM＋12 JAR・manifest・独立Consumerの確認案。現在の実装結果は上のE1結果文書を参照。POM／CI変更・remote公開なし。
+
 - [D1同期観測の実装・検証結果](../architecture/validation/phase4-d1-sync-observability-results-20261030.md): 独立Tooling11 file。訂正後の承認済み同範囲一回が全10項目PASS、cleanup・identity成立。限定範囲は技術成立、結果Owner確認待ち。初回・次回の失敗は保持。
 
-現作業branchは`docs/phase4-s1-b1-c2-guarantee-review-20261030`、基点main `fdfcfa5`（D1成果のPR #58統合済み）。[S1／B1／C2保証範囲・DoD判定初版](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md)を作成し、§7にS1リスクを認識したうえでのエビデンス採用のOwner判断を記録。個別DoDの最終受入・未達は別に維持する。今回は文書・source静的照合のみで、追加実装・動的検証・DoD原文変更なし。commit／push／PRは別判断。以下の過去の開始・統合手順は今回の作業指示ではない。
+現作業branchは`docs/phase4-s1-b1-c2-guarantee-review-20261030`、基点main `fdfcfa5`。[S1／B1／C2保証範囲・DoD整理](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md)の原本commitは`8fe8473`。個別DoDの最終受入・未達は維持する。同branchでE1のローカル実装・検証を行い、Ownerの今回のcommit／push指示に基づきVSCodeへ引き継ぐ。公開先は既存`zaziedlm/KOIKI-JAVAWEB`（public）。PR／main merge・Release公開はPCでの後続判断。以下の過去の開始・統合手順は今回の作業指示ではない。
 
 - [D2-03限定受入記録](phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30): 実CI成功・DoD 4-11の限定範囲をOwner受入として記録。既定無効・既知制限を維持。
 - [D1同期観測の計画整理](phase4-d1-sync-observability-plan-20261030.md): 現状整理に続き§8〜13へ限定接続案を具体化。標準依存・OTLP設定・10 checkpoint・有限実行枠、Framework変更の判断分岐を整理。実装・動的検証の最終結果は§16と結果文書§7を参照。非同期の設計・運用は採用案件の具体化時。

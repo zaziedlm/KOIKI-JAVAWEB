@@ -1,0 +1,14 @@
+koiki-dependencies-bom
+koiki-parent
+koiki-architecture-contract
+koiki-archunit-rules
+koiki-starter-api
+koiki-starter-data
+koiki-starter-data-jpa
+koiki-starter-observability
+koiki-starter-audit
+koiki-starter-security
+koiki-starter-identity
+koiki-starter-session-jdbc
+koiki-starter-web-mvc
+koiki-testing
