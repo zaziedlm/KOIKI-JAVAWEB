@@ -126,7 +126,7 @@ R-05／06はレビューと採用支援の共通作業として一度だけ計�
 | P4-C2 外部API耐障害性 | §5.2、C2-01〜03 | 代表操作・失敗契約→実装→障害実演 |
 | P4-C3 non-Web Batch | §5.2、C3-01〜03 | 既存基盤確認→実装→二重起動・再実行検証 |
 | P4-C4 File・Object Storage | §5.2、C4-01〜03 | 確定境界設計→実装→失敗・cleanup検証 |
-| P4-D1 同期処理の観測 | §5.2、D1S-01〜03 | 観測契約→接続→相関・障害実演 |
+| P4-D1 同期処理の観測 | §5.2、D1S-01〜03 | 現状整理→consumer側依存・設定の限定接続案→実装・有限実証の判断。今回は計画具体化まで |
 | P4-D2 Virtual Threads | §5.2、D2-01〜03 | 比較条件→検証→CI・ガイド |
 | P4-D3 Container・ECS | §5.2、D3-01〜03 | 起動契約→local検証→実ECS |
 | P4-04／P4-EDGE SAML・認証境界 | §5.2、EDGE-01〜03 | 認証境界確認→採否→必要Adapter・検証 |
@@ -147,8 +147,8 @@ R-05／06はレビューと採用支援の共通作業として一度だけ計�
 | P4-C2／A限定結果COMPLETE / OWNER ACCEPTED（2026-10-23） | C2-01 A照会契約と開始承認→02 Port／Adapter・限定retry・timeout・枠2→03 同一JARの有効／無効実演・限定結果受入まで実施。Bは運用機能確定・バリエーションの必要性発生時に別判断 | Reference／Tooling。[設計・結果・受入§9〜11](phase4-c2-01-operation-candidate-selection-20261022.md#11-aの限定検証結果のowner受入2026-10-23)、[受入承認正本§7](../architecture/validation/phase4-c2-a-implementation-results-20261022.md#7-aの限定検証結果に対するowner受入承認2026-10-23)。新規29 PASS／接続timeout1 SKIP、直接回帰89＋Framework6 PASS。成果commitは87728b7 | DoD4-7全体・C2全体は未認定。通常root全test449 PASS／100 SKIP、最後の集約clean失敗と集約だけの再開SUCCESSを区別。設定override等の検証限界を保持。ローカルPC手動確認は受入の追加必須条件にしない。BのUNKNOWN・Auditは未実装／未実証で後続へ残し、A受入・次package移行の条件にしない。追加追試・S1再開・commit／remoteの開始承認を兼ねない |
 | P4-C3／要件具体化待ち（§9.6） | C3-01 別Batch RepositoryのHEAD・互換性とjob選定→02 non-Web起動・永続metadata・単一実行→03 二重起動・停止後restart／rerun・Audit実演 | Reference／Tooling、Batchは別所有。job・運用主体・DB入力 | DoD 4-10。R-06はDB構成が該当する場合に接続。S1パージ完了と切り離す |
 | P4-C4／要件具体化待ち（§9.6） | C4-01 代表操作・保存／DB確定境界→02 Port／Adapterと受付／公開→03 重複・path・権限・容量・途中停止・cleanup | Reference／Tooling。storage／format入力。C3連携は必要時だけ | local fileとObject Storageの実証範囲を区別。共有harnessは一度だけ計上 |
-| P4-D1同期／優先第2段階（§9） | D1S-01 同期trace／log／metricとsink契約→02 tracer／exporter接続→03 相関・context非漏えい・sink障害実演 | Framework／Tooling。sink・保持・運用入力 | 同期OpenTelemetry成果物のEvidence。S1非同期のDoD 4-12を閉じない |
-| P4-D2／main実CI成功・DoD 4-11技術PASS、D2-03結果／DoDのOwner受入待ち（§9） | D2-01比較条件→02通常／観測6構成・43項目の限定検証→03専用CI・利用ガイドをmain統合済み | Framework／Tooling。[D2-03実CI・判定§5〜6](phase4-d2-03-ci-and-adoption-guide-20261026.md#5-main統合と実ciの確認記録2026-10-27)。main `f3c79d8`／run `40354524562`成功を記録。次は結果・制限のOwner受入判断 | DoD 4-11の技術条件は実CIでPASS。既定無効、早期拒否の相関・逼迫時403等の制限を維持。D2全体完了・正式提供へ拡張しない |
+| P4-D1同期／限定接続・動的検証の技術成立、結果Owner確認待ち（§9） | D1S-01計画→02独立consumer接続→03対照・有効・VT smokeの全10項目PASS | Framework変更なし、独立Tooling11 file。[結果§7](../architecture/validation/phase4-d1-sync-observability-results-20261030.md#7-o02期待値訂正後の同範囲一回2026-10-30) | 正式Collector・backend・本番運用、非同期DoD 4-12は未実証。次は結果・Git差分と成果固定対象確認 |
+| P4-D2／main実CI成功・DoD 4-11技術PASS、限定範囲Owner受入済み（2026-10-30） | D2-01比較条件→02通常／観測6構成・43項目→03専用CI・利用ガイドをmain統合済み | Framework／Tooling。[D2-03受入§7](phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30)。受入記録は現branchのローカル文書差分 | 既定無効、早期拒否の相関・逼迫時403等の制限を維持。D2全体・正式提供へ拡張しない |
 | P4-D3／優先第5段階・実ECS入力待ち（§9） | D3-01 固定JAR／image・起動契約→02 local containerのhealth／診断／停止再起動→03 実ECS差分と実演 | Reference／Tooling＋platform。secret・network・費用・権限 | local／ECS別Evidence。F2の実Cookie条件とR-06のmigration構成を該当時に照合 |
 | P4-C0／C1／保留維持 | C0-01 adoption trigger確認→02 分離モデル・規約／依存review→C1-01 accounting実装→02 競合・rollback・共通error実演 | Architecture／Framework規約、Reference。MyBatis採用入力 | DoD 4-6。C0前はRule8拒否維持。元計画のA1連携依存と独立検証可能部分を開始時に区別し、S1全体を自動再開しない |
 | P4-B2／入力待ち | B2-01 Customer API／BFF／認証選択取得→02 gap審査→03 Customer結合Evidenceの受入 | Customer主導、Framework契約review。案件／IdP／環境入力 | B1の代替DoDにしない。F1／F4〜F7のうち採用構成に関係する項目を照合 |
@@ -333,7 +333,7 @@ Ownerは提示順の点検後、「提示案を維持し補う形の案を採用
 | --- | --- | --- |
 | 先行整理：E1-01／R-09／AD-03・05 | 初期標準機能の一覧と配布方針をD2着手時から整理。既存成果・条件付き機能・Reference・対象外を区別し、案件が採用断面を識別できるようにする | §9.3の一覧初版、提供物・版識別・取得方法の論点。ここで全項目を最終確定させる新しいGateは設けず、D2以降の判断を同じ一覧へ反映 |
 | 1：D2-01〜03 | Java実行基盤として優先判断。Java target／build JDK／runtimeとVT opt-inを区別し、既定無効を維持。比較条件→有効／無効の同じ操作・artifact比較→実CIと利用条件を具体化 | 対応構成・有効化条件・制限・検証根拠。高速化や全案件での有効化を完了条件にしない。D2内で必要な応答時間／thread／pool／context観測を用意し、D1全体完了は待たない |
-| 2：D1S-01〜03 | 運用実務に必要な同期trace／log／metricの観測契約→tracer／exporter接続→正常・拒否・遅延・失敗・context非漏えい・収集先障害を実演 | 要求から原因へ辿れるEvidenceと診断手順。sampling・非露出・cardinality・資源上限・保持／アクセス責任を明示。S1と共有する観測準備は一度だけ計上し、非同期DoD4-12を自動充足しない |
+| 2：D1S-01〜03 | consumer側の標準依存・設定による限定接続を実装し、同期HTTP・log相関・要求分離・sink障害／回復・VT smokeの全10項目が技術成立 | Owner結果確認と成果固定対象確認。Framework変更0、正式Collector・backend・非同期の成立には拡張しない |
 | 3：S1-T1〜3／B1-08／C2-03 | 非同期を主軸に既存成果と未達を照合。B1・C2も含め、既存Evidenceで保証範囲・DoDの成立／未達・適用条件を評価。追加機能を抑制 | 「保証できること／できないこと／利用条件／残アクション」を記録。必要な追試・限定訂正、利用制限、後続化を区別。限定結果に理由を付けるだけで未達をPASSにせず、§9.5へ残す |
 | 4：E1-01〜03＋R-05／06・R-09・AD | Framework JAR群・Parent／BOMの固定と管理、案件の参照取り込み・更新を確立。採用構成の最小外部Consumer、取得・build・起動・診断と受領側Evidenceを照合 | artifact／version／checksum／source対応、配布先、導入・更新・既知制約の案内を備えた初期提供版。Phase5のv1.0／support条件・全体完了とは分ける。D3後の変更を受ける版管理を用意 |
 | 5：D3-01〜03 | Framework外で所有するfrontend moduleも配置境界に含め、Java backend containerの構成・build／run／health／診断／停止を検証。localと実ECSを段階分離 | frontend／backendの取得・build・配置と認証境界、固定JAR／image、起動・障害・cleanup Evidence。実ECSの不足入力を明示し、E1の版・対応表・導入手順へ結果を反映 |
@@ -358,8 +358,8 @@ Ownerは提示順の点検後、「提示案を維持し補う形の案を採用
 
 | 対象 | 対応方針・判断する時期 |
 | --- | --- |
-| D2のJava／VT条件 | [グランドデザイン§21.5](../architecture/grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md#215-ci-テストマトリクス)はJava21でVT有効のCI、[§23.3](../architecture/grand-design/KOIKI-JavaWeb-FW_グランドデザイン_v0.2.md#233-virtual-threads)は有効化条件Java25以上を記載。D2-01で試験対象と案内対象の関係を決め、必要な正本訂正を具体化する。今回Java baselineや正本文言を変更したものではない |
-| D1とD2／S1の観測共有 | D2の比較に必要な最小観測はD2で確保。D1でtrace／exporter／sinkと運用診断を確立し、S1の評価で共有する準備だけ再利用。同期の成功を非同期配送・復旧・相関の成功へ転用しない |
+| D2のJava／VT条件 | D2-01〜03で正本§21.5／§23.3をJava21 build・同一成果物のJava25 runtime／VT opt-inへ整合済み。既定無効・将来版個別確認を維持。実CI成功・限定受入は[D2-03§5〜7](phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30)を参照 |
+| D1とD2／S1の観測共有 | D2の結果と既存Starterを入力に、D1は独立consumerの同期trace接続・log相関・有限障害実演が技術成立。正式Collector・backend等は別。S1の保証範囲判定は既存Evidenceで進め、非同期採用案件の具体化時に設計・運用を深掘りする。同期成功を非同期配送・復旧・相関の成功へ転用しない |
 | R-05／F6：Customer Entity scan | E1の採用構成確認へ優先的に接続。Frameworkと別packageの最小Customer Entity／Repositoryが共存することを実証し、修正または明示登録の導入契約を定める。Referenceの成功だけで導入保証としない |
 | R-06／F7：Flyway | E1で初期標準が対応するDataSource／schema／migration接続を絞って明示・検証。全Flyway構成への対応を先行要求しない。D3等が別構成を採用するなら差分として確認 |
 | R-09・AD-01〜05 | 現在の提供機能・導入手順・既知制約の導線を更新。Maven stage等の日常開発方式と提供版の取得方式を整理し、独立Consumerおよび受領側の取得／build／起動／診断を照合する。AD-04の検証保留は維持し、恒常方式や新しい機械検査を黙って追加しない |
@@ -389,6 +389,16 @@ S1の人手照合・担当付きHOLDは、担当・照合資料・停止／再�
 これらは引き続きPhase4台帳で追跡する。初期標準の提供開始とPhase4全体完了は別の判定であり、当初DoD4-1〜4-12と番号なし成果物の未達・採否／延期を消さない。必要可能性が低いことを、SAML等の当初成果物の廃止承認と解釈しない。
 
 ### 9.7 直近の着手点・更新方法
+
+**D1限定範囲の技術成立（2026-10-30、現行）：** O02期待値訂正後、Owner承認の同範囲一回で全3 child・10 checkpointがPASS。Java21無効対照／有効、同じJava21生成JARのJava25 VT smokeが成立し、正常・500・log相関・要求分離・sink503／遅延／回復を確認。JUnit1 PASS、cleanup・source／JAR照合成功、Maven21.999秒。[結果§7](../architecture/validation/phase4-d1-sync-observability-results-20261030.md#7-o02期待値訂正後の同範囲一回2026-10-30)へEvidenceと限界を記録。Framework／Reference・CI変更なし。今回限定範囲は技術成立、Owner結果受入は確認待ち。さらに実行を増やさず、結果・Git差分と成果固定対象を確認する。正式Collector・backend・本番運用や非同期DoD 4-12へ一般化しない。結果確認後はS1／B1／C2保証範囲・DoD整理→E1→D3。以下は各時点の履歴。
+
+**D1追加一回の結果（2026-10-30、履歴）：** Owner承認の追加実行で、同じJAR・依存・設定のO04・O01が成功し、正常同期HTTPの実OTLP受信・decode・構造化log相関が成立。O02はHTTP500のspan statusがUNSETで期待ERRORと異なりFAIL、残7項目未到達。採用Micrometerの例外なし500ではstatus500／outcome SERVER_ERRORで識別することを静的照合し、harness期待値を訂正・compile済み。さらに動的再実行なし。両child／receiver cleanup・identity照合成功。全10項目・D1受入は未成立で、[結果§6](../architecture/validation/phase4-d1-sync-observability-results-20261030.md#6-訂正後の同範囲追加一回2026-10-30)を次の判断入口とする。Framework／Reference・CI変更なし。以下は各時点の履歴。
+
+**D1限定実装・初回結果（2026-10-30、履歴）：** Ownerの§8確認・進行指示を受け独立Tooling11 fileを作成。consumer側の標準依存・設定のみでJava21 package／test-compile・source／JAR固定を確認。初回一回はexport無効対照O04がPASS後、子process終了時のlog readerで`Stream closed`をERROR判定し停止した。JUnit1 invocation／1 error、残9 checkpoint未到達。所有child・receiver cleanupとidentity照合は成立。helper訂正・compile済み、動的再実行は未実施。[初回結果・再開案](../architecture/validation/phase4-d1-sync-observability-results-20261030.md)を次の判断入口とし、初回source／artifact／失敗を保持する。Framework／Reference・CI変更なし。export有効・VT smoke・同期OpenTelemetryの接続成立は未確認。以下は各時点の履歴。
+
+**D1限定接続案の具体化（2026-10-30、実行前の履歴）：** Ownerは「consumer側依存・設定で接続可能かを先に調べ、Framework変更が必要なら理由・最小差分を提示する」進め方を了承した。[D1計画§8〜13](phase4-d1-sync-observability-plan-20261030.md#8-限定接続案への見直し判断2026-10-30)にBoot4.1.1配布POM／sourceの静的照合、独立consumer・OTLP受信fixture、主8＋VT smoke2の10 checkpoint、40分上限案・cleanup・変更分岐を記載。Framework変更必須の根拠は現時点でなく、実接続成立は未確認。今回の実施は資料取得と文書訂正まで。D1S-02／03実装・動的検証は次の判断対象とし、非同期設計・運用の深掘りは採用案件の具体化時という方針を維持する。以下の「今回モジュール改変なし／計画確認後に第3段階」等は見直し前の履歴。
+
+**限定接続案具体化前の入口（2026-10-30、履歴）：** main `b2ca253`から`docs/d1-sync-observability-plan-20261030`を作成。Ownerの受入記録・表示訂正・D1計画整理の進行指示を受け、[D2-03§7](phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30)に説明済み限定範囲の受入を記録した。[D1計画初版](phase4-d1-sync-observability-plan-20261030.md)は現状・適用条件・不足・後続判断を整理し、Owner確認対象。今回はモジュール改変・新規動的検証なし。同期の基本整理を案件フィードバック待ちにせず、非同期連携の設計・運用の深掘りは採用案件が具体化した時に行う。計画確認後はS1／B1／C2の保証範囲・DoD整理→E1→D3の順を維持する。接続／実演・同期OpenTelemetry・非同期DoD 4-12は未成立のまま残す。この追記はローカル文書差分で、commit／remoteは未実施。以下の受入待ち・実CI待ち等は各時点の履歴。
 
 **D2-03の現在位置（2026-10-27）：** VT成果は`0af5d77`へcommitされ、PR #55でmain統合済み。後続CI調整PR #56のmerge commit `f3c79d8376d93d9f977ff2263c768b5ce32fc3ed`に対する[VT実CI run 40354524562](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40354524562)は成功。Temurin21.0.12+1 build・21／25.0.4+1 runtimeの通常／観測6 invocationで6 PASS／0 FAIL／0 ERROR／0 SKIP・43項目、source／JAR照合・cleanupが成立した。同mainの通常CI・Java Runtime Compatibilityも成功。[D2-03記録§5〜6](phase4-d2-03-ci-and-adoption-guide-20261026.md#5-main統合と実ciの確認記録2026-10-27)へcommit・run／job URL・artifact ID／digest・実時間・判定根拠を反映した。**DoD 4-11の技術条件はPASS、D2-03結果／DoDのOwner受入は未記録で判断待ち**。今回の文書追随指示やPR mergeを明示受入として扱わない。次は実CI結果・[適用ガイド§3.1](virtual-threads-adoption-guide.md#31-現在の検証限界)の制限を入力とするOwner受入判断。既定無効を維持し、D2全体完了・正式提供・Phase4全体の認定へ拡張しない。以下の未commit・実CI待ち等は各時点の履歴であり、現行状態は本段落に従う。
 

@@ -1,11 +1,11 @@
 # D2-03：VT実CI系統・適用ガイド・正本整合
 
-**状態（2026-10-27）：** main統合・実CI成功を確認済み。DoD 4-11は技術的にPASS（§5〜6）。D2-03結果／DoD 4-11のOwner受入は未記録で、受入判断待ち。
+**状態（2026-10-30）：** main統合・実CI成功、DoD 4-11技術PASS。説明済みの限定範囲についてD2-03結果／DoD 4-11をOWNER ACCEPTEDとして記録（§7）。D2全体・正式提供・本番採用へ拡張しない。
 
 **開始指示（2026-10-26）：** OwnerはD2-02結果を確認し「D2-03へ進めましょう」と指示した。
 限定結果・制限を次工程の入力とする。D2全体・正式releaseの認定とは区別する。
 作業branchは`docs/d2-01-java25-vt-verification-plan-20261026`、基点は`1284ba08a9e0cb44c67487dc02148e378699ceb4`。
-文書追随branchは`docs/d2-vt-ci-results-and-dod-alignment-20261027`、基点はmainの`f3c79d8376d93d9f977ff2263c768b5ce32fc3ed`。§4はローカル検証時点の履歴、§5〜6を実CI・判定の現行入口とする。
+文書追随branchは`docs/d2-vt-ci-results-and-dod-alignment-20261027`、基点はmainの`f3c79d8376d93d9f977ff2263c768b5ce32fc3ed`。§4はローカル検証時点の履歴、§5〜7を実CI・判定・受入の現行入口とする。
 
 ## 1. 最終変更の範囲
 
@@ -15,7 +15,7 @@
 | VT Tooling | bundle生成・checksum／source検証・43項目集約・所有資源cleanupをPython標準libraryで再現可能にする。CIの現在commitを照合し、旧D2-02の固定commit依存をCIへ持ち込まない |
 | VT適用ガイド | Java21 build／Java25 opt-in、既定無効、Hikari入力、context／pool／受付制御・検証限界を整理 |
 | グランドデザイン§21.5／§23.3 | VT CIをJava25 runtimeへ統一。同一Java21成果物の利用、将来版の個別確認、executorごとのcontext確認を明確化 |
-| 統合計画・提供機能ガイド | D2-02のOwner確認とD2-03のmain実CI成功・DoD技術判定／Owner受入待ちを反映 |
+| 統合計画・提供機能ガイド | D2-02のOwner確認とD2-03のmain実CI成功・DoD技術判定と§7の限定受入を反映 |
 
 正式Framework／ReferenceのJava・公開API・依存・migration・既定設定は変更しない。
 Root Reactor／publish unitへToolingを追加しない。実CI成功前にDoD4-11をPASSへ更新しない。
@@ -128,12 +128,27 @@ PR #55直後のmain `831af4a`ではVT系統は成功したが、[通常CI run 40
 | D2-03 workflow／ガイド／正本 | PR #55でmain統合済み。実CI結果を§5へ反映 |
 | 新VT checkの実CI | PASS／main `f3c79d8`、run `40354524562`、6件／43項目・cleanup成功 |
 | DoD 4-11の技術条件 | PASS／上記実CIを根拠に2026-10-27文書照合で判定 |
-| D2-03結果／DoD 4-11のOwner受入 | 未記録／OWNER ACCEPTANCE PENDING。今回の整理指示・過去のPR mergeと明示受入を区別 |
+| D2-03結果／DoD 4-11のOwner受入 | OWNER ACCEPTED（2026-10-30、§7の限定範囲）。2026-10-27時点では判断待ちだった |
 | D2全体・案件の本格採用 | 全体完了のOwner判断は未記録。CI結果と明示した条件・制限を入力に判断。既定無効を維持 |
 | D1等の残課題 | 早期拒否／ERROR dispatch相関、逼迫時403、他executor等を継続追跡 |
 
-次はOwnerが§5の実CI結果・§6の技術判定と適用ガイド§3.1の制限を確認し、受入／差戻し・追加条件を明示する。
-受入が成立した場合は、その指示日・対象commit／run・範囲を本節へ追記する。現在の受入欄は空の承認を補わず、判断待ちとして残す。
+2026-10-27時点はOwner受入判断待ちだった。2026-10-30の受入記録指示を§7へ追記し、現行状態は同節に従う。
 required checks追加・ruleset変更、全executor／非同期／Batch・将来Java版・本番SLOの保証、正式release／support付き配布、Phase4全体の認定へ拡張しない。
 
 利用条件は[VT適用ガイド](virtual-threads-adoption-guide.md)、実装・ローカルの根拠は[D2-02結果](../architecture/validation/phase4-d2-02-java25-virtual-threads-results.md)を参照する。
+
+## 7. 限定結果・DoD 4-11のOwner受入記録（2026-10-30）
+
+Ownerへの説明では、同じJava21生成JARのJava21無効／Java25無効／有効、通常・観測6構成／43項目、
+実効thread・選定業務／認証／context／接続解放・source／JAR照合・cleanupの成立と、適用ガイド§3.1の制限を受入対象として提示した。
+その後Ownerは、現在branchで「受入判断の記録・古い状態表示の訂正と、次のD1計画整理 と順に進めましょう」と指示した。
+本指示を、上記説明済みの限定範囲に対する受入記録の指示として扱い、**D2-03結果／DoD 4-11：OWNER ACCEPTED**と記録する。
+過去のPR mergeだけを受入根拠にしたものではない。
+
+- 基礎Evidence：§5のmain `f3c79d8376d93d9f977ff2263c768b5ce32fc3ed`／[run 40354524562](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40354524562)。6 PASS、43項目、source／JAR照合・cleanup成立。
+- 統合後確認：文書統合main `b2ca253fd12842f0e0e89c827c04c6ca35aa3a29`／[VT run 40641625269](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40641625269)も成功。今回の文書編集で新たな実行・artifact再検証は行っていない。
+- 受入記録branch：`docs/d1-sync-observability-plan-20261030`、基点main `b2ca253`。記録はローカル差分で、commit／remote反映は別操作。
+- 維持する条件：Java21 build、Java25 opt-in、VT既定無効、同期Webの選定経路。早期拒否の相関欠落・DB逼迫時403は既知制限として残す。
+- 対象外：全executor・S1非同期・Batch・将来Java版・本番SLO、D2全体の無条件保証、required化、正式release／support付き配布、Phase4全体認定。
+
+次は[D1同期観測の計画整理](phase4-d1-sync-observability-plan-20261030.md)。現状整理に続き、Owner了承に基づきconsumer側の依存・設定を先行する限定接続案を§8〜13へ具体化した。Framework変更が必要なら理由・最小差分を提示する。今回の編集は文書のみ。非同期の設計・運用の深掘りは採用案件の具体化時に行う。

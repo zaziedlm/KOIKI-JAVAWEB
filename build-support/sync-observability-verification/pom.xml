@@ -1,0 +1,5 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+<parent><groupId>org.koikifw</groupId><artifactId>koiki-parent</artifactId><version>0.1.0-SNAPSHOT</version><relativePath>../../koiki-parent/pom.xml</relativePath></parent>
+<groupId>org.koikifw.buildsupport</groupId><artifactId>sync-observability-verification</artifactId><packaging>pom</packaging>
+<modules><module>app</module><module>harness</module></modules>
+</project>

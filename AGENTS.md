@@ -1,6 +1,16 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
-## 現行入口：初期標準確立とmain統合（2026-10-23）
+## 現行入口：D2限定受入記録・D1計画整理（2026-10-30）
+
+Owner指示によりmain `b2ca253`から`docs/d1-sync-observability-plan-20261030`を作成し、D2の受入記録・古い表示の訂正とD1計画整理を同branchで行う。
+[D2-03§7](docs/development/phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30)へ説明済み限定範囲／DoD 4-11のOwner受入を記録。既定無効・制限を維持し、D2全体・正式提供へ拡張しない。
+[D1計画](docs/development/phase4-d1-sync-observability-plan-20261030.md)はOwner承認に基づき独立Tooling11 fileを実装。初回helper ERROR、次回O02期待値FAILを保持し、各訂正後に個別承認の同範囲一回を実行した。
+[結果§7](docs/architecture/validation/phase4-d1-sync-observability-results-20261030.md#7-o02期待値訂正後の同範囲一回2026-10-30)で全10 checkpoint PASS、JUnit1 PASS・cleanup／source／JAR照合成功。Framework／Reference・Root Reactor・CI変更なし。限定接続は技術成立、Owner結果受入は確認待ち。
+現行の次作業は結果・Git差分と成果固定対象の確認。さらに動的実行を追加しない。結果確認後の優先順はS1／B1／C2保証範囲・DoD整理→E1→D3。
+正式Collector・backend・本番運用、DB／外部client span・全拒否／全executorは今回未実証。既存S1未達・人手HOLD・DoD 4-12は維持し、非同期採用案件の具体化時に設計・運用を深掘りする。
+commit・remoteは今回の実行承認に含まれず、下記の過去のmain統合承認を新規操作へ流用しない。
+
+## 履歴入口：初期標準確立とmain統合（2026-10-23）
 
 現行の推進計画は[統合作業計画§9](docs/development/phase4-review-integrated-task-plan-20261020.md#9-初期標準確立に向けた見直し推進計画owner-approved2026-10-23)。複数案件採用を見据え、初期標準一覧の整理→D2→D1同期→S1／B1／C2の保証範囲・DoD判定→E1→D3→要件具体化に応じた残タスク、の順をOwner承認済み。
 B1の実装・選定検証とブラウザ結果受入、C2 Aの限定結果受入まで進んでいる。以下の「次はB1」等は履歴として読み、初期調査や非同期全件を自動再開しない。初期標準一覧は[提供機能ガイド§0〜1](docs/development/framework-capabilities-and-selection-guide.md#0-初期標準一覧の読み方と確定までの判断)に整理済みで、方向性はOwner承認済み。最終提供版・DoD全体・Phase4全体の認定は別に残る。
