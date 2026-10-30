@@ -13,12 +13,13 @@ Neither this ZIP nor its preparation script installs those tools. Only KOIKI
 artifacts are bundled: 14 POMs and 12 JARs, plus manifest and installation guidance.
 
 Use a reviewed copy of `prepare-koiki.ps1` pinned to a distribution repository
-commit, and the ZIP SHA-256 recorded with the selected version. Repository name
-and the following version are examples, not currently published coordinates.
+commit, and the ZIP SHA-256 recorded with the selected version. The distribution
+repository is the existing public `zaziedlm/KOIKI-JAVAWEB`. The preview below
+has local candidate evidence; remote publication/download remains unverified.
 
 ```powershell
 ./prepare-koiki.ps1 -Version 0.1.0-preview.1 `
-  -Repository OWNER/koiki-artifacts -ExpectedSha256 <pinned-64-character-hash>
+  -Repository zaziedlm/KOIKI-JAVAWEB -ExpectedSha256 <pinned-64-character-hash>
 ```
 
 The script downloads exactly `framework-<version>` /
@@ -55,7 +56,7 @@ private repository. Never put credentials in this script, POMs, or manifests.
     GH_TOKEN: ${{ secrets.KOIKI_ASSET_READ_TOKEN }}
   run: >-
     ./tools/prepare-koiki.ps1 -Version 0.1.0-preview.1
-    -Repository OWNER/koiki-artifacts
+    -Repository zaziedlm/KOIKI-JAVAWEB
     -ExpectedSha256 ${{ vars.KOIKI_ARCHIVE_SHA256 }}
 - name: Build application
   run: ./mvnw -B verify
@@ -94,11 +95,19 @@ are separate results; consult the E1 plan and version-specific evidence before u
 
 ## Continue release work on a local PC
 
-Cloud release creation/upload is outside the continuation scope. Use the
+Publishing (tag/release creation and asset upload) must run on a local PC after
+checking GitHub authentication and write access to the target repository. Do not
+run publishing from Codex Cloud or another cloud execution environment. Use the
 [VSCode handoff](../../docs/development/phase4-e1-vscode-handoff-20261030.md)
-for the existing public `zaziedlm/KOIKI-JAVAWEB` repository, candidate transfer,
-source/provenance checks, and local-PC release/download steps. Binary assets are
-transferred separately from Git. The old dedicated-repository publishing package
-is superseded; `publish-initial-release.ps1` is a retired, fail-fast guard.
-The original verified ZIP retains the README bundled at generation time; changed
-checkout documentation does not change those verified bytes.
+for the existing public `zaziedlm/KOIKI-JAVAWEB` repository, the Windows-generated
+candidate, source/provenance checks, and local-PC release/download commands.
+Candidate generation, installation and the Consumer were reproduced on Windows
+with Temurin 21.0.13+9; see the linked evidence for scope and corrections.
+The Cloud continuation ZIP/bundle is not required. Binary assets stay outside Git.
+There is no active publishing script: the handoff uses Git/GitHub CLI directly.
+`publish-initial-release.ps1` is a retired, fail-fast guard for the old repository plan.
+Recipient CI may download/install a published asset; it is not a publishing environment.
+This checkout README was corrected after candidate-3 was built. Its bundled README
+still contains the earlier repository examples; pass `-Repository zaziedlm/KOIKI-JAVAWEB`.
+Do not modify that verified ZIP to incorporate these text changes: doing so creates
+different bytes/hash and requires a new candidate and the necessary verification.

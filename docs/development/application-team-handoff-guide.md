@@ -1,6 +1,6 @@
 # KOIKI-JavaWeb-FW アプリ開発チーム向け引継ぎガイド v0.1
 
-**2026-10-30 E1継続：** [VSCode引継ぎ](phase4-e1-vscode-handoff-20261030.md)を追加。CloudのRelease操作は対象外とし、作業branchをcommit／pushしてPCで継続する。
+**2026-10-30 E1継続：** [ローカル再現確認・公開手順](phase4-e1-vscode-handoff-20261030.md)を現行入口とする。Cloudの別渡しZIPを条件とせず、Windows／Temurinでcandidate-3を生成・検証済み。[Windows結果](../architecture/validation/phase4-e1-local-windows-reproduction-20261030.md)にhashと限定結果を記録。公開はGitHub認証・書込権限を確認したローカルPCから既存`zaziedlm/KOIKI-JAVAWEB`へ行い、Codex Cloud等では行わない。asset登録はGit／GitHub CLI手順、取得／Maven登録は準備script。公開・V09／10・結果Owner受入は未完了。
 
 **2026-10-30 E1ローカル結果：** [固定版asset・Maven登録・独立Consumerの結果](../architecture/validation/phase4-e1-artifact-distribution-results-20261030.md)へ候補生成と限定導入条件を記録。取得・登録手順の正本は[配布Tooling](../../build-support/framework-distribution/README.md)。現時点でremote公開・実download・案件PC／CI受領は未完了のため、公開済み導入版の案内とは区別する。R-05のCustomer EntityScan明示、R-06の同一DataSource／schema・Data Starter明示の条件を参照する。
 

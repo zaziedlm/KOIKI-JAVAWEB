@@ -40,9 +40,13 @@ def main():
     status = {"container": name, "status": "RUNNING", "cleanup": "PENDING"}
 
     def docker(*command, input_text=None, check=True):
-        return subprocess.run(["docker", "--host=unix:///var/run/docker.sock", *command],
+        result = subprocess.run(["docker", *command],
                               env=env, input=input_text, text=True, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, timeout=25, check=check)
+                              stderr=subprocess.PIPE, timeout=25, check=False)
+        if check and result.returncode:
+            detail = result.stderr.replace(admin_password, "<redacted>").replace(application_password, "<redacted>")
+            raise RuntimeError(f"Docker {command[0]} failed ({result.returncode}): {detail[-2000:]}")
+        return result
 
     def sample():
         while not stopped.is_set():
@@ -61,7 +65,9 @@ def main():
                "-p", "127.0.0.1::5432", "postgres:17-alpine", "-c", "max_connections=16")
         created = True
         for _ in range(30):
-            if docker("exec", name, "pg_isready", "-U", "postgres", "-d", "e1", check=False).returncode == 0:
+            # The image's initialization server accepts Unix sockets before the
+            # application database exists. TCP is enabled only on the final server.
+            if docker("exec", name, "pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-d", "e1", check=False).returncode == 0:
                 break
             time.sleep(1)
         else:
@@ -76,7 +82,10 @@ def main():
         env["E1_JDBC_URL"] = f"jdbc:postgresql://127.0.0.1:{port}/e1"
         monitor = threading.Thread(target=sample, daemon=True)
         monitor.start()
-        base = [str(root / "mvnw"), "-B", "-ntp", f"-Dmaven.repo.local={args.repository.resolve()}"]
+        wrapper = root / ("mvnw.cmd" if os.name == "nt" else "mvnw")
+        if os.name == "nt":
+            env["MAVEN_BASEDIR"] = str(root)
+        base = [str(wrapper), "-B", "-ntp", f"-Dmaven.repo.local={args.repository.resolve()}"]
         if args.offline:
             base.append("-o")
         command = base + ["-DargLine=-Xmx512m", "-DforkCount=1", "-Djunit.jupiter.execution.parallel.enabled=false", "clean", "verify"]

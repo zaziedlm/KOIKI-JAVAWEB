@@ -1,5 +1,10 @@
 # E1 local verification
 
+Windows reproduction and its separate candidate/results are recorded in
+[the local evidence](../../docs/architecture/validation/phase4-e1-local-windows-reproduction-20261030.md).
+Windows uses `mvnw.cmd`; wrapper calls outside the checkout supply its base directory.
+Docker uses the configured CLI context / `DOCKER_HOST`, not a hard-coded Unix socket.
+
 Run only within the execution scope / time and resource budget in E1 plan §7.4.
 These scripts do not publish, modify Root CI or operate on a real project database.
 

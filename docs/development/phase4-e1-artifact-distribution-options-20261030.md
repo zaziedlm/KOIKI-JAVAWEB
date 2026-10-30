@@ -1,12 +1,16 @@
 # E1-01：初期提供artifact・版識別・配布／参照更新方式の検討
 
-**現行状態（2026-10-30）：** Ownerの進行指示に基づき§7.4のTooling・独立Consumerを実装し、V01〜08のローカル実証が限定技術成立。[結果文書](../architecture/validation/phase4-e1-artifact-distribution-results-20261030.md)に候補ZIP・test・補助訂正・R-05／06導入条件を記録。結果Owner受入、読取認証、V09／10は未完了。公開先はOwnerの見直し指示により既存`origin`の`zaziedlm/KOIKI-JAVAWEB`（public）へ変更。§8.2の配布先と§8.3のVSCode引継ぎを現行判断とし、§8.1の新規private repo案・旧handoffは採用しない。Framework本体／作業checkoutのPOM・Root CIは変更なし。以下の未実施記述は計画作成時点の履歴として読み、現在の結果は結果文書を優先する。
+**現行入口の更新（2026-10-30）：** Owner指示によりCloudの別渡しZIPを条件とせず、Windows／Temurinで候補を再生成・再現確認した。[Windows結果](../architecture/validation/phase4-e1-local-windows-reproduction-20261030.md)と[ローカル公開手順](phase4-e1-vscode-handoff-20261030.md)を優先する。現行候補はlocal candidate-3、公開先は既存public `zaziedlm/KOIKI-JAVAWEB`。公開はGitHub認証・書込権限を確認したローカルPCからGit／GitHub CLIで行い、Codex Cloud等では行わない。専用publish scriptは未実装、旧scriptは停止処理。V09／10・結果Owner受入は未完了。以下のCloud結果、配布先未定、未push等は各判断時点の履歴として読む。
+
+**Cloud実証時点の履歴（2026-10-30）：** Ownerの進行指示に基づき§7.4のTooling・独立Consumerを実装し、V01〜08のローカル実証が限定技術成立。[結果文書](../architecture/validation/phase4-e1-artifact-distribution-results-20261030.md)に候補ZIP・test・補助訂正・R-05／06導入条件を記録。結果Owner受入、読取認証、V09／10は未完了。公開先はOwnerの見直し指示により既存`origin`の`zaziedlm/KOIKI-JAVAWEB`（public）へ変更。§8.2の配布先と§8.3のVSCode引継ぎを現行判断とし、§8.1の新規private repo案・旧handoffは採用しない。Framework本体／作業checkoutのPOM・Root CIは変更なし。以下の未実施記述は計画作成時点の履歴として読み、現在の結果は結果文書を優先する。
 
 **作業branch：** `docs/phase4-s1-b1-c2-guarantee-review-20261030`を継続。機能保証範囲整理は`8fe8473`へcommit済み、main未統合。
 Ownerは同branchでE1へ進む方針を示した。本書は[保証範囲・DoD整理§7](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md#7-現時点のエビデンスとしてのowner採用判断2026-10-30)を入力にする。
 初期標準の基準一覧は[提供機能ガイド§0〜1](framework-capabilities-and-selection-guide.md#0-初期標準一覧の読み方と確定までの判断)。機能一覧を別に定義し直さない。
 
 ## 1. 提案の要点と前提
+
+本節から§7までの方式比較・開始前の説明は判断経緯として保存する。配布先・実装／検証の現在状態は冒頭の現行入口を優先し、「未定」「未実装」を現在の判断へ流用しない。
 
 **配布先は未定。初期運用の管理負担を抑える「成果物専用リポジトリ」から、managed Maven repositoryまでを比較する。**
 Ownerの最新回答（2026-10-30）は「候補を整理するところから」「成果物Jarのみ単体管理のリポ構築など、シンプルな見通し良い管理手法も考慮」。先のGitHub Packagesを主候補とする回答を更新するものとして扱う。

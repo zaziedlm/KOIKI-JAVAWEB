@@ -116,7 +116,14 @@ try {
         if (Test-Path -LiteralPath $dest) { Require ((Get-Hash $dest) -eq $record.sha256) 'Coordinate changed while preparing.' }
     }
     Push-Location $work
+    $previousMavenBaseDir = $env:MAVEN_BASEDIR
     try {
+        # Windows Wrapper searches from cwd unless its own project base is supplied.
+        # Keep cwd outside the Consumer so an uninstalled Parent is not read.
+        $mavenCommand = Get-Command $Maven -ErrorAction Stop
+        if ($IsWindows -and [IO.Path]::GetFileName($mavenCommand.Source) -ieq 'mvnw.cmd') {
+            $env:MAVEN_BASEDIR = Split-Path -Parent $mavenCommand.Source
+        }
         foreach ($id in $inventory) {
             $item = $install | Where-Object Id -EQ $id
             $destination = Join-Path $target "org/koikifw/$id/$Version"
@@ -129,7 +136,10 @@ try {
             & $Maven @arguments *> (Join-Path $work 'maven-install.log')
             Require ($LASTEXITCODE -eq 0) "Maven registration failed for $id. Preparation is incomplete; rerun with the same verified asset."
         }
-    } finally { Pop-Location }
+    } finally {
+        $env:MAVEN_BASEDIR = $previousMavenBaseDir
+        Pop-Location
+    }
     foreach ($record in $manifest.files | Where-Object path -Like 'maven-repository/*') {
         Require ((Get-Hash (Join-Path $target $record.path.Substring('maven-repository/'.Length))) -eq $record.sha256) 'Installed payload verification failed.'
     }

@@ -1,5 +1,7 @@
 # Phase4 E1：固定版asset・Maven登録・独立Consumerの検証結果
 
+本書はCloud内の実証と当時の候補／失敗の履歴である。現在のローカルPCでの再生成・Windows検証は[Windows再現結果](phase4-e1-local-windows-reproduction-20261030.md)、現行候補・公開手順は[ローカル公開手順](../../development/phase4-e1-vscode-handoff-20261030.md)を参照する。本書のCloud候補hash・旧handoff ZIP／bundleを現在の候補や再開条件へ流用しない。公開操作はGitHub権限を確認したローカルPCから行い、Cloudでは行わない。
+
 **状態（2026-10-30）：V01〜08のローカル実証は限定技術成立、結果Owner受入は未確認。通常root回帰成功。remote公開／取得と実チーム受領は未実施。**
 
 ## 1. 対象と実行根拠

@@ -19,7 +19,7 @@ def sha(path):
 
 
 def git(root, *args):
-    return subprocess.check_output(["git", "-C", str(root), *args], text=True).strip()
+    return subprocess.check_output(["git", "-C", str(root), *args], text=True, encoding="utf-8").strip()
 
 
 def main():
@@ -35,7 +35,7 @@ def main():
     output = args.output.resolve()
     if output.exists() or output.is_relative_to(root):
         parser.error("Output must be new and outside the source checkout")
-    ids = (Path(__file__).parent / "publish-unit.txt").read_text().splitlines()
+    ids = (Path(__file__).parent / "publish-unit.txt").read_text(encoding="utf-8").splitlines()
     reactor = ET.parse(root / "pom.xml").getroot()
     modules = {}
     for node in reactor.findall("m:modules/m:module", NS):
@@ -59,7 +59,13 @@ def main():
         if original.is_file():
             target = stage / name
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(original, target)
+            # CopyFile2 needs extended paths for long fixture names on Windows.
+            source_path = str(original)
+            target_path = str(target)
+            if os.name == "nt":
+                source_path = source_path if source_path.startswith("\\\\?\\") else "\\\\?\\" + source_path
+                target_path = target_path if target_path.startswith("\\\\?\\") else "\\\\?\\" + target_path
+            shutil.copy2(source_path, target_path)
             source_files[name] = sha(original)
     provenance = {
         "commit": git(root, "rev-parse", "HEAD"),
@@ -72,19 +78,20 @@ def main():
     for artifact, (module, _) in modules.items():
         pom = stage / module / "pom.xml"
         # Replace only explicitly KOIKI-owned version references in the selected POMs.
-        content = pom.read_text()
+        content = pom.read_text(encoding="utf-8")
         changed = content.replace("<version>0.1.0-SNAPSHOT</version>", f"<version>{args.version}</version>")
         if changed == content:
             raise ValueError(f"No baseline version in {module}")
-        pom.write_text(changed)
+        pom.write_text(changed, encoding="utf-8", newline="\n")
         generated[f"{module}/pom.xml"] = {"before": sha(root / module / "pom.xml"), "after": sha(pom)}
     # The staging reactor selects only the distribution modules. It is not a payload POM.
-    text = (stage / "pom.xml").read_text()
+    text = (stage / "pom.xml").read_text(encoding="utf-8")
     replacement = "<modules>\n" + "".join(f"    <module>{modules[a][0]}</module>\n" for a in ids) + "  </modules>"
-    (stage / "pom.xml").write_text(re.sub(r"<modules>.*?</modules>", replacement, text, flags=re.S))
+    (stage / "pom.xml").write_text(re.sub(r"<modules>.*?</modules>", replacement, text, flags=re.S), encoding="utf-8", newline="\n")
     generated["pom.xml"] = {"before": sha(root / "pom.xml"), "after": sha(stage / "pom.xml")}
     (output / "generated-poms.json").write_text(json.dumps(generated, indent=2) + "\n")
-    command = [str(stage / "mvnw"), "-B", "-ntp", f"-Dmaven.repo.local={args.maven_repository.resolve()}",
+    wrapper = stage / ("mvnw.cmd" if os.name == "nt" else "mvnw")
+    command = [str(wrapper), "-B", "-ntp", f"-Dmaven.repo.local={args.maven_repository.resolve()}",
                "-DargLine=-Xmx512m", "clean", "package"]
     if args.offline:
         command.insert(1, "-o")
@@ -100,7 +107,7 @@ def main():
         module, packaging = modules[artifact]
         relative = Path("maven-repository/org/koikifw") / artifact / args.version
         pom = stage / module / "pom.xml"
-        if "0.1.0-SNAPSHOT" in pom.read_text():
+        if "0.1.0-SNAPSHOT" in pom.read_text(encoding="utf-8"):
             raise ValueError(f"Stale KOIKI version in {artifact}")
         coordinates = {"groupId": "org.koikifw", "artifactId": artifact, "version": args.version,
                        "packaging": packaging, "files": []}
@@ -129,7 +136,7 @@ def main():
                 "sourceDirty": provenance["dirty"], "sourceInventorySha256": sha(output / "source-inventory.json"),
                 "generatedPomsSha256": sha(output / "generated-poms.json"),
                 "buildJava": subprocess.check_output(["java", "-version"], stderr=subprocess.STDOUT, text=True).strip(),
-                "buildMaven": subprocess.check_output([str(stage / "mvnw"), "-version"], cwd=stage, text=True).strip(),
+                "buildMaven": subprocess.check_output([str(wrapper), "-version"], cwd=stage, text=True, encoding="utf-8").strip(),
                 "knownLimits": "Development preview; see README and version-specific acceptance evidence.",
                 "artifacts": artifacts, "files": files}
     (bundle / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")

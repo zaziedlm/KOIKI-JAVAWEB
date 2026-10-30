@@ -42,7 +42,8 @@ def main():
                 command = "function gh { $global:LASTEXITCODE=42 }; " + command + " -Repository OWNER/koiki-artifacts"
             else:
                 command += f" -LocalArchive {quote(archive)}"
-            proc = subprocess.run([args.pwsh, "-NoProfile", "-Command", command], text=True,
+            command = "[Console]::OutputEncoding = [Text.UTF8Encoding]::new(); " + command
+            proc = subprocess.run([args.pwsh, "-NoProfile", "-Command", command], text=True, encoding="utf-8",
                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=90)
             passed = (proc.returncode == 0) if expect_success else (proc.returncode != 0 and message in proc.stdout)
             if not passed:

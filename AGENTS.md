@@ -1,6 +1,17 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
-## 現行入口：E1をVSCodeへ引継ぎ・成果commit／push（2026-10-30）
+## 現行入口：E1ローカル再現結果と公開手順の整理（2026-10-30）
+
+OwnerはCloudの別渡しZIPに依存せず、ローカルPCで設計・実装を再現確認するよう指示した。
+[Windows再現結果](docs/architecture/validation/phase4-e1-local-windows-reproduction-20261030.md)と[ローカル公開手順](docs/development/phase4-e1-vscode-handoff-20261030.md)を現行入口とする。
+VSCode拡張管理のTemurin21.0.13+9で、訂正後の候補生成111件・準備6確認・Consumer1 invocation／8 checkpoint・通常root449実行PASS＋100 skip、cleanup／source／ZIP照合が成立。初回失敗と訂正履歴は結果文書に保持する。
+現行候補はlocal candidate-3。Cloud候補のZIP／hash／Git bundleを再開条件にせず、候補識別はWindows結果を参照する。binary・raw logはGitへ格納しない。
+公開操作（tag／Release作成・asset upload）は、認証主体`zaziedlm`と対象repoへの書込権限を確認したローカルPCで行い、Codex Cloud等から実行しない。配布先は既存public `zaziedlm/KOIKI-JAVAWEB`。新規専用repoは作成しない。
+候補生成と取得／Maven登録はTooling実装済み。asset公開は引継ぎ§6のGit／GitHub CLI手順で行う構成で、専用publish scriptは未実装。旧`publish-initial-release.ps1`は廃止済みの停止処理。
+今回のWindows対応・文書訂正は未commit。過去のCloud成果commit／push指示を今回の新規操作へ流用せず、文書訂正に公開・commit／push・PR／mergeを含めない。
+結果Owner受入・公開対象commit確定・V09／10は未完了。既存S1未達・C2 H07・D1結果受入未記録を維持する。以下は各時点の履歴。
+
+## 履歴入口：E1をVSCodeへ引継ぎ・成果commit／push（2026-10-30）
 
 OwnerはCloudのRelease作成／uploadを今後の実行対象から外し、一通り準備後、この作業branchをcommit／pushしてローカルVSCodeでpull・継続すると指示した。
 [VSCode引継ぎ](docs/development/phase4-e1-vscode-handoff-20261030.md)を現行入口とする。branchは`docs/phase4-s1-b1-c2-guarantee-review-20261030`、remoteは`zaziedlm/KOIKI-JAVAWEB`。
