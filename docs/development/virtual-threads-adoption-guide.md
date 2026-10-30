@@ -1,6 +1,6 @@
 # Virtual Threadsの適用条件・有効化ガイド（開発版）
 
-**状態（2026-10-27）：** D2-03はmain統合・実CI成功を確認済み。DoD 4-11の技術条件はPASS、D2-03結果／DoDのOwner受入は判断待ち（[判定記録§6](phase4-d2-03-ci-and-adoption-guide-20261026.md#6-dod-4-11の技術判定とowner受入)）。開発版・既定無効を維持。正式release／support付き配布はE1／Phase5の判断に従う。
+**状態（2026-10-30）：** D2-03はmain統合・実CI成功を確認済み。DoD 4-11の技術条件はPASS、D2-03結果／DoDの限定範囲はOwner受入済み（[判定記録§7](phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30)）。開発版・既定無効を維持。正式release／support付き配布はE1／Phase5の判断に従う。
 
 ## 1. 確認した構成と採用の判断
 
@@ -70,7 +70,7 @@ JFRのPinnedが0でも、その記録窓・閾値で未観測という意味で�
 
 - 通常ReferenceにはObservability Starterを含まない。D2の詳細観測は実Starter・runtime依存を追加した構成で行った。
   案件は必要なStarterを依存として明示する。Toolingの外付けclasspath方式を正式な導入方式へ転用しない。
-- 現在のfilter順ではSecurityで先に拒否される401／403に相関IDがない場合がある。D1で拒否／ERROR dispatchを含む追跡範囲を扱う。
+- 現在のfilter順ではSecurityで先に拒否される401／403に相関IDがない場合がある。D1計画で拒否／ERROR dispatchの追跡範囲と不足を整理する。今回のfilter改変は行わず、実案件要求を受けて再判断する。
 - DB逼迫時はMVC内の500と、Session読取り例外からの前段403が混在した。全経路を5xxへ統一する保証は含めない。
 - S1の独自`ThreadPoolTaskExecutor`、非同期のcontext伝播、Batch、Container／ECS、全組合せは今回未実証。
 
@@ -88,7 +88,7 @@ artifact保持は一日で、正式配布repository／長期保存の代わり�
 main `f3c79d8376d93d9f977ff2263c768b5ce32fc3ed`の[実CI run 40354524562](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/40354524562)は成功。
 6 PASS／0 FAIL／0 ERROR／0 SKIP・43項目・固定source／JAR照合・所有資源cleanupが成立し、DoD 4-11の技術条件を満たす。
 commit・JDK版・artifact識別・ログ根拠は[D2-03記録§5〜6](phase4-d2-03-ci-and-adoption-guide-20261026.md#5-main統合と実ciの確認記録2026-10-27)を参照する。
-D2-03結果／DoDのOwner受入は未記録で、D2全体完了・案件での本格採用は別判断。§3.1の検証限界を維持する。
+D2-03結果／DoDの限定範囲は[受入記録§7](phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30)へ記録済み。D2全体完了・案件での本格採用は別判断。§3.1の検証限界を維持する。
 既存8 required checksへの追加・ruleset変更は今回行わない。新VT系統の失敗はD2受入・release判断で未解決として扱う。
 
 ## 5. 根拠と更新

@@ -1,0 +1,11 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+<parent><groupId>org.koikifw.buildsupport</groupId><artifactId>sync-observability-verification</artifactId><version>0.1.0-SNAPSHOT</version><relativePath>../pom.xml</relativePath></parent>
+<artifactId>sync-observability-harness</artifactId>
+<dependencies>
+<dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+<dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId><scope>test</scope></dependency>
+<dependency><groupId>io.opentelemetry.proto</groupId><artifactId>opentelemetry-proto</artifactId><version>1.11.1-alpha</version><scope>test</scope></dependency>
+<dependency><groupId>com.google.protobuf</groupId><artifactId>protobuf-java</artifactId><version>4.36.2</version><scope>test</scope></dependency>
+</dependencies>
+<build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><configuration><forkCount>1</forkCount><argLine>-Xmx512m</argLine><properties><configurationParameters>junit.jupiter.execution.parallel.enabled=false</configurationParameters></properties></configuration></plugin></plugins></build>
+</project>
