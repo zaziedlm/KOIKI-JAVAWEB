@@ -1,6 +1,14 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
-## 現行入口：D2限定受入記録・D1計画整理（2026-10-30）
+## 現行入口：S1／B1／C2の保証範囲・DoD整理（2026-10-30）
+
+Ownerの第3段階への進行指示により、main `fdfcfa5`（PR #58統合後）から`docs/phase4-s1-b1-c2-guarantee-review-20261030`を作成した。
+[判定初版](docs/development/phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md)は既存Evidence・受入・現行sourceの静的照合。B1のDoD4-8／4-9は選定Reference構成の技術成立・最終受入候補、C2 A限定受入とH07未実証、S1のDoD未達・人手HOLDを分けて記録する。
+DoD原文・受入済み範囲を変えず、未達をPASSにしない。追加実装・動的検証・運用基盤の深掘りは行わない。非同期の深掘りは採用案件の具体化時に必要範囲で判断する。
+D1はmain統合・限定技術成立、結果Owner受入の未記録を維持。同期traceの成功で非同期DoD4-12を充足しない。
+OwnerはS1の既知未達・運用／追加開発リスクを認識したうえで、[整理文書§7](docs/development/phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md#7-現時点のエビデンスとしてのowner採用判断2026-10-30)を現時点のエビデンスとして採用する判断を示した。個別DoDの最終受入・未達判定は変更しない。次は成果固定対象の確認と、E1の提供artifact・版識別・参照取り込み／更新の方式整理への接続。commit・remoteは別承認。以下の成果固定・remote待ち等は各時点の履歴。
+
+## 履歴入口：D2限定受入記録・D1計画整理（2026-10-30）
 
 Owner指示によりmain `b2ca253`から`docs/d1-sync-observability-plan-20261030`を作成し、D2の受入記録・古い表示の訂正とD1計画整理を同branchで行う。
 [D2-03§7](docs/development/phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30)へ説明済み限定範囲／DoD 4-11のOwner受入を記録。既定無効・制限を維持し、D2全体・正式提供へ拡張しない。

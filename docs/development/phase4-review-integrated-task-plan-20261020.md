@@ -143,12 +143,12 @@ R-05／06はレビューと採用支援の共通作業として一度だけ計�
 
 | 元package／状態 | 作業単位 | 主担当Ownership・必要入力 | 完了条件／レビューとの接続 |
 | --- | --- | --- | --- |
-| P4-B1／実装・選定検証済み、DoD全体受入は未判断 | B1-01〜08 | §3・§8参照。選定ブラウザ結果はOwner受入済み | DoD 4-8／4-9の全体受入・B1-08全体の状態を判断する残作業。F1〜F5を対応付け済み |
+| P4-B1／選定構成の技術成立・DoD最終受入候補 | B1-01〜08 | 選定ブラウザ結果はOwner受入済み。[判定初版](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md#41-b1の受入候補を成立させる構成)でDoD4-8／4-9の受入範囲を提示 | DoD最終受入・B1-08全体はOwner判断待ち。会社PC等の未確認を原DoDへ新規必須条件として追加せず、案件適用範囲として残す |
 | P4-C2／A限定結果COMPLETE / OWNER ACCEPTED（2026-10-23） | C2-01 A照会契約と開始承認→02 Port／Adapter・限定retry・timeout・枠2→03 同一JARの有効／無効実演・限定結果受入まで実施。Bは運用機能確定・バリエーションの必要性発生時に別判断 | Reference／Tooling。[設計・結果・受入§9〜11](phase4-c2-01-operation-candidate-selection-20261022.md#11-aの限定検証結果のowner受入2026-10-23)、[受入承認正本§7](../architecture/validation/phase4-c2-a-implementation-results-20261022.md#7-aの限定検証結果に対するowner受入承認2026-10-23)。新規29 PASS／接続timeout1 SKIP、直接回帰89＋Framework6 PASS。成果commitは87728b7 | DoD4-7全体・C2全体は未認定。通常root全test449 PASS／100 SKIP、最後の集約clean失敗と集約だけの再開SUCCESSを区別。設定override等の検証限界を保持。ローカルPC手動確認は受入の追加必須条件にしない。BのUNKNOWN・Auditは未実装／未実証で後続へ残し、A受入・次package移行の条件にしない。追加追試・S1再開・commit／remoteの開始承認を兼ねない |
 | P4-C3／要件具体化待ち（§9.6） | C3-01 別Batch RepositoryのHEAD・互換性とjob選定→02 non-Web起動・永続metadata・単一実行→03 二重起動・停止後restart／rerun・Audit実演 | Reference／Tooling、Batchは別所有。job・運用主体・DB入力 | DoD 4-10。R-06はDB構成が該当する場合に接続。S1パージ完了と切り離す |
 | P4-C4／要件具体化待ち（§9.6） | C4-01 代表操作・保存／DB確定境界→02 Port／Adapterと受付／公開→03 重複・path・権限・容量・途中停止・cleanup | Reference／Tooling。storage／format入力。C3連携は必要時だけ | local fileとObject Storageの実証範囲を区別。共有harnessは一度だけ計上 |
 | P4-D1同期／限定接続・動的検証の技術成立、結果Owner確認待ち（§9） | D1S-01計画→02独立consumer接続→03対照・有効・VT smokeの全10項目PASS | Framework変更なし、独立Tooling11 file。[結果§7](../architecture/validation/phase4-d1-sync-observability-results-20261030.md#7-o02期待値訂正後の同範囲一回2026-10-30) | 正式Collector・backend・本番運用、非同期DoD 4-12は未実証。次は結果・Git差分と成果固定対象確認 |
-| P4-D2／main実CI成功・DoD 4-11技術PASS、限定範囲Owner受入済み（2026-10-30） | D2-01比較条件→02通常／観測6構成・43項目→03専用CI・利用ガイドをmain統合済み | Framework／Tooling。[D2-03受入§7](phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30)。受入記録は現branchのローカル文書差分 | 既定無効、早期拒否の相関・逼迫時403等の制限を維持。D2全体・正式提供へ拡張しない |
+| P4-D2／main実CI成功・DoD 4-11技術PASS、限定範囲Owner受入済み（2026-10-30） | D2-01比較条件→02通常／観測6構成・43項目→03専用CI・利用ガイドをmain統合済み | Framework／Tooling。[D2-03受入§7](phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30)。受入記録はPR #58でmain統合済み | 既定無効、早期拒否の相関・逼迫時403等の制限を維持。D2全体・正式提供へ拡張しない |
 | P4-D3／優先第5段階・実ECS入力待ち（§9） | D3-01 固定JAR／image・起動契約→02 local containerのhealth／診断／停止再起動→03 実ECS差分と実演 | Reference／Tooling＋platform。secret・network・費用・権限 | local／ECS別Evidence。F2の実Cookie条件とR-06のmigration構成を該当時に照合 |
 | P4-C0／C1／保留維持 | C0-01 adoption trigger確認→02 分離モデル・規約／依存review→C1-01 accounting実装→02 競合・rollback・共通error実演 | Architecture／Framework規約、Reference。MyBatis採用入力 | DoD 4-6。C0前はRule8拒否維持。元計画のA1連携依存と独立検証可能部分を開始時に区別し、S1全体を自動再開しない |
 | P4-B2／入力待ち | B2-01 Customer API／BFF／認証選択取得→02 gap審査→03 Customer結合Evidenceの受入 | Customer主導、Framework契約review。案件／IdP／環境入力 | B1の代替DoDにしない。F1／F4〜F7のうち採用構成に関係する項目を照合 |
@@ -370,6 +370,8 @@ Ownerは提示順の点検後、「提示案を維持し補う形の案を採用
 
 ### 9.5 限定結果・DoD判定と後続アクション
 
+**第3段階の判定初版（2026-10-30）：** [S1／B1／C2保証範囲・DoD整理](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md)へ9項目の要求・Evidence・保証範囲・未達・利用条件・既存IDの残アクション／責任ロール案・再開条件を具体化した。B1の選定Reference構成は技術成立・最終受入候補、C2 Aは限定受入維持／H07等未実証、S1未達は維持。[文書§7](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md#7-現時点のエビデンスとしてのowner採用判断2026-10-30)に現時点のエビデンスとしてのOwner採用判断を記録。個別DoDの新規最終受入・原文改訂・動的実行はない。
+
 第3段階ではS1の既存DoD対応・運用OPENと、B1-08／C2の既存Evidenceを入力に判定表を作る。各項目には、要求／保証できること／保証できないこと／適用条件／Evidence／判断状態／残アクションと担当／再開条件を記録する。既存IDを使用し、同じ課題を複数packageへ二重計上しない。
 
 追加機能は抑制する。未達への対応は、(a)既存証拠で成立範囲を確定、(b)必要性が明確な有限追試・最小訂正、(c)利用制限または標準対象外、(d)後続課題化、から選ぶ。未達を理由の記述だけで達成扱いせず、DoD変更・採否・延期は明示したOwner判断として残す。C2 Bは必要性発生時の条件付き後続を維持する。
@@ -390,7 +392,9 @@ S1の人手照合・担当付きHOLDは、担当・照合資料・停止／再�
 
 ### 9.7 直近の着手点・更新方法
 
-**D1限定範囲の技術成立（2026-10-30、現行）：** O02期待値訂正後、Owner承認の同範囲一回で全3 child・10 checkpointがPASS。Java21無効対照／有効、同じJava21生成JARのJava25 VT smokeが成立し、正常・500・log相関・要求分離・sink503／遅延／回復を確認。JUnit1 PASS、cleanup・source／JAR照合成功、Maven21.999秒。[結果§7](../architecture/validation/phase4-d1-sync-observability-results-20261030.md#7-o02期待値訂正後の同範囲一回2026-10-30)へEvidenceと限界を記録。Framework／Reference・CI変更なし。今回限定範囲は技術成立、Owner結果受入は確認待ち。さらに実行を増やさず、結果・Git差分と成果固定対象を確認する。正式Collector・backend・本番運用や非同期DoD 4-12へ一般化しない。結果確認後はS1／B1／C2保証範囲・DoD整理→E1→D3。以下は各時点の履歴。
+**S1／B1／C2保証範囲・DoD整理（2026-10-30、現行）：** main `fdfcfa59504011e7ed9eb0d142ec67eaa98feabf`（PR #58・マージ後CI成功確認済み）から`docs/phase4-s1-b1-c2-guarantee-review-20261030`を作成。Ownerの指示に基づき、[判定初版](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md)を作成した。B1 DoD4-8／4-9は既存証拠により選定構成の技術成立、最終受入／B1-08全体完了は未判断。C2 DoD4-7はH07等を残して全体PASS未認定、S1 DoD4-1〜5／4-12の未達・限定成立を維持。追加実装・動的再実行なし。OwnerはS1の既知未達と運用／追加開発リスクを認識し、[文書§7](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md#7-現時点のエビデンスとしてのowner採用判断2026-10-30)をエビデンスとして採用する判断を示した。次は成果固定対象の確認と、E1への提供範囲・制限の引継ぎ・方式整理。個別DoDの最終受入と未達は別に追跡する。D1の限定結果受入は未記録のまま別管理し、本書で補わない。以下は各時点の履歴。
+
+**D1限定範囲の技術成立（2026-10-30、履歴）：** O02期待値訂正後、Owner承認の同範囲一回で全3 child・10 checkpointがPASS。Java21無効対照／有効、同じJava21生成JARのJava25 VT smokeが成立し、正常・500・log相関・要求分離・sink503／遅延／回復を確認。JUnit1 PASS、cleanup・source／JAR照合成功、Maven21.999秒。[結果§7](../architecture/validation/phase4-d1-sync-observability-results-20261030.md#7-o02期待値訂正後の同範囲一回2026-10-30)へEvidenceと限界を記録。Framework／Reference・CI変更なし。今回限定範囲は技術成立、Owner結果受入は確認待ち。さらに実行を増やさず、結果・Git差分と成果固定対象を確認する。正式Collector・backend・本番運用や非同期DoD 4-12へ一般化しない。結果確認後はS1／B1／C2保証範囲・DoD整理→E1→D3。以下は各時点の履歴。
 
 **D1追加一回の結果（2026-10-30、履歴）：** Owner承認の追加実行で、同じJAR・依存・設定のO04・O01が成功し、正常同期HTTPの実OTLP受信・decode・構造化log相関が成立。O02はHTTP500のspan statusがUNSETで期待ERRORと異なりFAIL、残7項目未到達。採用Micrometerの例外なし500ではstatus500／outcome SERVER_ERRORで識別することを静的照合し、harness期待値を訂正・compile済み。さらに動的再実行なし。両child／receiver cleanup・identity照合成功。全10項目・D1受入は未成立で、[結果§6](../architecture/validation/phase4-d1-sync-observability-results-20261030.md#6-訂正後の同範囲追加一回2026-10-30)を次の判断入口とする。Framework／Reference・CI変更なし。以下は各時点の履歴。
 

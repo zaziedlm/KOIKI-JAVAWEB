@@ -7,7 +7,7 @@
 
 - [D1同期観測の実装・検証結果](../architecture/validation/phase4-d1-sync-observability-results-20261030.md): 独立Tooling11 file。訂正後の承認済み同範囲一回が全10項目PASS、cleanup・identity成立。限定範囲は技術成立、結果Owner確認待ち。初回・次回の失敗は保持。
 
-現作業branchは`docs/d1-sync-observability-plan-20261030`、基点main `b2ca253`。D2の限定受入記録・表示整合と、consumer側依存・設定を先行するD1限定接続案の具体化を行う。独立Tooling11 fileを実装し、限定10項目が技術成立。正式Framework／Reference・CIは未変更。commit／push／PRは別判断。以下の過去の開始・統合手順は今回の作業指示ではない。
+現作業branchは`docs/phase4-s1-b1-c2-guarantee-review-20261030`、基点main `fdfcfa5`（D1成果のPR #58統合済み）。[S1／B1／C2保証範囲・DoD判定初版](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md)を作成し、§7にS1リスクを認識したうえでのエビデンス採用のOwner判断を記録。個別DoDの最終受入・未達は別に維持する。今回は文書・source静的照合のみで、追加実装・動的検証・DoD原文変更なし。commit／push／PRは別判断。以下の過去の開始・統合手順は今回の作業指示ではない。
 
 - [D2-03限定受入記録](phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30): 実CI成功・DoD 4-11の限定範囲をOwner受入として記録。既定無効・既知制限を維持。
 - [D1同期観測の計画整理](phase4-d1-sync-observability-plan-20261030.md): 現状整理に続き§8〜13へ限定接続案を具体化。標準依存・OTLP設定・10 checkpoint・有限実行枠、Framework変更の判断分岐を整理。実装・動的検証の最終結果は§16と結果文書§7を参照。非同期の設計・運用は採用案件の具体化時。
