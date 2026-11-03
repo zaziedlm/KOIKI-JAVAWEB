@@ -34,6 +34,12 @@ MVC／React／Next.js／外部IdPの構成判断は
 mainの専用CIは通常／観測の計6構成・43項目で成功しています。既定は無効で、D2-03結果／DoD 4-11の限定範囲は2026-10-30にOwner受入を記録しました。
 有効化条件・検証範囲と制限は[Virtual Threads適用ガイド](docs/development/virtual-threads-adoption-guide.md)を参照してください。
 
+**固定版ZIPの配布経路確立（2026-11-03）：** 実案件へFramework資源を提供するため、ローカルPCで現在sourceから全14座標（14 POM＋12 JAR）を再生成し、[GitHub Release `0.1.0-preview.1`](https://github.com/zaziedlm/KOIKI-JAVAWEB/releases/tag/framework-0.1.0-preview.1)へZIPを公開しました。
+生成時111件PASSに加え、公開ZIPの実取得・hash照合、空の専用Maven repositoryへの全座標登録、独立Consumerの固定版依存によるpackage成功まで確認しています（E1-V09限定技術PASS）。
+利用側は版とSHA-256を指定して取得し、各PCのMaven local repositoryへ登録できます。取得方法と次回更新手順は[引継ぎ文書](docs/development/phase4-e1-vscode-handoff-20261030.md)、証拠と確認範囲は[再生成・公開結果](docs/architecture/validation/phase4-e1-regeneration-and-publication-20261103.md)を参照してください。
+実案件PC／IDE／CIでの受領V10と正式support付き提供は未完了です。当面は引継ぎ文書とCodexの支援でZIP運用を試行し、実案件への配布・更新・受領を確実にする手順の見直し・安定化を進めます。
+mainの到達点を固定するcheckpoint tagは`checkpoint/e1-distribution-established-20261103`です。公開ZIPの生成元を示す既存tag `framework-0.1.0-preview.1`とは区別します。
+
 ## 現在の状態
 
 - Phase 0 Architecture Baseline: COMPLETE / ACCEPTED
@@ -54,6 +60,7 @@ mainの専用CIは通常／観測の計6構成・43項目で成功していま�
 - 正式groupId / Java base package: `org.koikifw`
 - Build JDK / target bytecode: Java 21
 - Runtime compatibility target: Java 21 / Java 25
+- E1固定版配布経路: Release公開・実取得・Maven登録・独立Consumer package確認済み（V09限定技術PASS）。実案件受領V10・正式supportは未完了
 
 Root ReactorはRoot aggregatorと15 moduleからなる16 projectsです。現行formal Framework release unit候補は、
 Referenceを除くRoot aggregator、BOM、Parent、Architecture Contract、ArchUnit Rules、Starter 9件、

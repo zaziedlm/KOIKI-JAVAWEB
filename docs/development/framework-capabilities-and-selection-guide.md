@@ -53,7 +53,13 @@ Root POMと各module POMを静的照合し、Referenceを除く提供候補は**
 
 現座標は可変`0.1.0-SNAPSHOT`。E1で、固定version・配布repository・取得方法・全対象artifactのchecksumとsource対応・更新方法を確定する。今回JARを生成・取得・配布したものではなく、14座標の現物や同一build由来checksumを検証したという意味ではない。
 
+**E1方式比較の履歴（2026-10-30）：** [比較初版](phase4-e1-artifact-distribution-options-20261030.md)に提供単位・固定版・取得／更新と最小Consumerの確認案を整理。OwnerはFramework本体モジュール群を同一版のRelease assetで一式配布する方式を優先候補に選定。取得は`gh release download`でrelease tag・asset名を明示し、準備スクリプトで照合・Maven local repository登録を行う方針（未実装）。binaryはGit履歴へ格納せず、Gitは案内・manifest・checksumを管理。[E1§7.2](phase4-e1-artifact-distribution-options-20261030.md#72-第2項版命名初期提供範囲の判断案2026-10-30)は`0.1.0-preview.1`・本節の14座標を同一版で収録する整理方向をOwner了解。第3項の独立Consumer・R-05／06・PC／CI確認構成はE1§7.3、具体的な実装・検証計画は§7.4を参照。実際の配布repository・版番号・公開は未確定。現version・POM・workflowは変更していない。
+
+**E1 Cloud内の実証履歴（2026-10-30）：** [結果](../architecture/validation/phase4-e1-artifact-distribution-results-20261030.md)で候補14座標生成・登録と独立Consumerが限定技術成立。R-05はCustomer自身のEntityScanを明示、R-06はData Starter明示・同一DataSource／既定schema・分離historyで確認。実際のRelease asset取得・案件PC／CI受領と結果Owner受入は未完了。前段の未生成記述は一覧／比較作成時点の履歴。
+
 ### 0.3 一覧確立までの残判断
+
+**E1現行入口（2026-10-30）：** 上記の未実装・配布先未定は方式比較時点の履歴。生成・取得／Maven登録は実装済みで、[Windows再現結果](../architecture/validation/phase4-e1-local-windows-reproduction-20261030.md)にlocal candidate-3の限定成立を記録した。公開先は既存public `zaziedlm/KOIKI-JAVAWEB`。公開は権限確認済みのローカルPCで[Git／GitHub CLI手順](phase4-e1-vscode-handoff-20261030.md)により行い、Cloudでは行わない。Cloud別渡しZIPは条件にしない。Release公開・実取得・実案件受領・結果Owner受入は未完了。
 
 | 担当タスク | 今回の整理から次へ渡すもの・出口 |
 | --- | --- |
@@ -106,12 +112,12 @@ Reference、Consumer、Toolingは正式Framework artifactと区別して案内�
 
 | 機能・構成 | 実装／証拠の現在地 | 提供範囲を確定する条件・担当タスク |
 | --- | --- | --- |
-| APIとMVC／Session SPAの併存 | API versioningの既定設定が全経路へ及ぶ点をReference側設定で扱い、B1で選定経路を実証 | Customerは非version経路・matcher・CSRFを明示設計。B1限定結果を任意構成へ一般化しない。B1-08／R-04の保証範囲判断 |
-| 外部HTTPとResilience | API StarterのSpring標準Resilienceとretry既定値は既存。C2でconnect200ms／read300msの低優先度既定値とmetadataを追加。Reference clientが明示採用 | 任意client全体へtimeoutを自動適用しない。retry対象・層・上限・同時実行枠・外部副作用は案件設計。接続timeout未実証、overrideの限界はC2結果を保持し第3段階で評価 |
+| APIとMVC／Session SPAの併存 | 同一origin・同梱Reference構成のCookie Session／CSRF・MVC／SPA併存は既存証拠で技術成立。選定ブラウザ結果はOwner受入済み、DoD4-8／4-9最終受入候補 | [保証範囲・判定初版](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md#41-b1の受入候補を成立させる構成)。Customerは非version経路・matcher・Cookie／CSRFを設計。HTTPS・別origin／BFF・実IdP・任意browserへ一般化しない。B1-08全体・DoD最終受入は未判断 |
+| 外部HTTPとResilience | API Starterの標準Resilience・retry既定値とHTTP期限既定値は既存。C2 Aは限定受入済み、選定retry・枠2・read timeoutは成立、connect実効期限は未実証 | [判定初版](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md#42-c2-aに限った利用条件)。任意clientへの自動適用なし。枠2は同時実行制限でrate／複数instance保証ではない。DoD4-7全体未認定、設定overrideの未検証枝・副作用ありC2 Bは条件付き後続 |
 | local認証／OIDC／Bearerの選択 | Security／Identity基盤と非配布fixtureの既存Evidenceあり | 実IdP・credential・claim／authority mapping・Session／Bearer経路分離は案件所有。方式選択は[認証構成ガイド](frontend-authentication-profile-guide.md)、実案件結合はB2等へ |
 | Virtual Threads | Java21生成Referenceの同期Web限定検証とmain実CIが成功（6構成／43項目）。DoD 4-11は技術PASS、D2-03結果／DoDの限定範囲はOwner受入済み（D2-03§7、2026-10-30）。既定無効を維持 | ローカルJava25.0.5の[D2-02結果・制限§10〜11](../architecture/validation/phase4-d2-02-java25-virtual-threads-results.md#10-最終の成立範囲計測結果)はOwner確認済み。main `f3c79d8`の実CIはTemurin21.0.12+1／25.0.4+1で成功し、[D2-03§5〜6](phase4-d2-03-ci-and-adoption-guide-20261026.md#5-main統合と実ciの確認記録2026-10-27)へ根拠を記録。観測側は実Observabilityを外付け。早期拒否の相関欠落・DB逼迫時403、別executor・将来Java版・本番SLOの制限は[適用ガイド](virtual-threads-adoption-guide.md)を参照。D2全体完了・正式提供保証は別判断 |
 | 同期OpenTelemetry・運用観測 | 既存Starterとconsumer側標準依存・設定で同期HTTPのOTLP export／decode・log相関・要求分離・sink障害／回復・VT smokeが限定技術成立（10項目）。結果Owner確認待ち | [D1結果§7](../architecture/validation/phase4-d1-sync-observability-results-20261030.md#7-o02期待値訂正後の同範囲一回2026-10-30)。Framework変更なし。受信fixtureへの接続までで、正式Collector・backend・本番SLO・DB／外部client span・metric／log exportは別。非同期の設計・運用は採用案件の具体化時。sink運用は案件側所有 |
-| 非同期利用・module Level2 | R0のmodule Level選択APIとReferenceの限定通知／復旧材料は存在。業務処理全体・運用保証は別 | [S1現品質](phase4-s1-dod-integrated-status-owner-review-20261016.md)の未達と人手HOLD条件を維持。第3段階で適用範囲と残アクションを判断。案件への一律導入はしない |
+| 非同期利用・module Level2 | R0のmodule Level選択APIとReferenceの限定通知／復旧材料、R1／R2等の限定受入あり。耐久復旧・二重送信抑止・監視／再送・パージ・非同期相関のDoD全体は未達／未認定 | [保証範囲・判定初版](phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md#3-dod対応判定初版)と[S1現品質](phase4-s1-dod-integrated-status-owner-review-20261016.md)。人手HOLD方針を配送保証・実運用成立とせず、非同期採用案件の具体化時に必要範囲を深掘り。ReferenceをFramework配布物へ昇格しない |
 
 ## 2. 検証済みの範囲・制約・未提供事項
 

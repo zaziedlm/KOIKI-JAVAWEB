@@ -1,6 +1,59 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
-## 現行入口：D2限定受入記録・D1計画整理（2026-10-30）
+## 現行入口：E1新規JAR生成・Release公開と取得確認（2026-11-03）
+
+Ownerは今回の成果commit・作業branch push・main向けPRと必要CI確認後のmerge・main checkpoint tag付与を明示指示した。READMEにも配布経路確立の成果と限定範囲を記載する。tag名は`checkpoint/e1-distribution-established-20261103`とし、マージ後CIを確認したmain commitへ付ける。公開済み`framework-0.1.0-preview.1`は動かさない。以下の未commit／未merge表示は成果固定前の履歴として扱う。
+
+Owner指示で現在sourceからJAR一式を再生成し、Releasesで配布・独立Consumerで受領確認する方針を確定した。実案件パスは未準備。
+[結果](docs/architecture/validation/phase4-e1-regeneration-and-publication-20261103.md)と[引継ぎ](docs/development/phase4-e1-vscode-handoff-20261030.md)を入口とする。
+`3887d39`から新規生成111件PASS、14 POM＋12 JAR、ZIP SHA-256 `470a2fac4a30d3c323e38341b855e23e263c7aced501c3c8a378e06db1a8b27c`。
+ローカルPCの`zaziedlm`／ADMIN確認後、`framework-0.1.0-preview.1` tagとprereleaseを既存public repoへ公開した。旧candidate-3は公開していない。
+remote実取得・空の専用Maven repository登録・Consumer `-DskipTests package`成功、26 payload照合・lock残留なしでV09は限定技術PASS。今回Consumer DB journey／通常rootの追加実行はしていない。
+tag対象は`3887d39`、manifestのdirtyは生成時の点検文書2ファイルによる。今回の結果文書・入口更新は未commit。作業branchの追加commit／push・PR／mergeは未実施。
+V10、結果Owner受入、正式support／全DoD・Phase4全体、既存S1未達・C2 H07・D1結果受入未記録は維持する。公開済み同一版assetを差替えない。以下は各時点の履歴。
+
+## 現行入口：E1ローカル再現結果と公開手順の整理（2026-10-30）
+
+OwnerはCloudの別渡しZIPに依存せず、ローカルPCで設計・実装を再現確認するよう指示した。
+[Windows再現結果](docs/architecture/validation/phase4-e1-local-windows-reproduction-20261030.md)と[ローカル公開手順](docs/development/phase4-e1-vscode-handoff-20261030.md)を現行入口とする。
+VSCode拡張管理のTemurin21.0.13+9で、訂正後の候補生成111件・準備6確認・Consumer1 invocation／8 checkpoint・通常root449実行PASS＋100 skip、cleanup／source／ZIP照合が成立。初回失敗と訂正履歴は結果文書に保持する。
+現行候補はlocal candidate-3。Cloud候補のZIP／hash／Git bundleを再開条件にせず、候補識別はWindows結果を参照する。binary・raw logはGitへ格納しない。
+公開操作（tag／Release作成・asset upload）は、認証主体`zaziedlm`と対象repoへの書込権限を確認したローカルPCで行い、Codex Cloud等から実行しない。配布先は既存public `zaziedlm/KOIKI-JAVAWEB`。新規専用repoは作成しない。
+候補生成と取得／Maven登録はTooling実装済み。asset公開は引継ぎ§6のGit／GitHub CLI手順で行う構成で、専用publish scriptは未実装。旧`publish-initial-release.ps1`は廃止済みの停止処理。
+今回のWindows対応・文書訂正は未commit。過去のCloud成果commit／push指示を今回の新規操作へ流用せず、文書訂正に公開・commit／push・PR／mergeを含めない。
+結果Owner受入・公開対象commit確定・V09／10は未完了。既存S1未達・C2 H07・D1結果受入未記録を維持する。以下は各時点の履歴。
+
+## 履歴入口：E1をVSCodeへ引継ぎ・成果commit／push（2026-10-30）
+
+OwnerはCloudのRelease作成／uploadを今後の実行対象から外し、一通り準備後、この作業branchをcommit／pushしてローカルVSCodeでpull・継続すると指示した。
+[VSCode引継ぎ](docs/development/phase4-e1-vscode-handoff-20261030.md)を現行入口とする。branchは`docs/phase4-s1-b1-c2-guarantee-review-20261030`、remoteは`zaziedlm/KOIKI-JAVAWEB`。
+今回のlocal commitと当該branchへのpushはこの指示に基づき実行する。pushは`zaziedlm` GitHub連携を使用。PR／main merge、tag／Release作成・asset upload・remote実downloadは今回含めない。
+検証済み候補ZIPはGitへ入れず、元source記録・原本Git bundle・remote保存対応とともに別packageで受け渡す。旧専用repo用handoffは使用しない。
+V01〜08の結果・既知制限、V09／10・結果Owner受入の未完了を維持。CloudのRelease権限／network制約を再調査せず、PC側で公開対象commitとsource対応を点検して継続する。
+以下は各時点の履歴で、未承認・未push・CloudからのRelease継続等の過去表示を現行判断へ流用しない。
+
+## 履歴入口：E1ローカル実装・限定検証（2026-10-30）
+
+Owner指示により`docs/phase4-s1-b1-c2-guarantee-review-20261030`を継続。保証範囲・DoD整理は`8fe8473`へlocal commit済み、remote未反映。
+[E1-01比較初版](docs/development/phase4-e1-artifact-distribution-options-20261030.md)で14座標（14 POM＋12 JAR）、固定版・manifest、取得／更新・独立ConsumerとR-05／06の確認条件を整理する。
+OwnerはFramework本体モジュール群のRelease asset一式配布を優先候補に選定。取得は`gh release download`でrelease tag・asset名を明示し、準備スクリプトで照合・Maven local repository登録を行う方針（未実装）。全モジュール同一versionで固め、binaryはGit履歴へ格納しない。Gitは案内・manifest・checksumを管理。公開先・取得権限は未確定。第2項の命名・範囲の説明をOwner了解、§7.2に正式版`1.0.0`との対応を補足。第3項は§7.3にKOIKI Parent・独立Consumer・PostgreSQL同一DataSource／schemaとPC／CI確認の構成案を整理。Ownerの第4項への進行指示を受け、§7.4へTooling・候補生成・登録・V01〜10の段階別計画を具体化。計画・開始時点の経緯として保持し、現在は以下の結果を優先する。
+Ownerは§7.4の具体計画・JAR生成からRelease asset取得までの流れを了解し、進行を指示した。V01〜08のローカルTooling・独立Consumerを実装し、[結果](docs/architecture/validation/phase4-e1-artifact-distribution-results-20261030.md)へ記録。候補14座標の既存test111 PASS、Consumer1 invocation／8 checkpoint PASS、通常root449実行PASS＋100 skip、cleanup・ZIP／source照合成功。登録系補助JSON比較の初回ERRORと局所訂正を保持。
+R-05はCustomer自身のEntityScan明示で成立、R-06はData Starter明示・同一DataSource／既定schemaの限定構成。Framework本体・作業checkout POM・Root CI変更なし。版変換は専用stagingのみ。
+Ownerは配布先を既存リモートへ見直すよう指示。`origin`とGitHub metadataを照合し、現行は`zaziedlm/KOIKI-JAVAWEB`（public、default main）を使用。Release assetもpublic。新規`KOIKI-JAVA-asset`は作成しない（E1§8.2）。
+全モジュール同一版のZIP・hash・Maven登録は維持し、取得先だけ既存repoへ変更。sourceの成果固定・remote反映・公開tag対象を先に点検する。Framework source branchのcommit／push／PRは今回未実施。
+旧private専用repo用handoff ZIPは使用しない。作業checkoutの旧publish scriptは停止処理へ変更。既存source repoのREADMEを配布専用READMEへ置換しない。
+`zaziedlm`連携の管理・書込権限は確認済みだが、現行connectorにRelease作成／binary uploadのtoolはなく、Cloud CLI APIもForbidden。remote登録・取得V09、案件受領V10と結果Owner受入は未完了。
+以下は各時点の履歴。S1の未達、D1結果受入未記録、個別DoDの最終受入待ちは維持する。
+
+## 履歴入口：S1／B1／C2の保証範囲・DoD整理（2026-10-30）
+
+Ownerの第3段階への進行指示により、main `fdfcfa5`（PR #58統合後）から`docs/phase4-s1-b1-c2-guarantee-review-20261030`を作成した。
+[判定初版](docs/development/phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md)は既存Evidence・受入・現行sourceの静的照合。B1のDoD4-8／4-9は選定Reference構成の技術成立・最終受入候補、C2 A限定受入とH07未実証、S1のDoD未達・人手HOLDを分けて記録する。
+DoD原文・受入済み範囲を変えず、未達をPASSにしない。追加実装・動的検証・運用基盤の深掘りは行わない。非同期の深掘りは採用案件の具体化時に必要範囲で判断する。
+D1はmain統合・限定技術成立、結果Owner受入の未記録を維持。同期traceの成功で非同期DoD4-12を充足しない。
+OwnerはS1の既知未達・運用／追加開発リスクを認識したうえで、[整理文書§7](docs/development/phase4-s1-b1-c2-guarantee-and-dod-review-20261030.md#7-現時点のエビデンスとしてのowner採用判断2026-10-30)を現時点のエビデンスとして採用する判断を示した。個別DoDの最終受入・未達判定は変更しない。次は成果固定対象の確認と、E1の提供artifact・版識別・参照取り込み／更新の方式整理への接続。commit・remoteは別承認。以下の成果固定・remote待ち等は各時点の履歴。
+
+## 履歴入口：D2限定受入記録・D1計画整理（2026-10-30）
 
 Owner指示によりmain `b2ca253`から`docs/d1-sync-observability-plan-20261030`を作成し、D2の受入記録・古い表示の訂正とD1計画整理を同branchで行う。
 [D2-03§7](docs/development/phase4-d2-03-ci-and-adoption-guide-20261026.md#7-限定結果dod-4-11のowner受入記録2026-10-30)へ説明済み限定範囲／DoD 4-11のOwner受入を記録。既定無効・制限を維持し、D2全体・正式提供へ拡張しない。
