@@ -392,6 +392,8 @@ S1の人手照合・担当付きHOLDは、担当・照合資料・停止／再�
 
 ### 9.7 直近の着手点・更新方法
 
+**現行入口：E1新規生成・公開／取得確認（2026-11-03）：** Owner指示で現在source `3887d39`からJAR一式を再生成し、Releasesで配布・既存独立Consumerで取得検証した。[結果](../architecture/validation/phase4-e1-regeneration-and-publication-20261103.md)は111件PASS・14 POM＋12 JAR、新ZIP hash `470a2fac4a30d3c323e38341b855e23e263c7aced501c3c8a378e06db1a8b27c`。認証済みローカルPCから`framework-0.1.0-preview.1`をprerelease公開し、remote実取得・空の専用Maven repositoryへ14座標登録・Consumer package成功、26 payload照合・lock残留なし。V09は限定技術PASS、実案件パス未準備のためV10未完了。結果Owner受入、正式support、PR／main統合・D3は残る。今回の文書は未commit。公開済み初回版と旧candidate-3を混同せず、同一版asset差替えは行わない。以下は各時点の履歴。
+
 **現行入口：E1 Windows再現確認後（2026-10-30）：** Cloudの別渡しZIPを条件とせず、ローカルPCのTemurin21.0.13+9で候補を再生成した。[Windows結果](../architecture/validation/phase4-e1-local-windows-reproduction-20261030.md)は訂正後の111件・準備6確認・Consumer8 checkpoint・通常root449実行PASS＋100 skip、cleanup／照合成功。現行候補はcandidate-3。公開は認証・書込権限を確認したローカルPCから既存public `zaziedlm/KOIKI-JAVAWEB`へ行い、Cloudでは行わない。[公開手順](phase4-e1-vscode-handoff-20261030.md)のGit／GitHub CLIを使う構成で、旧publish scriptは廃止済み。今回のWindows対応・文書は未commit。公開対象commit確定・V09／10・結果Owner受入は未完了。以下のCloud実証・別渡し・commit／push指示は各時点の履歴で、今回の実行指示ではない。
 
 **履歴：E1をVSCodeへ引継ぎ（2026-10-30）：** OwnerはCloudでのRelease操作を対象外とし、準備後の作業branch commit／pushとPC側での取得・継続を指示。[引継ぎ](phase4-e1-vscode-handoff-20261030.md)へ手順・候補ZIPの別受渡し・source対応・PC公開／取得確認を整理。今回のGit操作は本branchのみ、PR／main更新・tag／Release公開は含めない。V01〜08の限定結果と既知制限、V09／10・結果Owner受入の未完了を維持。以下のCloud公開検討・未push等は履歴。

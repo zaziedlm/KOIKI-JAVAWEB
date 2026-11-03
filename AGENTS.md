@@ -1,5 +1,17 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：E1新規JAR生成・Release公開と取得確認（2026-11-03）
+
+Ownerは今回の成果commit・作業branch push・main向けPRと必要CI確認後のmerge・main checkpoint tag付与を明示指示した。READMEにも配布経路確立の成果と限定範囲を記載する。tag名は`checkpoint/e1-distribution-established-20261103`とし、マージ後CIを確認したmain commitへ付ける。公開済み`framework-0.1.0-preview.1`は動かさない。以下の未commit／未merge表示は成果固定前の履歴として扱う。
+
+Owner指示で現在sourceからJAR一式を再生成し、Releasesで配布・独立Consumerで受領確認する方針を確定した。実案件パスは未準備。
+[結果](docs/architecture/validation/phase4-e1-regeneration-and-publication-20261103.md)と[引継ぎ](docs/development/phase4-e1-vscode-handoff-20261030.md)を入口とする。
+`3887d39`から新規生成111件PASS、14 POM＋12 JAR、ZIP SHA-256 `470a2fac4a30d3c323e38341b855e23e263c7aced501c3c8a378e06db1a8b27c`。
+ローカルPCの`zaziedlm`／ADMIN確認後、`framework-0.1.0-preview.1` tagとprereleaseを既存public repoへ公開した。旧candidate-3は公開していない。
+remote実取得・空の専用Maven repository登録・Consumer `-DskipTests package`成功、26 payload照合・lock残留なしでV09は限定技術PASS。今回Consumer DB journey／通常rootの追加実行はしていない。
+tag対象は`3887d39`、manifestのdirtyは生成時の点検文書2ファイルによる。今回の結果文書・入口更新は未commit。作業branchの追加commit／push・PR／mergeは未実施。
+V10、結果Owner受入、正式support／全DoD・Phase4全体、既存S1未達・C2 H07・D1結果受入未記録は維持する。公開済み同一版assetを差替えない。以下は各時点の履歴。
+
 ## 現行入口：E1ローカル再現結果と公開手順の整理（2026-10-30）
 
 OwnerはCloudの別渡しZIPに依存せず、ローカルPCで設計・実装を再現確認するよう指示した。

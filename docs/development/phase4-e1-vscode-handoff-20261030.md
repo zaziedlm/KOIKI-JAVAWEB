@@ -1,5 +1,7 @@
 # E1：ローカルPCでの再現確認とRelease公開手順（2026-10-30）
 
+**現行入口（2026-11-03）：** Owner指示でJAR一式を現在sourceから再生成し、[Releases](https://github.com/zaziedlm/KOIKI-JAVAWEB/releases/tag/framework-0.1.0-preview.1)へ新ZIPを公開した。V09はremote実取得・空の専用Maven repository登録・独立Consumer packageまで限定PASS。[再生成・公開記録](../architecture/validation/phase4-e1-regeneration-and-publication-20261103.md)を現行結果とする。実案件パスは未準備のためV10・結果Owner受入は未完了。以下の2026-10-30結果は履歴として保持し、旧candidate-3と公開ZIPを混同しない。
+
 ## 1. 現在地と実行環境
 
 公開操作（tag／Release作成・asset upload）は、GitHub認証と対象repositoryへの書込権限を確認したローカルPCから行う。Codex Cloud等のクラウド実行環境からは行わず、CloudのRelease権限／network制約の再調査を継続条件にしない。
@@ -13,7 +15,7 @@ Temurin21.0.13+9／Maven3.9.16で、候補生成111件、準備の6確認、Cons
 
 ## 2. branchとツールの役割
 
-作業branchは `docs/phase4-s1-b1-c2-guarantee-review-20261030`。先端 `78a8887` はGitHubへ反映済みで、その後のWindows対応・文書訂正は未commit。別PCではこの未commit差分をpullできないため、成果固定と反映状況を先に確認する。
+作業branchは `docs/phase4-s1-b1-c2-guarantee-review-20261030`。Windows対応を含む`3887d39`はGitHubへ反映済み。2026-11-03の点検・公開結果文書は未commit。公開tag対象は`3887d39`で、今回作業branchの追加commit／push・PR／main mergeはしていない。
 
 | 資材 | 役割 |
 |---|---|
@@ -30,13 +32,13 @@ Temurin21.0.13+9／Maven3.9.16で、候補生成111件、準備の6確認、Cons
 | 項目 | 値 |
 |---|---|
 | 候補版／asset | `0.1.0-preview.1`／`koiki-framework-0.1.0-preview.1.zip` |
-| 生成元 | local candidate-3、`78a8887efb1c02888c69976bee8171ab99e94c2f`＋source inventoryの未commit差分 |
-| ZIP size | 205,619 bytes |
-| ZIP SHA-256 | `e3cfe45514cd0af67177416467c052bc61b815bda375c57a4a12cc7798992928` |
-| source inventory SHA-256 | `06c6f8d8b70de307f3addc8be0400aa844b540aa51eaaad1eb71783cdd246d49` |
+| 生成元 | 2026-11-03新規生成、`3887d39aa52270d6a643af199da2bfdaa11d264d`＋点検記録／notes案2ファイル。Framework sourceはclean |
+| ZIP size | 205,900 bytes |
+| ZIP SHA-256 | `470a2fac4a30d3c323e38341b855e23e263c7aced501c3c8a378e06db1a8b27c` |
+| source inventory SHA-256 | `c7fcabeaab9e3d7e6a3c6606b27c381fa68936f0d2b36bb07550c2824a531fd8` |
 | staging変換記録 SHA-256 | `0818938495832ecda4e591552cd7bed467f4ae6af2a131308728c0f398cff214` |
 
-このPCの生成先は `%TEMP%\koiki-e1-local-20261030-2300\candidate-3`。ZIPはこのdirectory直下にあり、`assets/`配下ではない。
+このPCの新規生成先は `%TEMP%\koiki-e1-regeneration-20261103`。ZIPはこのdirectory直下にある。公開済み初回版はこの新候補であり、旧candidate-3は公開していない。
 候補とsource inventory・staging記録・有限logはGit外で保持している。一時領域から退避する際も同じbytesとhashを保つ。再生成したものは新候補として識別し、同一版の公開済みassetを差し替えない。
 
 Cloudの `koiki-e1-vscode-continuation.zip`／Git bundleは今回の必要条件ではない。旧専用repo用packageも使用しない。
@@ -64,10 +66,10 @@ Java／Mavenは拡張管理のTemurinを参照し、版不整合警告がない�
 次は現行候補の照合・登録を行う場合の例。Windowsでは既にDB journeyを含む再現確認が成立しているが、このcommand例の `-DskipTests` 自体は依存解決・package確認に限定される。
 
 ```powershell
-$verificationRoot = Join-Path $env:TEMP 'koiki-e1-local-20261030-2300'
-$candidate = Join-Path $verificationRoot 'candidate-3'
+$verificationRoot = Join-Path $env:TEMP 'koiki-e1-regeneration-20261103'
+$candidate = $verificationRoot
 $archive = Join-Path $candidate 'koiki-framework-0.1.0-preview.1.zip'
-$expected = 'e3cfe45514cd0af67177416467c052bc61b815bda375c57a4a12cc7798992928'
+$expected = '470a2fac4a30d3c323e38341b855e23e263c7aced501c3c8a378e06db1a8b27c'
 $recipient = Join-Path $verificationRoot 'pc-recipient-repository'
 $maven = (Resolve-Path ./mvnw.cmd).Path
 if ((Get-FileHash $archive -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw 'ZIP hash mismatch' }
@@ -84,17 +86,19 @@ ZIPを別の場所へ退避した場合は `$candidate` を実際のcandidate di
 
 ## 5. Release登録前の点検
 
+以下は次回公開時の点検手順。今回の初回版は公開済みのため、同名tag／Releaseを再作成・差替えしない。次回Framework改修時は新しい固定版と新候補を使用する。
+
 1. ローカル結果・既知制限を確認し、公開対象commitを選ぶ。必要な成果固定・push・PR／CI／mergeは各操作の判断に従い、未commit差分を公開済みsourceと扱わない。
-2. candidate-3の `source-inventory.json` と公開対象checkoutのFramework本体・POM・wrapper等のhashを照合し、module追加／削除もGit差分で確認する。
+2. その回の候補の `source-inventory.json` と公開対象checkoutのFramework本体・POM・wrapper等のhashを照合し、module追加／削除もGit差分で確認する。
 3. 元manifestのsource SHAと公開対象commitが異なる場合は、staging変換・module内容の同等性をRelease notesへ記録する。元manifestを別SHAへ書換えない。Framework内容が変われば新候補と必要確認を用意する。
 4. ZIP内のscript／README等を変更してもhashは変わる。checkoutの文書訂正を理由に、検証済みZIPの中身を差し替えない。
 5. `framework-0.1.0-preview.1` tag／Releaseの有無を確認する。存在すれば内容を照合して判断し、自動上書き・削除しない。
 
-candidate-3に同梱済みのREADMEには作成時の `OWNER/koiki-artifacts` 等の説明例が残る。実際には `-Repository zaziedlm/KOIKI-JAVAWEB` を明示する。訂正後のcheckout READMEと、既存ZIP内READMEは別のbytesである。
+旧candidate-3には旧repositoryの例示が残るが、今回公開した新ZIPは現在のREADMEを再収録した。取得時は必ず `-Repository zaziedlm/KOIKI-JAVAWEB` を明示する。
 
 ## 6. Release登録・実取得（PCでの後続作業）
 
-以下は公開対象commit・結果／制限・notesを確認し、公開操作の実行指示を得た後にローカルPCで使うcommand例。現時点で実行済みではない。
+以下は公開対象commit・結果／制限・notesを確認し、公開操作の実行指示を得た後にローカルPCで使うcommand例。初回版は2026-11-03に実行済みであり、そのまま再実行しない。
 §4の `$archive`・`$expected` を使用し、完全SHAとnotesの実ファイルを指定する。既存public repoへ登録し、可視性変更・source READMEの配布専用READMEへの置換は行わない。
 
 ```powershell
@@ -129,6 +133,16 @@ if ($LASTEXITCODE -ne 0) { throw 'Downloaded distribution Consumer build failed'
 
 ## 7. 保持する未完了事項
 
-V09／10、結果Owner受入、公開版の最終認定、PR／main統合・CI確認、正式support条件、D3は未完了。
+V09は2026-11-03に限定技術PASS。V10、結果Owner受入、公開版の最終認定、PR／main統合・CI確認、正式support条件、D3は未完了。
 S1の既知未達・人手HOLD、C2 H07未実証、D1結果受入未記録も維持する。
 Cloudの公開操作は再開せず、権限のあるローカルPCで、成果固定・公開・受領を段階別に継続する。
+
+## 8. 実案件向けZIP運用の試行と手順安定化（Owner方針・2026-11-03）
+
+次回以降もしばらくは、本書とCodexの支援を使い、Framework改修ごとにJAR一式の生成・ZIP公開・取得・Maven登録・利用側buildを段階別に確認して試行する。目的は、実案件が必要なFramework版を確実に選択・取得し、各開発PC／CIへ取り込み、改修版へ更新できる配布・受領手順を整えることである。
+
+今後の予定は、この目的に沿った手順の見直しと安定化とする。全自動公開スクリプトの検討・実装を予定事項や到達目標に含めない。
+
+試行では、公開対象commit・固定版・ZIP hashの対応、公開前確認、案件側のParent／BOM版指定とMaven／IDEの登録先、更新時の確認、失敗時の停止・状態点検・再開判断を確認し、不明点や改善点を本書へ反映する。公開・取得の成功だけでなく、実案件が採用・更新する際に迷わず判断できることを重視する。
+
+実案件の準備が整うまでは既存独立Consumerで配布経路を確認する。実案件PCの`.m2`・IDE・CIでの受領結果は、案件準備後に別途記録し、Consumerの成功でV10を完了扱いにしない。
