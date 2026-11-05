@@ -1,0 +1,73 @@
+services:
+  app:
+    image: ${D3_APP_IMAGE:?Run prepare.py first}
+    build:
+      context: ${D3_BUILD_CONTEXT:?Run prepare.py first}
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:size=134217728,mode=1777
+    mem_limit: 1536m
+    cpus: 1
+    pids_limit: 160
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      JAVA_TOOL_OPTIONS: -Xmx768m
+      SPRING_PROFILES_ACTIVE: d3-container
+      SPRING_CONFIG_IMPORT: configtree:/run/secrets/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/koiki
+      SPRING_DATASOURCE_USERNAME: koiki
+      KOIKI_REFERENCE_SOURCE_HMAC_KEY_ID: d3-local
+      SERVER_SERVLET_SESSION_COOKIE_SECURE: "false"
+      SERVER_SERVLET_SESSION_COOKIE_SAME_SITE: lax
+    secrets:
+      - source: app_db_password
+        target: spring.datasource.password
+      - source: source_hmac
+        target: koiki.identity.login-attempt.source-hmac-key
+    ports:
+      - "127.0.0.1:${D3_HTTP_PORT:?Run prepare.py first}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, /bin/bash, /app/probe.sh]
+      start_period: 90s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    stop_grace_period: 40s
+    networks: [database]
+  db:
+    image: postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+    command: [postgres, -c, max_connections=16]
+    mem_limit: 1024m
+    cpus: 1
+    environment:
+      POSTGRES_DB: koiki
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_admin_password
+    secrets:
+      - pg_admin_password
+      - app_db_password
+    volumes:
+      - database:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/10-app-role.sh:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -h 127.0.0.1 -U postgres -d koiki"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    stop_grace_period: 20s
+    networks: [database]
+secrets:
+  pg_admin_password:
+    file: ${D3_SECRET_DIR}/pg-admin-password
+  app_db_password:
+    file: ${D3_SECRET_DIR}/app-db-password
+  source_hmac:
+    file: ${D3_SECRET_DIR}/source-hmac
+networks:
+  database: {}
+volumes:
+  database: {}

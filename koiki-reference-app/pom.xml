@@ -90,6 +90,15 @@
 
   <profiles>
     <profile>
+      <id>d3-container</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.koikifw</groupId>
+          <artifactId>koiki-starter-observability</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>b1-session-spa</id>
       <build>
         <plugins>

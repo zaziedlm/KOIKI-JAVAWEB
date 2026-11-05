@@ -5,13 +5,21 @@
 
 ## 現在の入口
 
-- [E1：ローカル再現確認・Release公開手順](phase4-e1-vscode-handoff-20261030.md): Cloudの別渡しZIPに依存せず、Windows／Temurinで再生成したcandidate-3を使用。公開は認証・書込権限を確認したローカルPCから既存public `zaziedlm/KOIKI-JAVAWEB`へ行い、Codex Cloud等では行わない。生成・取得／Maven登録はscript、公開はGit／GitHub CLI手順。旧publish scriptは廃止済み。
+- [D3方式1：SPA同梱Java＋PostgreSQL Containerの限定結果](../architecture/validation/phase4-d3-integrated-container-results-20261105.md): image build・起動・実SPA journey／DB／Audit・再起動／DB障害回復・cleanupが成立。直接回帰25件、通常profile Security2件、7 checkpoint群＋secret mount欠落負例。結果Owner受入・HTTPS・案件Consumer・方式2は別管理。[資材・手順](../../build-support/container-verification/integrated/README.md)。
 
-- [E1：Windows再現結果](../architecture/validation/phase4-e1-local-windows-reproduction-20261030.md): 訂正後の111件・準備6確認・Consumer8 checkpoint・通常root449実行PASS＋100 skip、cleanup／照合成功。現行ZIPの配置・hashと初回失敗を記録。今回のWindows対応・文書は未commit。V09／10・結果Owner受入は未完了。
+- [D3：Keycloakを含む4コンテナSSO環境案](phase4-d3-keycloak-sso-environment-20261105.md): 第2候補のlocal検証はNext.js BFF＋Java API＋PostgreSQL＋Keycloak。OIDC・canonical issuer・3専用DB／role・claim対応・独立2 ClientによるSSOと有限検証条件を整理。構成案の段階で、Compose／BFFの実装・起動は未実施。
+
+- [D3-01：Container構成・起動契約案（2026-11-05）](phase4-d3-01-container-contract-20261105.md): main `c224b14`・checkpoint `v0.1.8`を起点に、第1候補のSPA同梱Java＋DBと、第2候補のJava API＋DB＋Next.js／Node.jsを設計。認証・公開経路・SSR／cache・base image・health・secret・migration・終了契約、D3-02／03への検証条件を整理。文書案であり、image build／起動・deployは未実施。
+
+- [E1：新規生成・Release公開と取得結果](../architecture/validation/phase4-e1-regeneration-and-publication-20261103.md): `3887d39`から生成した新ZIPを`framework-0.1.0-preview.1`で公開し、実取得・hash照合・Maven登録・独立Consumer packageまでV09限定技術PASS。PR #59でmain `c224b14`へ統合、mainの3 workflow成功。現行checkpointは`checkpoint/v0.1.8-phase4-development-baseline`。V10・結果Owner受入・正式supportは未完了。
+
+- [E1：ローカル再現確認・Release公開手順](phase4-e1-vscode-handoff-20261030.md): 生成・取得／Maven登録はscript、公開は権限のあるローカルPCから既存public repoへのGit／GitHub CLI手順。初回公開済み版を再公開・差替えせず、当面はCodex支援で配布・更新・受領を試行して手順を安定化する。全自動公開scriptは予定に含めない。
+
+- [E1：Windows再現結果の履歴](../architecture/validation/phase4-e1-local-windows-reproduction-20261030.md): 旧candidate-3の111件・準備6確認・Consumer8 checkpoint・通常root449実行PASS＋100 skip、cleanup／照合成功と初回失敗を記録。公開した新ZIP・V09・main統合は上記の2026-11-03結果／§6を参照し、旧候補と混同しない。
 
 - [E1 Cloud実証の履歴](../architecture/validation/phase4-e1-artifact-distribution-results-20261030.md): ローカルV01〜08が限定技術成立。候補生成111件PASS、Consumer1 invocation／8 checkpoint、通常root449実行PASS＋100 skip。R-05はCustomer EntityScan明示、R-06は同一DataSource／schema。Framework本体・POM・CI変更なし。配布先は既存`zaziedlm/KOIKI-JAVAWEB`（public）へ見直し。旧専用repo用handoffは使用しない。CloudのRelease操作機能／API経路の制約は残る。remote実取得・案件受領・結果Owner受入は未完了。
 
-- [E1-01：提供artifact・版識別・配布／更新方式の比較](phase4-e1-artifact-distribution-options-20261030.md): Ownerは全モジュール同一版のRelease asset一式配布を優先候補に選定。取得は`gh release download`でrelease tag・asset名を明示し、準備スクリプトで照合・Maven local repository登録を実装・ローカル検証済み。binaryはGit履歴へ格納せず、公開先は既存`zaziedlm/KOIKI-JAVAWEB`。実取得はPCで確認する。第2項の整理方向はOwner了解。第3項はKOIKI Parent・独立Consumer・PostgreSQL同一DataSource／schemaの構成案（§7.3）から、第4項のTooling・候補生成・段階別検証計画（§7.4）へ具体化。14 POM＋12 JAR・manifest・独立Consumerの確認案。現在の実装結果は上のE1結果文書を参照。POM／CI変更・remote公開なし。
+- [E1-01：提供artifact・版識別・配布／更新方式の比較と決定経緯](phase4-e1-artifact-distribution-options-20261030.md): 全モジュール同一版のRelease asset一式配布、固定tag／asset取得・hash照合・Maven登録、Parent／BOMと独立Consumerの構成、段階別V01〜10を整理した経緯。初回公開・V09結果・main統合の現在状態は上記の新規生成・公開結果を参照する。binaryはGit履歴へ格納しない。
 
 - [D1同期観測の実装・検証結果](../architecture/validation/phase4-d1-sync-observability-results-20261030.md): 独立Tooling11 file。訂正後の承認済み同範囲一回が全10項目PASS、cleanup・identity成立。限定範囲は技術成立、結果Owner確認待ち。初回・次回の失敗は保持。
 
