@@ -63,7 +63,8 @@ class ReferenceSpaWebConfigurationTest {
                         assertThat(context).hasNotFailed();
                         assertThat(context.containsBean("referenceSpaWebConfiguration")).isEqualTo(packaged);
                         var mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                        mvc.perform(get("/")).andExpect(status().isOk())
+                        mvc.perform(get("/").principal(new org.springframework.security.authentication.TestingAuthenticationToken(
+                                        "applicant", "unused", "EXPENSE:APPLY"))).andExpect(status().isOk())
                                 .andExpect(model().attribute("spaAvailable", packaged))
                                 .andExpect(content().string(packaged
                                         ? containsString("Session SPAで経費申請を開く")

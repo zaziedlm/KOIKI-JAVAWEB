@@ -1,5 +1,17 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3方式1のContainer構築・限定検証結果（2026-11-05）
+
+**成果固定・統合の現行指示：** Ownerは検証確認後のcommit・作業branch push・main向けPR／mergeを進める方針を示した。今回のReference／Tooling・設計／結果文書を対象に、差分確認・既存required checks成功後のmergeを行う。tag／Release／image公開は含めない。手動確認で報告されたUUIDエラーはTooling seed／専用DBの訂正後にOwnerが解消を確認した。結果全体の受入・D3全体の認定へは拡張しない。以下の未commit・remote未実行表示は成果固定前の履歴として扱う。
+
+**手動確認環境を保持中：** 後続Owner指示で`d3-manual-20261105`を別途build・起動し、app／DBを手動browser確認用に稼働保持した。URLは`http://127.0.0.1:18081/login`。申請者・承認者のHTTP login／選択route、承認入口訂正後の実browser表示・UUID訂正後のMVC保存を確認済み。OwnerはUUID問題の解消を確認したが、結果全体の受入は未記録。`.tmp/d3-manual-20261105/manual-ready.json`と[手順](build-support/container-verification/integrated/README.md)を参照し、このproject／DB／secretを自動cleanupしない。下記のcleanup済みは自動検証project `d3-integrated-01／02`を指す。
+
+Ownerは設計を`ded2698`へcommit後、方式1（SPA同梱Java app＋PostgreSQL）へ進むよう指示した。branchは`docs/d3-01-container-contract-20261105`。今回のReference／Tooling実装は未commit。
+[結果](docs/architecture/validation/phase4-d3-integrated-container-results-20261105.md)と[実行資材](build-support/container-verification/integrated/README.md)を入口とする。
+image build・起動・実browserの申請作成／提出・CSRF拒否／logout・DB／Audit・app再起動・DB停止回復・cleanupが限定技術成立。直接回帰25件、通常profileでのprobe Security2件成功。7 checkpoint群とsecret mount欠落の別1負例が成立し、初回のTooling失敗と訂正は結果へ保持する。
+Framework本体・Root Reactor／CI・公開済みartifactは変更しない。ReferenceはMaven／runtimeの`d3-container`明示選択だけでhealthを追加し、通常Securityを維持する。
+次は差分・結果／手順の確認とOwner結果受入・成果固定判断。追加動的実行・commit／remoteは自動先行しない。HTTPS／Secure Cookie・処理中drain・別案件Consumer・全通常root／CI・ECS・方式2SSOは未実施。既存S1未達／人手HOLD・C2 H07・D1結果受入未記録、V10・正式support／Phase4全体の未完了を維持する。以下は各時点の履歴。
+
 ## 現行入口：D3-01 Container構成・起動契約の検討（2026-11-05）
 
 Owner指示により、main `c224b146ea615e61bb1b89ea6fd1e17060581cb9`から`docs/d3-01-container-contract-20261105`を作成し、文書の現状追随後にContainer構成の検討へ進む。

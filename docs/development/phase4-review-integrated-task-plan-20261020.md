@@ -392,6 +392,8 @@ S1の人手照合・担当付きHOLDは、担当・照合資料・停止／再�
 
 ### 9.7 直近の着手点・更新方法
 
+**現行結果：D3方式1の限定Container成立（2026-11-05）：** Ownerの設計commit`ded2698`と方式1続行指示を受け、Reference opt-in health＋Tooling Dockerfile／Compose／準備・検証資材を実装。[結果](../architecture/validation/phase4-d3-integrated-container-results-20261105.md)でbuild・2サービス起動・実SPA作成／提出／CSRF拒否／logout・DB／Audit・app再起動・DB停止回復・cleanupが成立。直接回帰25件と通常profile Security2件、7 checkpoint群＋secret mount欠落の1負例を記録。初回失敗・局所訂正は保持。次は差分・結果／手順の確認とOwner結果受入・成果固定判断。今回差分は未commit。HTTPS／処理中drain・案件Consumer・全通常root／CI・ECS・方式2のSSO実証は未実施で、D3全体／正式提供・Phase4全体へ拡張しない。
+
 **現行追加方針：Keycloak local SSO検証環境（2026-11-05）：** Ownerは第2候補をKeycloakでContainer完結するSSO検証環境として構成する方針を示した。[4コンテナ環境案](phase4-d3-keycloak-sso-environment-20261105.md)でNext.js BFF＋Java API＋PostgreSQL＋Keycloak、OIDC、共通issuer・専用DB／role・Reference claim対応・独立2 ClientのSSO journeyを具体化する。localはC-BFFを選定し、実案件IdP／本番認証の採用判断とは分ける。構成・実行条件案の段階で、Compose／BFF実装・実起動は未実施。次はhostname到達性・library／版・realm／DB契約と実装／検証範囲の具体化。
 
 **D3-01構成候補の追加（2026-11-05）：** OwnerはSPA同梱Java＋PostgreSQLの第1候補に加え、Next.jsから利用するJava API／Java21＋PostgreSQL＋Next.js／Node.jsの第2候補も有力とし、構成設計を指示した。[D3-01案§3.3〜3.4](phase4-d3-01-container-contract-20261105.md#33-第2候補nextjs-frontendjava-apipostgresql)へ3コンテナ／外部Next.jsとの接続、BFF・Java Session中継の認証比較、build／run・公開経路・health・停止契約を追加する。Next.jsの認証方式・IdP・実装／動的検証開始は未確定。B2全体の実装完了を先行条件にせず、D3で必要な配置・起動境界を具体化する。

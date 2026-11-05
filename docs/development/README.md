@@ -5,6 +5,8 @@
 
 ## 現在の入口
 
+- [D3方式1：SPA同梱Java＋PostgreSQL Containerの限定結果](../architecture/validation/phase4-d3-integrated-container-results-20261105.md): image build・起動・実SPA journey／DB／Audit・再起動／DB障害回復・cleanupが成立。直接回帰25件、通常profile Security2件、7 checkpoint群＋secret mount欠落負例。結果Owner受入・HTTPS・案件Consumer・方式2は別管理。[資材・手順](../../build-support/container-verification/integrated/README.md)。
+
 - [D3：Keycloakを含む4コンテナSSO環境案](phase4-d3-keycloak-sso-environment-20261105.md): 第2候補のlocal検証はNext.js BFF＋Java API＋PostgreSQL＋Keycloak。OIDC・canonical issuer・3専用DB／role・claim対応・独立2 ClientによるSSOと有限検証条件を整理。構成案の段階で、Compose／BFFの実装・起動は未実施。
 
 - [D3-01：Container構成・起動契約案（2026-11-05）](phase4-d3-01-container-contract-20261105.md): main `c224b14`・checkpoint `v0.1.8`を起点に、第1候補のSPA同梱Java＋DBと、第2候補のJava API＋DB＋Next.js／Node.jsを設計。認証・公開経路・SSR／cache・base image・health・secret・migration・終了契約、D3-02／03への検証条件を整理。文書案であり、image build／起動・deployは未実施。

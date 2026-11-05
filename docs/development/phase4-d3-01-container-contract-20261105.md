@@ -2,7 +2,7 @@
 
 ## 1. 目的・状態・今回の範囲
 
-**状態：2候補の構成検討案／Owner review入力。Containerでの技術成立は未確認。**
+**現行状態：** 設計を`ded2698`へcommit後、Owner指示で方式1を実装・限定検証した。[結果](../architecture/validation/phase4-d3-integrated-container-results-20261105.md)はimage build・起動・実SPA journey／DB／Audit・再起動／DB回復・cleanupの限定技術成立。結果Owner受入は未記録。方式2は構成検討段階を維持する。以下の未実装・未実証表示は設計時点の契約案であり、現在の実行範囲・未実施は結果文書を優先する。
 
 Owner指示により、main `c224b146ea615e61bb1b89ea6fd1e17060581cb9`から`docs/d3-01-container-contract-20261105`を作成し、文書の現状追随後にD3-01の検討へ進んだ。[統合計画§9](phase4-review-integrated-task-plan-20261020.md#9-初期標準確立に向けた見直し推進計画owner-approved2026-10-23)のE1→D3の順序に従う。
 
