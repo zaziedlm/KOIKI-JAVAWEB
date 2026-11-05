@@ -392,6 +392,12 @@ S1の人手照合・担当付きHOLDは、担当・照合資料・停止／再�
 
 ### 9.7 直近の着手点・更新方法
 
+**現行追加方針：Keycloak local SSO検証環境（2026-11-05）：** Ownerは第2候補をKeycloakでContainer完結するSSO検証環境として構成する方針を示した。[4コンテナ環境案](phase4-d3-keycloak-sso-environment-20261105.md)でNext.js BFF＋Java API＋PostgreSQL＋Keycloak、OIDC、共通issuer・専用DB／role・Reference claim対応・独立2 ClientのSSO journeyを具体化する。localはC-BFFを選定し、実案件IdP／本番認証の採用判断とは分ける。構成・実行条件案の段階で、Compose／BFF実装・実起動は未実施。次はhostname到達性・library／版・realm／DB契約と実装／検証範囲の具体化。
+
+**D3-01構成候補の追加（2026-11-05）：** OwnerはSPA同梱Java＋PostgreSQLの第1候補に加え、Next.jsから利用するJava API／Java21＋PostgreSQL＋Next.js／Node.jsの第2候補も有力とし、構成設計を指示した。[D3-01案§3.3〜3.4](phase4-d3-01-container-contract-20261105.md#33-第2候補nextjs-frontendjava-apipostgresql)へ3コンテナ／外部Next.jsとの接続、BFF・Java Session中継の認証比較、build／run・公開経路・health・停止契約を追加する。Next.jsの認証方式・IdP・実装／動的検証開始は未確定。B2全体の実装完了を先行条件にせず、D3で必要な配置・起動境界を具体化する。
+
+**現行入口：D3-01構成・起動契約の検討（2026-11-05）：** E1成果はPR #59でmain `c224b146ea615e61bb1b89ea6fd1e17060581cb9`へ統合済み。同commitの通常CI・Java Runtime Compatibility・Virtual Threads Compatibilityはsuccess、現行checkpointは`checkpoint/v0.1.8-phase4-development-baseline`（旧E1 checkpoint名は現行tagから廃止）。Owner指示で同mainから`docs/d3-01-container-contract-20261105`を作成し、文書の現状追随後に[D3-01構成・起動契約案](phase4-d3-01-container-contract-20261105.md)を検討する。V10は案件準備後に確認し、当面はE1のZIP運用手順を試行・安定化する。全自動公開scriptは予定に含めない。D3-02 local実行・D3-03実ECSは段階分離する。E1結果Owner受入・D1結果受入未記録、S1未達／人手HOLD、C2 H07、正式support・全DoD／Phase4全体の未完了は維持する。以下は各時点の履歴。
+
 **現行入口：E1新規生成・公開／取得確認（2026-11-03）：** Owner指示で現在source `3887d39`からJAR一式を再生成し、Releasesで配布・既存独立Consumerで取得検証した。[結果](../architecture/validation/phase4-e1-regeneration-and-publication-20261103.md)は111件PASS・14 POM＋12 JAR、新ZIP hash `470a2fac4a30d3c323e38341b855e23e263c7aced501c3c8a378e06db1a8b27c`。認証済みローカルPCから`framework-0.1.0-preview.1`をprerelease公開し、remote実取得・空の専用Maven repositoryへ14座標登録・Consumer package成功、26 payload照合・lock残留なし。V09は限定技術PASS、実案件パス未準備のためV10未完了。結果Owner受入、正式support、PR／main統合・D3は残る。今回の文書は未commit。公開済み初回版と旧candidate-3を混同せず、同一版asset差替えは行わない。以下は各時点の履歴。
 
 **現行入口：E1 Windows再現確認後（2026-10-30）：** Cloudの別渡しZIPを条件とせず、ローカルPCのTemurin21.0.13+9で候補を再生成した。[Windows結果](../architecture/validation/phase4-e1-local-windows-reproduction-20261030.md)は訂正後の111件・準備6確認・Consumer8 checkpoint・通常root449実行PASS＋100 skip、cleanup／照合成功。現行候補はcandidate-3。公開は認証・書込権限を確認したローカルPCから既存public `zaziedlm/KOIKI-JAVAWEB`へ行い、Cloudでは行わない。[公開手順](phase4-e1-vscode-handoff-20261030.md)のGit／GitHub CLIを使う構成で、旧publish scriptは廃止済み。今回のWindows対応・文書は未commit。公開対象commit確定・V09／10・結果Owner受入は未完了。以下のCloud実証・別渡し・commit／push指示は各時点の履歴で、今回の実行指示ではない。

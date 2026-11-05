@@ -1,5 +1,17 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3-01 Container構成・起動契約の検討（2026-11-05）
+
+Owner指示により、main `c224b146ea615e61bb1b89ea6fd1e17060581cb9`から`docs/d3-01-container-contract-20261105`を作成し、文書の現状追随後にContainer構成の検討へ進む。
+E1成果はPR #59でmain統合済み。同commitの通常CI・Java Runtime Compatibility・Virtual Threads Compatibilityはsuccess。
+現行checkpointは`checkpoint/v0.1.8-phase4-development-baseline`で同commitを指す。旧名`checkpoint/e1-distribution-established-20261103`は現行local／remoteに存在せず、以下の旧名・未commit／未merge表示は履歴として扱う。
+公開版`framework-0.1.0-preview.1`とassetは変更しない。V09限定技術PASS、V10・結果Owner受入・正式support・S1未達／人手HOLD・C2 H07・D1結果受入未記録・全DoD／Phase4全体の状態は維持する。
+今回の対象はReference／Tooling-ownedのD3-01構成・起動契約案と文書整合。D3-02 local実行、D3-03実ECS、image公開・deploy、commit／push／PR／merge／tagは今回の文書作業で実行しない。
+後続Owner指示で、第1候補（SPA同梱Java app＋PostgreSQL）に加え、第2候補（Java API／Java21＋PostgreSQL＋Next.js frontend／Node.js）も有力案として構成設計する。Next.jsが別案件・別環境でも接続境界を設計対象とする。BFF／BearerかJava Session中継かは未確定で、Customer-owned認証・frontendとFramework責務を分ける。第2候補を将来検討だけとして除外しない。実装・動的検証は範囲具体化後の段階とする。
+次の検討入口は[D3-01構成・起動契約案](docs/development/phase4-d3-01-container-contract-20261105.md)。以下は各時点の履歴。
+
+第2候補の後続Owner方針は、Keycloakをlocal IdPとして加えた4コンテナ（Java API／PostgreSQL／Next.js BFF／Keycloak）でのSSO検証環境。localの方式はC-BFF＋OIDCとし、[環境構成案](docs/development/phase4-d3-keycloak-sso-environment-20261105.md)でcanonical issuer、3専用DB／role、既存Reference claim、独立2 ClientでのSSO、実装／有限検証条件を具体化する。実企業IdP・正式BFF／本番採用とは分ける。Compose・BFF等の実装／動的検証は未実施で、旧予算・承認を流用しない。直前段落の方式未確定は本local方式選定前の経緯とする。
+
 ## 現行入口：E1新規JAR生成・Release公開と取得確認（2026-11-03）
 
 Ownerは今回の成果commit・作業branch push・main向けPRと必要CI確認後のmerge・main checkpoint tag付与を明示指示した。READMEにも配布経路確立の成果と限定範囲を記載する。tag名は`checkpoint/e1-distribution-established-20261103`とし、マージ後CIを確認したmain commitへ付ける。公開済み`framework-0.1.0-preview.1`は動かさない。以下の未commit／未merge表示は成果固定前の履歴として扱う。

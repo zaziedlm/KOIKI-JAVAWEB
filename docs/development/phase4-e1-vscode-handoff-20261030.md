@@ -133,7 +133,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Downloaded distribution Consumer build failed'
 
 ## 7. 保持する未完了事項
 
-V09は2026-11-03に限定技術PASS。V10、結果Owner受入、公開版の最終認定、PR／main統合・CI確認、正式support条件、D3は未完了。
+V09は2026-11-03に限定技術PASS。PR #59でmain `c224b14`へ統合済みで、同commitの通常CI・Java互換性・VT互換性はsuccess。現行checkpointは`checkpoint/v0.1.8-phase4-development-baseline`。V10、結果Owner受入、公開版の最終認定、正式support条件は未完了。D3は[構成・起動契約案](phase4-d3-01-container-contract-20261105.md)の検討へ進む（2026-11-05追随、動的実証前）。
 S1の既知未達・人手HOLD、C2 H07未実証、D1結果受入未記録も維持する。
 Cloudの公開操作は再開せず、権限のあるローカルPCで、成果固定・公開・受領を段階別に継続する。
 

@@ -38,7 +38,7 @@ mainの専用CIは通常／観測の計6構成・43項目で成功していま�
 生成時111件PASSに加え、公開ZIPの実取得・hash照合、空の専用Maven repositoryへの全座標登録、独立Consumerの固定版依存によるpackage成功まで確認しています（E1-V09限定技術PASS）。
 利用側は版とSHA-256を指定して取得し、各PCのMaven local repositoryへ登録できます。取得方法と次回更新手順は[引継ぎ文書](docs/development/phase4-e1-vscode-handoff-20261030.md)、証拠と確認範囲は[再生成・公開結果](docs/architecture/validation/phase4-e1-regeneration-and-publication-20261103.md)を参照してください。
 実案件PC／IDE／CIでの受領V10と正式support付き提供は未完了です。当面は引継ぎ文書とCodexの支援でZIP運用を試行し、実案件への配布・更新・受領を確実にする手順の見直し・安定化を進めます。
-mainの到達点を固定するcheckpoint tagは`checkpoint/e1-distribution-established-20261103`です。公開ZIPの生成元を示す既存tag `framework-0.1.0-preview.1`とは区別します。
+mainの到達点を固定する現行checkpoint tagは`checkpoint/v0.1.8-phase4-development-baseline`です（PR #59統合commit `c224b14`、通常CI・Java互換性・VT互換性成功）。旧名`checkpoint/e1-distribution-established-20261103`からの名称変更は、現行tagの注記に記録されています。公開ZIPの生成元を示す既存tag `framework-0.1.0-preview.1`とは区別します。
 
 ## 現在の状態
 

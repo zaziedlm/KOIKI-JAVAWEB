@@ -78,3 +78,11 @@ Ownerは、実案件へFramework資源を提供する手段が整った版とし
 
 必要PR checkとマージ後main CIを確認してから、`checkpoint/e1-distribution-established-20261103`を検証済みmain commitへ付ける。既存`framework-0.1.0-preview.1` tag／assetの差替えは行わない。
 このcheckpointは配布手段確立の到達点であり、実案件受領V10・Owner結果受入の別管理、正式support、S1未達・C2 H07・D1結果受入・全DoD／Phase4全体の状態は変更しない。
+
+## 6. main統合・現行checkpointの照合（2026-11-05）
+
+[PR #59](https://github.com/zaziedlm/KOIKI-JAVAWEB/pull/59)はmerge済みで、mainは`c224b146ea615e61bb1b89ea6fd1e17060581cb9`。同commitの[通常CI](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/41569394840)、[Java Runtime Compatibility](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/41569394837)、[Virtual Threads Compatibility](https://github.com/zaziedlm/KOIKI-JAVAWEB/actions/runs/41569394819)はすべてsuccess。
+
+local／GitHub mainの一致とclean checkoutを照合した。現行annotated tagは`checkpoint/v0.1.8-phase4-development-baseline`で、local／remoteとも同main commitを指す。tag注記には旧`checkpoint/e1-distribution-established-20261103`と同じ到達点であることが記録されている。旧名は現行local／remoteに存在しない。§5の旧名・本書の未commit／未merge表示は各時点の履歴である。
+
+公開版`framework-0.1.0-preview.1`・ZIPの変更や再生成、追加Consumer／root実行は行っていない。main統合・CI成功を、V10・Owner結果受入・正式support・全DoD／Phase4全体の認定へ拡張しない。次の開発検討は[D3-01](../../development/phase4-d3-01-container-contract-20261105.md)。
