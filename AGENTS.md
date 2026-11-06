@@ -1,5 +1,12 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3方式1のローカル再現・Container改善計画（2026-11-06）
+
+PR #60統合後、Owner指示で同branchを継続する。HEAD `335e062`と手元`origin/main` `6bd2b0b`はtree同一。ローカルPCでJDK整合・社内CA・専用Nodeを整備し、Reference再生成／直接回帰25件、現行Containerの既存7 checkpointがPASS。証拠は`.tmp/d3-local-baseline-20261106/`。secret欠落負例は今回再実行していない。
+手動project `d3-manual-local-20261106`はOwnerの整理指示で`down`（volume削除なし）を実行し、app／DB container・専用networkを削除済み。DB volume・secret・image・Evidenceは保持し、自動削除・再起動・seed再投入を行わない。Ownerは差戻し等も含む打鍵で問題ない認識を報告し、DB／Audit照合は成立。`.tmp/d3-manual-local-20261106/manual-ready.json`は起動時点の履歴で、現在稼働中を意味しない。現状は同workの`manual-environment-state.json`を参照する。別端末の`d3-manual-20261105`は今回操作していない。
+Session属性`SPRING_SECURITY_SAVED_REQUEST`の重複保存例外を観測した。原因契機は未確定で、OwnerはPostgreSQL用Session customizer採用を別件で検討する方針。今回のContainer改善へ混ぜない。
+[改善計画案](docs/development/phase4-d3-container-improvement-plan-20261106.md)を現行の次作業入口とする。Reference／Tooling-ownedのBoot標準layer化・label識別・設定例／調整条件と有限検証を整理する文書作成段階。A4／B5／B6は対応外として保持。今回の文書作成で改善実装・追加動的実行・commit／remoteを先行しない。過去の実行・merge承認を新規操作へ流用せず、D3／Phase4全体の認定を変更しない。以下は各時点の履歴。
+
 ## 現行入口：D3方式1のContainer構築・限定検証結果（2026-11-05）
 
 **成果固定・統合の現行指示：** Ownerは検証確認後のcommit・作業branch push・main向けPR／mergeを進める方針を示した。今回のReference／Tooling・設計／結果文書を対象に、差分確認・既存required checks成功後のmergeを行う。tag／Release／image公開は含めない。手動確認で報告されたUUIDエラーはTooling seed／専用DBの訂正後にOwnerが解消を確認した。結果全体の受入・D3全体の認定へは拡張しない。以下の未commit・remote未実行表示は成果固定前の履歴として扱う。

@@ -5,6 +5,8 @@
 
 ## 現在の入口
 
+- [D3方式1：Container build・設定改善の実施計画案](phase4-d3-container-improvement-plan-20261106.md): ローカル再現・手動確認を基点に、Boot標準layer化、artifact label識別、設定の調整意図と有限検証を整理。A4／B5／B6とSession保存エラー対応は範囲外。計画案で、改善実装・動的実行は未着手。手動project `d3-manual-local-20261106`のcontainerはOwner指示で整理済み、DB volume・secret・image・Evidenceは保持する。
+
 - [D3方式1：SPA同梱Java＋PostgreSQL Containerの限定結果](../architecture/validation/phase4-d3-integrated-container-results-20261105.md): image build・起動・実SPA journey／DB／Audit・再起動／DB障害回復・cleanupが成立。直接回帰25件、通常profile Security2件、7 checkpoint群＋secret mount欠落負例。結果Owner受入・HTTPS・案件Consumer・方式2は別管理。[資材・手順](../../build-support/container-verification/integrated/README.md)。
 
 - [D3：Keycloakを含む4コンテナSSO環境案](phase4-d3-keycloak-sso-environment-20261105.md): 第2候補のlocal検証はNext.js BFF＋Java API＋PostgreSQL＋Keycloak。OIDC・canonical issuer・3専用DB／role・claim対応・独立2 ClientによるSSOと有限検証条件を整理。構成案の段階で、Compose／BFFの実装・起動は未実施。
