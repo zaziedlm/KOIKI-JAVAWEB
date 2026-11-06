@@ -2,10 +2,14 @@
 
 ## 現行入口：D3方式1のローカル再現・Container改善計画（2026-11-06）
 
+Ownerは別端末PC・Codex Cloudでの再検証を予定し、[引継ぎ](docs/development/phase4-d3-cross-environment-verification-handoff-20261106.md)へ留意点を保存した。次回は実際の改善成果commitと対象環境の能力・実行集合を確認し、このPCの`.tmp`・secret・旧実行予算を流用しない。別環境の実行は未実施。
+
+**改善版手動確認・点検済み：** 後続Owner指示で新規project `d3-improved-manual-20261106`をbuild・起動し、`http://127.0.0.1:18081/login`で稼働保持。image label識別・両利用者のHTTP login／選択route確認はPASS。Ownerは案内順の打鍵でいずれも問題なしと報告し、17:12 JSTの読取点検で申請4,800円の承認済み・差戻し／再編集／再提出／承認Audit・明細整合、app／DB healthy、ERROR／Session重複キー例外なしを確認。[結果§8](docs/architecture/validation/phase4-d3-container-improvement-results-20261106.md#8-改善版owner打鍵報告後のログdb点検)を参照。結果全体の受入へ拡張しない。`.tmp/d3-improved-manual-20261106/manual-ready.json`を参照し、このprojectのapp／DB／volume／secretを自動停止・cleanupしない。旧手動DB volume等の保持も継続する。
+
 PR #60統合後、Owner指示で同branchを継続する。HEAD `335e062`と手元`origin/main` `6bd2b0b`はtree同一。ローカルPCでJDK整合・社内CA・専用Nodeを整備し、Reference再生成／直接回帰25件、現行Containerの既存7 checkpointがPASS。証拠は`.tmp/d3-local-baseline-20261106/`。secret欠落負例は今回再実行していない。
 手動project `d3-manual-local-20261106`はOwnerの整理指示で`down`（volume削除なし）を実行し、app／DB container・専用networkを削除済み。DB volume・secret・image・Evidenceは保持し、自動削除・再起動・seed再投入を行わない。Ownerは差戻し等も含む打鍵で問題ない認識を報告し、DB／Audit照合は成立。`.tmp/d3-manual-local-20261106/manual-ready.json`は起動時点の履歴で、現在稼働中を意味しない。現状は同workの`manual-environment-state.json`を参照する。別端末の`d3-manual-20261105`は今回操作していない。
 Session属性`SPRING_SECURITY_SAVED_REQUEST`の重複保存例外を観測した。原因契機は未確定で、OwnerはPostgreSQL用Session customizer採用を別件で検討する方針。今回のContainer改善へ混ぜない。
-[改善計画案](docs/development/phase4-d3-container-improvement-plan-20261106.md)を現行の次作業入口とする。Reference／Tooling-ownedのBoot標準layer化・label識別・設定例／調整条件と有限検証を整理する文書作成段階。A4／B5／B6は対応外として保持。今回の文書作成で改善実装・追加動的実行・commit／remoteを先行しない。過去の実行・merge承認を新規操作へ流用せず、D3／Phase4全体の認定を変更しない。以下は各時点の履歴。
+Ownerは[改善計画](docs/development/phase4-d3-container-improvement-plan-20261106.md)を了解し`3b095a8`へcommit後、改修開始を指示した。[限定結果](docs/architecture/validation/phase4-d3-container-improvement-results-20261106.md)を現行入口とする。Boot標準layer化・label識別・専用設定例を適用し、layer測定5 invocation、直接回帰25件、既存7 checkpointがPASS。改善project `d3-improved-20261106`の資源cleanup済み、旧手動DB volume等は保持。自作Reactor JARはapplication区分に入り、loader／snapshot区分は空であることを結果に保持する。A4／B5／B6・Session対応は範囲外。次は結果・差分確認とOwner結果受入・成果固定判断。追加動的実行・手動project起動・commit／remoteを先行せず、過去の承認を流用しない。D3／Phase4全体の認定は変更しない。以下は各時点の履歴。
 
 ## 現行入口：D3方式1のContainer構築・限定検証結果（2026-11-05）
 

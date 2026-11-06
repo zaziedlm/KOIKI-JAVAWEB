@@ -1,5 +1,7 @@
 # D3方式1：Container build・設定改善の実施計画案（2026-11-06）
 
+**現行状態：** Ownerは本計画を了解し`3b095a8`へcommit後、改修開始を指示した。Reference／Toolingの改善・layer測定5 invocation・直接回帰25件・7 checkpointの限定検証を終了し、[結果](../architecture/validation/phase4-d3-container-improvement-results-20261106.md)へ記録した。結果Owner受入・成果commit／remoteは未実施。以下の未着手表示は計画固定時点の条件として保持する。
+
 ## 1. 目的・状態・Ownership
 
 方式1（SPA同梱Java app＋PostgreSQL）の成立済み構成を基点に、image更新時のlayer再利用と、実案件で設計・調整すべき項目の見通しを改善する。

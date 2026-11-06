@@ -5,7 +5,11 @@
 
 ## 現在の入口
 
-- [D3方式1：Container build・設定改善の実施計画案](phase4-d3-container-improvement-plan-20261106.md): ローカル再現・手動確認を基点に、Boot標準layer化、artifact label識別、設定の調整意図と有限検証を整理。A4／B5／B6とSession保存エラー対応は範囲外。計画案で、改善実装・動的実行は未着手。手動project `d3-manual-local-20261106`のcontainerはOwner指示で整理済み、DB volume・secret・image・Evidenceは保持する。
+- [D3方式1：別端末・Codex Cloud再検証への引継ぎ](phase4-d3-cross-environment-verification-handoff-20261106.md): source固定、新規toolchain／secret／project、Docker・browser・CA・cgroupの環境差、限定実行・結果記録・cleanupの留意点。別環境の実行は未実施。
+
+- [D3方式1：Container build・設定改善の限定結果](../architecture/validation/phase4-d3-container-improvement-results-20261106.md): Boot標準layer化・image label識別・専用設定例を適用。layer測定5 invocation、直接回帰25件、既存7 checkpointが成功。結果Owner受入・成果固定は未実施。A4／B5／B6・Session対応は範囲外、旧手動DB volume等は保持。
+
+- [D3方式1：Container build・設定改善の実施計画](phase4-d3-container-improvement-plan-20261106.md): Owner了解・`3b095a8`固定後に実装・限定検証済み。要件・適用境界・有限検証条件の正本。A4／B5／B6とSession保存エラー対応は範囲外。旧手動projectのDB volume・secret・image・Evidenceは保持する。
 
 - [D3方式1：SPA同梱Java＋PostgreSQL Containerの限定結果](../architecture/validation/phase4-d3-integrated-container-results-20261105.md): image build・起動・実SPA journey／DB／Audit・再起動／DB障害回復・cleanupが成立。直接回帰25件、通常profile Security2件、7 checkpoint群＋secret mount欠落負例。結果Owner受入・HTTPS・案件Consumer・方式2は別管理。[資材・手順](../../build-support/container-verification/integrated/README.md)。
 

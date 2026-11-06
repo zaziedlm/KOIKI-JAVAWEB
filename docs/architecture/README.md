@@ -13,6 +13,8 @@
 
 ## Validation index
 
+- [D3方式1：Container build・設定改善の限定結果（2026-11-06）](validation/phase4-d3-container-improvement-results-20261106.md): layer再利用測定・直接回帰25件・既存7 checkpointが成功。結果Owner受入・成果固定は未実施、旧手動DB volume等を保持。
+
 実装で得た証拠の正本は`validation/`に置きます。Phase 1aはMilestone A〜C、
 C1〜C5およびGate 1〜4を完了し、Architecture Ownerが最終CIを含むcloseoutを承認しています。
 Phase 1b Runtime FoundationはMilestone A〜C、CP1〜CP10、Gate 1〜2、main最終CIおよび

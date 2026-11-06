@@ -8,6 +8,7 @@ import subprocess
 import time
 import urllib.error
 import urllib.request
+import zipfile
 
 
 def main():
@@ -19,6 +20,8 @@ def main():
     work = args.work_dir.resolve(strict=True)
     recipe = Path(__file__).resolve().parent
     record = json.loads((work / 'artifact.json').read_text())
+    if not re.fullmatch('[a-f0-9]{64}', record.get('jar_sha256', '')):
+        parser.error('Missing or invalid source JAR SHA-256')
     if not re.fullmatch(r'd3-[a-z0-9-]+', record['project']) or not record['reference_spa']:
         parser.error('Expected prepared Reference-only d3 project')
     if (work / 'results.json').exists() or (work / 'failure.txt').exists():
@@ -81,7 +84,9 @@ def main():
             parser.error('Compose project already owns resources; choose a new project')
 
     try:
+        startup = time.monotonic()
         run(compose + ['up', '-d', '--wait', '--wait-timeout', '180'], timeout=210)
+        startup_seconds = round(time.monotonic() - startup, 3)
         ready()
         checkpoint('DC02 startup-migrations-ready')
         ids = run(compose + ['ps', '-q']).splitlines()
@@ -91,9 +96,29 @@ def main():
         assert app['Config']['User'] == '10001:10001' and app['HostConfig']['ReadonlyRootfs']
         assert app['HostConfig']['Memory'] == 1536 * 1024**2
         assert app['Path'] == 'java'
-        actual_hash = run(compose + ['exec', '-T', 'app', 'sha256sum', '/app/app.jar']).split()[0]
+        image = json.loads(run(['docker', 'image', 'inspect', app['Image']]))[0]
+        actual_hash = image['Config']['Labels'].get('org.koikifw.d3.source-jar-sha256')
         assert actual_hash == record['jar_sha256']
-        observed.append(dict(app_id=app['Id'], image_id=app['Image'], jar_sha256=actual_hash))
+        assert app['HostConfig']['PidsLimit'] == 160
+        assert app['Config']['Healthcheck']['StartInterval'] == 2_000_000_000
+        assert 'JAVA_TOOL_OPTIONS=-Xmx768m -XX:+ExitOnOutOfMemoryError' in app['Config']['Env']
+        for container in inspected:
+            assert container['HostConfig']['LogConfig'] == dict(
+                Type='json-file', Config={'max-size': '10m', 'max-file': '3'})
+        thread_status = run(compose + ['exec', '-T', 'app', 'cat', '/proc/1/status'])
+        threads = int(re.search(r'^Threads:\s+(\d+)', thread_status, re.MULTILINE).group(1))
+        pids_current = int(run(compose + ['exec', '-T', 'app', 'cat', '/sys/fs/cgroup/pids.current']))
+        assert threads < 160 and pids_current < 160
+        runtime_jar = work / 'runtime-app.jar'
+        run(['docker', 'cp', app['Id'] + ':/app/app.jar', str(runtime_jar)])
+        with zipfile.ZipFile(runtime_jar) as archive:
+            properties = archive.read('application-d3-container.properties').decode()
+            assert 'server.tomcat.threads.max=40' in properties.splitlines()
+            assert 'META-INF/resources/spa/index.html' in archive.namelist()
+        observed.append(dict(app_id=app['Id'], image_id=app['Image'], source_jar_sha256=actual_hash,
+                             identity_check='image-label', compose_up_wait_seconds=startup_seconds,
+                             startup_threads=threads, startup_pids=pids_current,
+                             packaged_tomcat_threads_max=40))
         checkpoint('DC01 nonroot-readonly-pid1-artifact')
         http('/actuator/health/liveness', 200)
         http('/actuator/env', 401)
