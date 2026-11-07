@@ -5,7 +5,8 @@
 
 ## 現在の入口
 
-- [D3方式1：別端末・Codex Cloud再検証への引継ぎ](phase4-d3-cross-environment-verification-handoff-20261106.md): source固定、新規toolchain／secret／project、Docker・browser・CA・cgroupの環境差、限定実行・結果記録・cleanupの留意点。別環境の実行は未実施。
+- [D3方式1：自宅Windows端末での改善版再検証](../architecture/validation/phase4-d3-home-container-reverification-20261107.md): 改善成果`5e01aac`から再生成・直接回帰25件・image build・既存7 checkpointが成功。専用資源cleanup済み、旧DB volume保持。Owner受入は未記録。
+- [D3方式1：別端末・Codex Cloud再検証への引継ぎ](phase4-d3-cross-environment-verification-handoff-20261106.md): source固定、新規toolchain／secret／project、Docker・browser・CA・cgroupの環境差、限定実行・結果記録・cleanupの留意点。保存時点では別環境未実施、その後の自宅Windows結果は上記を参照。Cloud実行は未実施。
 
 - [D3方式1：Container build・設定改善の限定結果](../architecture/validation/phase4-d3-container-improvement-results-20261106.md): Boot標準layer化・image label識別・専用設定例を適用。layer測定5 invocation、直接回帰25件、既存7 checkpointが成功。結果Owner受入・成果固定は未実施。A4／B5／B6・Session対応は範囲外、旧手動DB volume等は保持。
 

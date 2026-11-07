@@ -13,6 +13,7 @@
 
 ## Validation index
 
+- [D3方式1：自宅Windows端末での改善版再検証（2026-11-07）](validation/phase4-d3-home-container-reverification-20261107.md): 改善成果`5e01aac`から再生成・直接回帰25件・image build・既存7 checkpointが成功。専用資源cleanup済み、旧DB volume保持。Owner受入は未記録。
 - [D3方式1：Container build・設定改善の限定結果（2026-11-06）](validation/phase4-d3-container-improvement-results-20261106.md): layer再利用測定・直接回帰25件・既存7 checkpointが成功。結果Owner受入・成果固定は未実施、旧手動DB volume等を保持。
 
 実装で得た証拠の正本は`validation/`に置きます。Phase 1aはMilestone A〜C、

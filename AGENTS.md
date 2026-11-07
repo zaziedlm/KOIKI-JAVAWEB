@@ -1,5 +1,13 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3改善版の自宅Windows再検証（2026-11-07）
+
+**後続Owner指示による手動環境を稼働保持中：** 新規project `d3-home-manual-20261107`／port18081で改善版imageをbuild・起動し、両利用者のHTTP login／選択routeと元JAR hash label照合が成功。URL `http://127.0.0.1:18081/login`、起動記録は`.tmp/d3-home-manual-20261107/manual-ready.json`。[自宅端末結果§7](docs/architecture/validation/phase4-d3-home-container-reverification-20261107.md#7-後続owner指示による手動確認環境の準備)を参照。手動打鍵・Owner結果受入は未確認。このprojectのapp／DB／volume／secretを自動停止・cleanup・seed再投入しない。下記の手動起動未実施はこの後続指示前の履歴である。
+
+**手動操作後の点検済み：** Ownerは全行程・承認まで問題なしと報告。10:08 JSTの読取点検で5,600円の申請1件APPROVED、差戻し／再編集／再提出／承認のSUCCESS Audit5件、明細整合を確認。app／DB healthy・restart0、app ERROR・Session重複キー例外なし。LOGIN成功6件／BAD_CREDENTIALS失敗1件は区別して[結果§8](docs/architecture/validation/phase4-d3-home-container-reverification-20261107.md#8-owner手動操作報告後のログdb確認)へ記録。結果全体のOwner受入へ拡張しない。手動環境の稼働保持を継続し、上段の打鍵未確認表示は点検前の履歴とする。
+
+Ownerの最新build・実行検証指示により、改善成果`5e01aac`からこの端末で再生成・検証した。[自宅端末結果](docs/architecture/validation/phase4-d3-home-container-reverification-20261107.md)を今回の入口とする。直接回帰25件・image build・既存7 checkpointがPASS。初回buildのsandbox子プロセス`EPERM`と、承認手順後の同範囲成功を分けて保持。project `d3-home-verify-20261107`／port18087のcontainer・DB volume・networkはcleanup済み、image・ignored Evidence／secretは保持。既存`d3-manual-20261105_database`は保持し、再起動・seed再投入していない。別端末の改善版手動環境は操作していない。手動環境起動・layer比較・secret欠落負例・通常root全件は今回未実施。結果Owner受入・commit／remoteは未実施、D3／Phase4全体の認定は維持する。以下の2026-11-06記録は別端末での履歴・保持条件として読む。
+
 ## 現行入口：D3方式1のローカル再現・Container改善計画（2026-11-06）
 
 Ownerは別端末PC・Codex Cloudでの再検証を予定し、[引継ぎ](docs/development/phase4-d3-cross-environment-verification-handoff-20261106.md)へ留意点を保存した。次回は実際の改善成果commitと対象環境の能力・実行集合を確認し、このPCの`.tmp`・secret・旧実行予算を流用しない。別環境の実行は未実施。
