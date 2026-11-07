@@ -5,6 +5,13 @@
 
 ## 現在の入口
 
+- [D3方式1：自宅Windows端末での改善版再検証](../architecture/validation/phase4-d3-home-container-reverification-20261107.md): 改善成果`5e01aac`から再生成・直接回帰25件・image build・既存7 checkpointが成功。専用資源cleanup済み、旧DB volume保持。Owner受入は未記録。
+- [D3方式1：別端末・Codex Cloud再検証への引継ぎ](phase4-d3-cross-environment-verification-handoff-20261106.md): source固定、新規toolchain／secret／project、Docker・browser・CA・cgroupの環境差、限定実行・結果記録・cleanupの留意点。保存時点では別環境未実施、その後の自宅Windows結果は上記を参照。Cloud実行は未実施。
+
+- [D3方式1：Container build・設定改善の限定結果](../architecture/validation/phase4-d3-container-improvement-results-20261106.md): Boot標準layer化・image label識別・専用設定例を適用。layer測定5 invocation、直接回帰25件、既存7 checkpointが成功。結果Owner受入・成果固定は未実施。A4／B5／B6・Session対応は範囲外、旧手動DB volume等は保持。
+
+- [D3方式1：Container build・設定改善の実施計画](phase4-d3-container-improvement-plan-20261106.md): Owner了解・`3b095a8`固定後に実装・限定検証済み。要件・適用境界・有限検証条件の正本。A4／B5／B6とSession保存エラー対応は範囲外。旧手動projectのDB volume・secret・image・Evidenceは保持する。
+
 - [D3方式1：SPA同梱Java＋PostgreSQL Containerの限定結果](../architecture/validation/phase4-d3-integrated-container-results-20261105.md): image build・起動・実SPA journey／DB／Audit・再起動／DB障害回復・cleanupが成立。直接回帰25件、通常profile Security2件、7 checkpoint群＋secret mount欠落負例。結果Owner受入・HTTPS・案件Consumer・方式2は別管理。[資材・手順](../../build-support/container-verification/integrated/README.md)。
 
 - [D3：Keycloakを含む4コンテナSSO環境案](phase4-d3-keycloak-sso-environment-20261105.md): 第2候補のlocal検証はNext.js BFF＋Java API＋PostgreSQL＋Keycloak。OIDC・canonical issuer・3専用DB／role・claim対応・独立2 ClientによるSSOと有限検証条件を整理。構成案の段階で、Compose／BFFの実装・起動は未実施。

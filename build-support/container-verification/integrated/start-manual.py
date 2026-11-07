@@ -25,6 +25,8 @@ def main():
     args = parser.parse_args()
     work = args.work_dir.resolve(strict=True)
     record = json.loads((work / 'artifact.json').read_text())
+    if not re.fullmatch('[a-f0-9]{64}', record.get('jar_sha256', '')):
+        parser.error('Missing or invalid source JAR SHA-256')
     if not re.fullmatch(r'd3-[a-z0-9-]+', record['project']) or not record['reference_spa']:
         parser.error('Expected a prepared Reference-only d3 project')
     for name in ('manual-ready.json', 'manual-failure.txt', 'results.json', 'failure.txt'):
@@ -64,9 +66,12 @@ def main():
         run(psql + ['-U', 'postgres'], 'create extension if not exists pgcrypto;')
         for name in ('seed.sql', 'manual-seed.sql'):
             run(psql + ['-U', 'koiki'], (recipe / name).read_text().replace('__LOGIN_PASSWORD__', password))
-        actual_hash = run(compose + ['exec', '-T', 'app', 'sha256sum', '/app/app.jar']).split()[0]
+        app_id = run(compose + ['ps', '-q', 'app'])
+        image_id = run(['docker', 'inspect', '--format', '{{.Image}}', app_id])
+        image = json.loads(run(['docker', 'image', 'inspect', image_id]))[0]
+        actual_hash = image['Config']['Labels'].get('org.koikifw.d3.source-jar-sha256')
         if actual_hash != record['jar_sha256']:
-            raise RuntimeError('Image JAR hash mismatch')
+            raise RuntimeError('Image source JAR label mismatch')
         for username, path in (('d3-applicant@example.test', '/spa-api/v1/expense-options'),
                                ('d3-approver@example.test', '/expenses/approvals')):
             opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
@@ -87,6 +92,7 @@ def main():
         handoff = dict(project=record['project'], url=base + '/login', spa=base + '/spa/',
                        applicant='d3-applicant@example.test', approver='d3-approver@example.test',
                        password_file=str(work / 'secrets/login-password'), jar_sha256=actual_hash,
+                       image_id=image_id, identity_check='image-label',
                        state='RUNNING_FOR_MANUAL_CHECK', http_login_checks='PASS; both users and selected routes')
         (work / 'manual-ready.json').write_text(json.dumps(handoff, indent=2) + '\n', encoding='utf-8')
         print(json.dumps(handoff, indent=2))

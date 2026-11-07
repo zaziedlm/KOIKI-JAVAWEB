@@ -21,6 +21,7 @@ def main():
     if not re.fullmatch(r'd3-[a-z0-9-]+', args.project) or not 1024 <= args.port <= 65535:
         parser.error('Use project d3-<lowercase-name> and port 1024..65535')
     jar = args.jar.resolve(strict=True)
+    jar_sha256 = hashlib.sha256(jar.read_bytes()).hexdigest()
     work = args.work_dir.resolve()
     if work.exists():
         parser.error('work-dir must be new; do not overwrite secrets or evidence')
@@ -54,9 +55,10 @@ def main():
         'D3_BUILD_CONTEXT': context.as_posix(),
         'D3_SECRET_DIR': secret_dir.as_posix(),
         'D3_HTTP_PORT': str(args.port),
+        'D3_JAR_SHA256': jar_sha256,
     }
     (work / 'compose.env').write_text(''.join(f'{key}="{value}"\n' for key, value in values.items()), encoding='utf-8')
-    record = dict(project=args.project, port=args.port, jar_sha256=hashlib.sha256(jar.read_bytes()).hexdigest(),
+    record = dict(project=args.project, port=args.port, jar_sha256=jar_sha256,
                   source_jar=str(jar), reference_spa=args.require_reference_spa)
     (work / 'artifact.json').write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(record))

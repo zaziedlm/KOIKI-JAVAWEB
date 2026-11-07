@@ -1,5 +1,24 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3改善版の自宅Windows再検証（2026-11-07）
+
+**後続Owner指示による手動環境を稼働保持中：** 新規project `d3-home-manual-20261107`／port18081で改善版imageをbuild・起動し、両利用者のHTTP login／選択routeと元JAR hash label照合が成功。URL `http://127.0.0.1:18081/login`、起動記録は`.tmp/d3-home-manual-20261107/manual-ready.json`。[自宅端末結果§7](docs/architecture/validation/phase4-d3-home-container-reverification-20261107.md#7-後続owner指示による手動確認環境の準備)を参照。手動打鍵・Owner結果受入は未確認。このprojectのapp／DB／volume／secretを自動停止・cleanup・seed再投入しない。下記の手動起動未実施はこの後続指示前の履歴である。
+
+**手動操作後の点検済み：** Ownerは全行程・承認まで問題なしと報告。10:08 JSTの読取点検で5,600円の申請1件APPROVED、差戻し／再編集／再提出／承認のSUCCESS Audit5件、明細整合を確認。app／DB healthy・restart0、app ERROR・Session重複キー例外なし。LOGIN成功6件／BAD_CREDENTIALS失敗1件は区別して[結果§8](docs/architecture/validation/phase4-d3-home-container-reverification-20261107.md#8-owner手動操作報告後のログdb確認)へ記録。結果全体のOwner受入へ拡張しない。手動環境の稼働保持を継続し、上段の打鍵未確認表示は点検前の履歴とする。
+
+Ownerの最新build・実行検証指示により、改善成果`5e01aac`からこの端末で再生成・検証した。[自宅端末結果](docs/architecture/validation/phase4-d3-home-container-reverification-20261107.md)を今回の入口とする。直接回帰25件・image build・既存7 checkpointがPASS。初回buildのsandbox子プロセス`EPERM`と、承認手順後の同範囲成功を分けて保持。project `d3-home-verify-20261107`／port18087のcontainer・DB volume・networkはcleanup済み、image・ignored Evidence／secretは保持。既存`d3-manual-20261105_database`は保持し、再起動・seed再投入していない。別端末の改善版手動環境は操作していない。手動環境起動・layer比較・secret欠落負例・通常root全件は今回未実施。結果Owner受入・commit／remoteは未実施、D3／Phase4全体の認定は維持する。以下の2026-11-06記録は別端末での履歴・保持条件として読む。
+
+## 現行入口：D3方式1のローカル再現・Container改善計画（2026-11-06）
+
+Ownerは別端末PC・Codex Cloudでの再検証を予定し、[引継ぎ](docs/development/phase4-d3-cross-environment-verification-handoff-20261106.md)へ留意点を保存した。次回は実際の改善成果commitと対象環境の能力・実行集合を確認し、このPCの`.tmp`・secret・旧実行予算を流用しない。別環境の実行は未実施。
+
+**改善版手動確認・点検済み：** 後続Owner指示で新規project `d3-improved-manual-20261106`をbuild・起動し、`http://127.0.0.1:18081/login`で稼働保持。image label識別・両利用者のHTTP login／選択route確認はPASS。Ownerは案内順の打鍵でいずれも問題なしと報告し、17:12 JSTの読取点検で申請4,800円の承認済み・差戻し／再編集／再提出／承認Audit・明細整合、app／DB healthy、ERROR／Session重複キー例外なしを確認。[結果§8](docs/architecture/validation/phase4-d3-container-improvement-results-20261106.md#8-改善版owner打鍵報告後のログdb点検)を参照。結果全体の受入へ拡張しない。`.tmp/d3-improved-manual-20261106/manual-ready.json`を参照し、このprojectのapp／DB／volume／secretを自動停止・cleanupしない。旧手動DB volume等の保持も継続する。
+
+PR #60統合後、Owner指示で同branchを継続する。HEAD `335e062`と手元`origin/main` `6bd2b0b`はtree同一。ローカルPCでJDK整合・社内CA・専用Nodeを整備し、Reference再生成／直接回帰25件、現行Containerの既存7 checkpointがPASS。証拠は`.tmp/d3-local-baseline-20261106/`。secret欠落負例は今回再実行していない。
+手動project `d3-manual-local-20261106`はOwnerの整理指示で`down`（volume削除なし）を実行し、app／DB container・専用networkを削除済み。DB volume・secret・image・Evidenceは保持し、自動削除・再起動・seed再投入を行わない。Ownerは差戻し等も含む打鍵で問題ない認識を報告し、DB／Audit照合は成立。`.tmp/d3-manual-local-20261106/manual-ready.json`は起動時点の履歴で、現在稼働中を意味しない。現状は同workの`manual-environment-state.json`を参照する。別端末の`d3-manual-20261105`は今回操作していない。
+Session属性`SPRING_SECURITY_SAVED_REQUEST`の重複保存例外を観測した。原因契機は未確定で、OwnerはPostgreSQL用Session customizer採用を別件で検討する方針。今回のContainer改善へ混ぜない。
+Ownerは[改善計画](docs/development/phase4-d3-container-improvement-plan-20261106.md)を了解し`3b095a8`へcommit後、改修開始を指示した。[限定結果](docs/architecture/validation/phase4-d3-container-improvement-results-20261106.md)を現行入口とする。Boot標準layer化・label識別・専用設定例を適用し、layer測定5 invocation、直接回帰25件、既存7 checkpointがPASS。改善project `d3-improved-20261106`の資源cleanup済み、旧手動DB volume等は保持。自作Reactor JARはapplication区分に入り、loader／snapshot区分は空であることを結果に保持する。A4／B5／B6・Session対応は範囲外。次は結果・差分確認とOwner結果受入・成果固定判断。追加動的実行・手動project起動・commit／remoteを先行せず、過去の承認を流用しない。D3／Phase4全体の認定は変更しない。以下は各時点の履歴。
+
 ## 現行入口：D3方式1のContainer構築・限定検証結果（2026-11-05）
 
 **成果固定・統合の現行指示：** Ownerは検証確認後のcommit・作業branch push・main向けPR／mergeを進める方針を示した。今回のReference／Tooling・設計／結果文書を対象に、差分確認・既存required checks成功後のmergeを行う。tag／Release／image公開は含めない。手動確認で報告されたUUIDエラーはTooling seed／専用DBの訂正後にOwnerが解消を確認した。結果全体の受入・D3全体の認定へは拡張しない。以下の未commit・remote未実行表示は成果固定前の履歴として扱う。

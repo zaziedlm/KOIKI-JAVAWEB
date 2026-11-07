@@ -3,11 +3,13 @@
 Java 21 runtimeで実行するappとPostgreSQLの2サービス。Next.js／Keycloakは起動しない。
 実装所有はReference／Tooling、正式Framework配布unit・汎用Project Templateではない。
 
+別端末・Codex Cloudで再検証する場合は、[引継ぎ](../../../docs/development/phase4-d3-cross-environment-verification-handoff-20261106.md)でsource固定・toolchain・環境差・Evidenceの扱いを先に確認する。
+
 ## 資材と再利用境界
 
 | 資材 | 用途 |
 | --- | --- |
-| `Dockerfile`／`.dockerignore` | 明示した`app.jar`だけを格納するruntime recipe。案件側のJARにも適用できる構造 |
+| `Dockerfile`／`.dockerignore` | 明示したBoot JARをtoolsで抽出し、layer別に格納する2 stage recipe。Maven／Node buildはhost側 |
 | `probe.sh` | 同じportのreadinessをHTTPで検査。base imageにbashが必要 |
 | `compose.yaml`／`init-db.sh` | 専用DB・非superuser app role、secret file、非root／read-only app、loopback公開、資源制限 |
 | `prepare.py` | 明示JARを新しいcontextへコピーし、hash記録・secret生成。既存workを上書きしない |
@@ -21,6 +23,7 @@ Composeのprofile・DB名／role・HMAC等はReference向け設定例なので�
 ## 前提
 
 - Linux／amd64 Docker・Compose、JDK 21、Python 3。Reference frontendの正確なNode／npm版は`koiki-reference-app/frontend/package.json`を参照する。
+- `healthcheck.start_interval`にはEngine 25以降・Compose 2.20.2以降が必要。今回確認版はEngine 29.5.3／Compose 5.3.1。
 - Windows補助は`node.exe`と`npm.cmd`がある専用toolchain directoryを指定。端末全体のNode切替は不要。
 - runtime image／DB imageはdigest固定。更新時は新digestでbuild・検証して記録し、追跡可能にする。
 - app 1.5 GiB／CPU1／heap 768 MiB、PG 1 GiB／CPU1／最大16接続。browser／build JVMは別計上しbuildとruntimeを並走させない。
@@ -45,6 +48,7 @@ docker compose --env-file .tmp/d3-my-run/compose.env `
 ```
 
 `prepare.py`はReference指定時に埋込SPA build recordとasset hash、async JDBC非同梱を検査する。JAR名だけを版識別にしない。
+元JARのSHA-256を`artifact.json`／`compose.env`へ記録し、build argからimage label `org.koikifw.d3.source-jar-sha256`へ渡す。起動後はcontainerが参照するimage IDのlabelと照合する。labelは元artifactの取り違え検出用であり、抽出後の全ファイルの一致証明ではない。既存workのenvにはhashがないため、新しいrecipeの検証には新規workでprepareする。
 compose.envにはパス／image名等だけを記録し、passwordやHMACはsecret fileへ格納する。Compose secretはlocal file mountで、外部secret managerによる暗号化・配布とは異なる。
 
 ## 起動・検証・cleanup
@@ -61,7 +65,7 @@ python build-support/container-verification/integrated/verify.py `
   --classpath build-support/reference-e2e-verification/target/d3-classpath.txt --java $taskJava
 ```
 
-runnerは今回の専用projectを起動し、probe・拒否・非root／read-only／JAR一致・専用DB role／migration、fixture seed、実browserのlogin→SPA作成→CSRF欠落拒否→提出→reload→logout、DB／Audit照合、app再起動、DB停止／回復を確認する。最後に成功／失敗を問わず当該projectのcontainer／volume／networkをcleanupし、残留を照合する。
+runnerは今回の専用projectを起動し、probe・拒否・非root／read-only／元JARのimage label識別・専用DB role／migration、fixture seed、実browserのlogin→SPA作成→CSRF欠落拒否→提出→reload→logout、DB／Audit照合、app再起動、DB停止／回復を確認する。起動時thread／PID使用数、healthcheck・ログ上限・JVMオプション、抽出後JARのthread設定とSPA配置も記録・確認する。最後に成功／失敗を問わず当該projectのcontainer／volume／networkをcleanupし、残留を照合する。
 
 `artifact.json`、`results.json`、`browser.txt`、`spa.png`、`runtime-sanitized.log`をworkに保存する。初回失敗は同workへ保持し、訂正後は新しいwork／projectを使う。runnerは同じseedを既存DBへ重複投入する再開runnerではない。
 既存の結果／失敗記録があるwork、または同じCompose project labelのcontainer／volume／networkが既にある場合は、起動・cleanupへ入る前に拒否する。
@@ -109,3 +113,28 @@ docker compose --env-file .tmp/d3-manual-20261105/compose.env `
 ```
 
 この手動確認データが不要と判断できた後だけ、同じ指定のComposeで`down --volumes --timeout 40`を実行する。手動起動中は、以前の自動検証projectのcleanup結果と混同しない。
+
+## layer構成とartifact識別
+
+[Spring Boot公式例](https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html)に沿い、生成済みJARを`java -Djarmode=tools -jar app.jar extract --layers --destination extracted`で抽出する。最終imageには元fat JARを重複して置かず、抽出された小さな`/app/app.jar`と`/app/lib/`等を格納する。依存は個々のJARのままで、起動は引き続きJavaをPID1とする`java -jar /app/app.jar`。
+
+probe、dependencies、spring-boot-loader、snapshot-dependencies、applicationの順にCOPYする。標準toolsの分類を尊重し、空区分もあり得る。今回のReactor JARでは自作モジュールはapplication区分へ入り、loader／snapshot-dependencies区分は空。SNAPSHOTという名前だけで分類を断定しない。アプリと同じ区分の自作JARは、その区分の変更時に一緒に更新される。
+
+明示JAR指定、専用context、`.dockerignore` allowlist、抽出先の明示COPYが意図しない資材の取り込みを抑える。元JAR内のSPA hash／async JDBC検査はprepare時に実施する。image内の全class／resourceのhash台帳は作らず、SPA配信はbrowser journeyで確認する。
+
+## 実案件で見直す設定
+
+本資材はReferenceであり、案件は独自にContainer設計するか、本例を参考に設計する。次の数値は今回の限定検証用の例であり、capacityの推奨値・最適値ではない。
+
+| 項目 | 今回の例と理由 | 実案件での見直し条件 |
+| --- | --- | --- |
+| CPU／memory／heap | app CPU1・1536 MiB、固定heap768 MiB。残りをnative memory・thread・tmpfs等へ確保 | 実際の同時処理・使用memoryで配分する。`MaxRAMPercentage=50`等の比率指定も選べるが、非heap領域を含めた自動最適化ではない |
+| OOM | `ExitOnOutOfMemoryError`でJVMがOOMを検出した際に終了する方針 | container側OOM killとは別。終了後の復旧・restart policy・監視は案件の運用設計。今回は故障注入しない |
+| thread／PID／pool | Tomcat最大40、app PID160、Hikari最大4／最小1、DB最大16接続 | JVM／probe等の余裕を残す。DB待ち・処理時間・同時要求から設計し、pool4からthread最適値を決めない。virtual threads切替時はTomcat上限の意味も見直す |
+| healthcheck | 起動中2秒、通常10秒、起動猶予90秒、timeout5秒、連続失敗3回 | 起動特性・probe負荷・異常検出時間との関係で調整。対応Engineの起動中既定は5秒。readinessとlivenessの役割を維持 |
+| shutdown | Bootのphase待ち20秒、app停止猶予40秒 | 処理時間とplatformの停止契約に合わせる。処理中drainの実証は別 |
+| ログ | app／DBともjson-file、1 file10m・最大3 file | local保持の上限例。収集先・保管期間・driverを案件で選ぶ |
+
+A4（再現可能build設定）、B5（CDS／起動高速化）、B6（restart policy）は今回対応外。Session保存の重複キー例外とPostgreSQL用Session customizer採用も別件で、今回のlayer化と混同しない。
+
+2026-11-06の旧手動project `d3-manual-local-20261106`はcontainer／networkを整理済みで、DB volume・secret・image・Evidenceを保持している。旧版起動資材は同workの`recipe-before-improvement/`に保存。旧projectを再開する場合は対応する旧資材を使い、改善版Composeで自動recreate・seed再投入しない。元の`manual-ready.json`は起動時点の履歴であり、現在状態は`manual-environment-state.json`を確認する。
