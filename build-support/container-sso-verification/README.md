@@ -1,4 +1,4 @@
-# D3方式2 S1：専用DB・Java起動基盤
+# D3方式2：S1専用DB・Java基盤／S2実IdP→API
 
 Tooling-ownedの限定検証。S1ではPostgreSQLと既存Reference backendだけを起動する。
 Keycloak／Next.jsサービス・OIDC／BFF画面・認証処理はまだ実装しない。
@@ -95,3 +95,53 @@ Cloudのdownload経路が未確認ならOPENのまま記録し、workspace内に
 DB owner兼用は検証用の簡略化。案件ではmigration主体とruntime roleの分離を決める。
 BFFの鍵管理・暗号化tokenの保持期間・DDL運用はCustomer-ownedとし、本fixtureを正式配布物へ自動昇格させない。
 このCloudの実効CPUは4。S1の2CPUは上限内だが、後段の最大4.5CPU構成は開始判断で見直す。
+
+## S2：実KeycloakとJava API
+
+S2はS1の固定版／DDL／seedを再利用し、新しいprojectへKeycloakを追加する。
+`compose-s2.yaml`はbase Composeへのoverride。常設はDB／backend／Keycloakの3サービスで、
+一時Node helperを`helper` profileで起動する。BFF／Client B／SSOはまだ作らない。
+backend／DB／managementはhost非公開、Keycloak18080とhelper13000だけloopbackに公開する。
+runtimeは3 CPU／4 GiB、helperは最大0.5 CPU／512 MiB・同時1個。host Chromiumはworker1／同時context1。
+
+```sh
+python3 build-support/container-sso-verification/build-reference.py --stage S2 \
+  --output .tmp/d3-sso-s2-build-UNIQUE --settings /absolute/path/settings.xml
+python3 build-support/container-sso-verification/prepare.py --stage S2 \
+  --jar koiki-reference-app/target/koiki-reference-app-0.1.0-SNAPSHOT.jar \
+  --work-dir .tmp/d3-sso-s2-YYYYMMDD-UNIQUE --project d3-sso-s2-YYYYMMDD-UNIQUE
+docker compose --env-file .tmp/d3-sso-s2-YYYYMMDD-UNIQUE/compose.env \
+  -f .tmp/d3-sso-s2-YYYYMMDD-UNIQUE/recipe/compose.yaml \
+  -f .tmp/d3-sso-s2-YYYYMMDD-UNIQUE/recipe/compose-s2.yaml build backend
+python3 build-support/container-sso-verification/verify-s2.py \
+  --work-dir .tmp/d3-sso-s2-YYYYMMDD-UNIQUE
+```
+
+直接回帰は計画の4 class／23件を選択し、build側で件数・failure／error／skipを検査する。
+helper用のopenid-clientと純JS依存は専用lockで取得した`frontend/node_modules`からclosureをsnapshotへコピーし、
+各file hashを記録する。container内でnpm取得はしない。S1用`prepare.py`の既定stageは維持する。
+Linux／Windowsのhost依存取得は`npm ci --ignore-scripts`、Browserは同版Playwrightの`install chromium`で準備する。
+Browser binaryは`PLAYWRIGHT_BROWSERS_PATH`等でそのOSのものを指定し、他OSからコピーしない。
+
+`realm-template.json`はsecretなし。prepareが新規client secret／login passwordを生成し、
+生成realmをwork内だけへ保存する。管理属性`koiki_user_id`はadminのみ編集可能で、実DBのprofile設定も照合する。
+`ADMIN_EDIT`は採用版の有効なunmanaged attribute policy。独立負例Clientは誤audience用で、S4のClient Bとは異なる。
+4利用者は全員IdPでは有効、KOIKI側の無効1名・権限なし1名をJavaで拒否する。
+
+helperの`verify-oidc.ts`と共通`frontend/lib/oidc.ts`は実Code＋PKCE S256／state／nonceを使用する。
+HTTP例外は正確なlocal issuer `http://idp.localhost:18080/realms/koiki-d3`だけに限定する。
+local HTTPではTLSでIdPを認証できないため、library標準の`enableNonRepudiationChecks`を明示し、
+ID TokenのJWS署名をJWKSで検証する。issuer／audience／nonce／時刻・PKCE検証もlibraryへ委ねる。
+Access Token署名とissuer／API audience／token_use／現在利用者・権限の検証は既存Javaが行う。
+claimのdecodeは許可fieldの観測だけで、独自の署名検証は実装しない。
+
+tokenはhelperメモリ内に保持し、Browser／HTTP結果／logへ返さない。固定の3業務操作と6拒否条件だけを扱い、
+汎用proxy・正式BFFとして使わない。業務POSTの実行guardを先に立て、結果不明時に同じPOSTを再送しない。
+`browser-s2.mjs`は6条件を独立contextで順次loginし、Cookieの属性と送信名だけを記録する。
+Cookie値・token・code付きURL・HAR／trace／storageStateは保存しない。
+helper終了前に保持token／未完認証recordを破棄し、exit0を確認する。cleanupは生成realmも削除する。
+
+S2結果は[Cloud実証記録](../../docs/architecture/validation/phase4-d3-option2-s2-results-20261109.md)を参照する。
+初回設定不備・観測SQL不備、途中の機能PASSと最終の署名検証・Cookie観測を含むPASSは別workで保持する。
+exportは共通allowlistに値を含まない`browser.json`だけを追加する。Windows持帰り未確認の扱いはS1と同じ。
+S2のbuild／取得枠20分、動的45分（cleanup10分予約）。段階終了で停止し、S3はOwner判断を待つ。

@@ -1,0 +1,70 @@
+services:
+  backend:
+    environment:
+      KOIKI_REFERENCE_API_BEARER_ENABLED: "true"
+      KOIKI_REFERENCE_API_BEARER_ISSUER: http://idp.localhost:18080/realms/koiki-d3
+      KOIKI_REFERENCE_API_BEARER_AUDIENCE: koiki-reference-api
+    depends_on:
+      keycloak: {condition: service_healthy}
+  keycloak:
+    image: ${D3_KEYCLOAK_IMAGE}
+    platform: linux/amd64
+    entrypoint: [/bin/bash, -ec]
+    command:
+      - 'export KC_DB_PASSWORD="$$(cat /run/secrets/koiki_keycloak)"; exec /opt/keycloak/bin/kc.sh start-dev --import-realm'
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/koiki_keycloak
+      KC_DB_USERNAME: koiki_keycloak
+      KC_DB_POOL_INITIAL_SIZE: "1"
+      KC_DB_POOL_MIN_SIZE: "1"
+      KC_DB_POOL_MAX_SIZE: "4"
+      KC_HOSTNAME: http://idp.localhost:18080
+      KC_HTTP_PORT: "18080"
+      KC_HEALTH_ENABLED: "true"
+      KC_HTTP_ENABLED: "true"
+      JAVA_OPTS_KC_HEAP: -Xms256m -Xmx768m
+    secrets: [koiki_keycloak]
+    volumes:
+      - ${D3_WORK}/realm:/opt/keycloak/data/import:ro
+    ports: ['127.0.0.1:18080:18080']
+    mem_limit: 1536m
+    cpus: 1
+    stop_grace_period: 40s
+    depends_on:
+      db: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, /bin/bash, -ec, 'exec 3<>/dev/tcp/127.0.0.1/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; IFS= read -r line <&3; [[ "$$line" == *" 200 "* ]]']
+      start_period: 120s
+      start_interval: 3s
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    logging: {driver: json-file, options: {max-size: 10m, max-file: "3"}}
+    networks:
+      database:
+        aliases: [idp.localhost]
+  helper:
+    image: ${D3_NODE_IMAGE}
+    platform: linux/amd64
+    profiles: [helper]
+    user: '10001:10001'
+    working_dir: /tooling
+    command: [node, --experimental-strip-types, verify-oidc.ts]
+    read_only: true
+    tmpfs:
+      - /tmp:size=67108864,mode=1777
+    volumes:
+      - ${D3_WORK}/helper:/tooling:ro
+    secrets: [client_a, client_wrong]
+    ports: ['127.0.0.1:13000:13000']
+    mem_limit: 512m
+    cpus: 0.5
+    pids_limit: 128
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 20s
+    networks: [database]
+secrets:
+  client_a: {file: '${D3_WORK}/secrets/client_a'}
+  client_wrong: {file: '${D3_WORK}/secrets/client_wrong'}

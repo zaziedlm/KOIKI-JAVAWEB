@@ -1,4 +1,4 @@
-"""Export only reviewed S1 evidence paths; never archive .tmp wholesale."""
+"""Export only reviewed stage evidence paths; never archive .tmp wholesale."""
 import argparse
 import hashlib
 import json
@@ -27,7 +27,8 @@ def main():
     if archive.exists():
         p.error('Refusing to overwrite an exported archive')
     payload = {}
-    for name in ALLOWLIST:
+    names = ALLOWLIST + (['browser.json'] if record['phase'] == 'S2' and (work / 'browser.json').exists() else [])
+    for name in names:
         path = work / name
         if path.is_symlink() or not path.is_file():
             p.error('Missing or symlink allowlist entry: ' + name)

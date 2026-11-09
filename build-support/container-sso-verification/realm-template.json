@@ -1,0 +1,269 @@
+{
+  "realm": "koiki-d3",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "rememberMe": false,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 7200,
+  "clientSessionIdleTimeout": 1200,
+  "clientSessionMaxLifespan": 5400,
+  "revokeRefreshToken": true,
+  "refreshTokenMaxReuse": 0,
+  "defaultRoles": [],
+  "clients": [
+    {
+      "clientId": "koiki-d3-a",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "__CLIENT_A_SECRET__",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "fullScopeAllowed": false,
+      "redirectUris": [
+        "http://localhost:13000/a/auth/callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "client.session.idle.timeout": "1200",
+        "client.session.max.lifespan": "5400"
+      },
+      "defaultClientScopes": [],
+      "optionalClientScopes": [
+        "expense.apply"
+      ],
+      "protocolMappers": [
+        {
+          "name": "token-use",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "token_use",
+            "claim.value": "access",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        },
+        {
+          "name": "koiki-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "koiki_user_id",
+            "claim.name": "koiki_user_id",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false",
+            "multivalued": "false"
+          }
+        },
+        {
+          "name": "api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "koiki-reference-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "koiki-d3-wrong-audience",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "__CLIENT_WRONG_SECRET__",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "fullScopeAllowed": false,
+      "redirectUris": [
+        "http://localhost:13000/a/auth/callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "client.session.idle.timeout": "1200",
+        "client.session.max.lifespan": "5400"
+      },
+      "defaultClientScopes": [],
+      "optionalClientScopes": [
+        "expense.apply"
+      ],
+      "protocolMappers": [
+        {
+          "name": "token-use",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "token_use",
+            "claim.value": "access",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        },
+        {
+          "name": "koiki-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "koiki_user_id",
+            "claim.name": "koiki_user_id",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false",
+            "multivalued": "false"
+          }
+        },
+        {
+          "name": "api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "unrelated-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "clientScopes": [
+    {
+      "name": "expense.apply",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": []
+    }
+  ],
+  "users": [
+    {
+      "id": "d3210000-0000-4000-8000-000000000001",
+      "username": "applicant-a",
+      "email": "sso-a@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "S2",
+      "lastName": "applicant-a",
+      "requiredActions": [],
+      "attributes": {
+        "koiki_user_id": [
+          "d3200000-0000-4000-8000-000000000001"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "__LOGIN_PASSWORD__",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "d3210000-0000-4000-8000-000000000002",
+      "username": "applicant-b",
+      "email": "sso-b@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "S2",
+      "lastName": "applicant-b",
+      "requiredActions": [],
+      "attributes": {
+        "koiki_user_id": [
+          "d3200000-0000-4000-8000-000000000002"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "__LOGIN_PASSWORD__",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "d3210000-0000-4000-8000-000000000003",
+      "username": "disabled",
+      "email": "sso-disabled@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "S2",
+      "lastName": "disabled",
+      "requiredActions": [],
+      "attributes": {
+        "koiki_user_id": [
+          "d3200000-0000-4000-8000-000000000003"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "__LOGIN_PASSWORD__",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "d3210000-0000-4000-8000-000000000004",
+      "username": "unprivileged",
+      "email": "sso-unprivileged@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "S2",
+      "lastName": "unprivileged",
+      "requiredActions": [],
+      "attributes": {
+        "koiki_user_id": [
+          "d3200000-0000-4000-8000-000000000004"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "__LOGIN_PASSWORD__",
+          "temporary": false
+        }
+      ]
+    }
+  ],
+  "components": {
+    "org.keycloak.userprofile.UserProfileProvider": [
+      {
+        "name": "declarative-user-profile",
+        "providerId": "declarative-user-profile",
+        "config": {
+          "kc.user.profile.config": [
+            "{\"unmanagedAttributePolicy\":\"ADMIN_EDIT\",\"attributes\":[{\"name\":\"username\",\"validations\":{},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\"]},\"required\":{\"roles\":[\"user\"]}},{\"name\":\"email\",\"validations\":{\"email\":{}},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\"]}},{\"name\":\"firstName\",\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\"]}},{\"name\":\"lastName\",\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\"]}},{\"name\":\"koiki_user_id\",\"multivalued\":false,\"permissions\":{\"view\":[\"admin\"],\"edit\":[\"admin\"]},\"validations\":{\"pattern\":{\"pattern\":\"^[a-f0-9-]{36}$\"}}}]}"
+          ]
+        }
+      }
+    ]
+  }
+}

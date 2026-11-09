@@ -1,4 +1,4 @@
-"""Build only S1's Reference JAR and two explicit probe security tests."""
+"""Build a Reference JAR with the current stage's explicitly selected direct tests."""
 import argparse
 import hashlib
 import json
@@ -17,6 +17,7 @@ def main():
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--settings', type=Path)
     p.add_argument('--toolchains', type=Path)
+    p.add_argument('--stage', choices=['S1', 'S2'], default='S1')
     a = p.parse_args()
     out = a.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
@@ -34,21 +35,23 @@ def main():
     for flag, value in [('-s', a.settings), ('-t', a.toolchains)]:
         if value:
             command += [flag, str(value.resolve(strict=True))]
+    tests = 'ReferenceContainerSecurityConfigurationTest' if a.stage == 'S1' else 'ReferenceApiJwtDecoderTest,ReferenceJwtAuthenticationConverterTest,ExpenseApiControllerTest,ApiExceptionBoundarySecurityTest'
+    expected = 2 if a.stage == 'S1' else 23
     command += ['-B', '-ntp', '-pl', 'koiki-reference-app', '-am', '-P', 'd3-container', 'clean', 'package',
-                '-Dtest=ReferenceContainerSecurityConfigurationTest', '-Dsurefire.failIfNoSpecifiedTests=false',
+                '-Dtest=' + tests, '-Dsurefire.failIfNoSpecifiedTests=false',
                 '-DargLine=-Xmx768m']
     (out / 'command.json').write_text(json.dumps(dict(command=command, tools=versions), indent=2) + '\n')
     with (out / 'build.log').open('w', encoding='utf-8') as log:
         subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, check=True, timeout=1200)
     reports = ROOT / 'koiki-reference-app/target/surefire-reports'
     suites = [ET.parse(f).getroot() for f in reports.glob('TEST-*.xml')]
-    assert sum(int(s.get('tests', 0)) for s in suites) == 2
+    assert sum(int(s.get('tests', 0)) for s in suites) == expected
     assert sum(int(s.get(k, 0)) for s in suites for k in ['failures', 'errors', 'skipped']) == 0
     jar = ROOT / 'koiki-reference-app/target/koiki-reference-app-0.1.0-SNAPSHOT.jar'
     with zipfile.ZipFile(jar) as z:
         assert not any('/spa/' in n or 'spring-modulith-events-jdbc-' in n for n in z.namelist())
     record = dict(jar=str(jar), jar_sha256=hashlib.sha256(jar.read_bytes()).hexdigest(),
-                  tests=2, failures=0, errors=0, skipped=0, profile='d3-container')
+                  stage=a.stage, tests=expected, failures=0, errors=0, skipped=0, profile='d3-container')
     (out / 'build-result.json').write_text(json.dumps(record, indent=2) + '\n')
     print(json.dumps(record))
 

@@ -20,7 +20,7 @@ class OwnershipTests(unittest.TestCase):
         with patch.object(preflight, 'resources', return_value={'containers': ['foreign']}), \
                 patch.object(preflight, 'command') as command:
             with self.assertRaises(RuntimeError):
-                preflight.preflight(Path('/not-used'), {'project': 'd3-sso-s1-20261109-test'}, [])
+                preflight.preflight(Path('/not-used'), {'project': 'd3-sso-s1-20261109-test', 'source_files': {}}, [])
             command.assert_not_called()
 
     def test_cleanup_requires_matching_execution(self):

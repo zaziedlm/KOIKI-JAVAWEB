@@ -13,7 +13,7 @@ def cleanup(work, record, compose):
     for cid in before['containers']:
         item = json.loads(command(work, ['docker', 'inspect', cid]).stdout)[0]
         labels = item['Config']['Labels']
-        if labels['com.docker.compose.service'] not in ['db', 'backend'] or Path(labels['com.docker.compose.project.working_dir']).resolve() != work / 'recipe':
+        if labels['com.docker.compose.service'] not in record['permitted_resources']['services'] or Path(labels['com.docker.compose.project.working_dir']).resolve() != work / 'recipe':
             raise RuntimeError('Container ownership mismatch')
     if not set(before['volumes']) <= {record['permitted_resources']['volume']} or not set(before['networks']) <= {record['permitted_resources']['network']}:
         raise RuntimeError('Volume/network ownership mismatch')
@@ -27,6 +27,9 @@ def cleanup(work, record, compose):
             raise RuntimeError('Unexpected secret path')
         path.unlink()
     (work / 'secrets').rmdir()
+    if (work / 'realm/koiki-d3.json').exists():
+        (work / 'realm/koiki-d3.json').unlink()
+        (work / 'realm').rmdir()
     result = dict(status='PASS', before=before, remaining=after, generated_secrets_deleted=True)
     write(work / 'cleanup.json', result)
     return result

@@ -16,10 +16,11 @@ def main():
     p.add_argument('--work-dir', type=Path, required=True)
     p.add_argument('--project', required=True)
     p.add_argument('--jar', type=Path, required=True)
+    p.add_argument('--stage', choices=['S1', 'S2'], default='S1')
     a = p.parse_args()
     work = a.work_dir.resolve()
-    if not re.fullmatch(r'd3-sso-s1-\d{8}-[a-z0-9]+', a.project):
-        p.error('Expected d3-sso-s1-YYYYMMDD-suffix')
+    if not re.fullmatch(r'd3-sso-' + a.stage.lower() + r'-\d{8}-[a-z0-9]+', a.project):
+        p.error('Project must match selected stage and date')
     if work.parent != ROOT / '.tmp' or work.exists() or '\n' in str(work) or '"' in str(work):
         p.error('Expected a new work directly under repository .tmp')
     jar = a.jar.resolve(strict=True)
@@ -33,7 +34,10 @@ def main():
     work.mkdir(mode=0o700, parents=True)
     (work / 'secrets').mkdir(mode=0o700)
     assert not any(resources(work, a.project).values()), 'Project already owns resources'
-    for name in ['pg_admin', 'koiki_app', 'koiki_bff', 'koiki_keycloak', 'source_hmac']:
+    secret_names = ['pg_admin', 'koiki_app', 'koiki_bff', 'koiki_keycloak', 'source_hmac']
+    if a.stage == 'S2':
+        secret_names += ['client_a', 'client_wrong', 'login_password']
+    for name in secret_names:
         value = base64.b64encode(secrets.token_bytes(32)).decode() if name == 'source_hmac' else secrets.token_hex(24)
         path = work / 'secrets' / name
         path.write_text(value)
@@ -42,7 +46,10 @@ def main():
         path.chmod(0o444)
     recipe = work / 'recipe'
     recipe.mkdir()
-    for name in ['compose.yaml', 'init-db.sh', 'bff-migration.sql', 'reference-seed.sql', 'versions.json']:
+    recipe_names = ['compose.yaml', 'init-db.sh', 'bff-migration.sql', 'reference-seed.sql', 'versions.json']
+    if a.stage == 'S2':
+        recipe_names += ['compose-s2.yaml', 'realm-template.json']
+    for name in recipe_names:
         (recipe / name).write_bytes((RECIPE / name).read_bytes().replace(b'\r\n', b'\n'))
         (recipe / name).chmod(0o644)
     context = work / 'context'
@@ -55,10 +62,39 @@ def main():
                D3_IMAGE=a.project + ':local', D3_JAR_SHA256=jar_hash,
                D3_JAVA_IMAGE=versions['images']['java']['reference'],
                D3_PG_IMAGE=versions['images']['postgres']['reference'])
+    helper_hashes = {}
+    if a.stage == 'S2':
+        env.update(D3_KEYCLOAK_IMAGE=versions['images']['keycloak']['reference'], D3_NODE_IMAGE=versions['images']['node']['reference'])
+        realm = (RECIPE / 'realm-template.json').read_text()
+        for marker, name in [('__CLIENT_A_SECRET__', 'client_a'), ('__CLIENT_WRONG_SECRET__', 'client_wrong'), ('__LOGIN_PASSWORD__', 'login_password')]:
+            realm = realm.replace(marker, (work / 'secrets' / name).read_text())
+        (work / 'realm').mkdir(mode=0o755)
+        (work / 'realm/koiki-d3.json').write_text(realm)
+        (work / 'realm/koiki-d3.json').chmod(0o644)
+        helper = work / 'helper'
+        (helper / 'frontend/lib').mkdir(parents=True)
+        for src, dst in [(RECIPE / 'verify-oidc.ts', helper / 'verify-oidc.ts'),
+                         (RECIPE / 'frontend/lib/oidc.ts', helper / 'frontend/lib/oidc.ts'),
+                         (RECIPE / 'frontend/package.json', helper / 'frontend/package.json')]:
+            shutil.copyfile(src, dst)
+        modules = RECIPE / 'frontend/node_modules'
+        queue, copied = ['openid-client'], set()
+        while queue:
+            name = queue.pop()
+            if name in copied:
+                continue
+            copied.add(name)
+            package = json.loads((modules / name / 'package.json').read_text())
+            shutil.copytree(modules / name, helper / 'frontend/node_modules' / name)
+            queue.extend(package.get('dependencies', {}))
+        for path in [helper, *helper.rglob('*')]:
+            path.chmod(0o755 if path.is_dir() else 0o644)
+            if path.is_file():
+                helper_hashes[str(path.relative_to(helper))] = digest(path)
     (work / 'compose.env').write_text(''.join(f'{k}="{v}"\n' for k, v in env.items()))
     inventory = {str(f.relative_to(ROOT)): digest(f) for f in RECIPE.rglob('*')
                  if f.is_file() and not any(p in f.parts for p in ['node_modules', '__pycache__'])}
-    record = dict(schema=1, phase='S1', project=a.project, work=str(work), image=env['D3_IMAGE'],
+    record = dict(schema=1, phase=a.stage, project=a.project, work=str(work), image=env['D3_IMAGE'],
                   source_sha=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                   source_files=inventory, jar_sha256=jar_hash, lock_sha256=digest(RECIPE / 'frontend/package-lock.json'),
                   versions=versions, recipe_hashes={f.name: digest(f) for f in recipe.iterdir()},
@@ -67,6 +103,13 @@ def main():
                   limits=dict(build_minutes=60, dynamic_minutes=40, cleanup_reserved_minutes=10,
                               runtime_cpu=2, runtime_memory_mib=2560, pg_connections=32),
                   validation=dict(direct_tests=2, checkpoint_ids=['S1-V01', 'S1-V02', 'S1-V03', 'S1-V04', 'S1-V05']))
+    if a.stage == 'S2':
+        record['helper_hashes'] = helper_hashes
+        record['realm_sha256'] = digest(work / 'realm/koiki-d3.json')
+        record['permitted_resources']['services'] = ['db', 'backend', 'keycloak', 'helper']
+        record['limits'] = dict(build_minutes=20, dynamic_minutes=45, cleanup_reserved_minutes=10,
+                                runtime_cpu=3.5, runtime_memory_mib=4608, pg_connections=32)
+        record['validation'] = dict(direct_tests=23, checkpoint_ids=['S2-V01', 'S2-V02', 'S2-V03', 'S2-V04'])
     write(work / 'manifest.json', record)
     print(json.dumps(dict(project=a.project, jar_sha256=jar_hash, work=str(work))))
 

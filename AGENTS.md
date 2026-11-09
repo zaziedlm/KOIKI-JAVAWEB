@@ -1,5 +1,11 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3方式2 S2 Cloud限定技術PASS（2026-11-09）
+
+**S2コミットポイント：** Ownerは「S2 PASSをコミットします」と指示した。S2のTooling実装・結果記録・本入口をlocal commitとして固定する。S3開始・push／PR／merge・D3全体の受入へ拡張しない。以下のcommit未実施・別判断表示はこの後続指示前の履歴。
+
+OwnerのS2開始指示によりS1固定`3e3ec1b`からToolingだけを実装。最終project `d3-sso-s2-20261109-05`でS2-V01〜04がPASS。実Chromium6認証、library標準のID Token JWS／state／nonce／PKCE、canonical issuer、Javaの正常3操作・拒否6条件11要求とDB／Audit不変、helper終了・cleanup・secret／生成realm削除・exportが成立。[S2結果](docs/architecture/validation/phase4-d3-option2-s2-results-20261109.md)を現行入口とする。直接回帰23件・共有guard5件・OIDC境界3件もPASS。初回enum設定／観測SQLの失敗と、観測・署名検証を補強した中間結果を別Evidenceで保持し、OwnerのFramework非改変修正後再実行許可に従った。Framework／Reference本体の変更なし。S3・結果Owner受入・commit／remoteへ自動進行せず、Windows持帰り未確認と既存保持資源の条件を維持する。以下のS2未着手表示は以前の履歴。
+
 ## 現行入口：D3方式2 S1 Cloud限定技術PASS（2026-11-09）
 
 **S1コミットポイント：** OwnerはS1 PASSをコミットポイントと認識し、S1のTooling実装・結果記録・本入口のlocal commitを指示した。今回この範囲を固定する。S2開始・push／PR／merge・D3全体の受入へ拡張しない。以下のcommit未実施・別判断表示はこの後続指示前の履歴。
