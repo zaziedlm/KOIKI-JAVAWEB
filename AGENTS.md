@@ -1,5 +1,13 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3方式2の実装・検証条件具体化（2026-11-09）
+
+**Cloud引継ぎ・成果固定の後続指示：** Ownerは[段階別計画§11](docs/development/phase4-d3-option2-staged-task-plan-20261109.md#11-cloud実装自動検証windows再現手動確認)へのCloud実装／自動検証・Windows再現／手動確認の分担、Linux build、Cloud開始前確認、証拠持帰り手順の追記と、本作業branchへのcommit・pushを指示した。今回の文書一式を固定・pushしてCloudへ渡す。以下のcommit／remote未承認表示はこの指示前の履歴とし、PR／merge／tag／Releaseは今回含めない。Cloudでは報告された実commit SHAを確認しS1から順に進め、各段階結果後に次へ判断する。現在のWindowsでは実装・動的実行を先行しない。方式1の保持中環境は維持する。
+
+**後続Owner判断：** 具体化案・DB整理と5段階で進める方針をOwner了解済み。[段階別タスク計画](docs/development/phase4-d3-option2-staged-task-plan-20261109.md)を現行入口とする。S1 DB／基盤→S2 Keycloak／Java API→S3 BFF最小縦断→S4独立2 Client SSO→S5 refresh／障害／終了の順。今回の指示はタスク計画の具体化であり、全段階の実装開始・動的実行は未承認／未着手。次はS1の開始条件・対象／実行上限の確認と開始判断。既存KOIKI tableは構造変更なし、BFF新規3 table案、Keycloak tableは製品管理。段階ごとの結果確認・次段階判断とcommit／remoteを分け、旧一括実行枠を流用しない。
+
+Owner指示により、local main／origin/main／GitHub mainが一致する`cf77a3c58c9dd4a7460e965ec9abe224f668c083`から、新規branch `docs/d3-option2-implementation-conditions-20261109`で方式2（Next.js BFF＋Java API＋PostgreSQL＋Keycloak）の条件具体化へ進む。[実装・有限検証条件](docs/development/phase4-d3-option2-implementation-conditions-20261109.md)を今回の入口とする。Tooling-ownedの計画初版であり、実装・依存取得・image build／起動・動的検証・commit／remoteは未実施。初回は既存Bearer APIの作成／本人詳細／提出と独立2 Clientの選択SSO、3 DB分離を対象候補とする。正確な採用版／digest・file manifest／直接回帰集合・資源／時間・Owner開始判断は同書§8で確定する。方式1の保持中手動project／DB／volume／secret／Evidenceを操作せず、旧予算・承認を流用しない。D3／Phase4全体の認定を変更しない。以下の方式1の実行記録と保持条件は継続して適用する。
+
 ## 現行入口：D3改善版の自宅Windows再検証（2026-11-07）
 
 **後続Owner指示による手動環境を稼働保持中：** 新規project `d3-home-manual-20261107`／port18081で改善版imageをbuild・起動し、両利用者のHTTP login／選択routeと元JAR hash label照合が成功。URL `http://127.0.0.1:18081/login`、起動記録は`.tmp/d3-home-manual-20261107/manual-ready.json`。[自宅端末結果§7](docs/architecture/validation/phase4-d3-home-container-reverification-20261107.md#7-後続owner指示による手動確認環境の準備)を参照。手動打鍵・Owner結果受入は未確認。このprojectのapp／DB／volume／secretを自動停止・cleanup・seed再投入しない。下記の手動起動未実施はこの後続指示前の履歴である。

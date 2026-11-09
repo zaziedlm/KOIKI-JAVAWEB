@@ -1,5 +1,9 @@
 # D3：Keycloakを含む4コンテナSSO検証環境の構成案（2026-11-05）
 
+**段階別の実装入口：** Ownerは具体化案・DB整理と段階的に進める方針を了解した。[5段階のタスク計画](phase4-d3-option2-staged-task-plan-20261109.md)を次の作業入口とする。各段階の実装開始・動的検証は未着手。
+
+**2026-11-09の詳細化入口：** 同期済みmain `cf77a3c`から新規branchで[方式2の実装・有限検証条件](phase4-d3-option2-implementation-conditions-20261109.md)を整理した。初回業務3操作、BFF Session／refresh／logout、realm／DB、対象資材・KS判定・実行上限・開始前OPENを同書へ具体化する。本書の構成方針を維持し、版／資源／時間の旧候補は詳細化前の案として読む。実装・動的実行は未実施。
+
 ## 1. 目的と今回の判断
 
 Ownerは、外部IdP連携を想定するNext.js BFF＋Java API＋PostgreSQLの第2候補について、OSS IdPのKeycloakをContainer化し、SSOをローカルで検証できる環境を構成する方針を示した。本書でIdP製品と認証方式を具体化し、[D3-01](phase4-d3-01-container-contract-20261105.md)の詳細設計入口とする。

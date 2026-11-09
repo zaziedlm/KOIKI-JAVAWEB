@@ -1,5 +1,9 @@
 # D3-01：Container構成・起動契約案（2026-11-05）
 
+**方式2の実装順序：** 具体化案・DB整理のOwner了解を経て、[5段階のタスク計画](phase4-d3-option2-staged-task-plan-20261109.md)へ作業順・検証・終了条件を整理した。実装開始は各段階の判断に従う。
+
+**2026-11-09の方式2入口：** main `cf77a3c`（PR #61統合後）を基点に、新規branchで[方式2の実装・有限検証条件](phase4-d3-option2-implementation-conditions-20261109.md)を具体化する。方式1の改善・自宅／Cloud結果は各結果文書を優先し、方式2は文書計画段階を維持する。下記§2のsource／health／Container資材は2026-11-05の設計時点の棚卸しであり、現行mainの不存在を意味しない。
+
 ## 1. 目的・状態・今回の範囲
 
 **現行状態：** 設計を`ded2698`へcommit後、Owner指示で方式1を実装・限定検証した。[結果](../architecture/validation/phase4-d3-integrated-container-results-20261105.md)はimage build・起動・実SPA journey／DB／Audit・再起動／DB回復・cleanupの限定技術成立。結果Owner受入は未記録。方式2は構成検討段階を維持する。以下の未実装・未実証表示は設計時点の契約案であり、現在の実行範囲・未実施は結果文書を優先する。
