@@ -1,16 +1,18 @@
 import pg from 'pg';
-import {config,purpose,rpConfig} from './config.ts';
+import {renew,lifetimeValid} from './refresh.ts';
+import {configure,refresh} from './oidc.ts';
+import {config,purpose,rpConfig,clientSecret} from './config.ts';
 import {csrfFor,equal,hash,opaque,open,seal} from './crypto.ts';
 let shared:pg.Pool|undefined;
-export function pool(){return shared??=new pg.Pool({host:'db',port:5432,database:'koiki_bff',user:'koiki_bff',
-  password:config().databasePassword,max:4,min:1,connectionTimeoutMillis:3000,statement_timeout:5000,lock_timeout:5000});}
+export function pool(){if(shared)return shared;shared=new pg.Pool({host:'db',port:5432,database:'koiki_bff',user:'koiki_bff',
+  password:config().databasePassword,max:4,min:1,connectionTimeoutMillis:3000,statement_timeout:5000,lock_timeout:5000});shared.on('error',()=>{/* dead idle connections are removed by pg; readiness reports DOWN */});return shared;}
 const validId=(id:string|undefined)=>Boolean(id && /^[A-Za-z0-9_-]{43}$/.test(id));
 export function sessionValid(row:{idle_expires_at:Date;absolute_expires_at:Date;access_token_expires_at:Date},now=Date.now()) {
   return [row.idle_expires_at,row.absolute_expires_at,row.access_token_expires_at].every(d=>d.getTime()>now);
 }
 async function finitePurge() {
   await pool().query("DELETE FROM bff_auth_transaction WHERE ctid IN (SELECT ctid FROM bff_auth_transaction WHERE expires_at<=current_timestamp ORDER BY expires_at LIMIT 100)");
-  await pool().query("DELETE FROM bff_session WHERE ctid IN (SELECT ctid FROM bff_session WHERE absolute_expires_at<=current_timestamp OR idle_expires_at<=current_timestamp OR access_token_expires_at<=current_timestamp ORDER BY absolute_expires_at LIMIT 100)");
+  await pool().query("DELETE FROM bff_session WHERE ctid IN (SELECT ctid FROM bff_session WHERE absolute_expires_at<=current_timestamp OR idle_expires_at<=current_timestamp"+(process.env.BFF_REFRESH==='true'?'':' OR access_token_expires_at<=current_timestamp')+" ORDER BY absolute_expires_at LIMIT 100)");
 }
 export async function saveTransaction(binding:string,expected:{state:string;verifier?:string;nonce?:string;kind?:string},rp='a') {
   rpConfig(rp);await finitePurge();const digest=hash(expected.state),aad='auth:'+rp+':'+digest,key=config(),cipher=seal(key.key,expected,aad);
@@ -44,6 +46,7 @@ export async function createSession(tokens:{access_token:string;refresh_token?:s
   return id;
 }
 export async function session(id:string|undefined,rp='a') {
+  if(process.env.BFF_REFRESH==='true')return refreshingSession(id,rp);
   rpConfig(rp);if(!validId(id))return null;
   const db=await pool().connect();
   try {
@@ -62,5 +65,46 @@ export async function session(id:string|undefined,rp='a') {
   } catch(error){await db.query('ROLLBACK');throw error;}finally{db.release();}
 }
 export async function removeSession(id:string,rp='a') {
-  rpConfig(rp);if(validId(id))await pool().query("DELETE FROM bff_session WHERE client_id=$2 AND session_id_hash=$1",[hash(id),rp]);
+  rpConfig(rp);if(!validId(id))return false;const result=await pool().query("DELETE FROM bff_session WHERE client_id=$2 AND session_id_hash=$1 RETURNING 1",[hash(id),rp]);return result.rowCount===1;
+}
+
+/** Advisory lock spans the two short row-lock transactions and network exchange.
+ * Pending is committed BEFORE exchange, so process/DB loss cannot restore a usable old RT.
+ * Logout does not take the advisory lock; conditional UPDATE never recreates its deleted row. */
+async function refreshingSession(id:string|undefined,rp:string) {
+  rpConfig(rp);if(!validId(id))return null;
+  const digest=hash(id!),lock=rp+':'+digest,db=await pool().connect();let locked=false,transaction=false;
+  const connectionError=()=>{/* pending marker survives a lost DB connection during exchange */};db.on('error',connectionError);
+  const beginTx=async()=>{await db.query('BEGIN');transaction=true;};
+  const commitTx=async()=>{await db.query('COMMIT');transaction=false;};
+  const rollback=async()=>{if(transaction){try{await db.query('ROLLBACK');}finally{transaction=false;}}};
+  const discard=async()=>{await rollback();await db.query('DELETE FROM bff_session WHERE client_id=$2 AND session_id_hash=$1',[digest,rp]);};
+  try {
+    await db.query('SELECT pg_advisory_lock(hashtextextended($1,731095))',[lock]);locked=true;
+    await beginTx();
+    const found=await db.query('SELECT * FROM bff_session WHERE client_id=$2 AND session_id_hash=$1 FOR UPDATE',[digest,rp]);
+    const row=found.rows[0];if(!row){await commitTx();return null;}
+    if(!lifetimeValid(row)||row.refresh_pending||row.encryption_key_id!==config().keyId){await discard();return null;}
+    const csrf=csrfFor(config().key,purpose('session',rp),id!);
+    if(!equal(hash(csrf),row.csrf_hash))throw new Error('Invalid Session binding');
+    let tokens=open(config().key,{payload:row.protected_tokens,iv:row.encryption_iv,tag:row.encryption_tag},'session:'+rp+':'+digest);
+    if(new Date(row.access_token_expires_at).getTime()<=Date.now()) {
+      await db.query('UPDATE bff_session SET refresh_pending=true,version=version+1 WHERE client_id=$2 AND session_id_hash=$1',[digest,rp]);
+      await commitTx();
+      tokens=await renew(tokens,async token=>refresh(await configure(rpConfig(rp).clientId,clientSecret(rp)),token,row.issuer,row.subject),async next=>{
+        const key=config(),cipher=seal(key.key,next,'session:'+rp+':'+digest);
+        await beginTx();
+        const updated=await db.query(`UPDATE bff_session SET protected_tokens=$3,encryption_iv=$4,encryption_tag=$5,access_token_expires_at=$6,refresh_pending=false,version=version+1
+          WHERE client_id=$2 AND session_id_hash=$1 AND refresh_pending AND idle_expires_at>current_timestamp AND absolute_expires_at>current_timestamp RETURNING 1`,
+          [digest,rp,cipher.payload,cipher.iv,cipher.tag,new Date(Date.now()+(next.expires_in!-5)*1000)]);
+        await commitTx();return updated.rowCount===1;
+      },discard);
+      if(!tokens)return null;
+      await beginTx();
+    }
+    const updated=await db.query(`UPDATE bff_session SET last_seen_at=current_timestamp,idle_expires_at=LEAST(absolute_expires_at,current_timestamp+interval '15 minutes'),version=version+1
+      WHERE client_id=$2 AND session_id_hash=$1 AND NOT refresh_pending AND idle_expires_at>current_timestamp AND absolute_expires_at>current_timestamp RETURNING 1`,[digest,rp]);
+    await commitTx();return updated.rowCount===1?{subject:row.subject,csrf,tokens}:null;
+  }catch(error){await rollback();throw error;}
+  finally{if(locked)try{await db.query('SELECT pg_advisory_unlock(hashtextextended($1,731095))',[lock]);}catch{/* connection loss releases session locks */}db.removeListener('error',connectionError);db.release();}
 }

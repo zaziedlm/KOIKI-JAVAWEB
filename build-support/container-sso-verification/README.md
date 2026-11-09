@@ -234,3 +234,50 @@ logout後の新規SSO失敗と、Bの既存Session／発行済みJWTの利用可
 
 [S4結果](../../docs/architecture/validation/phase4-d3-option2-s4-results-20261109.md)を参照。
 段階終了時に停止し、S5／commit／remoteは個別のOwner判断に従う。
+
+## S5：refresh・2利用者・障害・終了
+
+S4固定成果とOwnerのS5開始判断を入力にする。依存版／lock・Java APIは継承し、frontendの同じ単体test／Next buildを実行する。
+JDKの`javap`もPATHに必要。runnerは実行JAR内のoauth2-jose7.1.1を専用workへ取り出し、実際のTimestampValidator既定skew60秒を照合する。
+
+```sh
+python3 build-support/container-sso-verification/prepare.py --stage S5 \
+  --jar koiki-reference-app/target/koiki-reference-app-0.1.0-SNAPSHOT.jar \
+  --work-dir .tmp/d3-sso-s5-YYYYMMDD-UNIQUE --project d3-sso-s5-YYYYMMDD-UNIQUE
+```
+
+S4と同じ元JAR hashを照合してbackendへproject専用tagを付け、base→S2→S3→S4→`compose-s5.yaml`のsnapshotと
+専用`compose.env`で`build frontend`を行う。その後に以下を実行する。毎回新規DB／secret／realmを用いる。
+
+```sh
+python3 build-support/container-sso-verification/verify-s5.py --work-dir .tmp/d3-sso-s5-YYYYMMDD-UNIQUE
+python3 build-support/container-sso-verification/export-evidence.py \
+  --work-dir .tmp/d3-sso-s5-YYYYMMDD-UNIQUE --output-dir .tmp/d3-sso-exports
+```
+
+S5の生成realmだけtoken寿命60秒と有限のevent記録を有効にする。SSO／Client Session期限・rotation true／MaxReuse0は継承する。
+一時helperが独立2 IdP Sessionで実tokenを取得し、専用rotation後の旧token拒否、更新しないJWTのJava直接GETを実施する。
+iat／exp／実効skew／UTC時計を根拠にexp＋60＋5秒を待つ。helper終了・token破棄・container削除後にfrontendを起動する。
+
+`BFF_REFRESH=true`はS5だけに設定する。`migrate-refresh.py`は既存V1 checksumを確認してV2を適用し、
+新しい`refresh_pending`列を追加する。初期化時のV2同一checksum再適用を確認し、SIGTERM再起動時にはmigration／seedを再実行しない。
+client／Session hashのadvisory lockと短いrow lock transactionを使い、期限再読込→pending永続化→交換1回→token／versionの同時更新を行う。
+不明応答を再送せず再認証にし、process／DB lossでpendingが残っても古いtokenを再送しない。logoutはrow削除で競合し、refresh完了のUPDATEはSessionを再作成しない。
+
+実Browserは2利用者と最大1追加context、worker1／同時context最大3。並行refresh用のBFF deadlineだけを有限SQLで過去へ移す。
+KeycloakのREFRESH_TOKEN event差分1、HTTP200×2、暗号化payload／version更新を照合する。
+別SessionではIdPを短時間pauseし、pending確認→logout→unpauseで実refresh成功後もSessionが復活しないことを確認する。
+交換結果不明は単体stub、再起動時pending拒否は別Sessionへtest-owned SQLでmarkerを設定するfixtureであり、実障害と区別して記録する。
+
+IdP／backend／DBを今回所有containerに限ってstop／startし、ready／live、既存JWTとrefresh、業務POST失敗1回とDB／Audit不変を観測する。
+DB停止回復後の古いpool接続を利用しないよう、S5のKeycloakだけ`QUARKUS_DATASOURCE_JDBC_VALIDATE_ON_BORROW=true`を明示する。
+Node／Java／KeycloakへSIGTERMを送り、時間・exit／強制終了有無と同volume／同鍵での保持・復号を照合する。
+処理中の業務POST／長時間requestのdrainを保証する試験にはしない。
+
+最後に同じ最終artifactでAの作成→詳細→提出、A→B独立SSOをsmoke確認する。
+SSO logout後のB既存JWT利用と、次のB refresh拒否／新規silent SSOのlogin_requiredも個別に観測する。
+Cookie値・token・code付きURL・trace／HAR／storageStateを保存しない。exportは従来allowlistに公開clock／statusだけの`helper.json`を加える。
+
+build30分・動的60分（cleanup10分予約）、常設5GiB／4CPU・PG32接続、一時helperはfrontendと非並走とする。
+[S5結果](../../docs/architecture/validation/phase4-d3-option2-s5-results-20261109.md)に段階別source／artifact・KS coverage・初回失敗・残るOPENを記録する。
+D3／Phase4全体の受入、commit／remote、Windows持帰り確認は個別に判断する。

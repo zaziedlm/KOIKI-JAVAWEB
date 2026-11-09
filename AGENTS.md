@@ -1,5 +1,11 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3方式2 S5 Cloud限定技術PASS（2026-11-09）
+
+**S5コミットポイント・Windows引継ぎ：** OwnerはS5 PASSのcommitと、Windows再現のための作業branchへのremote pushを指示した。S5のTooling実装・結果記録・本入口を固定し、S1〜S5のlocal固定履歴を同branchへ送る。[S5結果§10](docs/architecture/validation/phase4-d3-option2-s5-results-20261109.md#10-windows再現への引継ぎ)をWindowsの入口とする。Windowsでは同commitをpullしてSHA／clean状態・環境を確認し、新規build／project／DB／secretで自動再現する。Cloudの.tmp／鍵／DBをGitで転送しない。Windows手動環境の起動・保持、PR／merge・D3全体受入へ拡張しない。以下のcommit／remote未実施表示はこの後続指示前の履歴。
+
+Ownerの「S5へ進めましょう」によりS4固定`f365831`からToolingだけを実装。修正後の新規project `d3-sso-s5-20261109-02`でS5-V01〜06がPASS。並行2要求で実refresh1回・token/version原子更新、旧token再送なし・専用Sessionのrotation後旧token拒否、logout競合で復活なし、2利用者SSR/RSC/API分離、実JWTをexp＋実効skew60＋5秒後にJavaへ直接送り401、IdP/backend/DB停止回復、SIGTERM・同volume/同鍵の保持、最終Browser作成/詳細/提出・A→B SSO、残るB JWT200→refresh401→silent login_required、cleanup・secret/realm削除・exportが成立。[S5結果](docs/architecture/validation/phase4-d3-option2-s5-results-20261109.md)にKS01〜10の段階別source/artifact対応・継承と未反復を記録した。単体39件・共有guard5件PASS。初回はDB回復後のKeycloakの古いpool接続で新規login500となりFAIL、cleanup/exportを保持。S5専用borrow時検証とtoken/version更新・観測を訂正し、同一S5集合を新規projectで再実行した。結果不明は単体stub、pending再起動拒否はSQL fixture、静穏時SIGTERMであり処理中drainは未実証。Framework/Reference変更・Java再buildなし。S1〜S5の限定技術成立をD3/Phase4全体や本番運用の受入へ拡張しない。結果Owner判断・commit/remote、Windows持帰り/手動確認は未実施。既存保持資源の条件を維持し、以下のS5未着手表示は以前の履歴。
+
 ## 現行入口：D3方式2 S4 Cloud限定技術PASS（2026-11-09）
 
 **S4コミットポイント：** Ownerは「S4 PASS をコミットします」と指示した。S4のTooling実装・結果記録・本入口をlocal commitとして固定する。S5開始・push／PR／merge・D3全体の受入へ拡張しない。以下のcommit未実施・別判断表示はこの後続指示前の履歴。

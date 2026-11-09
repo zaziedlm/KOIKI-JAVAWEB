@@ -42,13 +42,13 @@ export async function POST(request:NextRequest,{params}:Params) {
       const cfg=await configure(c.clientId,clientSecret(rp)),value=await begin(cfg,'openid expense.apply',action==='silent');
       await saveTransaction(id,{state:value.state,verifier:value.verifier,nonce:value.nonce},rp);return reply({redirect:value.url.href});
     }
-    if(!await session(id,rp))return reply({error:'authentication_required'},401);
+    if(action==='sso-logout'&&!await session(id,rp))return reply({error:'authentication_required'},401);
     let target='/'+rp,logoutBinding;
     if(action==='sso-logout') {
       const cfg=await configure(c.clientId,clientSecret(rp)),state=opaque();logoutBinding=opaque();
       target=logoutUrl(cfg,state).href;await saveTransaction(logoutBinding,{state,kind:'logout'},rp);
     }
-    await removeSession(id,rp);const response=reply({redirect:target});
+    const removed=await removeSession(id,rp);if(!removed)return reply({error:'authentication_required'},401);const response=reply({redirect:target});
     response.cookies.set(c.session,'',{...c.options,maxAge:0});response.cookies.set(c.flow,'',{...c.options,maxAge:0});
     if(logoutBinding)response.cookies.set(c.logout,logoutBinding,{...c.options,maxAge:300});return response;
   }catch(error){return reply({error:'request_rejected'},error instanceof BoundaryError?error.status:503);}

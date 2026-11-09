@@ -50,7 +50,7 @@ def load(path):
     if work.parent != ROOT / '.tmp' or record['work'] != str(work):
         raise ValueError('Expected direct owned work directory under repository .tmp')
     stage = record.get('phase', 'S1')
-    if stage not in ['S1', 'S2', 'S3', 'S4'] or not re.fullmatch(r'd3-sso-' + stage.lower() + r'-\d{8}-[a-z0-9]+', record['project']):
+    if stage not in ['S1', 'S2', 'S3', 'S4', 'S5'] or not re.fullmatch(r'd3-sso-' + stage.lower() + r'-\d{8}-[a-z0-9]+', record['project']):
         raise ValueError('Wrong stage/project')
     if work.is_symlink() or (work / 'manifest.json').is_symlink():
         raise ValueError('Symlink work is forbidden')
@@ -59,11 +59,12 @@ def load(path):
             raise ValueError('Prepared recipe changed: ' + name)
     compose = ['docker', 'compose', '--project-name', record['project'], '--env-file', str(work / 'compose.env'),
                '-f', str(work / 'recipe/compose.yaml')]
-    if stage in ['S2', 'S3', 'S4']:
+    if stage in ['S2', 'S3', 'S4', 'S5']:
         compose += ['-f', str(work / 'recipe/compose-s2.yaml')]
-    if stage in ['S3', 'S4']:
+    if stage in ['S3', 'S4', 'S5']:
         compose += ['-f', str(work / 'recipe/compose-s3.yaml')]
-    if stage=='S4':compose += ['-f',str(work/'recipe/compose-s4.yaml')]
+    if stage in ['S4','S5']:compose += ['-f',str(work/'recipe/compose-s4.yaml')]
+    if stage=='S5':compose += ['-f',str(work/'recipe/compose-s5.yaml')]
     return work, record, compose
 
 
@@ -93,7 +94,7 @@ def preflight(work, record, compose):
         raise RuntimeError('Work already executed; use fresh work')
     assert digest(work / 'context/app.jar') == record['jar_sha256']
     assert digest(RECIPE / 'frontend/package-lock.json') == record['lock_sha256']
-    selected = compose + (['--profile', 'helper'] if record['phase'] in ['S2', 'S3', 'S4'] else [])
+    selected = compose + (['--profile', 'helper'] if record['phase'] in ['S2', 'S3', 'S4', 'S5'] else [])
     command(work, selected + ['config', '--quiet'])
     config = json.loads(command(work, selected + ['config', '--format', 'json']).stdout)
     assert set(config['services']) == set(record['permitted_resources']['services'])
@@ -111,25 +112,28 @@ def preflight(work, record, compose):
     assert image['Config']['Labels']['org.koikifw.d3.source-jar-sha256'] == record['jar_sha256']
     assert image['Os'] == 'linux' and image['Architecture'] == 'amd64'
     assert image['Config']['User'] == '10001:10001'
-    if record['phase'] in ['S2', 'S3', 'S4']:
+    if record['phase'] in ['S2', 'S3', 'S4', 'S5']:
         assert digest(work / 'realm/koiki-d3.json') == record['realm_sha256']
         for name, expected in record['helper_hashes'].items():
             assert digest(work / 'helper' / name) == expected
         for name in ['node', 'keycloak']:
             item = json.loads(command(work, ['docker', 'image', 'inspect', record['versions']['images'][name]['reference']]).stdout)[0]
             assert item['Architecture'] == 'amd64' and item['Os'] == 'linux'
-    if record['phase'] in ['S3', 'S4']:
+    if record['phase'] in ['S3', 'S4', 'S5']:
         assert tree_digest(work / 'frontend-context') == record['frontend_sha256']
         front=json.loads(command(work,['docker','image','inspect',record['frontend_image']]).stdout)[0]
         assert front['Config']['Labels']['org.koikifw.d3.frontend-sha256']==record['frontend_sha256']
         assert front['Config']['User']=='10001:10001'
-    if record['phase']=='S4':
+    if record['phase'] in ['S4','S5']:
         realm=json.loads((work/'realm/koiki-d3.json').read_text())
         for rp in ['a','b']:
             client=next(c for c in realm['clients'] if c['clientId']=='koiki-d3-'+rp)
             assert client['redirectUris']==['http://localhost:13000/'+rp+'/auth/callback']
             assert client['attributes']['post.logout.redirect.uris']=='http://localhost:13000/'+rp+'/auth/logout-return'
         assert config['services']['frontend']['environment']['BFF_RPS']=='a,b'
+    if record['phase']=='S5':
+        assert realm['accessTokenLifespan']==60 and realm['revokeRefreshToken'] and realm['refreshTokenMaxReuse']==0
+        assert config['services']['frontend']['environment']['BFF_REFRESH']=='true'
     return dict(image_id=image['Id'], configuration='S1:2 services/no host ports; S2:3 services+transient helper/loopback only', platform='linux/amd64')
 
 

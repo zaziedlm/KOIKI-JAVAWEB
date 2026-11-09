@@ -41,3 +41,10 @@ export function logoutUrl(config:oidc.Configuration,state:string) {
   const clientId=config.clientMetadata().client_id;
   return oidc.buildEndSessionUrl(config,{client_id:clientId,post_logout_redirect_uri:callbackFor(clientId).replace('/callback','/logout-return'),state});
 }
+
+export async function refresh(config:oidc.Configuration,token:string,issuer:string,subject:string) {
+  const result=await oidc.refreshTokenGrant(config,token);
+  const claims=result.claims();
+  if(claims&&(claims.iss!==issuer||claims.sub!==subject))throw new Error('Refresh identity mismatch');
+  return {access_token:result.access_token,refresh_token:result.refresh_token,id_token:result.id_token,expires_in:result.expires_in};
+}

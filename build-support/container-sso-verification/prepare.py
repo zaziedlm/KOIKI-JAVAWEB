@@ -16,7 +16,7 @@ def main():
     p.add_argument('--work-dir', type=Path, required=True)
     p.add_argument('--project', required=True)
     p.add_argument('--jar', type=Path, required=True)
-    p.add_argument('--stage', choices=['S1', 'S2', 'S3', 'S4'], default='S1')
+    p.add_argument('--stage', choices=['S1', 'S2', 'S3', 'S4', 'S5'], default='S1')
     a = p.parse_args()
     work = a.work_dir.resolve()
     if not re.fullmatch(r'd3-sso-' + a.stage.lower() + r'-\d{8}-[a-z0-9]+', a.project):
@@ -35,11 +35,11 @@ def main():
     (work / 'secrets').mkdir(mode=0o700)
     assert not any(resources(work, a.project).values()), 'Project already owns resources'
     secret_names = ['pg_admin', 'koiki_app', 'koiki_bff', 'koiki_keycloak', 'source_hmac']
-    if a.stage in ['S2', 'S3', 'S4']:
+    if a.stage in ['S2', 'S3', 'S4', 'S5']:
         secret_names += ['client_a', 'client_wrong', 'login_password']
-    if a.stage in ['S3', 'S4']:
+    if a.stage in ['S3', 'S4', 'S5']:
         secret_names += ['bff_key']
-    if a.stage=='S4':secret_names += ['client_b']
+    if a.stage in ['S4','S5']:secret_names += ['client_b']
     for name in secret_names:
         value = base64.b64encode(secrets.token_bytes(32)).decode() if name in ['source_hmac', 'bff_key'] else secrets.token_hex(24)
         path = work / 'secrets' / name
@@ -50,11 +50,12 @@ def main():
     recipe = work / 'recipe'
     recipe.mkdir()
     recipe_names = ['compose.yaml', 'init-db.sh', 'bff-migration.sql', 'reference-seed.sql', 'versions.json']
-    if a.stage in ['S2', 'S3', 'S4']:
+    if a.stage in ['S2', 'S3', 'S4', 'S5']:
         recipe_names += ['compose-s2.yaml', 'realm-template.json']
-    if a.stage in ['S3', 'S4']:
+    if a.stage in ['S3', 'S4', 'S5']:
         recipe_names += ['compose-s3.yaml', 'compose-key-missing.yaml']
-    if a.stage=='S4':recipe_names += ['compose-s4.yaml']
+    if a.stage in ['S4','S5']:recipe_names += ['compose-s4.yaml']
+    if a.stage=='S5':recipe_names += ['compose-s5.yaml','bff-refresh-migration.sql']
     for name in recipe_names:
         (recipe / name).write_bytes((RECIPE / name).read_bytes().replace(b'\r\n', b'\n'))
         (recipe / name).chmod(0o644)
@@ -69,12 +70,13 @@ def main():
                D3_JAVA_IMAGE=versions['images']['java']['reference'],
                D3_PG_IMAGE=versions['images']['postgres']['reference'])
     helper_hashes = {}
-    if a.stage in ['S2', 'S3', 'S4']:
+    if a.stage in ['S2', 'S3', 'S4', 'S5']:
         env.update(D3_KEYCLOAK_IMAGE=versions['images']['keycloak']['reference'], D3_NODE_IMAGE=versions['images']['node']['reference'])
         realm_object=json.loads((RECIPE / 'realm-template.json').read_text())
-        if a.stage!='S4':realm_object['clients']=[c for c in realm_object['clients'] if c['clientId']!='koiki-d3-b']
+        if a.stage not in ['S4','S5']:realm_object['clients']=[c for c in realm_object['clients'] if c['clientId']!='koiki-d3-b']
+        if a.stage=='S5':realm_object.update(accessTokenLifespan=60,eventsEnabled=True,eventsExpiration=3600,enabledEventTypes=['LOGIN','LOGIN_ERROR','REFRESH_TOKEN','REFRESH_TOKEN_ERROR','LOGOUT','LOGOUT_ERROR'])
         realm=json.dumps(realm_object)
-        if a.stage=='S4':realm=realm.replace('__CLIENT_B_SECRET__',(work/'secrets/client_b').read_text())
+        if a.stage in ['S4','S5']:realm=realm.replace('__CLIENT_B_SECRET__',(work/'secrets/client_b').read_text())
         for marker, name in [('__CLIENT_A_SECRET__', 'client_a'), ('__CLIENT_WRONG_SECRET__', 'client_wrong'), ('__LOGIN_PASSWORD__', 'login_password')]:
             realm = realm.replace(marker, (work / 'secrets' / name).read_text())
         (work / 'realm').mkdir(mode=0o755)
@@ -82,7 +84,7 @@ def main():
         (work / 'realm/koiki-d3.json').chmod(0o644)
         helper = work / 'helper'
         (helper / 'frontend/lib').mkdir(parents=True)
-        for src, dst in [(RECIPE / 'verify-oidc.ts', helper / 'verify-oidc.ts'),
+        for src, dst in [(RECIPE / ('verify-s5-oidc.ts' if a.stage=='S5' else 'verify-oidc.ts'), helper / 'verify-oidc.ts'),
                          (RECIPE / 'frontend/lib/oidc.ts', helper / 'frontend/lib/oidc.ts'),
                          (RECIPE / 'frontend/package.json', helper / 'frontend/package.json')]:
             shutil.copyfile(src, dst)
@@ -101,7 +103,7 @@ def main():
             if path.is_file():
                 helper_hashes[str(path.relative_to(helper))] = digest(path)
     frontend_sha = None
-    if a.stage in ['S3', 'S4']:
+    if a.stage in ['S3', 'S4', 'S5']:
         frontend = work / 'frontend-context'
         frontend.mkdir()
         shutil.copytree(RECIPE / 'frontend/.next/standalone', frontend / 'standalone')
@@ -124,14 +126,14 @@ def main():
                   limits=dict(build_minutes=60, dynamic_minutes=40, cleanup_reserved_minutes=10,
                               runtime_cpu=2, runtime_memory_mib=2560, pg_connections=32),
                   validation=dict(direct_tests=2, checkpoint_ids=['S1-V01', 'S1-V02', 'S1-V03', 'S1-V04', 'S1-V05']))
-    if a.stage in ['S2', 'S3', 'S4']:
+    if a.stage in ['S2', 'S3', 'S4', 'S5']:
         record['helper_hashes'] = helper_hashes
         record['realm_sha256'] = digest(work / 'realm/koiki-d3.json')
         record['permitted_resources']['services'] = ['db', 'backend', 'keycloak', 'helper']
         record['limits'] = dict(build_minutes=20, dynamic_minutes=45, cleanup_reserved_minutes=10,
                                 runtime_cpu=3.5, runtime_memory_mib=4608, pg_connections=32)
         record['validation'] = dict(direct_tests=23, checkpoint_ids=['S2-V01', 'S2-V02', 'S2-V03', 'S2-V04'])
-    if a.stage in ['S3', 'S4']:
+    if a.stage in ['S3', 'S4', 'S5']:
         record['frontend_sha256'] = frontend_sha
         record['frontend_image'] = env['D3_FRONTEND_IMAGE']
         record['permitted_resources']['services'].append('frontend')
@@ -143,6 +145,11 @@ def main():
         record['authorization']='Owner: S4へ進めましょう; Framework非改変の同一集合修正後再実行許可を継承; commit/remote/S5は対象外'
         record['validation_commands']=['node --experimental-strip-types --test frontend/test/*.test.mjs:29 cases,0 skip','python3 -m unittest discover -s . -p test_s1.py -v:5 cases','node node_modules/next/dist/bin/next build:1 successful build','docker compose build frontend:1 invocation','python3 verify-s4.py --work-dir <fresh>:S4-V01..04,worker1,contexts<=2']
         record['validation']=dict(direct_tests=0,java_unchanged=True,unit_boundaries=29,checkpoint_ids=['S4-V01','S4-V02','S4-V03','S4-V04'])
+    if a.stage=='S5':
+        record['limits'].update(build_minutes=30,dynamic_minutes=60)
+        record['authorization']='Owner: S5へ進めましょう; Framework非改変の修正後同一集合再実行許可を継承; commit/remoteは対象外'
+        record['validation']=dict(direct_tests=0,java_unchanged=True,unit_boundaries=39,shared_guards=5,bff_schema_version=2,checkpoint_ids=['S5-V01','S5-V02','S5-V03','S5-V04','S5-V05','S5-V06'])
+        record['validation_commands']=['node --experimental-strip-types --test frontend/test/*.test.mjs:39 cases,0 skip','python3 -m unittest discover -s . -p test_s1.py -v:5 cases','next build:3 successful builds','docker compose build frontend:1 invocation','python3 verify-s5.py --work-dir <fresh>:S5-V01..06,worker1,contexts<=3,real JWT exp+60+5 seconds']
     write(work / 'manifest.json', record)
     print(json.dumps(dict(project=a.project, jar_sha256=jar_hash, work=str(work))))
 

@@ -27,7 +27,8 @@ def main():
     if archive.exists():
         p.error('Refusing to overwrite an exported archive')
     payload = {}
-    names = ALLOWLIST + (['browser.json'] if record['phase'] in ['S2', 'S3', 'S4'] and (work / 'browser.json').exists() else [])
+    names = ALLOWLIST + (['browser.json'] if record['phase'] in ['S2', 'S3', 'S4', 'S5'] and (work / 'browser.json').exists() else [])
+    if record['phase']=='S5' and (work/'helper.json').exists():names += ['helper.json']
     for name in names:
         path = work / name
         if path.is_symlink() or not path.is_file():
