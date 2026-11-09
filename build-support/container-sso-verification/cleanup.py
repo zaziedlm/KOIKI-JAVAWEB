@@ -1,7 +1,9 @@
 """Remove only the resources of an S1 execution whose ownership was recorded."""
 import argparse
 import json
+import os
 from pathlib import Path
+import stat
 from preflight import load, resources, command, write
 
 
@@ -25,6 +27,10 @@ def cleanup(work, record, compose):
     for path in (work / 'secrets').iterdir():
         if path.is_symlink() or not path.is_file():
             raise RuntimeError('Unexpected secret path')
+        # prepare marks secrets read-only; Windows requires clearing that attribute
+        # before unlink, only after all owned runtime resources are gone.
+        if os.name == 'nt':
+            path.chmod(stat.S_IREAD | stat.S_IWRITE)
         path.unlink()
     (work / 'secrets').rmdir()
     if (work / 'realm/koiki-d3.json').exists():

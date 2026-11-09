@@ -17,7 +17,10 @@ def main():
     p.add_argument('--project', required=True)
     p.add_argument('--jar', type=Path, required=True)
     p.add_argument('--stage', choices=['S1', 'S2', 'S3', 'S4', 'S5'], default='S1')
+    p.add_argument('--stop-diagnostics', action='store_true', help='S5 stop investigation only, not a full S5 result')
     a = p.parse_args()
+    if a.stop_diagnostics and a.stage != 'S5':
+        p.error('Stop diagnostics require S5')
     work = a.work_dir.resolve()
     if not re.fullmatch(r'd3-sso-' + a.stage.lower() + r'-\d{8}-[a-z0-9]+', a.project):
         p.error('Project must match selected stage and date')
@@ -56,6 +59,7 @@ def main():
         recipe_names += ['compose-s3.yaml', 'compose-key-missing.yaml']
     if a.stage in ['S4','S5']:recipe_names += ['compose-s4.yaml']
     if a.stage=='S5':recipe_names += ['compose-s5.yaml','bff-refresh-migration.sql']
+    if a.stop_diagnostics:recipe_names += ['compose-stop-diagnostic.yaml','stop-observer.cjs']
     for name in recipe_names:
         (recipe / name).write_bytes((RECIPE / name).read_bytes().replace(b'\r\n', b'\n'))
         (recipe / name).chmod(0o644)
@@ -150,6 +154,9 @@ def main():
         record['authorization']='Owner: S5へ進めましょう; Framework非改変の修正後同一集合再実行許可を継承; commit/remoteは対象外'
         record['validation']=dict(direct_tests=0,java_unchanged=True,unit_boundaries=39,shared_guards=5,bff_schema_version=2,checkpoint_ids=['S5-V01','S5-V02','S5-V03','S5-V04','S5-V05','S5-V06'])
         record['validation_commands']=['node --experimental-strip-types --test frontend/test/*.test.mjs:39 cases,0 skip','python3 -m unittest discover -s . -p test_s1.py -v:5 cases','next build:3 successful builds','docker compose build frontend:1 invocation','python3 verify-s5.py --work-dir <fresh>:S5-V01..06,worker1,contexts<=3,real JWT exp+60+5 seconds']
+    if a.stop_diagnostics:
+        record['stop_diagnostics'] = True
+        record['diagnostic_scope'] = 'one stop investigation; API connection release at SIGTERM+10s; no full S5 certification'
     write(work / 'manifest.json', record)
     print(json.dumps(dict(project=a.project, jar_sha256=jar_hash, work=str(work))))
 

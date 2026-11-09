@@ -1,8 +1,12 @@
 # D3方式2：S1専用DB・Java基盤／S2実IdP→API
 
+**最新結果：Windows win06のS5-V01〜06限定技術PASS（2026-11-10）。** [Windows記録§13.1](../../docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#131-win06windows-s5限定技術pass2026-11-10)を参照。冒頭のS1記述は段階導入時の履歴で、後続のS2〜S5節を併せて読む。
+
 Tooling-ownedの限定検証。S1ではPostgreSQLと既存Reference backendだけを起動する。
 Keycloak／Next.jsサービス・OIDC／BFF画面・認証処理はまだ実装しない。
 [段階別計画](../../docs/development/phase4-d3-option2-staged-task-plan-20261109.md)に従い、S1結果後に停止する。
+
+Windows修正後のLinux回帰確認は[Cloud再検証引継ぎ](../../docs/development/phase4-d3-option2-cloud-harness-reverification-handoff-20261110.md)を入口とする。旧Cloud PASSと修正後harnessの結果を分けて記録する。
 
 ## 固定版と境界
 
@@ -281,3 +285,22 @@ Cookie値・token・code付きURL・trace／HAR／storageStateを保存しない
 build30分・動的60分（cleanup10分予約）、常設5GiB／4CPU・PG32接続、一時helperはfrontendと非並走とする。
 [S5結果](../../docs/architecture/validation/phase4-d3-option2-s5-results-20261109.md)に段階別source／artifact・KS coverage・初回失敗・残るOPENを記録する。
 D3／Phase4全体の受入、commit／remote、Windows持帰り確認は個別に判断する。
+
+### opt-in停止診断（通常S5とは別）
+
+`prepare.py --stage S5 --stop-diagnostics ...`と`verify-s5.py --stop-diagnostics --work-dir ...`を
+明示指定したworkだけでHTTP close／socket所有・要求完了状態を観測する。生成された診断overrideを
+loaderが追加し、image／Next本体をpatchせずread-only preloaderを使う。
+停止10秒後のAPIRequestContext解放対照を含み、停止後の保持・最終業務／SSO集合は実行しない。
+正常終了しても`DIAGNOSTIC_COMPLETE`であり、S5全体PASSではない。40秒後の強制終了はFAILとする。
+preloader専用testは`node --test build-support/container-sso-verification/test-stop-observer.mjs`。
+実測と残る境界は[Windows記録§9](../../docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#9-owner指示後の接続所有元停止待機箇所の限定調査)を参照。
+
+通常S5の静穏時再起動は、Browser processを終了しCookieをNode harnessメモリへ保持してから行う。
+新しいBrowserContextへCookieを戻し、値・属性・同一Session IDと、HTTP要求前のDB snapshot不変を照合する。
+Cookie／storageStateをfileへ保存しない。`cookie-replay.mjs`は固定IdP／realmの`KC_AUTH_SESSION_HASH`が
+注入時点で期限切れの場合だけ復元・期待集合から除外し、復活しないことを検査する。
+有効な同Cookie・その他Cookieの完全一致、必須BFF Session3件の存在／同一ID／属性／有効性は維持する。
+境界testは`node --test build-support/container-sso-verification/test-cookie-replay.mjs`（5件）。
+Windows win06で復元とS5-V01〜06全件PASS、frontend停止0.412秒／143を確認した。
+過去win03〜05のCookie比較FAILは履歴として保持する。詳細・未実施範囲はWindows記録§13.1を参照。

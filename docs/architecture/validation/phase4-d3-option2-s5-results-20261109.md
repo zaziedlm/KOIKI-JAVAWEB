@@ -144,3 +144,8 @@ Ownerは「S5 PASS をコミットします。Windows再現のために、リモ
 Windows開始時の依頼例：
 
 > Cloud報告のS5固定commitを確認し、AGENTS.mdとS5結果§10に従ってWindows開始前確認、同sourceの新規build、専用projectでS5の自動再現を進めてください。Cloud結果を上書きせず、Windows結果・cleanup・export状態を別に記録してください。既存方式1環境は操作せず、手動環境の起動・保持やremote操作へは自動進行しないでください。
+
+
+## 11. Windows修正後harnessのCloud再検証入口（2026-11-10）
+
+Windows win06でS5-V01〜06の限定技術PASSを確認した。Browser終了・Cookieメモリ復元・期限切れ補助Cookie限定除外等のTooling差分は本書の旧Cloud実行後に加わったため、本書のPASSを修正後harnessのCloud実証へ読み替えない。[Cloud再検証引継ぎ](../../development/phase4-d3-option2-cloud-harness-reverification-handoff-20261110.md)に従い、pushされた修正後commit・新規Cloud資材で限定回帰確認する。Cloud再検証は現時点で未実施。Windowsの実測は[Windows結果§13.1](phase4-d3-option2-windows-reproduction-20261109.md#131-win06windows-s5限定技術pass2026-11-10)に分離して記録している。

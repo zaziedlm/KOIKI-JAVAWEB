@@ -65,6 +65,9 @@ def load(path):
         compose += ['-f', str(work / 'recipe/compose-s3.yaml')]
     if stage in ['S4','S5']:compose += ['-f',str(work/'recipe/compose-s4.yaml')]
     if stage=='S5':compose += ['-f',str(work/'recipe/compose-s5.yaml')]
+    if record.get('stop_diagnostics'):
+        if stage != 'S5':raise ValueError('Stop diagnostics require S5')
+        compose += ['-f',str(work/'recipe/compose-stop-diagnostic.yaml')]
     return work, record, compose
 
 
@@ -134,6 +137,10 @@ def preflight(work, record, compose):
     if record['phase']=='S5':
         assert realm['accessTokenLifespan']==60 and realm['revokeRefreshToken'] and realm['refreshTokenMaxReuse']==0
         assert config['services']['frontend']['environment']['BFF_REFRESH']=='true'
+        if record.get('stop_diagnostics'):
+            assert config['services']['frontend']['environment']['NODE_OPTIONS']=='--max-old-space-size=768 --require=/opt/d3-stop-observer.cjs'
+            mounts=config['services']['frontend']['volumes']
+            assert len(mounts)==1 and mounts[0]['target']=='/opt/d3-stop-observer.cjs' and mounts[0]['read_only']
     return dict(image_id=image['Id'], configuration='S1:2 services/no host ports; S2:3 services+transient helper/loopback only', platform='linux/amd64')
 
 
