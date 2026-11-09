@@ -1,5 +1,11 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：Windows修正後harnessのCloud限定回帰PASS（2026-11-10）
+
+**Cloud再検証結果の成果固定：** Ownerは「結果文書など3件をコミットして、pushまで進めましょう」と指示した。Cloud再検証結果・引継ぎ・本入口の文書3件をlocal commitに固定し、同じ作業branchへpushする。以下の結果commit／remote未実施表示はこの後続指示前の履歴。PR／merge・tag／Release・手動環境・D3全体の受入へは拡張しない。
+
+Ownerの「再検証へ進めましょう」により`5ac06e3`・開始時cleanからCloud資材を新規生成し、新規`d3-sso-s5-20261110-cloud01`で通常S5-V01〜06を1回実行して全PASS。境界5／observer1／Node39／guard5／Java直接23件も全成功。Browser.close後のfrontend0.201秒／143、backend0.446秒／143、Keycloak1.199秒／143、強制kill／OOMなし。新Browser／3 contextの復元対象Cookie完全一致・必須Session3件の値／属性／有効性・期限切れ固定補助CookieA/B各1件の除外／非復活・HTTP前DB/IdP event不変、同volume／同鍵保持・後段業務／Audit／SSO、cleanup・10 secret/realm削除・export/checksum/source67 file照合が成立。[Cloud再検証結果](docs/architecture/validation/phase4-d3-option2-cloud-harness-reverification-results-20261110.md)を現行入口とする。通常runtimeで停止診断observerは有効化していない。準備manifestの旧固定回数は実行前に整合させ、harness/Framework/Reference/依存/lockは無変更。旧Cloud/Windows結果と失敗履歴を保持する。旧Cloud最終PASS ZIP `d3-sso-s5-20261109-02`はOwner取得・SHA一致確認済みだが、新Cloud ZIPのWindows受領は未確認。結果commit/remote・手動環境/Owner打鍵・結果全体受入・D3/Phase4全体の認定は未実施。以下のCloud未実施・旧最終PASS ZIP受領OPEN表示は当該実行/報告前の履歴。
+
 ## 現行入口：D3方式2 Windows成果固定・Cloud再検証引継ぎ（2026-11-10）
 
 OwnerはWindows検証までのTooling・文書とCloud引継ぎをcommitし、当該作業branchへpushしてCodex Cloudで点検するよう指示した。[Cloud再検証引継ぎ](docs/development/phase4-d3-option2-cloud-harness-reverification-handoff-20261110.md)を次の入口とする。push完了報告の実SHA・clean状態をCloudで確認し、Cloud専用に資材を再生成、境界5／observer1／Node39／guard5と新規projectの通常S5-V01〜06を1回確認する。Cloud実行はこのWindows作業では開始せず、結果・証拠はWindowsと分離する。PR／merge・tag／Release・手動環境は今回の指示に含めない。以下のcommit／remote未実施表示はこの成果固定指示前の履歴として読む。

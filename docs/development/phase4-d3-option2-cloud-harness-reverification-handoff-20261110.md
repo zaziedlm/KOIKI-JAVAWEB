@@ -76,3 +76,13 @@ Cloud内でのexportと、Windowsでの実取得／SHA-256照合は別の状態�
 > 作業branch `docs/d3-option2-implementation-conditions-20261109`のpush完了報告にあるcommit SHAを確認し、本引継ぎ§2〜5に従ってWindows修正後harnessのCloud限定回帰確認を進めてください。新規Cloud資材・project／DB／secretで、単体集合と通常S5-V01〜06を1回実行し、cleanup・redacted証拠exportまで記録してください。旧Cloud／Windows証拠・既存projectを変更せず、FAIL時は原因と必要差分を報告してください。手動環境起動・PR／merge・tag／Release・追加再実行は先行しないでください。
 
 今回のWindows上のcommit・pushにはCloudタスクの起動／実行を含めない。Cloudの結果commit／pushはその時点のOwner指示に従う。Windows手動確認・結果Owner受入・D3／Phase4全体の認定は別判断として残す。
+
+## 7. Cloud再検証の完了記録（2026-11-10）
+
+Ownerの「再検証へ進めましょう」により、開始SHA `5ac06e361cb69878dbeb7c765173a7c82849bd91`・cleanからCloud資材を新規生成し、新規`d3-sso-s5-20261110-cloud01`で指示された通常S5集合1回を実施した。境界5／observer1／Node39／guard5／Java23件とS5-V01〜06が全件PASS、Browser終了・新3 contextへのCookie完全一致／必須Session3件・期限切れ補助Cookieの非復活・HTTP前のsnapshot不変が成立した。frontend0.201秒／143、backend0.446秒／143、Keycloak1.199秒／143、強制kill／OOMなし。資源残留0・10 secret／realm削除・export／checksum・source67 file照合まで成立。[Cloud再検証結果](../architecture/validation/phase4-d3-option2-cloud-harness-reverification-results-20261110.md)を参照する。
+
+開始manifestの旧固定build回数等は今回の実測集合へ実行前に補正し、元manifest hashと理由を保持した。harness本体・Framework／Reference／依存／lockは変更していない。旧Cloud最終PASS ZIPの受領・SHA一致は前ターンOwner報告に基づき確認済み、新Cloud ZIPの受領は未確認として別管理する。上記各節のCloud未実施・従来ZIP受領OPEN表示は当該報告前の履歴として読む。結果commit／remote・手動環境・Owner結果受入・D3全体の認定は先行していない。
+
+## 8. Cloud再検証結果の成果固定指示（2026-11-10）
+
+Ownerは「結果文書など3件をコミットして、pushまで進めましょう」と指示した。Cloud再検証結果・本引継ぎ・AGENTSの文書3件をcommitし、`docs/d3-option2-implementation-conditions-20261109`へpushする。実SHA・local／remote一致は操作後の報告とGit履歴で確認する。上記の結果commit／remote未実施表示は後続指示前の履歴として保持する。新Cloud ZIPのWindows受領・手動環境・Owner結果全体受入、PR／merge・tag／Releaseは今回の成果固定に含めない。
