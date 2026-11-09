@@ -33,7 +33,8 @@
       "attributes": {
         "pkce.code.challenge.method": "S256",
         "client.session.idle.timeout": "1200",
-        "client.session.max.lifespan": "5400"
+        "client.session.max.lifespan": "5400",
+        "post.logout.redirect.uris": "http://localhost:13000/a/auth/logout-return"
       },
       "defaultClientScopes": [],
       "optionalClientScopes": [
@@ -144,6 +145,75 @@
           "consentRequired": false,
           "config": {
             "included.custom.audience": "unrelated-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "koiki-d3-b",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "__CLIENT_B_SECRET__",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "fullScopeAllowed": false,
+      "redirectUris": [
+        "http://localhost:13000/b/auth/callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "client.session.idle.timeout": "1200",
+        "client.session.max.lifespan": "5400",
+        "post.logout.redirect.uris": "http://localhost:13000/b/auth/logout-return"
+      },
+      "defaultClientScopes": [],
+      "optionalClientScopes": [
+        "expense.apply"
+      ],
+      "protocolMappers": [
+        {
+          "name": "token-use",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "token_use",
+            "claim.value": "access",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        },
+        {
+          "name": "koiki-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "koiki_user_id",
+            "claim.name": "koiki_user_id",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false",
+            "multivalued": "false"
+          }
+        },
+        {
+          "name": "api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "koiki-reference-api",
             "access.token.claim": "true",
             "id.token.claim": "false",
             "userinfo.token.claim": "false"

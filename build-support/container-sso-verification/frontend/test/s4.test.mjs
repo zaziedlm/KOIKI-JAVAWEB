@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {Configuration,allowInsecureRequests} from 'openid-client';
+import {callbackFor,logoutUrl} from '../lib/oidc.ts';
+import {rpAllowed,rpConfig,purpose} from '../lib/config.ts';
+import {csrfFor} from '../lib/crypto.ts';
+process.env.BFF_RPS='a,b';
+test('RP allowlist rejects unknown paths',()=>{assert.equal(rpAllowed('a'),true);assert.equal(rpAllowed('b'),true);assert.equal(rpAllowed('c'),false);assert.throws(()=>rpConfig('../a'));});
+test('S3 configuration still disables B',()=>{delete process.env.BFF_RPS;assert.equal(rpAllowed('b'),false);process.env.BFF_RPS='a,b';});
+test('A and B have separate cookie names and paths',()=>{const a=rpConfig('a'),b=rpConfig('b');for(const k of ['session','flow','logout'])assert.notEqual(a[k],b[k]);assert.equal(a.options.path,'/a');assert.equal(b.options.path,'/b');});
+test('callbacks are fixed per client',()=>{assert.equal(callbackFor('koiki-d3-a'),'http://localhost:13000/a/auth/callback');assert.equal(callbackFor('koiki-d3-b'),'http://localhost:13000/b/auth/callback');assert.throws(()=>callbackFor('unknown'));});
+test('CSRF purpose binds client even with identical Cookie value',()=>{const key=Buffer.alloc(32,1);assert.notEqual(csrfFor(key,purpose('session','a'),'same'),csrfFor(key,purpose('session','b'),'same'));});
+for(const rp of ['a','b'])test(rp+' logout uses fixed registered return URI and no token hint',()=>{const cfg=new Configuration({issuer:'http://idp.localhost:18080/realms/koiki-d3',end_session_endpoint:'http://idp.localhost:18080/logout'},'koiki-d3-'+rp,'fixture');allowInsecureRequests(cfg);const url=logoutUrl(cfg,'state');assert.equal(url.searchParams.get('post_logout_redirect_uri'),'http://localhost:13000/'+rp+'/auth/logout-return');assert.equal(url.searchParams.get('client_id'),'koiki-d3-'+rp);assert.equal(url.searchParams.get('state'),'state');assert.equal(url.searchParams.has('id_token_hint'),false);});
+test('RP descriptors keep same Origin local limitation explicit',()=>{assert.equal(new URL(rpConfig('a').callback).origin,new URL(rpConfig('b').callback).origin);assert.notEqual(rpConfig('a').postLogout,rpConfig('b').postLogout);});

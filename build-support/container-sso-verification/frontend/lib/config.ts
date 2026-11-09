@@ -12,4 +12,12 @@ function read() {
     databasePassword:fs.readFileSync('/run/secrets/koiki_bff','utf8').trim()};
 }
 export function config(){return cached??=read();}
-export function rpAllowed(rp:string){return rp==='a';}
+export function rpAllowed(rp:string){return rp==='a'||(rp==='b'&&process.env.BFF_RPS==='a,b');}
+export function rpConfig(rp:string) {
+  if(!rpAllowed(rp))throw new Error('Unapproved RP');
+  return {clientId:'koiki-d3-'+rp,session:'D3_'+rp.toUpperCase()+'_SESSION',flow:'D3_'+rp.toUpperCase()+'_FLOW',
+    logout:'D3_'+rp.toUpperCase()+'_LOGOUT',options:{...cookieOptions,path:'/'+rp},
+    callback:ORIGIN+'/'+rp+'/auth/callback',postLogout:ORIGIN+'/'+rp+'/auth/logout-return'};
+}
+export function clientSecret(rp:string){rpConfig(rp);return fs.readFileSync('/run/secrets/client_'+rp,'utf8').trim();}
+export function purpose(kind:string,rp:string){rpConfig(rp);return rp==='a'?kind:kind+':'+rp;}

@@ -193,3 +193,44 @@ Browser失敗時の出力も固定文言にし、provider URL／入力／資格�
 
 [S3結果](../../docs/architecture/validation/phase4-d3-option2-s3-results-20261109.md)を参照。
 S3のbuild／依存枠40分、動的50分（cleanup10分予約）。S4／refreshは別段階とする。
+
+## S4：独立2 Client SSO／logout
+
+S3固定成果からOwnerのS4開始判断後に使用する。`compose-s4.yaml`でRP `a,b`とClient B専用secretを有効にする。
+`prepare.py --stage S4`以外では生成realmからBを除外する。A／BでSession・認証途中・logout Cookie名とPath、
+DB client_id／検索、暗号化AADとCSRF用途を分ける。同じOrigin／Next process内の検証であり、Cookie Pathを強い隔離境界とはしない。
+
+frontendの同じ単体test／Next buildを実行後、Repository rootから新規workを準備する。
+
+```sh
+python3 build-support/container-sso-verification/prepare.py --stage S4 \
+  --jar koiki-reference-app/target/koiki-reference-app-0.1.0-SNAPSHOT.jar \
+  --work-dir .tmp/d3-sso-s4-YYYYMMDD-UNIQUE --project d3-sso-s4-YYYYMMDD-UNIQUE
+```
+
+S3と同様に元JAR hash labelを照合してbackendをproject専用`:local`へtagし、
+base→`compose-s2.yaml`→`compose-s3.yaml`→`compose-s4.yaml`のsnapshotと専用`compose.env`で`build frontend`を実行する。
+続いて以下を実行する。失敗後はworkを再利用しない。
+
+```sh
+python3 build-support/container-sso-verification/verify-s4.py --work-dir .tmp/d3-sso-s4-YYYYMMDD-UNIQUE
+python3 build-support/container-sso-verification/export-evidence.py \
+  --work-dir .tmp/d3-sso-s4-YYYYMMDD-UNIQUE --output-dir .tmp/d3-sso-exports
+```
+
+runnerは常設4サービスと非並走のhelper probe、DB seed／migration、実ChromiumのSSO集合、DB client結付け、
+cleanupを担当する。Browserはhost1 worker／同時context最大2、build25分・動的35分（cleanup10分予約）。
+Browserとrunnerがhashだけのfileで同期し、A／Bの独立Sessionをlogout前にDB照合する。業務作成／更新は行わない。
+
+Aを対話login→Bが匿名であることを確認→`prompt=none`でBを認証→新規contextの同要求は`login_required`、
+Aの途中state／bindingをBへ渡して拒否、Cookie値・CSRFのclient混同拒否を検証する。
+A local logout後はB／IdPの存続とAの再SSOを確認する。RP-Initiated Logoutはclient_id・固定復帰URI・一回消費stateを使い、
+ID TokenをBrowserへ渡さずKeycloakの確認画面を操作する。state不正・client／用途混同・復帰再利用、任意戻り先入力とIdPの未登録URIを拒否する。
+logout後の新規SSO失敗と、Bの既存Session／発行済みJWTの利用可否を個別に観測し、即時失効を約束しない。
+
+`.localhost`はChromiumとhost Nodeの名前解決が異なる場合がある。IdPへの未登録logout URI負例もChromiumの画面遷移を使う。
+固定issuerを書き換えず、token／Cookie値・code付きURL・trace／HAR／storageStateを保存しない。
+負例の一部はBrowserContextのHTTP要求（localhost宛）で行い、実画面操作と区別する。
+
+[S4結果](../../docs/architecture/validation/phase4-d3-option2-s4-results-20261109.md)を参照。
+段階終了時に停止し、S5／commit／remoteは個別のOwner判断に従う。

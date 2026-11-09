@@ -1,5 +1,11 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3方式2 S4 Cloud限定技術PASS（2026-11-09）
+
+**S4コミットポイント：** Ownerは「S4 PASS をコミットします」と指示した。S4のTooling実装・結果記録・本入口をlocal commitとして固定する。S5開始・push／PR／merge・D3全体の受入へ拡張しない。以下のcommit未実施・別判断表示はこの後続指示前の履歴。
+
+Ownerの「S4へ進めましょう」によりS3固定`f48a0cc`からToolingだけを実装。新規project `d3-sso-s4-20261109-03`でS4-V01〜04がPASS。実ChromiumでA認証→B匿名→prompt=noneによる独立B Session、新規contextのlogin_required、client混同拒否、A local logoutとSSO logoutの範囲、state／固定復帰先・再利用拒否、cleanup・生成secret／realm削除・exportが成立。[S4結果](docs/architecture/validation/phase4-d3-option2-s4-results-20261109.md)を現行入口とする。単体29件・共有guard5件PASS。初回／診断実行FAILとhost Node DNS差を保持し、harnessのIdP負例をChromium遷移へ訂正して同一集合を新規projectで再実行した。Framework／Reference変更・Java再buildなし。SSO logout後もBの既存Session／JWTは観測時点で利用でき、即失効・backchannelを保証しない。同じOrigin／process内の2 RPでありCookie Pathを強い隔離境界とはしない。S5・結果受入・commit／remoteへ自動進行せず、Windows持帰り未確認・既存保持資源の条件を維持する。以下のS4未着手表示は以前の履歴。
+
 ## 現行入口：D3方式2 S3 Cloud限定技術PASS（2026-11-09）
 
 **S3コミットポイント：** Ownerは「S3 PASSのここで、コミットしましょう」と指示した。S3のTooling実装・結果記録・本入口をlocal commitとして固定する。S4開始・push／PR／merge・D3全体の受入へ拡張しない。以下のcommit未実施・別判断表示はこの後続指示前の履歴。

@@ -1,6 +1,6 @@
 import {NextRequest,NextResponse} from 'next/server';
 import {api,apiPath} from '../../../../lib/api-client';
-import {config,rpAllowed,SESSION} from '../../../../lib/config';
+import {config,rpAllowed,rpConfig,purpose} from '../../../../lib/config';
 import {csrfFor} from '../../../../lib/crypto';
 import {BoundaryError,jsonBody,validateMutation} from '../../../../lib/csrf';
 import {session} from '../../../../lib/store';
@@ -16,9 +16,9 @@ async function handle(request:NextRequest,{params}:Params) {
   else return reply({error:'not_found'},404);
   try{apiPath(operation,id);}catch{return reply({error:'not_found'},404);}
   try {
-    const sid=request.cookies.get(SESSION)?.value;if(!sid)return reply({error:'authentication_required'},401);
-    if(request.method==='POST')validateMutation(request.headers.get('origin'),request.headers.get('content-type'),request.headers.get('x-csrf-token'),csrfFor(config().key,'session',sid));
-    const current=await session(sid);if(!current)return reply({error:'authentication_required'},401);
+    const sid=request.cookies.get(rpConfig(rp).session)?.value;if(!sid)return reply({error:'authentication_required'},401);
+    if(request.method==='POST')validateMutation(request.headers.get('origin'),request.headers.get('content-type'),request.headers.get('x-csrf-token'),csrfFor(config().key,purpose('session',rp),sid));
+    const current=await session(sid,rp);if(!current)return reply({error:'authentication_required'},401);
     let body;
     if(request.method==='POST') {
       body=await jsonBody(request);
