@@ -1,0 +1,79 @@
+services:
+  backend:
+    image: ${D3_IMAGE:?Run prepare.py}
+    platform: linux/amd64
+    build:
+      context: ${D3_WORK}/context
+      args:
+        JAVA_RUNTIME_IMAGE: ${D3_JAVA_IMAGE}
+        D3_JAR_SHA256: ${D3_JAR_SHA256}
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:size=134217728,mode=1777
+    mem_limit: 1536m
+    cpus: 1
+    pids_limit: 160
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      JAVA_TOOL_OPTIONS: -Xmx768m -XX:+ExitOnOutOfMemoryError
+      SPRING_PROFILES_ACTIVE: d3-container
+      SPRING_CONFIG_IMPORT: configtree:/run/secrets/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/koiki_app
+      SPRING_DATASOURCE_USERNAME: koiki_app
+      KOIKI_REFERENCE_SOURCE_HMAC_KEY_ID: d3-sso-s1
+      KOIKI_REFERENCE_API_BEARER_ENABLED: "false"
+    secrets:
+      - source: koiki_app
+        target: spring.datasource.password
+      - source: source_hmac
+        target: koiki.identity.login-attempt.source-hmac-key
+    depends_on:
+      db: {condition: service_healthy}
+    healthcheck:
+      test:
+        - CMD
+        - /bin/bash
+        - -ec
+        - 'exec 3<>/dev/tcp/127.0.0.1/8080; printf "GET /actuator/health/readiness HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; IFS= read -r line <&3; [[ "$$line" == *" 200 "* ]]'
+      start_period: 90s
+      start_interval: 2s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    stop_grace_period: 40s
+    logging: {driver: json-file, options: {max-size: 10m, max-file: "3"}}
+    networks: [database]
+  db:
+    image: ${D3_PG_IMAGE:?Run prepare.py}
+    platform: linux/amd64
+    command: [postgres, -c, max_connections=32]
+    mem_limit: 1024m
+    cpus: 1
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_admin
+      POSTGRES_DB: postgres
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    secrets: [pg_admin, koiki_app, koiki_bff, koiki_keycloak]
+    volumes:
+      - database:/var/lib/postgresql/data
+      - ${D3_WORK}/recipe/init-db.sh:/docker-entrypoint-initdb.d/10-databases.sh:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -h 127.0.0.1 -U postgres -d postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    stop_grace_period: 30s
+    logging: {driver: json-file, options: {max-size: 10m, max-file: "3"}}
+    networks: [database]
+secrets:
+  pg_admin: {file: '${D3_WORK}/secrets/pg_admin'}
+  koiki_app: {file: '${D3_WORK}/secrets/koiki_app'}
+  koiki_bff: {file: '${D3_WORK}/secrets/koiki_bff'}
+  koiki_keycloak: {file: '${D3_WORK}/secrets/koiki_keycloak'}
+  source_hmac: {file: '${D3_WORK}/secrets/source_hmac'}
+networks:
+  database: {}
+volumes:
+  database: {}

@@ -1,5 +1,15 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3方式2 S1 Cloud限定技術PASS（2026-11-09）
+
+**S1コミットポイント：** OwnerはS1 PASSをコミットポイントと認識し、S1のTooling実装・結果記録・本入口のlocal commitを指示した。今回この範囲を固定する。S2開始・push／PR／merge・D3全体の受入へ拡張しない。以下のcommit未実施・別判断表示はこの後続指示前の履歴。
+
+**最新結果：** Owner承認後、新規project `d3-sso-s1-20261109-02`で同じS1-V01〜05を1回再実行し、全件PASS・自動cleanup・生成secret削除・証拠exportが成立した。[S1結果§8](docs/architecture/validation/phase4-d3-option2-s1-results-20261109.md#8-owner承認後の修正済み新規project再実行)を参照。既存JAR／imageをhash照合して再利用し、Framework変更なし。初回project `01`の失敗・cleanup復旧・Evidenceも保持。Windows持帰り／checksum照合は未確認。S2・結果全体受入・commit／remoteへ自動進行しない。以下のHOLD・再実行未実施表示は初回の履歴。
+
+**後続Owner再実行指示：** Ownerは修正後の新規projectで同じS1集合1回の再実行を指示し、Framework本体の改変を伴わないS1範囲の修正後再実行を許可した。初回失敗・cleanup復旧・各試行のsource／結果を保持して進める。同一範囲の修正・再実行許可を反復要求しない。Framework変更・S2開始・commit／remoteへは拡張しない。以下の再実行未承認表示はこの指示前の履歴。
+
+OwnerのS1実装開始指示によりTooling資材を実装。Java直接回帰2件・guard5件・backend image buildはPASSだが、初回runtimeはCompose tmpfs不備でbackend作成前に停止し、S1はHOLD。[S1結果](docs/architecture/validation/phase4-d3-option2-s1-results-20261109.md)を参照。自動cleanupのnetwork ID／名比較不備も記録し、所有label照合後に今回projectだけcleanup、残留0・生成secret削除・失敗Evidence exportまで成立。両不備は訂正・静的確認済み、動的再実行は未実施。計画の各集合初回1回を維持し、新規projectで同じS1集合1回の再実行案を提示中。S2へ自動進行せず、commit／remoteも先行しない。方式1の保持中資源は操作していない。以下のS1未着手表示は実装前の履歴とする。
+
 ## 現行入口：D3方式2の実装・検証条件具体化（2026-11-09）
 
 **Cloud引継ぎ・成果固定の後続指示：** Ownerは[段階別計画§11](docs/development/phase4-d3-option2-staged-task-plan-20261109.md#11-cloud実装自動検証windows再現手動確認)へのCloud実装／自動検証・Windows再現／手動確認の分担、Linux build、Cloud開始前確認、証拠持帰り手順の追記と、本作業branchへのcommit・pushを指示した。今回の文書一式を固定・pushしてCloudへ渡す。以下のcommit／remote未承認表示はこの指示前の履歴とし、PR／merge／tag／Releaseは今回含めない。Cloudでは報告された実commit SHAを確認しS1から順に進め、各段階結果後に次へ判断する。現在のWindowsでは実装・動的実行を先行しない。方式1の保持中環境は維持する。
