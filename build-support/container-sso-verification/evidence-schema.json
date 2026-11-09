@@ -5,7 +5,7 @@
   "required": ["schema", "stage", "status", "source_sha", "checkpoints", "observations", "not_executed", "elapsed_seconds"],
   "properties": {
     "schema": {"const": 1},
-    "stage": {"enum": ["S1", "S2"]},
+    "stage": {"enum": ["S1", "S2", "S3"]},
     "status": {"enum": ["PASS", "FAIL", "HOLD"]},
     "source_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
     "checkpoints": {
@@ -13,7 +13,7 @@
       "items": {
         "type": "object", "required": ["id", "status", "details"],
         "properties": {
-          "id": {"enum": ["S1-V01", "S1-V02", "S1-V03", "S1-V04", "S1-V05", "S2-V01", "S2-V02", "S2-V03", "S2-V04"]},
+          "id": {"enum": ["S1-V01", "S1-V02", "S1-V03", "S1-V04", "S1-V05", "S2-V01", "S2-V02", "S2-V03", "S2-V04", "S3-V01", "S3-V02", "S3-V03", "S3-V04", "S3-V05"]},
           "status": {"const": "PASS"},
           "details": {"type": "string"}
         }
@@ -21,6 +21,6 @@
     },
     "observations": {"type": "object"},
     "not_executed": {"type": "array", "items": {"type": "string"}},
-    "elapsed_seconds": {"type": "number", "maximum": 2700}
+    "elapsed_seconds": {"type": "number", "maximum": 3000}
   }
 }

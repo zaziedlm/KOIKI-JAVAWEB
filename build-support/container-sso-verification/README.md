@@ -145,3 +145,51 @@ S2結果は[Cloud実証記録](../../docs/architecture/validation/phase4-d3-opti
 初回設定不備・観測SQL不備、途中の機能PASSと最終の署名検証・Cookie観測を含むPASSは別workで保持する。
 exportは共通allowlistに値を含まない`browser.json`だけを追加する。Windows持帰り未確認の扱いはS1と同じ。
 S2のbuild／取得枠20分、動的45分（cleanup10分予約）。段階終了で停止し、S3はOwner判断を待つ。
+
+## S3：Client AのBFF縦断
+
+Next.js App Router／Node runtimeのstandalone imageを追加した。S3ではRP `a`だけ許可する。
+S2の同じJava JAR／imageを再利用し、Java API／Frameworkは変更しない。
+`frontend/lib`がserver側の設定・暗号化・store・CSRF・固定API先を持ち、Client Componentには
+本人表示用subject・CSRF・安全な申請DTOだけを渡す。Access／Refresh／ID Tokenは渡さない。
+
+```sh
+# frontendで指定Node/npmを使用し、security情報を確認してから実行する
+cd build-support/container-sso-verification/frontend
+npm audit
+node --experimental-strip-types --test test/*.test.mjs
+NODE_OPTIONS=--max-old-space-size=2048 NEXT_TELEMETRY_DISABLED=1 node node_modules/next/dist/bin/next build
+```
+
+Repository rootへ戻り、`prepare.py --stage S3 --jar ... --work-dir .tmp/d3-sso-s3-YYYYMMDD-UNIQUE --project d3-sso-s3-YYYYMMDD-UNIQUE`で新規workを作る。
+prepareはhost buildの`.next/standalone`／staticを専用contextへコピーし、全fileのhashからfrontend識別を作る。
+base／`compose-s2.yaml`／`compose-s3.yaml`をこの順に指定して`build frontend`を実行する。
+backend imageは対応する元JAR hash labelを照合して専用projectの`:local`へtagするか、同じDockerfileで生成する。
+実行は`python3 build-support/container-sso-verification/verify-s3.py --work-dir ...`。
+生成されたcontextだけをDockerへ渡し、buildへrealm／secret／host cacheを含めない。
+
+認証開始・logoutはJSON POST＋固定Origin＋CSRF、callbackだけGET＋一回消費stateで保護する。
+認証前のHttpOnly CookieとDB transactionをhashで結び、nonce／PKCE情報をAES-256-GCMで保護する。
+transactionを消費してcommitしてからtoken交換し、結果不明の交換は再送しない。
+Sessionは新規256-bit ID、DBはhashだけを保存。tokenはclient／Session hashをAADに使って暗号化する。
+Cookieは`D3_A_SESSION`、Path `/a`、HttpOnly／SameSite=Lax、Domainなし、local HTTPだけSecure=false。
+idle15分／absolute60分、Access Token期限は`expires_in−5秒`の保守的な時刻で拒否し、S3ではrefreshしない。
+有効Session取得時にidle／last_seen／versionを更新し、absoluteは延長しない。
+期限切れauth transaction／Sessionの削除はlogin開始時に各最大100件の有限batchとする。
+
+Browser→BFFはJSON・64KiB上限とOrigin／Session結付けCSRFを検査する。上流は固定3操作だけで、
+BrowserのCookie／Authorization／Forwardedや上流Set-Cookieを中継しない。SSR／RSC／APIはno-store。
+`startup.mjs`は暗号鍵欠落／不正時にNext起動前に終了する。非root／read-only、必要書込はtmpfsだけ。
+
+CPU実効4のため、helper probeはfrontend未起動時に実行し、終了・削除してから常設4サービスを起動する。
+通常runtimeは最大5GiB／4CPU、probe時はfrontendなしの4.5GiB／3.5CPUで、5サービスを同時起動しない。
+Browserはhost側1 worker／1 context。最大負荷やCPU余裕を保証する試験ではない。
+鍵欠落負例は依存サービス起動前に`compose-key-missing.yaml`でBFFだけを実行し、exit1と終了を確認する。
+
+S3 runnerはBrowserでログイン・作成・提出・reload・logoutを行い、別Session1件のidle期限だけを
+test所有のDB更新で過去へ移して拒否・削除を確認する。実アプリの時計や故障注入endpointは追加しない。
+callback URL／Cookie値はBrowserプロセス内だけに保持し、証拠はstatus／属性／hashのみ。
+Browser失敗時の出力も固定文言にし、provider URL／入力／資格情報を出力しない。
+
+[S3結果](../../docs/architecture/validation/phase4-d3-option2-s3-results-20261109.md)を参照。
+S3のbuild／依存枠40分、動的50分（cleanup10分予約）。S4／refreshは別段階とする。

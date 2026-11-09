@@ -1,0 +1,26 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {randomBytes} from 'node:crypto';
+import {keyFrom,seal,open,hash,csrfFor,opaque} from '../lib/crypto.ts';
+import {validateMutation,jsonBody,BoundaryError} from '../lib/csrf.ts';
+import {apiPath} from '../lib/api-client.ts';
+import {sessionValid} from '../lib/store.ts';
+
+test('AES-GCM roundtrip keeps plaintext out of ciphertext',()=>{const k=randomBytes(32),v=seal(k,{access_token:'private-token'},'session:a:one');assert.equal(open(k,v,'session:a:one').access_token,'private-token');assert.equal(v.payload.includes(Buffer.from('private-token')),false);});
+test('AES-GCM rejects ciphertext tampering',()=>{const k=randomBytes(32),v=seal(k,{value:1},'auth:a:one');v.payload[0]^=1;assert.throws(()=>open(k,v,'auth:a:one'));});
+test('AES-GCM binds purpose and client',()=>{const k=randomBytes(32),v=seal(k,{value:1},'auth:a:one');assert.throws(()=>open(k,v,'auth:b:one'));});
+test('AES-GCM generates distinct IVs',()=>{const k=randomBytes(32);assert.notDeepEqual(seal(k,{},'a').iv,seal(k,{},'a').iv);});
+test('invalid key is rejected',()=>{assert.throws(()=>keyFrom('invalid'));assert.throws(()=>keyFrom(Buffer.alloc(31).toString('base64')));});
+test('opaque IDs have 256 bits and different hashes',()=>{const a=opaque(),b=opaque();assert.equal(a.length,43);assert.notEqual(hash(a),hash(b));});
+test('CSRF is bound to purpose and Session',()=>{const k=randomBytes(32),id=opaque();assert.notEqual(csrfFor(k,'login',id),csrfFor(k,'session',id));assert.notEqual(csrfFor(k,'session',id),csrfFor(k,'session',opaque()));});
+test('valid mutation boundary passes',()=>assert.doesNotThrow(()=>validateMutation('http://localhost:13000','application/json','expected','expected')));
+test('missing CSRF is rejected',()=>assert.throws(()=>validateMutation('http://localhost:13000','application/json',null,'expected'),e=>e.status===403));
+test('wrong CSRF is rejected',()=>assert.throws(()=>validateMutation('http://localhost:13000','application/json','bad','expected'),e=>e.status===403));
+test('different Origin is rejected',()=>assert.throws(()=>validateMutation('http://untrusted.example','application/json','expected','expected'),e=>e.status===403));
+test('non JSON is rejected',()=>assert.throws(()=>validateMutation('http://localhost:13000','text/plain','expected','expected'),e=>e.status===415));
+test('streamed body limit is enforced',async()=>{const r=new Request('http://localhost',{method:'POST',body:'x'.repeat(65537)});await assert.rejects(()=>jsonBody(r),e=>e instanceof BoundaryError && e.status===413);});
+test('arbitrary API target is rejected',()=>{assert.throws(()=>apiPath('http://untrusted.example'));assert.throws(()=>apiPath('detail','../../admin'));assert.throws(()=>apiPath('delete','d3200000-0000-4000-8000-000000000001'));});
+test('idle expiry is enforced at its boundary',()=>{assert.equal(sessionValid({idle_expires_at:new Date(10),absolute_expires_at:new Date(20),access_token_expires_at:new Date(30)},10),false);});
+test('absolute expiry cannot be extended by idle state',()=>{assert.equal(sessionValid({idle_expires_at:new Date(30),absolute_expires_at:new Date(10),access_token_expires_at:new Date(30)},10),false);});
+test('Access Token expiry requires reauthentication',()=>{assert.equal(sessionValid({idle_expires_at:new Date(30),absolute_expires_at:new Date(30),access_token_expires_at:new Date(10)},10),false);});
+test('unexpired Session passes injected clock',()=>{assert.equal(sessionValid({idle_expires_at:new Date(20),absolute_expires_at:new Date(30),access_token_expires_at:new Date(15)},10),true);});
