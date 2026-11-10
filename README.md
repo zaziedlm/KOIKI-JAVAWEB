@@ -38,7 +38,20 @@ mainの専用CIは通常／観測の計6構成・43項目で成功していま�
 生成時111件PASSに加え、公開ZIPの実取得・hash照合、空の専用Maven repositoryへの全座標登録、独立Consumerの固定版依存によるpackage成功まで確認しています（E1-V09限定技術PASS）。
 利用側は版とSHA-256を指定して取得し、各PCのMaven local repositoryへ登録できます。取得方法と次回更新手順は[引継ぎ文書](docs/development/phase4-e1-vscode-handoff-20261030.md)、証拠と確認範囲は[再生成・公開結果](docs/architecture/validation/phase4-e1-regeneration-and-publication-20261103.md)を参照してください。
 実案件PC／IDE／CIでの受領V10と正式support付き提供は未完了です。当面は引継ぎ文書とCodexの支援でZIP運用を試行し、実案件への配布・更新・受領を確実にする手順の見直し・安定化を進めます。
-mainの到達点を固定する現行checkpoint tagは`checkpoint/v0.1.8-phase4-development-baseline`です（PR #59統合commit `c224b14`、通常CI・Java互換性・VT互換性成功）。旧名`checkpoint/e1-distribution-established-20261103`からの名称変更は、現行tagの注記に記録されています。公開ZIPの生成元を示す既存tag `framework-0.1.0-preview.1`とは区別します。
+2026-11-03の配布経路確立時点のcheckpoint tagは`checkpoint/v0.1.8-phase4-development-baseline`です（PR #59統合commit `c224b14`、通常CI・Java互換性・VT互換性成功）。旧名`checkpoint/e1-distribution-established-20261103`からの名称変更は、同tagの注記に記録されています。公開ZIPの生成元を示す既存tag `framework-0.1.0-preview.1`とは区別します。
+
+## コンテナ構成のフィジビリティ確認（2026-11-10）
+
+実案件チームが配置・認証方式を検討するため、Reference／Toolingで次の2構成を実装し、ローカルContainerでの成立を確認しました。方式2はCloudとWindowsの限定自動検証、WindowsでのOwner手動ブラウザ操作とDB／Audit・ログ照合まで実施しています。案件向けの参考情報を参照できる、sourceのチェックポイントとして位置づけます。今回の成果を固定する新しいtagはまだ作成していません。
+
+| 方式 | 構成と認証のポイント | 検証・利用案内 |
+| --- | --- | --- |
+| 方式1：SPA同梱Java＋DB | JavaがSPA／MVCを配信し、Java Sessionで認証状態を管理。Java appとPostgreSQLの2サービス | [資材・再現手順](build-support/container-verification/integrated/README.md)、[Windows再検証・手動操作結果](docs/architecture/validation/phase4-d3-home-container-reverification-20261107.md) |
+| 方式2：Next.js BFF＋Java API＋DB＋IdP | BFFがBrowser Sessionとtokenを管理し、Java APIはBearer認証。PostgreSQLとKeycloakを含む4サービス | [資材・再現手順](build-support/container-sso-verification/README.md)、[修正後Cloud回帰結果](docs/architecture/validation/phase4-d3-option2-cloud-harness-reverification-results-20261110.md)、[Windows手動確認結果](docs/architecture/validation/phase4-d3-option2-windows-manual-20261110.md) |
+
+案件側がアプリケーション・コンテナ運用の設計を所有し、KOIKI側はFrameworkの利用条件、参考構成、検証証拠と限界を提供します。[KOIKI利用案件へのコンテナ設計情報](docs/development/phase4-d3-container-consumer-guidance-input-20261110.md)に、方式間の違い・責任分担・案件で判断する事項をまとめています。SPAの配信方法とIdP／token管理主体は別の設計判断であり、方式1へJava OIDC ClientとIdPを組み合わせる構成も選択肢ですが、今回のContainer検証では未実証です。
+
+Dockerfile／Compose・BFF・seed等は検証用資材で、正式Framework配布物や全案件の標準構成ではありません。公開済みFramework ZIPの更新を意味しません。方式2の初回認証transactionエラー原因は未確定で、他Clientの即時logoutも保証していません。HTTPS／proxy、実AWS／ECS、処理中drain・複数instance・本番運用、別案件での受入を今回の結果から保証せず、D3／Phase4全体の認定とは分けます。
 
 ## 現在の状態
 

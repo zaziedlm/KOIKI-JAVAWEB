@@ -1,5 +1,15 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3方式2 Windows手動環境の稼働保持（2026-11-10）
+
+**案件向け情報への引継ぎ整理：** Owner指示により[KOIKI利用案件へのコンテナ設計情報](docs/development/phase4-d3-container-consumer-guidance-input-20261110.md)を追加。案件側の設計主体を維持し、KOIKIから提供できる利用条件・参考構成・検証証拠と、方式1（Java Session／SPA同梱）・方式2（BFF Session／Java Bearer API）の違い・注意点を整理した。正式support／標準構成／Template昇格・D3全体受入を定めず、既存結果と残件へ追跡する文書成果。
+
+**Chrome／Edge・別利用者の追加点検済み：** Ownerの再試行報告後、12:45 JSTにapplicant-bの1,209円申請のSUBMITTED・明細一致・提出SUCCESS Audit／actor一致を確認。合計9申請（a8／b1）。IdP利用者JOINでA／applicant-aとB／applicant-bのLOGIN、A logout後もB refresh成功→B logoutを確認し、別ブラウザ認証分離のOwner報告と整合。最終BFF Session0、4サービスhealthy／restart0／OOMなし。[手動記録§9](docs/architecture/validation/phase4-d3-option2-windows-manual-20261110.md#9-chromeedge別利用者の再試行と点検1245-jst)参照。下段のapplicant-b未確認は追加点検前の履歴。初回認証エラー原因未確定・相互の他人詳細拒否の手動未確認を残し、環境保持・commit／remote未実施を継続する。
+
+**Owner打鍵報告後の最終点検済み：** Ownerは確認範囲の画面操作・約60秒のAccess Token期限後挙動に問題なしと報告。12:18 JSTの読取点検で申請5件すべてapplicant-aのSUBMITTED、明細合計一致・提出成功Audit各1件、A SSO logout後のB refresh拒否3件、最終BFF Session0・4サービスhealthy／restart0／OOMなしを確認。[手動記録§7](docs/architecture/validation/phase4-d3-option2-windows-manual-20261110.md#7-owner打鍵報告後の最終読取点検2026-11-10-1218-jst)を参照。user_not_found1件と後続login成功を別記し、初回invalid_auth_transaction推定の原因未確定・applicant-b手動分離の独立証拠なしを残す。環境は継続保持、結果全体受入・commit／remote・D3全体認定は未実施。以下の打鍵／点検未実施表示は点検前の履歴。
+
+Ownerの「方式2の手動環境起動・Owner打鍵を進めます」により、`8517ca5`＋手動起動Tooling差分から新規`d3-sso-s5-20261110-manual01`を準備・起動した。Java23／Node39／guard5・Next／image build成功、DB seed1回・BFF migration1/2、常設4サービス稼働・readiness／A／B HTTP200。[手動確認記録と操作順](docs/architecture/validation/phase4-d3-option2-windows-manual-20261110.md)を入口とする。URLは`http://localhost:13000/a`と`/b`、利用者`applicant-a`／`applicant-b`、passwordは`.tmp/d3-sso-s5-20261110-manual01/secrets/login_password`でローカル参照。`manual-ready.json`／`manual-state.json`を確認し、このproject／DB volume／secret／realmを指示なしに停止・cleanup・再seedしない。方式1資源は操作していない。Owner打鍵・操作後のlog／DB／Audit点検・結果受入は未実施、commit／remote・PR／mergeは今回行わない。以下の方式2手動環境未実施表示はこの指示・準備前の履歴。
+
 ## 現行入口：Windows修正後harnessのCloud限定回帰PASS（2026-11-10）
 
 **Cloud再検証結果の成果固定：** Ownerは「結果文書など3件をコミットして、pushまで進めましょう」と指示した。Cloud再検証結果・引継ぎ・本入口の文書3件をlocal commitに固定し、同じ作業branchへpushする。以下の結果commit／remote未実施表示はこの後続指示前の履歴。PR／merge・tag／Release・手動環境・D3全体の受入へは拡張しない。

@@ -1,5 +1,7 @@
 # D3方式2：S1専用DB・Java基盤／S2実IdP→API
 
+**Windows手動環境（2026-11-10）：** [操作順・保持条件](../../docs/architecture/validation/phase4-d3-option2-windows-manual-20261110.md)を参照。`d3-sso-s5-20261110-manual01`を稼働保持中。通常の`verify-s5.py`は障害注入とcleanupを行うため手動環境へ実行しない。新規S5 workの手動起動だけは`PYTHONUTF8=1`で`start-manual.py --work-dir <fresh-work>`を使う。image build後にpreflight、migration／seed各初回、4サービスのready確認を行い、環境と鍵を保持する。既存workへの再実行は拒否する。停止・cleanup・再seedはOwner指示に従う。
+
 **最新結果：Windows win06のS5-V01〜06限定技術PASS（2026-11-10）。** [Windows記録§13.1](../../docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#131-win06windows-s5限定技術pass2026-11-10)を参照。冒頭のS1記述は段階導入時の履歴で、後続のS2〜S5節を併せて読む。
 
 Tooling-ownedの限定検証。S1ではPostgreSQLと既存Reference backendだけを起動する。
