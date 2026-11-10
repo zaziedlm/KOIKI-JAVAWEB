@@ -1,0 +1,11 @@
+services:
+  frontend:
+    environment:
+      BFF_REFRESH: "true"
+  keycloak:
+    environment:
+      # Validate borrowed JDBC connections after the owned DB stop/recovery fault.
+      QUARKUS_DATASOURCE_JDBC_VALIDATE_ON_BORROW: "true"
+  helper:
+    volumes:
+      - ${D3_WORK}/helper:/tooling:ro

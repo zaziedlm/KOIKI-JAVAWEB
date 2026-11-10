@@ -1,0 +1,7 @@
+# Explicit diagnostic mode only; normal S5 image/startup is unchanged.
+services:
+  frontend:
+    environment:
+      NODE_OPTIONS: --max-old-space-size=768 --require=/opt/d3-stop-observer.cjs
+    volumes:
+      - ${D3_WORK}/recipe/stop-observer.cjs:/opt/d3-stop-observer.cjs:ro

@@ -1,0 +1,3 @@
+services:
+  frontend:
+    secrets: !override [client_a, koiki_bff]

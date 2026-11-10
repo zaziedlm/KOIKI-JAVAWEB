@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "node": "24.19.0",
+  "npm": "11.9.0",
+  "java_build_major": 21,
+  "maven": "3.9.16",
+  "packages": {
+    "next": "16.4.5",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "openid-client": "6.8.9",
+    "pg": "8.23.1",
+    "typescript": "7.0.2",
+    "playwright": "1.62.0",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/pg": "8.23.1"
+  },
+  "images": {
+    "java": {
+      "reference": "eclipse-temurin:21-jre-noble@sha256:0eda5830ed7b669abc246a8dc520ea8a23cab06f9a8d4b6964109e2f2394e46f",
+      "index_digest": "sha256:0eda5830ed7b669abc246a8dc520ea8a23cab06f9a8d4b6964109e2f2394e46f",
+      "linux_amd64_digest": "sha256:db724162e4ff5f71fa0a2815026314d9e5e0e9a139f49be1d4717e6930e93341",
+      "platform": "linux/amd64",
+      "availability": "registry metadata verified; runtime only java/postgres in S1"
+    },
+    "node": {
+      "reference": "node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df",
+      "index_digest": "sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df",
+      "linux_amd64_digest": "sha256:e5a8dee7bc1e6a215d224a7ef8206f7e77271bc3cabd5febf2beafac0674f174",
+      "platform": "linux/amd64",
+      "availability": "registry metadata verified; runtime only java/postgres in S1"
+    },
+    "postgres": {
+      "reference": "postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73",
+      "index_digest": "sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73",
+      "linux_amd64_digest": "sha256:7456ef82e5f5bc43d997f4781bbd7c0d6389bff397564649a356e206ba473aee",
+      "platform": "linux/amd64",
+      "availability": "registry metadata verified; runtime only java/postgres in S1"
+    },
+    "keycloak": {
+      "reference": "quay.io/keycloak/keycloak:26.8.1@sha256:3f3c5f8e03c614774b4bd9173b88391fefa4153bfc010d8012d59ad825377332",
+      "index_digest": "sha256:3f3c5f8e03c614774b4bd9173b88391fefa4153bfc010d8012d59ad825377332",
+      "linux_amd64_digest": "sha256:de6ed510b59cfcd25f129ba4118696fa10d4165eee921a8d846178b6d35d30f7",
+      "platform": "linux/amd64",
+      "availability": "registry metadata verified; runtime only java/postgres in S1"
+    }
+  },
+  "playwright_browser": {
+    "playwright": "1.62.0",
+    "chromium": [
+      {
+        "name": "chromium",
+        "revision": "1234",
+        "installByDefault": true,
+        "browserVersion": "151.0.7922.34",
+        "title": "Chrome for Testing"
+      },
+      {
+        "name": "chromium-headless-shell",
+        "revision": "1234",
+        "installByDefault": true,
+        "browserVersion": "151.0.7922.34",
+        "title": "Chrome Headless Shell"
+      }
+    ],
+    "probe": {
+      "browser": "151.0.7922.34",
+      "observed": [
+        {
+          "url": "http://localhost:13000/",
+          "status": 200,
+          "title": "S1 infrastructure probe"
+        },
+        {
+          "url": "http://idp.localhost:18080/",
+          "status": 200,
+          "title": "S1 infrastructure probe"
+        }
+      ],
+      "scope": "Infrastructure reachability only; no IdP/BFF/Cookie journey"
+    },
+    "host_os": "Debian13 Linux amd64"
+  },
+  "security_review": {
+    "npm_audit": {
+      "total": 0,
+      "critical": 0,
+      "high": 0,
+      "scope": "npm audit final lock on 2026-11-09; recheck at S3"
+    },
+    "images": {
+      "upstream_pages": [
+        "https://github.com/keycloak/keycloak/security/advisories",
+        "https://github.com/adoptium/temurin21-binaries/releases/tag/jdk-21.0.13%2B9",
+        "https://nodejs.org/en/blog/vulnerability"
+      ],
+      "limitations": [
+        "No trivy/grype installed; full image OS vulnerability scan not performed",
+        "PostgreSQL security site HTTP403 in current environment",
+        "Keycloak/Node runtime compatibility remains S2/S3 work; metadata availability is not runtime validation"
+      ]
+    },
+    "selection_change": "Next 16.2.9 candidate rejected: npm audit critical/high; explicitly select audit-proposed patched 16.4.5 before runtime"
+  }
+}

@@ -1,0 +1,38 @@
+services:
+  frontend:
+    image: ${D3_FRONTEND_IMAGE}
+    platform: linux/amd64
+    build:
+      context: ${D3_WORK}/frontend-context
+      dockerfile: Dockerfile.frontend
+      args:
+        NODE_RUNTIME_IMAGE: ${D3_NODE_IMAGE}
+        D3_FRONTEND_SHA256: ${D3_FRONTEND_SHA256}
+    user: '10001:10001'
+    read_only: true
+    tmpfs:
+      - /tmp:size=134217728,mode=1777
+      - /app/.next/cache:size=67108864,mode=1777
+    mem_limit: 1024m
+    cpus: 1
+    pids_limit: 160
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      APP_ORIGIN: http://localhost:13000
+      BACKEND_URL: http://backend:8080
+      NODE_OPTIONS: --max-old-space-size=768
+    secrets: [client_a, koiki_bff, bff_key]
+    ports: ['127.0.0.1:13000:3000']
+    healthcheck:
+      test: [CMD, node, -e, 'fetch("http://127.0.0.1:3000/health/ready").then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))']
+      start_period: 60s
+      start_interval: 3s
+      interval: 10s
+      timeout: 20s
+      retries: 4
+    stop_grace_period: 40s
+    logging: {driver: json-file, options: {max-size: 10m, max-file: "3"}}
+    networks: [database]
+secrets:
+  bff_key: {file: '${D3_WORK}/secrets/bff_key'}

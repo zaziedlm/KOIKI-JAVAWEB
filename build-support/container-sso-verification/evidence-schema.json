@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "D3 option2 staged result",
+  "type": "object",
+  "required": ["schema", "stage", "status", "source_sha", "checkpoints", "observations", "not_executed", "elapsed_seconds"],
+  "properties": {
+    "schema": {"const": 1},
+    "stage": {"enum": ["S1", "S2", "S3", "S4", "S5"]},
+    "status": {"enum": ["PASS", "FAIL", "HOLD"]},
+    "source_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "checkpoints": {
+      "type": "array", "maxItems": 6,
+      "items": {
+        "type": "object", "required": ["id", "status", "details"],
+        "properties": {
+          "id": {"enum": ["S1-V01", "S1-V02", "S1-V03", "S1-V04", "S1-V05", "S2-V01", "S2-V02", "S2-V03", "S2-V04", "S3-V01", "S3-V02", "S3-V03", "S3-V04", "S3-V05", "S4-V01", "S4-V02", "S4-V03", "S4-V04", "S5-V01", "S5-V02", "S5-V03", "S5-V04", "S5-V05", "S5-V06"]},
+          "status": {"const": "PASS"},
+          "details": {"type": "string"}
+        }
+      }
+    },
+    "observations": {"type": "object"},
+    "not_executed": {"type": "array", "items": {"type": "string"}},
+    "elapsed_seconds": {"type": "number", "maximum": 3600}
+  }
+}

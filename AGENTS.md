@@ -1,5 +1,97 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：D3方式2 Windows手動環境の稼働保持（2026-11-10）
+
+**案件向け情報への引継ぎ整理：** Owner指示により[KOIKI利用案件へのコンテナ設計情報](docs/development/phase4-d3-container-consumer-guidance-input-20261110.md)を追加。案件側の設計主体を維持し、KOIKIから提供できる利用条件・参考構成・検証証拠と、方式1（Java Session／SPA同梱）・方式2（BFF Session／Java Bearer API）の違い・注意点を整理した。正式support／標準構成／Template昇格・D3全体受入を定めず、既存結果と残件へ追跡する文書成果。
+
+**Chrome／Edge・別利用者の追加点検済み：** Ownerの再試行報告後、12:45 JSTにapplicant-bの1,209円申請のSUBMITTED・明細一致・提出SUCCESS Audit／actor一致を確認。合計9申請（a8／b1）。IdP利用者JOINでA／applicant-aとB／applicant-bのLOGIN、A logout後もB refresh成功→B logoutを確認し、別ブラウザ認証分離のOwner報告と整合。最終BFF Session0、4サービスhealthy／restart0／OOMなし。[手動記録§9](docs/architecture/validation/phase4-d3-option2-windows-manual-20261110.md#9-chromeedge別利用者の再試行と点検1245-jst)参照。下段のapplicant-b未確認は追加点検前の履歴。初回認証エラー原因未確定・相互の他人詳細拒否の手動未確認を残し、環境保持・commit／remote未実施を継続する。
+
+**Owner打鍵報告後の最終点検済み：** Ownerは確認範囲の画面操作・約60秒のAccess Token期限後挙動に問題なしと報告。12:18 JSTの読取点検で申請5件すべてapplicant-aのSUBMITTED、明細合計一致・提出成功Audit各1件、A SSO logout後のB refresh拒否3件、最終BFF Session0・4サービスhealthy／restart0／OOMなしを確認。[手動記録§7](docs/architecture/validation/phase4-d3-option2-windows-manual-20261110.md#7-owner打鍵報告後の最終読取点検2026-11-10-1218-jst)を参照。user_not_found1件と後続login成功を別記し、初回invalid_auth_transaction推定の原因未確定・applicant-b手動分離の独立証拠なしを残す。環境は継続保持、結果全体受入・commit／remote・D3全体認定は未実施。以下の打鍵／点検未実施表示は点検前の履歴。
+
+Ownerの「方式2の手動環境起動・Owner打鍵を進めます」により、`8517ca5`＋手動起動Tooling差分から新規`d3-sso-s5-20261110-manual01`を準備・起動した。Java23／Node39／guard5・Next／image build成功、DB seed1回・BFF migration1/2、常設4サービス稼働・readiness／A／B HTTP200。[手動確認記録と操作順](docs/architecture/validation/phase4-d3-option2-windows-manual-20261110.md)を入口とする。URLは`http://localhost:13000/a`と`/b`、利用者`applicant-a`／`applicant-b`、passwordは`.tmp/d3-sso-s5-20261110-manual01/secrets/login_password`でローカル参照。`manual-ready.json`／`manual-state.json`を確認し、このproject／DB volume／secret／realmを指示なしに停止・cleanup・再seedしない。方式1資源は操作していない。Owner打鍵・操作後のlog／DB／Audit点検・結果受入は未実施、commit／remote・PR／mergeは今回行わない。以下の方式2手動環境未実施表示はこの指示・準備前の履歴。
+
+## 現行入口：Windows修正後harnessのCloud限定回帰PASS（2026-11-10）
+
+**Cloud再検証結果の成果固定：** Ownerは「結果文書など3件をコミットして、pushまで進めましょう」と指示した。Cloud再検証結果・引継ぎ・本入口の文書3件をlocal commitに固定し、同じ作業branchへpushする。以下の結果commit／remote未実施表示はこの後続指示前の履歴。PR／merge・tag／Release・手動環境・D3全体の受入へは拡張しない。
+
+Ownerの「再検証へ進めましょう」により`5ac06e3`・開始時cleanからCloud資材を新規生成し、新規`d3-sso-s5-20261110-cloud01`で通常S5-V01〜06を1回実行して全PASS。境界5／observer1／Node39／guard5／Java直接23件も全成功。Browser.close後のfrontend0.201秒／143、backend0.446秒／143、Keycloak1.199秒／143、強制kill／OOMなし。新Browser／3 contextの復元対象Cookie完全一致・必須Session3件の値／属性／有効性・期限切れ固定補助CookieA/B各1件の除外／非復活・HTTP前DB/IdP event不変、同volume／同鍵保持・後段業務／Audit／SSO、cleanup・10 secret/realm削除・export/checksum/source67 file照合が成立。[Cloud再検証結果](docs/architecture/validation/phase4-d3-option2-cloud-harness-reverification-results-20261110.md)を現行入口とする。通常runtimeで停止診断observerは有効化していない。準備manifestの旧固定回数は実行前に整合させ、harness/Framework/Reference/依存/lockは無変更。旧Cloud/Windows結果と失敗履歴を保持する。旧Cloud最終PASS ZIP `d3-sso-s5-20261109-02`はOwner取得・SHA一致確認済みだが、新Cloud ZIPのWindows受領は未確認。結果commit/remote・手動環境/Owner打鍵・結果全体受入・D3/Phase4全体の認定は未実施。以下のCloud未実施・旧最終PASS ZIP受領OPEN表示は当該実行/報告前の履歴。
+
+## 現行入口：D3方式2 Windows成果固定・Cloud再検証引継ぎ（2026-11-10）
+
+OwnerはWindows検証までのTooling・文書とCloud引継ぎをcommitし、当該作業branchへpushしてCodex Cloudで点検するよう指示した。[Cloud再検証引継ぎ](docs/development/phase4-d3-option2-cloud-harness-reverification-handoff-20261110.md)を次の入口とする。push完了報告の実SHA・clean状態をCloudで確認し、Cloud専用に資材を再生成、境界5／observer1／Node39／guard5と新規projectの通常S5-V01〜06を1回確認する。Cloud実行はこのWindows作業では開始せず、結果・証拠はWindowsと分離する。PR／merge・tag／Release・手動環境は今回の指示に含めない。以下のcommit／remote未実施表示はこの成果固定指示前の履歴として読む。
+
+## Windows S5限定技術PASS（2026-11-10）
+
+Owner指示の期限切れ補助Cookie期待集合修正後、新規`d3-sso-s5-20261109-win06`のS5-V01〜06が全件PASS。固定IdP／realmのKC_AUTH_SESSION_HASHで注入時期限切れの場合だけ除外し、A／B各1件の非復活を確認。その他Cookie完全一致・必須BFF Session3件の存在／同一ID／属性／有効性を維持した。境界5／Node39／guard5成功。frontend0.412秒／143、backend0.662秒／143、Keycloak1.465秒／143、同volume／同鍵snapshot一致、最終業務／Audit・SSO成立。専用資源残留0・10 secret／realm削除・export／checksum／実行source67 file照合成功。[Windows記録§13.1](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#131-win06windows-s5限定技術pass2026-11-10)を最新入口とする。Cloud ZIP受領OPEN、手動環境／Owner手動確認・結果受入・commit／remote未実施を維持。次は結果・差分確認とOwner判断。以下のFAIL／HOLD・未実施は各時点の履歴として保持する。
+
+## 履歴入口：D3方式2 Windows自動再現の初回停止（2026-11-09）
+
+**期限切れ補助Cookie期待集合の訂正指示：** Ownerが当該harness修正へ進むよう指示した。[Windows記録§13](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#13-期限切れ補助cookieの期待集合訂正win06)に従い、固定IdP／realmのKC_AUTH_SESSION_HASHで注入時期限切れの場合だけ復元・期待集合から除外し、非復活を確認する。その他Cookieと必須BFF Session3件の厳密比較は維持。境界5／Node39／guard5を確認後、新規win06で通常S5集合1回を実行する。以下の訂正・再確認未承認表示はこの指示前の履歴。手動環境・commit／remoteへ拡張しない。
+
+**win05で欠落Cookieの役割・期限を特定：** Owner指示の1回確認で、A／Bの欠落はKeycloakのIDP_AUTH_SESSION_HASH（KC_AUTH_SESSION_HASH、採用版sourceで既定60秒）と判明。取得時valid（A5〜30秒／B0〜5秒残存）、注入前・読取後expired。必須BFF Session3件は存在・同一ID・属性一致・有効性全true。期限切れ補助Cookieまで完全一致を求めたharness期待値が今回のFAIL原因。[Windows記録§12](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#12-欠落cookieの役割期限状態確認win05)を最新入口とする。frontend0.412秒／143、同volume／同鍵snapshot一致、専用資源残留0・10 secret／realm削除・FAIL export／checksum／source65 file保全成功。次の案は注入時点で期限切れの同補助Cookieだけを期待集合から除外し、有効Cookie・必須Sessionの厳密比較を維持する修正。まだ修正・追加S5を実行していない。手動環境・commit／remoteは先行しない。以下は原因特定前の履歴。
+
+**欠落Cookieの役割・期限状態確認の指示：** Ownerが当該確認へ進むよう指示した。[Windows記録§12](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#12-欠落cookieの役割期限状態確認win05)へ追跡し、新規win05で1回確認する。匿名役割、取得／注入／読取時の期限状態・残存時間bucket、必須BFF Session3件の存在／同一ID／属性／有効性だけを観測。Cookie値や生時刻は出さず、完全一致・停止判定を維持。以下の次回観測判断待ちはこの指示前の記録とし、手動環境・commit／remoteは先行しない。
+
+**win04の追加S5結果：** Owner指示の通常S5集合1回を新規win04で実行し、Cookie復元検査でFAIL。AのCookie6→5、Bの5→4で各1件missing、独立contextは5件一致。unexpected0・残存Cookieの変更field0。frontend0.413秒／143・backend0.524秒／143・Keycloak1.498秒／143、強制kill／OOMなし、同volume／同鍵snapshot一致を再確認。missingが期限切れか非受入かは未確定。[Windows記録§11](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#11-cookie差分観測付き追加s5win04)を最新入口とする。専用資源残留0・10 secret／realm削除・FAIL export／checksum／source65 file保全成功。次はmissingの匿名役割・期限状態と必須BFF Session3件の個別照合の判断。今回の追加1回は終了し、次の観測／実行・手動環境・commit／remoteは先行しない。以下はwin04実行前の経緯。
+
+**Cookie差分観測付き追加S5の指示：** Ownerが追加S5実行を指示した。[Windows記録§11](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#11-cookie差分観測付き追加s5win04)に従い、新規win04で通常S5集合1回を実行する。件数・変更field名だけを観測し、Cookie値・属性完全一致／同一Session ID・停止条件を維持する。従来FAIL・source／artifactを保持し、手動環境・commit／remoteへ拡張しない。以下の追加S5判断待ちはこの指示前の記録とする。
+
+**win03：frontend停止改善・Cookie復元検査でHOLD：** Owner指示のBrowser終了・Cookieメモリ復元をToolingだけへ実装し、新規win03で通常S5を1回実行。Node39／guard5成功。Browser.close後のfrontendは0.413秒／143、backend0.758秒／143・Keycloak1.389秒／143、強制kill・OOMなし。同volume／同鍵のDB／Audit／Session暗号文等のsnapshotも一致したが、新BrowserへのCookie値・属性完全一致検査で停止しS5全体FAIL。[Windows記録§10](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#10-browser終了cookieメモリ復元によるharness修正)へ追跡。Cookie差分fieldは未特定。合成Cookieの3条件probeでは差分なし、実行後に件数・変更field名だけを残す観測を追加（実Cookieで未実行）。判定を緩めず、次は実Cookie集合の差分特定。専用資源残留0・10 secret／realm削除・FAIL export／checksum／source65 file保全成功。追加通常S5・手動環境・commit／remoteは先行しない。以下はwin03前の記録。
+
+**Browser終了・Cookieメモリ復元の後続指示：** Ownerが当該harness修正へ進むよう指示した。[Windows記録§10](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#10-browser終了cookieメモリ復元によるharness修正)に従いToolingだけを修正し、新規win03で同一S5集合1回を確認する。停止前Browser.close完了→Cookieメモリ保持→同volume／同鍵再起動・DB／Audit照合→新BrowserContextへ属性・同一Session IDを維持して復元する。40秒／exit0・143等の合格条件は維持。以下の当該修正判断待ちは指示前の記録。Framework／Reference／Next本体改変・手動環境・commit／remoteへは拡張しない。
+
+**限定調査の結果：** 新規`diag01`1回で、Next PID1所有のrequestイベント未発火13 socketと、Windows側Chrome Established13件の継続を観測した。SIGTERM後10.087秒の3 APIRequestContext解放でも変化せず、NextはHTTP server.closeのcallback待ち（後段のnextServer.close前）で停止。41.307秒／137・OOMなしで終了した。S5全体PASSではなく、所有元・待機箇所の限定調査結果。[Windows記録§9](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#9-owner指示後の接続所有元停止待機箇所の限定調査)を参照。observer専用1／Node39／guard5成功、専用資源残留0・10 secret／realm削除・export／checksum／source65 file保全成功。次の候補はBrowser process終了とCookieメモリ保持・新Context復元によるharness静穏化。まだ実装・追加実行していない。実Browser接続中の本番drain対策とは分け、追加S5・手動環境・commit／remoteを先行しない。以下は調査開始前の経緯とする。
+
+**接続所有元・Next停止待機の後続調査指示：** Ownerが当該2点の調査続行を指示した。[Windows記録§9](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#9-owner指示後の接続所有元停止待機箇所の限定調査)の診断用新規project1回へ進む。HTTP request／socket分類・FD所有とclose呼出し／callbackを秘密値なしで観測し、SIGTERM後10秒でPlaywright API接続だけを解放する対照を置く。Next／Framework／Referenceをpatchせず、40秒／exit0・143の条件を維持。診断完了はS5全体PASSにしない。以下の追加調査判断待ちはこの後続指示前の履歴とする。
+
+**静穏化・診断追加後のwin02もFAIL：** Owner指示に従いBrowser3画面のblank／networkidle・Cookieメモリ保持と、PID1／port3000接続集計をToolingへ追加し、新規`d3-sso-s5-20261109-win02`で同一S5集合を1回実行した。Node39件／guard5件成功、JAR／frontend hash照合して再利用。frontend SIGTERM41.066秒・exit137（OOMなし）で停止した。SIGTERM後に待受が消え、ESTABLISHED12件が35秒時点まで残存。接続owner・停止awaitは未確定。[Windows記録§8](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#8-owner指示後の静穏化停止診断と同一集合1回)を最新入口とする。今回専用資源残留0、10 secret／realm削除、FAIL Evidence export・checksum／source snapshot62 file照合成功。許可された再実行1回は終了。次は残る接続の所有元・HTTP完了状態／Next停止phaseの有限調査の判断であり、追加実行・3回目S5・手動環境起動・commit／remoteは先行しない。Cloud／初回FAILの証拠と既存方式1保護条件を維持する。
+
+**後続Owner再実行指示：** 停止前Browser接続の静穏化・停止診断をToolingへ追加し、新規projectで同じS5集合1回の再実行をOwnerが指示した。[Windows記録§8](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md#8-owner指示後の静穏化停止診断と同一集合1回)へ追跡する。40秒・exit0／143の判定を維持し、初回FAIL・別source／artifact・cleanup／exportを保持する。以下の再実行判断待ちはこの後続指示前の記録。Framework／Reference改変・手動環境起動・commit／remoteへ拡張しない。
+
+OwnerのWindows再現指示により、S5固定`bf3eca6`のlocal／remote一致・開始時cleanを確認し、新規Java23件／Node39件・guard5件・Next／image buildを実施。ToolingのWindows read-only secret削除対応を最小追加した新規project `d3-sso-s5-20261109-win01`で初回S5集合を1回実行したが、frontend SIGTERMが41.313秒・exit137（OOMなし）でFAIL、後続HOLD。[Windows初回記録](docs/architecture/validation/phase4-d3-option2-windows-reproduction-20261109.md)を現行入口とする。並行refresh／logout競合・実JWT期限401・依存停止回復は途中観測で、runnerのcheckpoint確定前に停止したため全群PASSとしない。専用container／DB volume／network残留0、10 secret／realm削除、失敗Evidence export・Windows内checksum照合・source62 file保全が成立。Cloud ZIP受領は未確認。次は同記録§5の停止診断／静穏条件・必要最小Tooling修正と同一集合の新規project1回再実行の判断。追加動的実行・手動環境起動・commit／remoteは先行しない。Cloud結果を上書きせず、旧Cloudの再実行承認を流用しない。既存方式1環境の保持条件は継続する。
+
+## 現行入口：D3方式2 S5 Cloud限定技術PASS（2026-11-09）
+
+**S5コミットポイント・Windows引継ぎ：** OwnerはS5 PASSのcommitと、Windows再現のための作業branchへのremote pushを指示した。S5のTooling実装・結果記録・本入口を固定し、S1〜S5のlocal固定履歴を同branchへ送る。[S5結果§10](docs/architecture/validation/phase4-d3-option2-s5-results-20261109.md#10-windows再現への引継ぎ)をWindowsの入口とする。Windowsでは同commitをpullしてSHA／clean状態・環境を確認し、新規build／project／DB／secretで自動再現する。Cloudの.tmp／鍵／DBをGitで転送しない。Windows手動環境の起動・保持、PR／merge・D3全体受入へ拡張しない。以下のcommit／remote未実施表示はこの後続指示前の履歴。
+
+Ownerの「S5へ進めましょう」によりS4固定`f365831`からToolingだけを実装。修正後の新規project `d3-sso-s5-20261109-02`でS5-V01〜06がPASS。並行2要求で実refresh1回・token/version原子更新、旧token再送なし・専用Sessionのrotation後旧token拒否、logout競合で復活なし、2利用者SSR/RSC/API分離、実JWTをexp＋実効skew60＋5秒後にJavaへ直接送り401、IdP/backend/DB停止回復、SIGTERM・同volume/同鍵の保持、最終Browser作成/詳細/提出・A→B SSO、残るB JWT200→refresh401→silent login_required、cleanup・secret/realm削除・exportが成立。[S5結果](docs/architecture/validation/phase4-d3-option2-s5-results-20261109.md)にKS01〜10の段階別source/artifact対応・継承と未反復を記録した。単体39件・共有guard5件PASS。初回はDB回復後のKeycloakの古いpool接続で新規login500となりFAIL、cleanup/exportを保持。S5専用borrow時検証とtoken/version更新・観測を訂正し、同一S5集合を新規projectで再実行した。結果不明は単体stub、pending再起動拒否はSQL fixture、静穏時SIGTERMであり処理中drainは未実証。Framework/Reference変更・Java再buildなし。S1〜S5の限定技術成立をD3/Phase4全体や本番運用の受入へ拡張しない。結果Owner判断・commit/remote、Windows持帰り/手動確認は未実施。既存保持資源の条件を維持し、以下のS5未着手表示は以前の履歴。
+
+## 現行入口：D3方式2 S4 Cloud限定技術PASS（2026-11-09）
+
+**S4コミットポイント：** Ownerは「S4 PASS をコミットします」と指示した。S4のTooling実装・結果記録・本入口をlocal commitとして固定する。S5開始・push／PR／merge・D3全体の受入へ拡張しない。以下のcommit未実施・別判断表示はこの後続指示前の履歴。
+
+Ownerの「S4へ進めましょう」によりS3固定`f48a0cc`からToolingだけを実装。新規project `d3-sso-s4-20261109-03`でS4-V01〜04がPASS。実ChromiumでA認証→B匿名→prompt=noneによる独立B Session、新規contextのlogin_required、client混同拒否、A local logoutとSSO logoutの範囲、state／固定復帰先・再利用拒否、cleanup・生成secret／realm削除・exportが成立。[S4結果](docs/architecture/validation/phase4-d3-option2-s4-results-20261109.md)を現行入口とする。単体29件・共有guard5件PASS。初回／診断実行FAILとhost Node DNS差を保持し、harnessのIdP負例をChromium遷移へ訂正して同一集合を新規projectで再実行した。Framework／Reference変更・Java再buildなし。SSO logout後もBの既存Session／JWTは観測時点で利用でき、即失効・backchannelを保証しない。同じOrigin／process内の2 RPでありCookie Pathを強い隔離境界とはしない。S5・結果受入・commit／remoteへ自動進行せず、Windows持帰り未確認・既存保持資源の条件を維持する。以下のS4未着手表示は以前の履歴。
+
+## 現行入口：D3方式2 S3 Cloud限定技術PASS（2026-11-09）
+
+**S3コミットポイント：** Ownerは「S3 PASSのここで、コミットしましょう」と指示した。S3のTooling実装・結果記録・本入口をlocal commitとして固定する。S4開始・push／PR／merge・D3全体の受入へ拡張しない。以下のcommit未実施・別判断表示はこの後続指示前の履歴。
+
+OwnerのS3開始指示によりS2固定`445681c`からToolingだけを実装。新規project `d3-sso-s3-20261109-01`でS3-V01〜05がPASS。Client Aの実Browser認証・暗号化Session／nonce／PKCE、一回消費・CSRF／Origin・固定API／上限・正常3操作／DB／Audit、no-store／秘密非露出、logout・idle期限、鍵欠落の起動拒否、cleanup・secret／realm削除・exportが成立。[S3結果](docs/architecture/validation/phase4-d3-option2-s3-results-20261109.md)を現行入口とする。Node境界21件・共有guard5件成功。初回native TS読込停止と訂正を保持し、runtime集合は1回で成功。Java／Framework変更・再buildなし。実効4CPU内に合わせprobeをBFFと非並走にし、4.5CPU同時構成の実証としない。S4・結果受入・commit／remoteへ自動進行せず、Windows持帰り未確認・既存保持資源の条件を維持する。以下のS3未着手表示は以前の履歴。
+
+## 現行入口：D3方式2 S2 Cloud限定技術PASS（2026-11-09）
+
+**S2コミットポイント：** Ownerは「S2 PASSをコミットします」と指示した。S2のTooling実装・結果記録・本入口をlocal commitとして固定する。S3開始・push／PR／merge・D3全体の受入へ拡張しない。以下のcommit未実施・別判断表示はこの後続指示前の履歴。
+
+OwnerのS2開始指示によりS1固定`3e3ec1b`からToolingだけを実装。最終project `d3-sso-s2-20261109-05`でS2-V01〜04がPASS。実Chromium6認証、library標準のID Token JWS／state／nonce／PKCE、canonical issuer、Javaの正常3操作・拒否6条件11要求とDB／Audit不変、helper終了・cleanup・secret／生成realm削除・exportが成立。[S2結果](docs/architecture/validation/phase4-d3-option2-s2-results-20261109.md)を現行入口とする。直接回帰23件・共有guard5件・OIDC境界3件もPASS。初回enum設定／観測SQLの失敗と、観測・署名検証を補強した中間結果を別Evidenceで保持し、OwnerのFramework非改変修正後再実行許可に従った。Framework／Reference本体の変更なし。S3・結果Owner受入・commit／remoteへ自動進行せず、Windows持帰り未確認と既存保持資源の条件を維持する。以下のS2未着手表示は以前の履歴。
+
+## 現行入口：D3方式2 S1 Cloud限定技術PASS（2026-11-09）
+
+**S1コミットポイント：** OwnerはS1 PASSをコミットポイントと認識し、S1のTooling実装・結果記録・本入口のlocal commitを指示した。今回この範囲を固定する。S2開始・push／PR／merge・D3全体の受入へ拡張しない。以下のcommit未実施・別判断表示はこの後続指示前の履歴。
+
+**最新結果：** Owner承認後、新規project `d3-sso-s1-20261109-02`で同じS1-V01〜05を1回再実行し、全件PASS・自動cleanup・生成secret削除・証拠exportが成立した。[S1結果§8](docs/architecture/validation/phase4-d3-option2-s1-results-20261109.md#8-owner承認後の修正済み新規project再実行)を参照。既存JAR／imageをhash照合して再利用し、Framework変更なし。初回project `01`の失敗・cleanup復旧・Evidenceも保持。Windows持帰り／checksum照合は未確認。S2・結果全体受入・commit／remoteへ自動進行しない。以下のHOLD・再実行未実施表示は初回の履歴。
+
+**後続Owner再実行指示：** Ownerは修正後の新規projectで同じS1集合1回の再実行を指示し、Framework本体の改変を伴わないS1範囲の修正後再実行を許可した。初回失敗・cleanup復旧・各試行のsource／結果を保持して進める。同一範囲の修正・再実行許可を反復要求しない。Framework変更・S2開始・commit／remoteへは拡張しない。以下の再実行未承認表示はこの指示前の履歴。
+
+OwnerのS1実装開始指示によりTooling資材を実装。Java直接回帰2件・guard5件・backend image buildはPASSだが、初回runtimeはCompose tmpfs不備でbackend作成前に停止し、S1はHOLD。[S1結果](docs/architecture/validation/phase4-d3-option2-s1-results-20261109.md)を参照。自動cleanupのnetwork ID／名比較不備も記録し、所有label照合後に今回projectだけcleanup、残留0・生成secret削除・失敗Evidence exportまで成立。両不備は訂正・静的確認済み、動的再実行は未実施。計画の各集合初回1回を維持し、新規projectで同じS1集合1回の再実行案を提示中。S2へ自動進行せず、commit／remoteも先行しない。方式1の保持中資源は操作していない。以下のS1未着手表示は実装前の履歴とする。
+
+## 現行入口：D3方式2の実装・検証条件具体化（2026-11-09）
+
+**Cloud引継ぎ・成果固定の後続指示：** Ownerは[段階別計画§11](docs/development/phase4-d3-option2-staged-task-plan-20261109.md#11-cloud実装自動検証windows再現手動確認)へのCloud実装／自動検証・Windows再現／手動確認の分担、Linux build、Cloud開始前確認、証拠持帰り手順の追記と、本作業branchへのcommit・pushを指示した。今回の文書一式を固定・pushしてCloudへ渡す。以下のcommit／remote未承認表示はこの指示前の履歴とし、PR／merge／tag／Releaseは今回含めない。Cloudでは報告された実commit SHAを確認しS1から順に進め、各段階結果後に次へ判断する。現在のWindowsでは実装・動的実行を先行しない。方式1の保持中環境は維持する。
+
+**後続Owner判断：** 具体化案・DB整理と5段階で進める方針をOwner了解済み。[段階別タスク計画](docs/development/phase4-d3-option2-staged-task-plan-20261109.md)を現行入口とする。S1 DB／基盤→S2 Keycloak／Java API→S3 BFF最小縦断→S4独立2 Client SSO→S5 refresh／障害／終了の順。今回の指示はタスク計画の具体化であり、全段階の実装開始・動的実行は未承認／未着手。次はS1の開始条件・対象／実行上限の確認と開始判断。既存KOIKI tableは構造変更なし、BFF新規3 table案、Keycloak tableは製品管理。段階ごとの結果確認・次段階判断とcommit／remoteを分け、旧一括実行枠を流用しない。
+
+Owner指示により、local main／origin/main／GitHub mainが一致する`cf77a3c58c9dd4a7460e965ec9abe224f668c083`から、新規branch `docs/d3-option2-implementation-conditions-20261109`で方式2（Next.js BFF＋Java API＋PostgreSQL＋Keycloak）の条件具体化へ進む。[実装・有限検証条件](docs/development/phase4-d3-option2-implementation-conditions-20261109.md)を今回の入口とする。Tooling-ownedの計画初版であり、実装・依存取得・image build／起動・動的検証・commit／remoteは未実施。初回は既存Bearer APIの作成／本人詳細／提出と独立2 Clientの選択SSO、3 DB分離を対象候補とする。正確な採用版／digest・file manifest／直接回帰集合・資源／時間・Owner開始判断は同書§8で確定する。方式1の保持中手動project／DB／volume／secret／Evidenceを操作せず、旧予算・承認を流用しない。D3／Phase4全体の認定を変更しない。以下の方式1の実行記録と保持条件は継続して適用する。
+
 ## 現行入口：D3改善版の自宅Windows再検証（2026-11-07）
 
 **後続Owner指示による手動環境を稼働保持中：** 新規project `d3-home-manual-20261107`／port18081で改善版imageをbuild・起動し、両利用者のHTTP login／選択routeと元JAR hash label照合が成功。URL `http://127.0.0.1:18081/login`、起動記録は`.tmp/d3-home-manual-20261107/manual-ready.json`。[自宅端末結果§7](docs/architecture/validation/phase4-d3-home-container-reverification-20261107.md#7-後続owner指示による手動確認環境の準備)を参照。手動打鍵・Owner結果受入は未確認。このprojectのapp／DB／volume／secretを自動停止・cleanup・seed再投入しない。下記の手動起動未実施はこの後続指示前の履歴である。

@@ -1,0 +1,9 @@
+services:
+  frontend:
+    environment:
+      BFF_RPS: a,b
+    secrets:
+      - client_b
+secrets:
+  client_b:
+    file: ${D3_WORK}/secrets/client_b
