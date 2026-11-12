@@ -55,8 +55,8 @@ Framework Public API、Starter、migration、dependencyまたはSecurity既定�
 |---|---|---|
 | Parent / BOM | Java、Spring Boot、dependencyおよびbuild基準を揃えます | 現在は正式なCustomer向けreleaseではありません |
 | API / Data / Data JPA / Observability Starter | Web API、永続化、JPA、観測性の基礎を構成します | 必要なStarterだけを選びます |
-| Security / Audit / Identity / Session JDBC Starter | default deny、Audit、local Identity、server-side Sessionを構成します | route、Role / Permission、provisioning、IdP設定はCustomer Ownershipです |
-| Web MVC Starter | Thymeleaf HTML主軸のMVCとKOIKI Web resourceを利用します | Customer画面、Form、View DTO、UXはCustomer Ownershipです |
+| Security / Audit / Identity / Session JDBC Starter | default deny、Audit、local Identity、server-side Sessionを構成します。`0.1.0-preview.1`でSession logout customizerを使う場合は`CookieSerializer`の宣言が必要です（是正版では不要） | route、Role / Permission、provisioning、IdP設定はCustomer Ownershipです |
+| Web MVC Starter | Thymeleaf HTML主軸のMVCとKOIKI Web resourceを利用します。共通templateは`koiki/fragments :: head(title)`だけです | Customer画面、header／navigation等のlayout、Form、View DTO、UXはCustomer Ownershipです |
 | Architecture Contract / ArchUnit Rules | module、Tier、依存方向、internal参照違反を検出します | 規則回避のための除外を案件側で暗黙に追加しません |
 | `koiki-testing` | 公開契約に対するtest支援を利用します | production runtime、Reference fixtureまたは万能test kitではありません |
 

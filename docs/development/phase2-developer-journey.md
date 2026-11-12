@@ -157,6 +157,7 @@ Session initializer、table名、Web cleanup cronはStarterの安全な既定に
 | local auth起動失敗 | enable、source protection、HMAC key ID / secret | secretを環境から供給し、値をlogへ出さない |
 | `IdentityAdministration`を注入できない | Audit、password checker、Session invalidator | 管理機能の必須協力beanを明示する。Query-only構成と混同しない |
 | Session JDBC起動失敗 | initializer、table name、cleanup cron | KOIKI固定値への独自overrideを除去する |
+| `koikiSessionLogoutCustomizer`を注入できない（`NoSuchBeanDefinitionException`） | KOIKIの版、`CookieSerializer` beanの有無 | `0.1.0-preview.1`では、Boot `ServerProperties`の`server.servlet.session.cookie.*`を反映した`CookieSerializer`をApplicationで宣言する（[R-02](../architecture/validation/phase4-r02-cookie-logout-results-20261021.md)の形）。是正版ではBoot既定のserializerで成立し、宣言は不要 |
 | migration / JPA validate失敗 | PostgreSQL Flyway module、location、history、schema | Framework SQLをcopyせず、所有者別migrationと履歴を修正する |
 | OIDC login失敗 | registration、issuer、redirect URI、state / nonce | Spring Security / Boot標準設定とCustomer matcherを確認する |
 | Bearer 401 / 403 | token種別、signature / issuer / audience / time、scope | 401認証失敗と403権限不足を分け、ID TokenをAccess Token代用しない |

@@ -20,17 +20,24 @@ import org.koikifw.session.internal.KoikiSessionJdbcAutoConfiguration;
 import org.koikifw.session.internal.KoikiSessionJdbcDefaultsEnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration;
+import org.springframework.boot.session.jdbc.autoconfigure.JdbcSessionAutoConfiguration;
+import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
 
 class SessionJdbcAutoConfigurationContextTest {
@@ -155,6 +162,70 @@ class SessionJdbcAutoConfigurationContextTest {
             assertThat(authentication.getCredentials()).isNull();
             verify(cookieSerializer).writeCookieValue(any(CookieSerializer.CookieValue.class));
         });
+    }
+
+    @Test
+    void usesBootSessionCookieSerializerWhenTheApplicationDeclaresNone() {
+        bootSessionRunner()
+                .withPropertyValues(
+                        "server.servlet.session.cookie.secure=true",
+                        "server.servlet.session.cookie.same-site=lax",
+                        "server.servlet.session.cookie.name=KOIKI_FIXTURE_SESSION",
+                        "server.servlet.session.cookie.path=/fixture")
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(context).hasSingleBean(CookieSerializer.class);
+                    assertThat(context).hasBean("cookieSerializer");
+                    assertThat(context).hasBean("koikiSessionLogoutHandler");
+                    assertThat(context).hasBean("koikiSessionLogoutCustomizer");
+                    assertThat(context.getBean("koikiSessionLogoutCustomizer")).isInstanceOf(Customizer.class);
+
+                    MockHttpServletResponse response = new MockHttpServletResponse();
+                    context.getBean("koikiSessionLogoutHandler", LogoutHandler.class)
+                            .logout(new MockHttpServletRequest(), response, null);
+                    String deletion = response.getHeader("Set-Cookie");
+                    assertThat(deletion)
+                            .startsWith("KOIKI_FIXTURE_SESSION=;")
+                            .contains("Max-Age=0", "Path=/fixture", "Secure", "HttpOnly", "SameSite=Lax");
+                });
+    }
+
+    @Test
+    void prefersTheApplicationCookieSerializerOverBootDefault() {
+        DefaultCookieSerializer applicationSerializer = new DefaultCookieSerializer();
+        applicationSerializer.setCookieName("APPLICATION_SESSION");
+
+        bootSessionRunner()
+                .withBean("applicationCookieSerializer", CookieSerializer.class, () -> applicationSerializer)
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(context).hasSingleBean(CookieSerializer.class);
+                    assertThat(context).doesNotHaveBean("cookieSerializer");
+                    assertThat(context).hasBean("koikiSessionLogoutCustomizer");
+
+                    MockHttpServletResponse response = new MockHttpServletResponse();
+                    context.getBean("koikiSessionLogoutHandler", LogoutHandler.class)
+                            .logout(new MockHttpServletRequest(), response, null);
+                    assertThat(response.getHeader("Set-Cookie")).startsWith("APPLICATION_SESSION=;");
+                });
+    }
+
+    /**
+     * Boot's Session auto-configuration together with KOIKI on an embedded server, as in a Customer
+     * application. A mock ServletContext would select Boot's war-deployment serializer instead.
+     */
+    private WebApplicationContextRunner bootSessionRunner() {
+        return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+                .withConfiguration(AutoConfigurations.of(
+                        KoikiSessionJdbcAutoConfiguration.class,
+                        SessionAutoConfiguration.class,
+                        JdbcSessionAutoConfiguration.class,
+                        TomcatServletWebServerAutoConfiguration.class))
+                .withPropertyValues("server.port=0")
+                .withBean(DataSource.class, () -> mock(DataSource.class))
+                .withBean(PlatformTransactionManager.class, () -> mock(PlatformTransactionManager.class))
+                .withBean(JdbcIndexedSessionRepository.class, () -> mock(JdbcIndexedSessionRepository.class))
+                .withPropertyValues(APPROVED_VALUES);
     }
 
     private void assertRejected(String property, String expectedMessagePart) {

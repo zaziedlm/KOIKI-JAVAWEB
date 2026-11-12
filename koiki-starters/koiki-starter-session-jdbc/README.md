@@ -8,6 +8,9 @@ Phase 2 P2-B3のFramework-owned Spring Session JDBC構成を、Sessionを利用�
 - table名とWeb process内cleanup無効化を固定し、設定逸脱時はstartup failureとする
 - Secure / HttpOnly / SameSite Cookieを安全な既定とする
 - Sessionを利用しないBearer専用applicationは本Starterを導入しない
+- Servlet logout用の`koikiSessionLogoutHandler`／`koikiSessionLogoutCustomizer`は`CookieSerializer` beanを使う。
+  Spring Bootの`SessionAutoConfiguration`より後に評価し、Applicationが宣言しなければBoot既定のserializer
+  （`server.servlet.session.cookie.*`を反映）を使う。`0.1.0-preview.1`はこの順序指定がなく、Applicationの宣言が必要だった
 
 P2-B3 B3-3では、既存`UserSessionInvalidator`をSpring Session JDBCのprincipal indexへ接続し、対象userの
 全Sessionだけを同期削除する。Spring Security標準logoutを内部handlerで拡張し、Session store障害時もlocal

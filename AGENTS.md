@@ -1,5 +1,9 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：利用側報告2件（共通header fragment・Session logout customizer）の是正（2026-11-12）
+
+[Owner判断票](docs/development/phase4-consumer-feedback-web-fragment-session-logout-owner-review-20261112.md)§7でOwnerがD-1＝A1、D-2＝B1、D-3＝O-1別票、D-4＝§6のままを選択。branch `claude/eager-hawking-2pyla8`で、Web MVC Starterの`koiki/fragments :: header`をReference所有の`reference/fragments :: header`へ移し、`KoikiSessionJdbcAutoConfiguration`をBoot `SessionAutoConfiguration`の後に評価するよう是正した。[結果](docs/architecture/validation/phase4-consumer-feedback-web-fragment-session-logout-results-20261112.md)を入口とする。Session context test 7件（負の対照で新規1件のFAILを確認）、Reference・Architecture対象46件PASS、通常root 554実行・既知のroot権限起因failure 1・skip 100。packaged E2Eはcloud環境のbrowser版不一致で未成立、PRのCIで確認する。結果Owner受入、O-1別票、後続版収録は未完了。公開済み`framework-0.1.0-preview.1`は変更しない。
+
 ## 現行入口：D3方式2 Windows手動環境の稼働保持（2026-11-10）
 
 **案件向け情報への引継ぎ整理：** Owner指示により[KOIKI利用案件へのコンテナ設計情報](docs/development/phase4-d3-container-consumer-guidance-input-20261110.md)を追加。案件側の設計主体を維持し、KOIKIから提供できる利用条件・参考構成・検証証拠と、方式1（Java Session／SPA同梱）・方式2（BFF Session／Java Bearer API）の違い・注意点を整理した。正式support／標準構成／Template昇格・D3全体受入を定めず、既存結果と残件へ追跡する文書成果。

@@ -2,7 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{koiki/fragments :: head('部門管理')}"></head>
 <body>
-<header th:replace="~{koiki/fragments :: header}"></header>
+<header th:replace="~{reference/fragments :: header}"></header>
 <main>
   <h1>部門管理</h1>
   <p class="notice" th:if="${notice}" th:text="${notice}" role="status"></p>
