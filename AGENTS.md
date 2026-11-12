@@ -1,5 +1,9 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：E1配布ZIPへのソースJAR・Javadoc JAR同梱の引継ぎ（2026-11-12）
+
+Owner指示により、配布ZIPへソースJAR・Javadoc JARを同梱する新固定版`0.1.0-preview.2`の作業を、branch `feat/e1-sources-jar-20261112`（main `f6ff36d`から作成）でローカルPCのAI sessionへ引き継ぐ。[引継ぎ](docs/development/phase4-e1-sources-javadoc-handoff-20261112.md)を入口とする。cloud sessionでは本引継ぎ文書と本入口の追加だけを行い、Framework・Tooling・POMは未変更。実装・候補生成・検証・Release公開はローカルPCで行い、公開は既存README・VSCode引継ぎのローカルPC手順に従う。`framework-0.1.0-preview.1`は変更しない。ソースJAR／Javadoc JARの対象座標、Javadoc記述量、plugin版、doclintの扱いはOwner判断事項として同書§4・§7に残す。以下のD3記録は継続して適用する。
+
 ## 現行入口：D3方式2 Windows手動環境の稼働保持（2026-11-10）
 
 **案件向け情報への引継ぎ整理：** Owner指示により[KOIKI利用案件へのコンテナ設計情報](docs/development/phase4-d3-container-consumer-guidance-input-20261110.md)を追加。案件側の設計主体を維持し、KOIKIから提供できる利用条件・参考構成・検証証拠と、方式1（Java Session／SPA同梱）・方式2（BFF Session／Java Bearer API）の違い・注意点を整理した。正式support／標準構成／Template昇格・D3全体受入を定めず、既存結果と残件へ追跡する文書成果。
