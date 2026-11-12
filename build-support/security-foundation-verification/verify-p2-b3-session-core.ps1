@@ -35,7 +35,7 @@ $expectedSuites = [ordered]@{
     'IdentityAuthenticationFixtureTest' = 6
     'IdentityAdministrationAutoConfigurationContextTest' = 2
     'IdentityAdministrationFixtureTest' = 6
-    'SessionJdbcAutoConfigurationContextTest' = 5
+    'SessionJdbcAutoConfigurationContextTest' = 7
     'SessionJdbcCoreMigrationFixtureTest' = 6
     'SessionCleanupContractTest' = 5
 }
@@ -110,7 +110,7 @@ function Assert-SurefireResults {
         }
         $total += [int]$suite.tests
     }
-    if ($total -ne 72) {
+    if ($total -ne 74) {
         throw "Unexpected cumulative test count: $total"
     }
 }
@@ -265,7 +265,7 @@ try {
             $formalJar,
             (Get-Item -LiteralPath $verificationLog)) + $reportFiles)
 
-    Write-Host 'Phase 2 P2-B3 Session cleanup contract verification succeeded (T0-T5 72/72).'
+    Write-Host 'Phase 2 P2-B3 Session cleanup contract verification succeeded (T0-T5 74/74).'
 } catch {
     $verificationFailure = $_
     $failureEvidence = @()

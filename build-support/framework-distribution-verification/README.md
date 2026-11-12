@@ -10,18 +10,21 @@ These scripts do not publish, modify Root CI or operate on a real project databa
 
 1. Create a candidate with `framework-distribution/create-candidate.py` and record
    its ZIP SHA-256. Candidate generation runs the selected module tests/package.
-2. Run `prepare-koiki.ps1 -Version 0.1.0-preview.1 -LocalArchive <zip>
+2. Run `prepare-koiki.ps1 -Version 0.1.0-preview.2 -LocalArchive <zip>
    -ExpectedSha256 <hash> -LocalRepository <new-recipient-repository> -Maven <absolute-wrapper>`.
    Start with an empty recipient repository; allow normal Maven third-party access.
 3. `python verify-preparation.py --pwsh <pwsh> --maven <absolute-wrapper>
    --archive <zip> --repository <prepared-recipient-repository>` checks corrupted
    ZIP/payload rejection, unsafe archive paths, simulated download failure,
-   identical reuse and conflicting installed content. It restores its single
-   deliberately modified POM in `finally`. Use an isolated repository only.
+   sources/Javadoc corruption and omission, unexpected classifiers, old schemas,
+   identical reuse, conflicting installed content and missing-classifier recovery.
+   It restores deliberately modified POM/classifier files in `finally`.
+   Use an isolated repository only.
 4. `python verify-consumer.py --repository <prepared-recipient-repository>
    --output <new-evidence-directory>` starts one owned PostgreSQL 17 container,
    creates the limited role, runs the Consumer journey and captures the dependency
-   tree. It always removes the owned container and records cleanup status.
+   tree, and checks that its Boot JAR contains no sources/Javadoc dependencies.
+   It always removes the owned container and records cleanup status.
 5. Run normal Root regression once, sequentially, with the existing normal-root
    DB limits and finite JVM settings in the plan. It does not certify candidate
    version bytes; candidate Consumer checks do that separately.

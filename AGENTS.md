@@ -1,5 +1,15 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：preview.2のsource／Javadoc同梱を本branchで実装（2026-11-12）
+
+**現行指示はcommit／push／PR・CIまで：** Ownerはフレームワーク資産のcheckpoint tagと配布版`framework-0.1.0-preview.2`tag／Releaseを別とする方針を確認した。[結果§7](docs/architecture/validation/phase4-e1-sources-javadoc-results-20261112.md#7-ownerのソース断面固定指示とci集計の追随)に従い、今回の変更をcommit／pushしmain向けPRとCI確認へ進む。merge・checkpoint tag（名前未確定）・最終ZIP生成・配布Releaseは後続段階。以前のソース固定にframework tagを使う説明は訂正する。固定前にSession追加2 testへCI harness期待数を7／累計74へ追随させた。前段7件PASSとPR CIでの累積確認を分ける。以下のcommit／remote未承認表示は今回指示前の履歴。
+
+**Owner IDE表示確認済み：** Ownerは独立Consumerの`IdentityQuery`をF12で開いてJava sourceが表示され、型hoverでJavadocが見えることを報告した。[結果§6](docs/architecture/validation/phase4-e1-sources-javadoc-results-20261112.md#6-ide確認と証拠の保持)に記録。最終42 payload hash・正規ZIP SHA不変・installer lockなし・E1検証container残留0を照合し、ヘッダー手動環境のJava生存／DB healthy・restart0も確認した。以下のIDE確認待ち表示は報告前の履歴。成果commit／remote・clean最終候補・Release公開は未実施。
+
+**ローカル技術候補PASS：** [同梱結果](docs/architecture/validation/phase4-e1-sources-javadoc-results-20261112.md)へ記録。候補1回でFramework111件PASS、sources11／Javadoc5の内容検査・本体12 JARの追加goal前後SHA一致、空recipientへの14座標／42 payload登録、準備script16確認、独立Consumer1件／8 checkpoint・実行JARへのclassifier混入0・専用container／volume cleanupが成立した。IDE表示確認待ち。候補SHA `892a0d00…82eaca6`は`d0b39bd`＋未コミット差分の`sourceDirty=true`であり、公開対象の最終候補とはしない。Tempのcandidate01／recipient01／consumer01とignored Evidenceを保持し、commit／remote・clean最終候補・Release公開は未実施。下段の実装開始案は着手時点の記録。
+
+Ownerは別branchのE1案を本branchへ統合する方針とA1＋B1を了承した。[引継ぎの現行判断](docs/development/phase4-e1-sources-javadoc-handoff-20261112.md#現行判断利用側是正branchへ統合2026-11-12)に従い、`d0b39bd`からToolingでsources11／Javadoc5・schema2・payload42を実装する。Source Plugin3.4.0／Javadoc Plugin3.12.0・doclint all,-missingをToolingへ固定し、Parent・Framework機能・Referenceの追加改変はしない。preview.2には既存の今回是正を含め、preview.1は変更しない。候補／空recipient／Consumer／IDEは段階別に記録し、公開・commit／remoteは別判断。ヘッダー手動環境の保持条件も継続する。
+
 ## 現行入口：利用側是正ヘッダーのWindows手動確認環境を稼働保持（2026-11-12）
 
 **Owner目視確認報告済み：** Ownerから「確認しました。問題ありません。」との報告を受け、[手動記録§6](docs/architecture/validation/phase4-consumer-feedback-header-manual-20261112.md#6-ownerの目視確認報告2026-11-12)へ記録した。今回のヘッダー目視確認で問題なし。画面数・browser・個別操作は推測せず、操作後のlog／DB／Audit追加点検・結果全体の受入へ拡張しない。手動環境の稼働保持を継続し、commit／remote未実施。以下のOwner目視未実施表示は報告前の履歴。
