@@ -2,7 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{koiki/fragments :: head(${editing ? '経費申請編集' : '経費申請作成'})}"></head>
 <body>
-<header th:replace="~{koiki/fragments :: header}"></header>
+<header th:replace="~{reference/fragments :: header}"></header>
 <main>
   <h1 th:text="${editing ? '経費申請編集' : '経費申請作成'}"></h1>
   <p class="muted">Phase 3の最小画面では1明細の申請を扱います。</p>

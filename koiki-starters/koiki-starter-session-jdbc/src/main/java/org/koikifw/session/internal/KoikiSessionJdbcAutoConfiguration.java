@@ -24,9 +24,17 @@ import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/** Guards the Framework-owned Spring Session JDBC schema and cleanup boundary. */
+/**
+ * Guards the Framework-owned Spring Session JDBC schema and cleanup boundary.
+ *
+ * <p>Runs after Boot's {@code SessionAutoConfiguration} so that its default {@link CookieSerializer},
+ * which reflects {@code server.servlet.session.cookie.*}, is visible to the Servlet logout support.
+ */
 @AutoConfiguration(
-        afterName = "org.springframework.boot.session.jdbc.autoconfigure.JdbcSessionAutoConfiguration",
+        afterName = {
+            "org.springframework.boot.session.jdbc.autoconfigure.JdbcSessionAutoConfiguration",
+            "org.springframework.boot.session.autoconfigure.SessionAutoConfiguration"
+        },
         beforeName = "org.koikifw.identity.internal.KoikiIdentityAutoConfiguration")
 @ConditionalOnClass(JdbcIndexedSessionRepository.class)
 @ConditionalOnBean(DataSource.class)

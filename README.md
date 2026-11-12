@@ -40,6 +40,8 @@ mainの専用CIは通常／観測の計6構成・43項目で成功していま�
 実案件PC／IDE／CIでの受領V10と正式support付き提供は未完了です。当面は引継ぎ文書とCodexの支援でZIP運用を試行し、実案件への配布・更新・受領を確実にする手順の見直し・安定化を進めます。
 2026-11-03の配布経路確立時点のcheckpoint tagは`checkpoint/v0.1.8-phase4-development-baseline`です（PR #59統合commit `c224b14`、通常CI・Java互換性・VT互換性成功）。旧名`checkpoint/e1-distribution-established-20261103`からの名称変更は、同tagの注記に記録されています。公開ZIPの生成元を示す既存tag `framework-0.1.0-preview.1`とは区別します。
 
+**次版preview.2のローカル確認（2026-11-12・未公開）：** 利用側から報告されたheader所有・Session logout構成の是正に加え、配布ZIPへのsources11／Javadoc5 JAR同梱を実装しました。Framework111件・準備script16確認・独立ConsumerとIDEでのsource／Javadoc表示を確認済みです。[同梱結果と残件](docs/architecture/validation/phase4-e1-sources-javadoc-results-20261112.md)を参照してください。候補は未コミット差分を含む技術確認用であり、成果固定・最終候補・公開は未実施です。公開済みpreview.1は維持します。
+
 ## コンテナ構成のフィジビリティ確認（2026-11-10）
 
 実案件チームが配置・認証方式を検討するため、Reference／Toolingで次の2構成を実装し、ローカルContainerでの成立を確認しました。方式2はCloudとWindowsの限定自動検証、WindowsでのOwner手動ブラウザ操作とDB／Audit・ログ照合まで実施しています。案件向けの参考情報を参照できる、sourceのチェックポイントとして位置づけます。今回の成果を固定する新しいtagはまだ作成していません。

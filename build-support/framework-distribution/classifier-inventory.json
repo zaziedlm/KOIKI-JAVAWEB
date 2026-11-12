@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "sourcePlugin": "3.4.0",
+  "javadocPlugin": "3.12.0",
+  "doclint": "all,-missing",
+  "sources": [
+    "koiki-architecture-contract", "koiki-archunit-rules", "koiki-starter-api",
+    "koiki-starter-data", "koiki-starter-data-jpa", "koiki-starter-observability",
+    "koiki-starter-audit", "koiki-starter-security", "koiki-starter-identity",
+    "koiki-starter-session-jdbc", "koiki-starter-web-mvc"
+  ],
+  "javadoc": [
+    "koiki-architecture-contract", "koiki-archunit-rules", "koiki-starter-audit",
+    "koiki-starter-identity", "koiki-starter-session-jdbc"
+  ]
+}

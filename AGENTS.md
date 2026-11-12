@@ -1,5 +1,33 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：preview.2のsource／Javadoc同梱を本branchで実装（2026-11-12）
+
+**現行指示はcommit／push／PR・CIまで：** Ownerはフレームワーク資産のcheckpoint tagと配布版`framework-0.1.0-preview.2`tag／Releaseを別とする方針を確認した。[結果§7](docs/architecture/validation/phase4-e1-sources-javadoc-results-20261112.md#7-ownerのソース断面固定指示とci集計の追随)に従い、今回の変更をcommit／pushしmain向けPRとCI確認へ進む。merge・checkpoint tag（名前未確定）・最終ZIP生成・配布Releaseは後続段階。以前のソース固定にframework tagを使う説明は訂正する。固定前にSession追加2 testへCI harness期待数を7／累計74へ追随させた。前段7件PASSとPR CIでの累積確認を分ける。以下のcommit／remote未承認表示は今回指示前の履歴。
+
+**Owner IDE表示確認済み：** Ownerは独立Consumerの`IdentityQuery`をF12で開いてJava sourceが表示され、型hoverでJavadocが見えることを報告した。[結果§6](docs/architecture/validation/phase4-e1-sources-javadoc-results-20261112.md#6-ide確認と証拠の保持)に記録。最終42 payload hash・正規ZIP SHA不変・installer lockなし・E1検証container残留0を照合し、ヘッダー手動環境のJava生存／DB healthy・restart0も確認した。以下のIDE確認待ち表示は報告前の履歴。成果commit／remote・clean最終候補・Release公開は未実施。
+
+**ローカル技術候補PASS：** [同梱結果](docs/architecture/validation/phase4-e1-sources-javadoc-results-20261112.md)へ記録。候補1回でFramework111件PASS、sources11／Javadoc5の内容検査・本体12 JARの追加goal前後SHA一致、空recipientへの14座標／42 payload登録、準備script16確認、独立Consumer1件／8 checkpoint・実行JARへのclassifier混入0・専用container／volume cleanupが成立した。IDE表示確認待ち。候補SHA `892a0d00…82eaca6`は`d0b39bd`＋未コミット差分の`sourceDirty=true`であり、公開対象の最終候補とはしない。Tempのcandidate01／recipient01／consumer01とignored Evidenceを保持し、commit／remote・clean最終候補・Release公開は未実施。下段の実装開始案は着手時点の記録。
+
+Ownerは別branchのE1案を本branchへ統合する方針とA1＋B1を了承した。[引継ぎの現行判断](docs/development/phase4-e1-sources-javadoc-handoff-20261112.md#現行判断利用側是正branchへ統合2026-11-12)に従い、`d0b39bd`からToolingでsources11／Javadoc5・schema2・payload42を実装する。Source Plugin3.4.0／Javadoc Plugin3.12.0・doclint all,-missingをToolingへ固定し、Parent・Framework機能・Referenceの追加改変はしない。preview.2には既存の今回是正を含め、preview.1は変更しない。候補／空recipient／Consumer／IDEは段階別に記録し、公開・commit／remoteは別判断。ヘッダー手動環境の保持条件も継続する。
+
+## 現行入口：利用側是正ヘッダーのWindows手動確認環境を稼働保持（2026-11-12）
+
+**Owner目視確認報告済み：** Ownerから「確認しました。問題ありません。」との報告を受け、[手動記録§6](docs/architecture/validation/phase4-consumer-feedback-header-manual-20261112.md#6-ownerの目視確認報告2026-11-12)へ記録した。今回のヘッダー目視確認で問題なし。画面数・browser・個別操作は推測せず、操作後のlog／DB／Audit追加点検・結果全体の受入へ拡張しない。手動環境の稼働保持を継続し、commit／remote未実施。以下のOwner目視未実施表示は報告前の履歴。
+
+Ownerの目視確認環境準備指示により、検証済み`ac23657`の通常JAR（SHA `c5b1cc3c…157df9`）を`.tmp/header-manual-20261112/reference.jar`へコピーし、Java PID26008／port18082と専用PostgreSQL `koiki-reference-header-20261112`／port55442／volume `koiki-reference-header-20261112-data`を起動した。[手動確認手順](docs/architecture/validation/phase4-consumer-feedback-header-manual-20261112.md)を入口とする。URL `http://127.0.0.1:18082/login`、user `p3-demo-user@example.test`、passwordは同workの`secrets/login-password`をローカル参照。既存demo seed1回、HTTP login／5画面のheader1個・4link／logout成功、DB healthy・restart0／OOMなし。**Owner目視確認・結果受入は未実施**。Java／DB／volume／secretを指示なしに停止・cleanup・再seedせず、`manual-state.json`／`manual-ready.json`を確認する。既存D3資源は操作していない。commit／remote未実施。
+
+## 現行入口：利用側是正のWindows clean再実行・root・packaged検証PASS（2026-11-12）
+
+Ownerのclean再実行指示後、`ac23657`から同じ対象51件を`clean test`で1回再実行し全PASS、不整合class再出現なし。前段Session context7件PASSを維持し、通常root1回は全16 project SUCCESS・Surefire総数554＝454 PASS＋100 skip・failure／error0。clean package後の実Chromium `PackagedReferenceCriticalJourneyTest`1件もPASSし、申請／承認・HTMX・Cookie／logout・DB／Audit整合とcleanupが成立した。[Windows記録§5](docs/architecture/validation/phase4-consumer-feedback-windows-verification-20261112.md#5-owner承認後のclean再実行後続検証)を現行入口とする。JAR実行前後SHA一致、最終新規container残留0・既存16 container欠落0・稼働0・子Java終了を確認。初回FAIL証拠は保持し、Cloud結果とは分離する。結果Owner受入・O-1別判断・後続版公開・commit／remoteは未実施。下段のWindows HOLD表示は再実行前の履歴である。
+
+## 現行入口：利用側是正のWindows初回検証は対象実行FAIL・後続HOLD（2026-11-12）
+
+Ownerの対象テスト→通常root→packagedブラウザ検証指示により、`ac23657`からWindowsで実行した。Session context7件PASS、Reference／Architectureの期待51件PASS。ただしReferenceをcleanせず実行したため、Maven実行前の不整合package classが追加28件errorとなり、対象実行全体はFAIL。通常root・packagedブラウザは未実施。[Windows記録](docs/architecture/validation/phase4-consumer-feedback-windows-verification-20261112.md)へ追跡する。判断票§6の失敗時停止条件に従い再実行していない。次はFAIL証拠を保持し、Reference clean後の同じ対象集合1回再実行からの再開判断。保持中手動資源・production code・remoteを操作していない。下段のClaude cloud結果とは別証拠である。
+
+## 現行入口：利用側報告2件（共通header fragment・Session logout customizer）の是正（2026-11-12）
+
+[Owner判断票](docs/development/phase4-consumer-feedback-web-fragment-session-logout-owner-review-20261112.md)§7でOwnerがD-1＝A1、D-2＝B1、D-3＝O-1別票、D-4＝§6のままを選択。branch `claude/eager-hawking-2pyla8`で、Web MVC Starterの`koiki/fragments :: header`をReference所有の`reference/fragments :: header`へ移し、`KoikiSessionJdbcAutoConfiguration`をBoot `SessionAutoConfiguration`の後に評価するよう是正した。[結果](docs/architecture/validation/phase4-consumer-feedback-web-fragment-session-logout-results-20261112.md)を入口とする。Session context test 7件（負の対照で新規1件のFAILを確認）、Reference・Architecture対象46件PASS、通常root 554実行・既知のroot権限起因failure 1・skip 100。packaged E2Eはcloud環境のbrowser版不一致で未成立、PRのCIで確認する。結果Owner受入、O-1別票、後続版収録は未完了。公開済み`framework-0.1.0-preview.1`は変更しない。
+
 ## 現行入口：D3方式2 Windows手動環境の稼働保持（2026-11-10）
 
 **案件向け情報への引継ぎ整理：** Owner指示により[KOIKI利用案件へのコンテナ設計情報](docs/development/phase4-d3-container-consumer-guidance-input-20261110.md)を追加。案件側の設計主体を維持し、KOIKIから提供できる利用条件・参考構成・検証証拠と、方式1（Java Session／SPA同梱）・方式2（BFF Session／Java Bearer API）の違い・注意点を整理した。正式support／標準構成／Template昇格・D3全体受入を定めず、既存結果と残件へ追跡する文書成果。

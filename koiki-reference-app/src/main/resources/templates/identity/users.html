@@ -2,7 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{koiki/fragments :: head('Identity user lookup')}"></head>
 <body>
-<header th:replace="~{koiki/fragments :: header}"></header>
+<header th:replace="~{reference/fragments :: header}"></header>
 <main>
   <h1>Identity user lookup</h1>
   <form method="get" th:action="@{/identity/users}">

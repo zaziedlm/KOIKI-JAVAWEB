@@ -2,7 +2,8 @@
 
 This tooling builds and prepares a complete, fixed KOIKI version. It does not
 create repositories, tags, releases, or upload assets. The initial proposed
-version is `0.1.0-preview.1`; it is not the Phase 5 production/support release.
+version was `0.1.0-preview.1`. This tooling targets the unpublished
+`0.1.0-preview.2` candidate; it is not the Phase 5 production/support release.
 All modules share one version. Do not mix modules from different distributions.
 
 ## Prepare a development PC or CI runner
@@ -10,15 +11,21 @@ All modules share one version. Do not mix modules from different distributions.
 Requirements: PowerShell 7, JDK 21, Maven 3.9.16, GitHub CLI for remote downloads,
 and access to the normal Maven repositories for third-party dependencies/plugins.
 Neither this ZIP nor its preparation script installs those tools. Only KOIKI
-artifacts are bundled: 14 POMs and 12 JARs, plus manifest and installation guidance.
+artifacts are bundled: 14 POMs, 12 main JARs, 11 sources JARs and 5 Javadoc JARs,
+plus manifest and installation guidance (42 payloads / 46 files in total).
+The fixed classifier inventory is recorded in the producer's
+`classifier-inventory.json`: sources cover all Java-bearing modules, including
+internal implementation sources; Javadoc covers only the five modules with
+public packages. `koiki-testing` has no Java sources and no classifier JARs.
+Use each version's bundled installer; this schema-2 installer rejects schema 1.
 
 Use a reviewed copy of `prepare-koiki.ps1` pinned to a distribution repository
 commit, and the ZIP SHA-256 recorded with the selected version. The distribution
 repository is the existing public `zaziedlm/KOIKI-JAVAWEB`. The preview below
-has local candidate evidence; remote publication/download remains unverified.
+is a candidate until version-specific publication and download are verified.
 
 ```powershell
-./prepare-koiki.ps1 -Version 0.1.0-preview.1 `
+./prepare-koiki.ps1 -Version 0.1.0-preview.2 `
   -Repository zaziedlm/KOIKI-JAVAWEB -ExpectedSha256 <pinned-64-character-hash>
 ```
 
@@ -36,7 +43,15 @@ select a different directory, and pass the same `-Dmaven.repo.local=...` to buil
 and configure the IDE consistently. `-Maven` accepts an absolute Maven executable
 or wrapper path. The script invokes Maven outside the project so missing KOIKI
 Parent artifacts do not prevent initial installation. A completion record is
-written under `.koiki-distributions/` only after all 26 payloads are verified.
+written under `.koiki-distributions/` only after all 42 payloads are verified,
+including every sources/Javadoc hash. Missing classifier files are reinstalled;
+conflicting classifier bytes are rejected before any registration begins.
+
+For IDE source and documentation lookup, use the same local Maven repository
+as the application build and refresh the Maven project. Standard classifier
+filenames allow the IDE to attach sources/Javadoc where supported. Actual IDE
+attachment is a separate recipient check. Do not add classifier artifacts as
+application dependencies; they are not runtime libraries.
 
 For local verification, use `-LocalArchive <path>` instead of `-Repository`.
 `-Offline` affects Maven registration only; it requires cached install-plugin
@@ -55,7 +70,7 @@ private repository. Never put credentials in this script, POMs, or manifests.
   env:
     GH_TOKEN: ${{ secrets.KOIKI_ASSET_READ_TOKEN }}
   run: >-
-    ./tools/prepare-koiki.ps1 -Version 0.1.0-preview.1
+    ./tools/prepare-koiki.ps1 -Version 0.1.0-preview.2
     -Repository zaziedlm/KOIKI-JAVAWEB
     -ExpectedSha256 ${{ vars.KOIKI_ARCHIVE_SHA256 }}
 - name: Build application
@@ -73,14 +88,26 @@ Producer requirements additionally include Python 3.12+ and the repository Maven
 Wrapper. Run `create-candidate.py --version <fixed-version> --output <new-path>
 --maven-repository <producer-cache>`; add `--offline` only with prepared dependencies.
 It snapshots tracked and non-ignored source files, captures dirty-source hashes,
-converts only staged POMs, runs the selected modules' tests/package, checks embedded
+converts only staged POMs, runs the selected modules' tests/local install, checks embedded
 versions and writes a ZIP. The checkout's POMs are unchanged. `source-inventory.json`
 and `generated-poms.json` beside the ZIP identify exact source and version conversion.
 The ZIP SHA-256 is outside the ZIP; internal hashes are in `SHA256SUMS` and manifest.
+The explicitly selected producer cache receives local fixed-version artifacts
+so the separate classifier goals can resolve inter-module dependencies.
+Source Plugin 3.4.0 and Javadoc Plugin 3.12.0 are pinned in Tooling only; the
+distributed Parent does not make recipients run these goals. Javadoc uses
+`all,-missing` doclint and excludes internal packages. Source bytes/public HTML,
+local-path absence and identical main-JAR hashes before/after these goals are checked.
 Publish the exact verified ZIP without rebuilding. Fixed version content must not
 be replaced after publication. This tool is local staging, not a publishing command.
 
 ## Scope and known limits
+
+Preview.2 includes the consumer-feedback Session logout configuration-order fix.
+It also removes the Reference-specific `koiki/fragments :: header` from the
+Framework. Applications must own their navigation/header; the shared
+`koiki/fragments :: head(title)` remains. Update any old header references
+before adopting this version. Published preview.1 remains unchanged.
 
 Parent/BOM, architecture contracts/rules, nine Starters and `koiki-testing` are
 distribution candidates; install-all is not depend-on-all. Select required

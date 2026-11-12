@@ -10,6 +10,7 @@ import subprocess
 import threading
 import time
 import uuid
+import zipfile
 
 
 def main():
@@ -36,6 +37,7 @@ def main():
     stopped = threading.Event()
     samples = []
     created = False
+    owned_volumes = []
     monitor = None
     status = {"container": name, "status": "RUNNING", "cleanup": "PENDING"}
 
@@ -61,9 +63,12 @@ def main():
 
     try:
         docker("run", "-d", "--name", name, "--label", "koiki.verification=e1",
+               "--memory", "1g", "--cpus", "1",
                "-e", "POSTGRES_PASSWORD", "-e", "POSTGRES_DB=e1",
                "-p", "127.0.0.1::5432", "postgres:17-alpine", "-c", "max_connections=16")
         created = True
+        mounts = json.loads(docker("inspect", "--format", "{{json .Mounts}}", name).stdout)
+        owned_volumes = [mount["Name"] for mount in mounts if mount["Type"] == "volume"]
         for _ in range(30):
             # The image's initialization server accepts Unix sockets before the
             # application database exists. TCP is enabled only on the final server.
@@ -93,6 +98,14 @@ def main():
             code = subprocess.run(command, cwd=consumer, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=600).returncode
         if code:
             raise RuntimeError(f"Consumer failed ({code}); inspect consumer.log")
+        jars = list((consumer / "target").glob("distribution-consumer-*.jar"))
+        if len(jars) != 1:
+            raise RuntimeError("Expected one packaged Consumer JAR")
+        with zipfile.ZipFile(jars[0]) as jar:
+            leaked = [n for n in jar.namelist() if n.startswith("BOOT-INF/lib/") and n.endswith(("-sources.jar", "-javadoc.jar"))]
+            if leaked:
+                raise RuntimeError("Classifier JARs leaked into Consumer runtime")
+        status["runtimeClassifierJars"] = 0
         with (output / "dependency-tree.log").open("w") as log:
             code = subprocess.run(base + ["org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree", "-Dincludes=org.koikifw"],
                                   cwd=consumer, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=180).returncode
@@ -111,9 +124,11 @@ def main():
         if monitor:
             monitor.join(30)
         if created:
-            result = docker("rm", "-f", name, check=False)
+            result = docker("rm", "-f", "-v", name, check=False)
             inspect = docker("inspect", name, check=False)
-            status["cleanup"] = "PASS" if result.returncode == 0 and inspect.returncode != 0 else "FAIL"
+            remaining_volumes = [v for v in owned_volumes if docker("volume", "inspect", v, check=False).returncode == 0]
+            status["ownedVolumesRemaining"] = len(remaining_volumes)
+            status["cleanup"] = "PASS" if result.returncode == 0 and inspect.returncode != 0 and not remaining_volumes else "FAIL"
         else:
             status["cleanup"] = "NOT_CREATED"
         status["dbClientSamples"] = samples
