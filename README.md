@@ -40,7 +40,7 @@ mainの専用CIは通常／観測の計6構成・43項目で成功していま�
 実案件PC／IDE／CIでの受領V10と正式support付き提供は未完了です。当面は引継ぎ文書とCodexの支援でZIP運用を試行し、実案件への配布・更新・受領を確実にする手順の見直し・安定化を進めます。
 2026-11-03の配布経路確立時点のcheckpoint tagは`checkpoint/v0.1.8-phase4-development-baseline`です（PR #59統合commit `c224b14`、通常CI・Java互換性・VT互換性成功）。旧名`checkpoint/e1-distribution-established-20261103`からの名称変更は、同tagの注記に記録されています。公開ZIPの生成元を示す既存tag `framework-0.1.0-preview.1`とは区別します。
 
-**次版preview.2のローカル確認（2026-11-12・未公開）：** 利用側から報告されたheader所有・Session logout構成の是正に加え、配布ZIPへのsources11／Javadoc5 JAR同梱を実装しました。Framework111件・準備script16確認・独立ConsumerとIDEでのsource／Javadoc表示を確認済みです。[同梱結果と残件](docs/architecture/validation/phase4-e1-sources-javadoc-results-20261112.md)を参照してください。候補は未コミット差分を含む技術確認用であり、成果固定・最終候補・公開は未実施です。公開済みpreview.1は維持します。
+**preview.2公開（2026-11-16）：** header所有・Session logout構成の是正とsources11／Javadoc5 JAR同梱を含む[GitHub prerelease](https://github.com/zaziedlm/KOIKI-JAVAWEB/releases/tag/framework-0.1.0-preview.2)を公開しました。資産断面`checkpoint/v0.1.9-phase4-development-baseline`と同じclean commit `557fbfc`から最終ZIPを新規生成し、Framework111件・準備16確認・公開前後の各42 payload登録と独立Consumerが成功しています。ZIP SHAは`7858dc3719ed9f8f0fab164e6dfa2e6015893dd971b0d7bd6a48a37136aab08e`です。[最終生成・公開・実取得結果](docs/architecture/validation/phase4-e1-preview2-publication-20261116.md)を参照してください。配布版tagと資産checkpointは役割を分け、preview.1は維持します。前段IDE確認・実案件側の採用・正式supportの範囲も同記録で区別します。
 
 ## コンテナ構成のフィジビリティ確認（2026-11-10）
 

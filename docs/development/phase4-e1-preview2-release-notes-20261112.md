@@ -1,6 +1,8 @@
-# KOIKI Framework 0.1.0-preview.2 Release notes案
+# KOIKI Framework 0.1.0-preview.2 Release notes（2026-11-16公開）
 
-状態：**DRAFT／未公開**。ローカル技術候補の検証結果は[同梱対応結果](../architecture/validation/phase4-e1-sources-javadoc-results-20261112.md)を参照する。公開対象commit・最終候補hash・Release作成は未確定であり、この文書は公開指示を意味しない。
+状態：**GitHub prerelease公開済み**。[Release](https://github.com/zaziedlm/KOIKI-JAVAWEB/releases/tag/framework-0.1.0-preview.2)と[最終生成・公開・実取得結果](../architecture/validation/phase4-e1-preview2-publication-20261116.md)を参照する。生成元はcheckpointと同じ`557fbfc59ddbf1275b1ff53c95b68d9e21739dfa`、最終manifestは`sourceDirty=false`。以前の未コミット技術候補の記録は[同梱対応結果](../architecture/validation/phase4-e1-sources-javadoc-results-20261112.md)に保持する。
+
+公開ZIP：`koiki-framework-0.1.0-preview.2.zip`。SHA-256：`7858dc3719ed9f8f0fab164e6dfa2e6015893dd971b0d7bd6a48a37136aab08e`。
 
 ## 変更点
 
@@ -21,6 +23,6 @@ Parentへsource／Javadoc生成pluginを追加していないため、Applicatio
 
 ローカル候補でFramework111件、準備script16確認、独立Consumer1 test／8 checkpoint、42 payload登録・hash照合、実行JARへのclassifier非混入が成立した。今回のヘッダー／Session是正は別の[Windows自動検証](../architecture/validation/phase4-consumer-feedback-windows-verification-20261112.md)と[Owner目視確認](../architecture/validation/phase4-consumer-feedback-header-manual-20261112.md#6-ownerの目視確認報告2026-11-12)に追跡する。
 
-IDEで`IdentityQuery`のJava sourceと型hoverのJavadocが表示されることはOwner確認済み。成果の固定と最終候補の生成／照合、CI、公開後のremote取得・空recipient登録・Consumer確認はそれぞれ別の記録を必要とする。現候補は未コミット差分を含む技術検証用であり、そのまま公開対象と確定していない。
+前段の技術候補で、IDEの`IdentityQuery`のJava sourceと型hoverのJavadocが表示されることはOwner確認済み。今回の最終ZIPはその後に固定したclean sourceから新規生成し、Framework111件・準備16確認・空recipient登録・独立Consumerを再確認して公開した。公開後の実取得・別の空recipientへの42 payload登録・独立Consumerも成功し、asset digestと正規ZIP SHAが一致した。最終ZIPでのIDE再確認や別PC／実案件CIは、この自動確認へ含めない。
 
 O-1（logout customizerの全chain自動適用・明示呼出しによる二重登録）、正式support、実案件PC／IDE／CI採用、D3／Phase4全体の受入は、この版の同梱対応で解消・認定しない。
