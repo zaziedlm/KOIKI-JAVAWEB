@@ -1,5 +1,11 @@
 # KOIKI-JavaWeb-FW Agent Guidance — Phase 3
 
+## 現行入口：preview.2最終ZIP生成・配布版tag／prerelease公開・実取得PASS（2026-11-16）
+
+**公開記録4文書の固定指示：** OwnerはAGENTS・README・preview.2 Release notes・公開結果の4文書だけを専用branchでcommit／pushし、main向けPR・必要CI確認後のmergeへ進むよう指示した。コード・checkpoint／配布tag・公開ZIPは変更せず、両tagは557fbfcを維持する。以下の文書未commit表示は公開完了直後の履歴として読む。
+
+Owner指示により、資産checkpoint `checkpoint/v0.1.9-phase4-development-baseline`と同じclean `557fbfc`から最終ZIPを新規生成し、配布版tag `framework-0.1.0-preview.2`とGitHub prereleaseへ公開した。[公開結果](docs/architecture/validation/phase4-e1-preview2-publication-20261116.md)を現行入口とする。manifest sourceDirty=false、14座標／42 payload（POM14・本体12・sources11・Javadoc5）、ZIP SHA `7858dc3719ed9f8f0fab164e6dfa2e6015893dd971b0d7bd6a48a37136aab08e`。Framework111件・準備16確認・公開前後の空recipient登録全42 hash・独立Consumer各1件／8 checkpoint・classifier混入0・専用container／volume cleanupが成立し、asset digest・local／remote配布tag対象557fbfc一致も確認した。既存preview.1は変更せず、既存containerの状態変更0。登録の一時runnerはinstaller起動前の引数不備を訂正したが、正規ZIP・固定sourceは手修正していない。公開後の文書追記は未commit、配布tagは付替えない。最終ZIPのIDE／案件側採用、結果全体Owner受入・正式support・全DoD／Phase4認定は別判断。以下の未公開表示・技術候補892a0d00等は各時点の履歴である。
+
 ## 現行入口：preview.2のsource／Javadoc同梱を本branchで実装（2026-11-12）
 
 **現行指示はcommit／push／PR・CIまで：** Ownerはフレームワーク資産のcheckpoint tagと配布版`framework-0.1.0-preview.2`tag／Releaseを別とする方針を確認した。[結果§7](docs/architecture/validation/phase4-e1-sources-javadoc-results-20261112.md#7-ownerのソース断面固定指示とci集計の追随)に従い、今回の変更をcommit／pushしmain向けPRとCI確認へ進む。merge・checkpoint tag（名前未確定）・最終ZIP生成・配布Releaseは後続段階。以前のソース固定にframework tagを使う説明は訂正する。固定前にSession追加2 testへCI harness期待数を7／累計74へ追随させた。前段7件PASSとPR CIでの累積確認を分ける。以下のcommit／remote未承認表示は今回指示前の履歴。
